@@ -188,9 +188,19 @@ export default class LocalPosterService {
       );
     }
 
+    if (poster.file) {
+      await this.fileRepo.delete(poster.file.id);
+      await this.storage.deleteFile(poster.file);
+    }
+
     const fileParams = await this.storage.saveFile(filename, filedata);
-    poster.file = await this.fileRepo.save(fileParams);
-    return this.repo.save(poster);
+    try {
+      poster.file = await this.fileRepo.save(fileParams);
+      return this.repo.save(poster);
+    } catch (error) {
+      await this.storage.deleteFile(fileParams);
+      throw error;
+    }
   }
 
   /**

@@ -12,6 +12,7 @@
     "lint-fix": "eslint ./src --fix",
     "format": "prettier --ignore-path .gitignore --check ./src/",
     "format-fix": "prettier --ignore-path .gitignore --write ./src",
+    "migrate": "ts-node src/migrate.ts",
     "seed": "ts-node src/seed/index.ts",
     "seed:gewis": "ts-node src/seed/index.ts --gewis",
     "seed:hubble": "ts-node src/seed/index.ts --hubble",

@@ -10,6 +10,7 @@ import { Entities as SpotifyEntities } from './modules/spotify/entities';
 import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
 import LocalPoster from './modules/handlers/screen/poster/local/local-poster';
+import { InitialMigration1780248780327 } from './migrations/1780248780327-InitialMigration';
 
 const dataSource = new DataSource({
   host: process.env.TYPEORM_HOST,
@@ -27,6 +28,9 @@ const dataSource = new DataSource({
     : {}),
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
+  migrations: [
+    InitialMigration1780248780327,
+  ],
   extra: {
     authPlugins: {
       mysql_clear_password: () => () => Buffer.from(`${process.env.TYPEORM_PASSWORD}\0`),

@@ -28,9 +28,7 @@ const dataSource = new DataSource({
     : {}),
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
-  migrations: [
-    InitialMigration1780248780327,
-  ],
+  migrations: [InitialMigration1780248780327],
   extra: {
     authPlugins: {
       mysql_clear_password: () => () => Buffer.from(`${process.env.TYPEORM_PASSWORD}\0`),

@@ -1,10 +1,32 @@
 import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
 import { File } from '../../../../files/entities';
-import { FooterSize, PosterType } from '../poster';
+
+export enum PosterType {
+  UNKNOWN = 'unknown',
+  ERROR = 'error',
+  AGENDA = 'agenda',
+  INFIMA = 'infima',
+  TRAINS = 'train',
+  IMAGE = 'img',
+  LOGO = 'logo',
+  EXTERNAL = 'extern',
+  PHOTO = 'photo',
+  VIDEO = 'video',
+  BORREL_LOGO = 'borrel-logo',
+  BORREL_PRICE_LIST = 'borrel-price-list',
+  BORREL_WALL_OF_SHAME = 'borrel-wall-of-shame',
+  OLYMPICS = 'olympics',
+}
+
+export enum FooterSize {
+  FULL = 'full',
+  MINIMAL = 'minimal',
+  HIDDEN = 'hidden',
+}
 
 @Entity()
-export default class LocalPoster extends BaseEntity {
+export default class Poster extends BaseEntity {
   @Column()
   name: string;
 

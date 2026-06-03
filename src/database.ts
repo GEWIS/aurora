@@ -10,7 +10,7 @@ import { Entities as SpotifyEntities } from './modules/spotify/entities';
 import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
 import StaticPoster from './modules/handlers/screen/poster/static/static-poster';
-import LocalPoster from './modules/handlers/screen/poster/local/local-poster';
+import Poster from './modules/handlers/screen/poster/local/poster';
 import Carousel, { CarouselPoster } from './modules/handlers/screen/poster/local/local-carousel';
 
 const dataSource = new DataSource({
@@ -45,7 +45,7 @@ const dataSource = new DataSource({
     ...SpotifyEntities,
     ...LightsEntities,
     StaticPoster,
-    LocalPoster,
+    Poster,
     Carousel,
     CarouselPoster,
   ],

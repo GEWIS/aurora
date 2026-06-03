@@ -11,10 +11,9 @@ import GEWISPosterService, { GEWISPhotoAlbumParams } from './gewis-poster-servic
 import OlympicsService from './olympics-service';
 import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
 import { Controller } from '@tsoa/runtime';
-import { Poster } from './poster';
 import { ISettings } from '../../../server-settings/server-setting';
-import { LocalPosterResponse } from './local/local-poster-service';
-import LocalPoster from './local/local-poster';
+import { PosterResponse } from './local/poster-service';
+import Poster from './local/poster';
 
 export interface BorrelModeParams {
   enabled: boolean;
@@ -28,8 +27,8 @@ export interface EnabledParams {
   enabled: boolean;
 }
 
-export interface PosterResponse {
-  posters: LocalPosterResponse[];
+export interface CarouselResponse {
+  posters: PosterResponse[];
   borrelMode: boolean;
 }
 
@@ -48,10 +47,10 @@ export class CarouselPosterController extends Controller {
 
   @Security(SecurityNames.LOCAL, securityGroups.poster.base)
   @Get('')
-  public async getPosters(@Query() includeHidden?: boolean): Promise<PosterResponse> {
-    const posters = await this.screenHandler.posterService.getAllLocalPosters();
+  public async getPosters(@Query() includeHidden?: boolean): Promise<CarouselResponse> {
+    const posters = await this.screenHandler.posterService.getAllPosters();
 
-    let visible: LocalPoster[];
+    let visible: Poster[];
     if (includeHidden) {
       visible = posters;
     } else {
@@ -106,7 +105,7 @@ export class CarouselPosterController extends Controller {
   public async togglePosterEnable(
     id: number,
     @Body() body: EnabledParams,
-  ): Promise<LocalPosterResponse> {
+  ): Promise<PosterResponse> {
     const poster = await this.screenHandler.posterService.togglePosterEnable(id, body.enabled);
     return this.screenHandler.posterService.toResponse(poster);
   }

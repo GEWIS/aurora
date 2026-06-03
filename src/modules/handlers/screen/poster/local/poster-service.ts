@@ -2,14 +2,13 @@ import { FileStorage } from '../../../../files/storage/file-storage';
 import { Repository } from 'typeorm';
 import { lookup } from 'mime-types';
 import { File } from '../../../../files/entities';
-import LocalPoster from './local-poster';
+import Poster, { FooterSize, PosterType } from './poster';
 import StaticPoster from '../static/static-poster';
 import { DiskStorage } from '../../../../files/storage';
 import dataSource from '../../../../../database';
 import logger from '../../../../../logger';
 import { HttpApiException } from '../../../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
-import { FooterSize, PosterType } from '../poster';
 import FileResponse from '../../../../files/entities/file-response';
 
 interface BasePosterParams {
@@ -52,7 +51,7 @@ export interface UpdatePosterRequest {
   albums?: number[];
 }
 
-export interface LocalPosterResponse {
+export interface PosterResponse {
   id: number;
   name: string;
   label?: string;
@@ -72,25 +71,25 @@ export interface LocalPosterResponse {
   file?: FileResponse;
 }
 
-export default class LocalPosterService {
+export default class PosterService {
   private storage: FileStorage;
 
-  private repo: Repository<LocalPoster>;
+  private repo: Repository<Poster>;
 
   private fileRepo: Repository<File>;
 
   constructor() {
     this.storage = new DiskStorage('posters');
-    this.repo = dataSource.getRepository(LocalPoster);
+    this.repo = dataSource.getRepository(Poster);
     this.fileRepo = dataSource.getRepository(File);
   }
 
   /**
-   * Converts a poster entity to the LocalPosterResponse format.
+   * Converts a poster entity to the PosterResponse format.
    * @param poster The poster to be converted.
    */
-  public toResponse(poster: LocalPoster): LocalPosterResponse {
-    let file: LocalPosterResponse['file'];
+  public toResponse(poster: Poster): PosterResponse {
+    let file: PosterResponse['file'];
     if (poster.file) {
       const location = this.storage.getPublicFileUri(poster.file);
       if (location) {
@@ -125,7 +124,7 @@ export default class LocalPosterService {
   /**
    * Fetches all Local Posters from the database.
    */
-  public async getAllLocalPosters(): Promise<LocalPoster[]> {
+  public async getAllPosters(): Promise<Poster[]> {
     return this.repo.find();
   }
 
@@ -133,7 +132,7 @@ export default class LocalPosterService {
    * Gets a specific Local Poster from the database.
    * @param id The id of the poster to fetch.
    */
-  public async getSingleLocalPoster(id: number): Promise<LocalPoster> {
+  public async getSinglePoster(id: number): Promise<Poster> {
     const poster = await this.repo.findOne({ where: { id } });
     if (poster == null) {
       throw new HttpApiException(HttpStatusCode.NotFound, `Poster with ID "${id}" not found.`);
@@ -146,7 +145,7 @@ export default class LocalPosterService {
    * This does not yet contain the actual image or video of the poster.
    * @param params Metadata of the poster as specified in the MediaPosterParams interface.
    */
-  public async createMediaPoster(params: MediaPosterRequest): Promise<LocalPoster> {
+  public async createMediaPoster(params: MediaPosterRequest): Promise<Poster> {
     const {
       name,
       label,
@@ -179,8 +178,8 @@ export default class LocalPosterService {
    * @param filename Original filename of the media file.
    * @param filedata Buffer containing the file.
    */
-  public async attachMedia(id: number, filename: string, filedata: Buffer): Promise<LocalPoster> {
-    const poster = await this.getSingleLocalPoster(id);
+  public async attachMedia(id: number, filename: string, filedata: Buffer): Promise<Poster> {
+    const poster = await this.getSinglePoster(id);
     if (poster.type != PosterType.IMAGE && poster.type != PosterType.VIDEO) {
       throw new HttpApiException(
         HttpStatusCode.BadRequest,
@@ -207,7 +206,7 @@ export default class LocalPosterService {
    * Creates a new Local Poster of the url type.
    * @param params The specifics of the poster as specified in the UrlPosterParams interface.
    */
-  public async createExternalPoster(params: ExternalPosterRequest): Promise<LocalPoster> {
+  public async createExternalPoster(params: ExternalPosterRequest): Promise<Poster> {
     const {
       name,
       label,
@@ -240,7 +239,7 @@ export default class LocalPosterService {
    * Creates a new Local Poster of the photo type.
    * @param params The specifics of the poster as specified in the PhotoPosterParams interface.
    */
-  public async createPhotoPoster(params: PhotoPosterRequest): Promise<LocalPoster> {
+  public async createPhotoPoster(params: PhotoPosterRequest): Promise<Poster> {
     const {
       name,
       label,
@@ -273,8 +272,8 @@ export default class LocalPosterService {
    * Deletes the given poster from the database and storage.
    * @param id The id of the poster to be deleted.
    */
-  public async deleteLocalPoster(id: number): Promise<void> {
-    const poster = await this.getSingleLocalPoster(id);
+  public async deletePoster(id: number): Promise<void> {
+    const poster = await this.getSinglePoster(id);
     if (poster.file) {
       await this.fileRepo.delete(poster.file.id);
       await this.storage.deleteFile(poster.file);
@@ -287,8 +286,8 @@ export default class LocalPosterService {
    * @param id The id of the poster to be updated.
    * @param params The fields of the poster to be updated as specified in UpdatePosterParams.
    */
-  public async updateLocalPoster(id: number, params: UpdatePosterRequest): Promise<LocalPoster> {
-    const poster = await this.getSingleLocalPoster(id);
+  public async updatePoster(id: number, params: UpdatePosterRequest): Promise<Poster> {
+    const poster = await this.getSinglePoster(id);
     Object.assign(poster, params);
     return this.repo.save(poster);
   }
@@ -298,8 +297,8 @@ export default class LocalPosterService {
    * @param id The id of the poster to enable/disable.
    * @param enabled The state to put the poster in.
    */
-  public async togglePosterEnable(id: number, enabled: boolean): Promise<LocalPoster> {
-    const poster = await this.getSingleLocalPoster(id);
+  public async togglePosterEnable(id: number, enabled: boolean): Promise<Poster> {
+    const poster = await this.getSinglePoster(id);
     poster.enabled = enabled;
     return this.repo.save(poster);
   }
@@ -309,7 +308,7 @@ export default class LocalPosterService {
    */
   public async deleteTrelloPosters(): Promise<void> {
     const posters = await this.repo.find({ where: { trello: true } });
-    await Promise.all(posters.map((poster) => this.deleteLocalPoster(poster.id)));
+    await Promise.all(posters.map((poster) => this.deletePoster(poster.id)));
   }
 
   /**

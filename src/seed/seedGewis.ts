@@ -21,8 +21,7 @@ import { ColorEffects } from '../modules/lights/effects/color/color-effects';
 import { MovementEffects } from '../modules/lights/effects/movement/movement-effetcs';
 import { TimedEvent } from '../modules/timed-events/entities';
 import { IntegrationUserService } from '../modules/auth/integration';
-import LocalPoster from '../modules/handlers/screen/poster/local/local-poster';
-import { FooterSize, PosterType } from '../modules/handlers/screen/poster/poster';
+import Poster, { FooterSize, PosterType } from '../modules/handlers/screen/poster/local/poster';
 
 export default async function seedDatabase() {
   const timedEventsRepo = dataSource.getRepository(TimedEvent);
@@ -778,7 +777,7 @@ export async function seedOpeningSequence(
 }
 
 export async function seedPosters() {
-  const repo = dataSource.getRepository(LocalPoster);
+  const repo = dataSource.getRepository(Poster);
 
   await repo.save([
     {
@@ -847,5 +846,5 @@ export async function seedPosters() {
       defaultTimeout: 15,
       trello: false,
     },
-  ] as LocalPoster[]);
+  ] as Poster[]);
 }

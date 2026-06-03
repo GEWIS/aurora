@@ -1,8 +1,7 @@
-import { BasePoster, FooterSize, LocalPosterType, Poster, PosterType } from '../poster';
 import { Board, Card, Checklist, TrelloClient, TrelloList } from './client';
-import LocalPosterService from '../local/local-poster-service';
+import PosterService from '../local/poster-service';
 import axios from 'axios';
-import LocalPoster from '../local/local-poster';
+import Poster, { FooterSize, PosterType } from '../local/poster';
 
 const DEFAULT_POSTER_TIMEOUT = 15;
 const DEFAULT_POSTER_REFRESH = 1000 * 60 * 15;
@@ -11,7 +10,7 @@ export class TrelloPosterManager {
   private client: TrelloClient;
 
   private refreshTimeout: NodeJS.Timeout | undefined = undefined;
-  
+
   constructor() {
     this.client = new TrelloClient();
   }
@@ -29,7 +28,7 @@ export class TrelloPosterManager {
     board: Board,
     listType?: PosterType,
     visitedLists: Set<string> = new Set(),
-  ): Promise<LocalPoster[]> {
+  ): Promise<Poster[]> {
     if (!list.id || visitedLists.has(list.id)) return [];
     visitedLists.add(list.id);
 
@@ -76,7 +75,7 @@ export class TrelloPosterManager {
       }),
     );
 
-    return posters.filter((p) => p !== undefined).flat() as LocalPoster[];
+    return posters.filter((p) => p !== undefined).flat() as Poster[];
   }
 
   /**
@@ -86,7 +85,7 @@ export class TrelloPosterManager {
    * @param borrelMode
    * @private
    */
-  private parseBasePoster(card: Card, checklists: Checklist[], borrelMode: boolean): BasePoster {
+  private parseBasePoster(card: Card, checklists: Checklist[], borrelMode: boolean) {
     // Find the index of the "timeout" checklist if it exists
     // @ts-ignore
     const indexTimeout = checklists.findIndex(
@@ -134,14 +133,14 @@ export class TrelloPosterManager {
     checklists: Checklist[],
     type: PosterType.IMAGE | PosterType.VIDEO,
     borrelMode = false,
-  ): Promise<LocalPoster | undefined> {
+  ): Promise<Poster | undefined> {
     const poster = this.parseBasePoster(card, checklists, borrelMode);
 
     if (!card.id) {
       return undefined;
     }
 
-    const service = new LocalPosterService();
+    const service = new PosterService();
     let localPoster = await service.createMediaPoster({
       name: poster.name,
       type: type,
@@ -178,7 +177,7 @@ export class TrelloPosterManager {
     card: Card,
     checklists: Checklist[],
     borrelMode = false,
-  ): Promise<LocalPoster | undefined> {
+  ): Promise<Poster | undefined> {
     const index = checklists.findIndex((checklist) => checklist.name.toLowerCase() === 'photos');
     // If such list cannot be found, it does not exist. Throw an error because we cannot continue
     if (index === undefined || index < 0) {
@@ -189,7 +188,7 @@ export class TrelloPosterManager {
     const albums = checkList.checkItems.map((item: any) => item.name.split(' ')[0]);
 
     const poster = this.parseBasePoster(card, checklists, borrelMode);
-    const service = new LocalPosterService();
+    const service = new PosterService();
     return service.createPhotoPoster({
       name: poster.name,
       type: PosterType.PHOTO,
@@ -217,7 +216,7 @@ export class TrelloPosterManager {
     card: Card,
     checklists: Checklist[],
     borrelMode = false,
-  ): Promise<LocalPoster | undefined> {
+  ): Promise<Poster | undefined> {
     const isUrl = (url: string): boolean => {
       try {
         const parsedUrl = new URL(url);
@@ -237,7 +236,7 @@ export class TrelloPosterManager {
     }
 
     const poster = this.parseBasePoster(card, checklists, borrelMode);
-    const service = new LocalPosterService();
+    const service = new PosterService();
 
     return service.createExternalPoster({
       name: poster.name,
@@ -254,7 +253,7 @@ export class TrelloPosterManager {
     });
   }
 
-  async reloadPosters(): Promise<LocalPoster[]> {
+  async reloadPosters(): Promise<Poster[]> {
     let board = await this.client.default.getBoard(process.env.TRELLO_BOARD_ID || '');
     if (!Object.prototype.hasOwnProperty.call(board, 'id')) throw new Error(JSON.stringify(board));
     board = board as Board;
@@ -266,7 +265,7 @@ export class TrelloPosterManager {
     const list = lists.find((l) => l.name === basePosterListName);
     if (!list) throw new Error(`Could not find the list called "${basePosterListName}"`);
 
-    const service = new LocalPosterService();
+    const service = new PosterService();
 
     await service.deleteTrelloPosters();
 
@@ -275,6 +274,6 @@ export class TrelloPosterManager {
     if (this.refreshTimeout) clearTimeout(this.refreshTimeout);
     this.refreshTimeout = setTimeout(this.reloadPosters.bind(this), DEFAULT_POSTER_REFRESH);
 
-    return await service.getAllLocalPosters();
+    return await service.getAllPosters();
   }
 }

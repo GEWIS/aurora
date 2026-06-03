@@ -1,6 +1,6 @@
 import { Entity, Column, OneToMany, ManyToOne } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
-import LocalPoster from './local-poster';
+import Poster from './poster';
 
 @Entity()
 export default class Carousel extends BaseEntity {
@@ -19,8 +19,8 @@ export class CarouselPoster extends BaseEntity {
   @ManyToOne(() => Carousel, (c) => c.posters, { onDelete: 'CASCADE' })
   carousel: Carousel;
 
-  @ManyToOne(() => LocalPoster, { onDelete: 'CASCADE' })
-  poster: LocalPoster;
+  @ManyToOne(() => Poster, { onDelete: 'CASCADE' })
+  poster: Poster;
 
   @Column({ nullable: true })
   customTimeout?: number;

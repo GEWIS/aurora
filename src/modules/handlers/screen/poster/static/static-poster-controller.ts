@@ -8,7 +8,7 @@ import { securityGroups } from '../../../../../helpers/security-groups';
 import { Request as ExpressRequest } from 'express';
 import logger from '../../../../../logger';
 import { StaticPosterHandlerState } from '../static-poster-handler';
-import LocalPosterService from '../local/local-poster-service';
+import PosterService from '../local/poster-service';
 
 interface SetClockRequest {
   visible: boolean;
@@ -75,8 +75,8 @@ export class StaticPosterController extends Controller {
   @Security(SecurityNames.INTEGRATION, ['showStaticPoster'])
   @Post('items/{id}/show')
   public async showStaticPoster(id: number, @Request() req: ExpressRequest): Promise<void> {
-    const service = new LocalPosterService();
-    const poster = await service.getSingleLocalPoster(id);
+    const service = new PosterService();
+    const poster = await service.getSinglePoster(id);
     const posterResponse = service.toResponse(poster);
 
     logger.audit(req.user, `Show static poster (id: ${id}).`);

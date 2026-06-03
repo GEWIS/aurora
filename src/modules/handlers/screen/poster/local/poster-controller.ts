@@ -3,29 +3,28 @@ import { Body, Delete, Get, Post, Put, Res, Route, Security, Tags } from 'tsoa';
 import { SecurityNames } from '../../../../../helpers/security';
 import { securityGroups } from '../../../../../helpers/security-groups';
 import { HttpStatusCode } from 'axios';
-import LocalPosterService, {
+import PosterService, {
   CreatePosterRequest,
-  LocalPosterResponse,
+  PosterResponse,
   UpdatePosterRequest,
-} from './local-poster-service';
-import LocalPoster from './local-poster';
+} from './poster-service';
+import Poster, { PosterType } from './poster';
 import { lookup } from 'mime-types';
-import { PosterType } from '../poster';
 import { FeatureEnabled } from '../../../../server-settings';
 
 @Route('/handler/screen/poster')
 @Tags('Handlers')
 @FeatureEnabled('Poster')
-export class LocalPosterController extends Controller {
-  private service = new LocalPosterService();
+export class PosterController extends Controller {
+  private service = new PosterService();
 
   /**
    * Get all posters from the database.
    */
   @Security(SecurityNames.LOCAL, securityGroups.poster.base)
   @Get('items')
-  public async getAllPosters(): Promise<LocalPosterResponse[]> {
-    const posters = await this.service.getAllLocalPosters();
+  public async getAllPosters(): Promise<PosterResponse[]> {
+    const posters = await this.service.getAllPosters();
     return posters.map((poster) => this.service.toResponse(poster));
   }
 
@@ -35,8 +34,8 @@ export class LocalPosterController extends Controller {
    */
   @Security(SecurityNames.LOCAL, securityGroups.poster.base)
   @Get('items/{id}')
-  public async getPoster(id: number): Promise<LocalPosterResponse> {
-    const poster = await this.service.getSingleLocalPoster(id);
+  public async getPoster(id: number): Promise<PosterResponse> {
+    const poster = await this.service.getSinglePoster(id);
     return this.service.toResponse(poster);
   }
 
@@ -51,8 +50,8 @@ export class LocalPosterController extends Controller {
     @Body() body: CreatePosterRequest,
     @Res()
     invalidPosterTypeResponse: TsoaResponse<HttpStatusCode.BadRequest, 'Unknown Poster Type'>,
-  ): Promise<LocalPosterResponse> {
-    let poster: LocalPoster;
+  ): Promise<PosterResponse> {
+    let poster: Poster;
     switch (body.type) {
       case PosterType.IMAGE:
       case PosterType.VIDEO:
@@ -87,7 +86,7 @@ export class LocalPosterController extends Controller {
       HttpStatusCode.UnsupportedMediaType,
       'Invalid file type, expected an image or a video.'
     >,
-  ): Promise<LocalPosterResponse> {
+  ): Promise<PosterResponse> {
     const mimeType = lookup(file.originalname);
     if (!mimeType || !(mimeType.startsWith('image/') || mimeType.startsWith('video/'))) {
       return invalidFileTypeResponse(
@@ -107,7 +106,7 @@ export class LocalPosterController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.poster.privileged)
   @Delete('items/{id}')
   public async deletePoster(id: number): Promise<void> {
-    await this.service.deleteLocalPoster(id);
+    await this.service.deletePoster(id);
   }
 
   /**
@@ -120,8 +119,8 @@ export class LocalPosterController extends Controller {
   public async updatePoster(
     id: number,
     @Body() body: UpdatePosterRequest,
-  ): Promise<LocalPosterResponse> {
-    const poster = await this.service.updateLocalPoster(id, body);
+  ): Promise<PosterResponse> {
+    const poster = await this.service.updatePoster(id, body);
     return this.service.toResponse(poster);
   }
 }

@@ -3,11 +3,11 @@ import { Namespace } from 'socket.io';
 import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
 import { TrackChangeEvent } from '../../../events/music-emitter-events';
 import { ISettings } from '../../../server-settings/server-setting';
-import LocalPosterService from './local/local-poster-service';
+import PosterService from './local/poster-service';
 
 @FeatureEnabled('Poster')
 export default class CarouselPosterHandler extends BaseScreenHandler {
-  public posterService: LocalPosterService;
+  public posterService: PosterService;
 
   private borrelModeDay: number | undefined;
 
@@ -20,7 +20,7 @@ export default class CarouselPosterHandler extends BaseScreenHandler {
       // Check whether we need to enable/disable borrel mode
       this.borrelModeInterval = setInterval(this.checkBorrelMode.bind(this), 60 * 1000);
     }
-    this.posterService = new LocalPosterService();
+    this.posterService = new PosterService();
   }
 
   forceUpdate(): void {

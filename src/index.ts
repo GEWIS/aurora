@@ -26,7 +26,7 @@ import { OrderManager } from './modules/orders';
 import TimedEventsService from './modules/timed-events/timed-events-service';
 import LightsSwitchManager from './modules/root/lights-switch-manager';
 import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
-import LocalPosterService from './modules/handlers/screen/poster/local/local-poster-service';
+import PosterService from './modules/handlers/screen/poster/local/poster-service';
 
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
@@ -47,7 +47,7 @@ async function createApp(): Promise<void> {
 
   await dataSource.initialize();
 
-  await new LocalPosterService().migrateStaticPosters();
+  await new PosterService().migrateStaticPosters();
 
   await ServerSettingsStore.getInstance().initialize();
   const featureFlagManager = new FeatureFlagManager();

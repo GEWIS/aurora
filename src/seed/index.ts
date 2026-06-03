@@ -14,7 +14,9 @@ const program = new Command();
 program
   .name('aurora-seeder')
   .description('Functions to seed the database.')
-  .addOption(new Option('--gewis', 'Seed for GEWIS').conflicts(['gewis-posters','hubble', 'disco-floor']))
+  .addOption(
+    new Option('--gewis', 'Seed for GEWIS').conflicts(['gewis-posters', 'hubble', 'disco-floor']),
+  )
   .addOption(
     new Option('--gewis-posters', 'Seed for GEWIS (Default posters only)').conflicts([
       'gewis',
@@ -22,8 +24,16 @@ program
       'disco-floor',
     ]),
   )
-  .addOption(new Option('--hubble', 'Seed for Hubble').conflicts(['gewis', 'gewis-posters', 'disco-floor']))
-  .addOption(new Option('--disco-floor', 'Seed the disco floor').conflicts(['gewis', 'gewis-posters', 'hubble']))
+  .addOption(
+    new Option('--hubble', 'Seed for Hubble').conflicts(['gewis', 'gewis-posters', 'disco-floor']),
+  )
+  .addOption(
+    new Option('--disco-floor', 'Seed the disco floor').conflicts([
+      'gewis',
+      'gewis-posters',
+      'hubble',
+    ]),
+  )
   .option('-w, --width <number>', 'Width of the disco floor (int)', parseInt)
   .option('-h, --height <number>', 'Height of the disco floor (int)', parseInt)
   .option(

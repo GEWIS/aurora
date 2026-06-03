@@ -1,3 +1,4 @@
+import './env';
 import { DataSource } from 'typeorm';
 import fs from 'fs';
 import ServerSetting from './modules/server-settings/server-setting';

@@ -155,20 +155,29 @@ export class TrelloPosterManager {
     });
 
     const attachments = await this.client.default.getCardAttachments(card.id);
-    const mediaAttachment = attachments.find((a) =>
+    const mediaAttachments = attachments.filter((a) =>
       a.mimeType.startsWith(type === PosterType.IMAGE ? 'image/' : 'video/'),
     );
-    if (!mediaAttachment) return undefined;
+    if (mediaAttachments.length === 0) return undefined;
 
     const headers = {
       Authorization: `OAuth oauth_consumer_key="${process.env.TRELLO_KEY}", oauth_token="${process.env.TRELLO_TOKEN}"`,
     };
-    const resp = await axios.get<ArrayBuffer>(mediaAttachment.url, {
-      responseType: 'arraybuffer',
-      headers,
-    });
 
-    return service.attachMedia(localPoster.id, mediaAttachment.fileName, Buffer.from(resp.data));
+    // Attach every matching attachment sequentially so each appends to the poster's files.
+    for (const attachment of mediaAttachments) {
+      const resp = await axios.get<ArrayBuffer>(attachment.url, {
+        responseType: 'arraybuffer',
+        headers,
+      });
+      localPoster = await service.attachMedia(
+        localPoster.id,
+        attachment.fileName,
+        Buffer.from(resp.data),
+      );
+    }
+
+    return localPoster;
   }
 
   /**

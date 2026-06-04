@@ -68,7 +68,7 @@ export interface PosterResponse {
   protected: boolean;
   uri?: string;
   albums?: number[];
-  file?: FileResponse;
+  files: FileResponse[];
 }
 
 export default class PosterService {
@@ -89,16 +89,13 @@ export default class PosterService {
    * @param poster The poster to be converted.
    */
   public toResponse(poster: Poster): PosterResponse {
-    let file: PosterResponse['file'];
-    if (poster.file) {
-      const location = this.storage.getPublicFileUri(poster.file);
+    const files: FileResponse[] = (poster.files ?? []).reduce<FileResponse[]>((acc, file) => {
+      const location = this.storage.getPublicFileUri(file);
       if (location) {
-        file = {
-          location,
-          name: poster.file.originalName,
-        };
+        acc.push({ location, name: file.originalName });
       }
-    }
+      return acc;
+    }, []);
 
     return {
       id: poster.id,
@@ -117,7 +114,7 @@ export default class PosterService {
       protected: poster.protected,
       uri: poster.uri ?? undefined,
       albums: poster.albums ?? undefined,
-      file: file,
+      files,
     };
   }
 
@@ -187,14 +184,10 @@ export default class PosterService {
       );
     }
 
-    if (poster.file) {
-      await this.fileRepo.delete(poster.file.id);
-      await this.storage.deleteFile(poster.file);
-    }
-
     const fileParams = await this.storage.saveFile(filename, filedata);
     try {
-      poster.file = await this.fileRepo.save(fileParams);
+      const file = await this.fileRepo.save(fileParams);
+      poster.files = [...(poster.files ?? []), file];
       return this.repo.save(poster);
     } catch (error) {
       await this.storage.deleteFile(fileParams);
@@ -274,11 +267,16 @@ export default class PosterService {
    */
   public async deletePoster(id: number): Promise<void> {
     const poster = await this.getSinglePoster(id);
-    if (poster.file) {
-      await this.fileRepo.delete(poster.file.id);
-      await this.storage.deleteFile(poster.file);
-    }
+    const files = poster.files ?? [];
+    // Removing the poster clears the owning-side join-table rows, after which
+    // the now-orphaned files can be deleted from the database and disk.
     await this.repo.remove(poster);
+    await Promise.all(
+      files.map(async (file) => {
+        await this.fileRepo.delete(file.id);
+        await this.storage.deleteFile(file);
+      }),
+    );
   }
 
   /**
@@ -346,7 +344,7 @@ export default class PosterService {
           await this.repo.save({
             name: staticPoster.file.originalName,
             type: mimeType && mimeType.startsWith('video/') ? PosterType.VIDEO : PosterType.IMAGE,
-            file,
+            files: [file],
             enabled: false,
           });
 

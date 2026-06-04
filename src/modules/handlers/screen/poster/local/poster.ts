@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
 import { File } from '../../../../files/entities';
 
@@ -73,9 +73,9 @@ export default class Poster extends BaseEntity {
   @Column({ type: 'simple-array', nullable: true })
   albums?: number[];
 
-  @OneToOne(() => File, { nullable: true, eager: true, onDelete: 'SET NULL' })
-  @JoinColumn()
-  file?: File;
+  @ManyToMany(() => File, { eager: true })
+  @JoinTable()
+  files: File[];
 
   @Column({ default: false })
   trello: boolean;

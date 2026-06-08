@@ -79,4 +79,10 @@ export default class Poster extends BaseEntity {
 
   @Column({ default: false })
   trello: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  trelloCardId?: string;
+
+  @Column({ type: 'text', nullable: true })
+  trelloLastActivity?: string;
 }

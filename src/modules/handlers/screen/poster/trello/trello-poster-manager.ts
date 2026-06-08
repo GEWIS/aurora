@@ -2,6 +2,13 @@ import { Board, Card, Checklist, TrelloClient, TrelloList } from './client';
 import PosterService from '../local/poster-service';
 import axios from 'axios';
 import Poster, { FooterSize, PosterType } from '../local/poster';
+import dataSource from '../../../../../database';
+
+interface CardEntry {
+  card: Card;
+  checklists: Checklist[];
+  type: PosterType;
+}
 
 const DEFAULT_POSTER_TIMEOUT = 15;
 const DEFAULT_POSTER_REFRESH = 1000 * 60 * 15;
@@ -16,19 +23,21 @@ export class TrelloPosterManager {
   }
 
   /**
-   * Parse a Trello list recursively to a list of posters
+   * Recursively resolve a Trello list to the leaf cards that should become posters.
+   * This performs no database writes; it only decides which cards map to which poster
+   * type, so the caller can reconcile them against the existing posters.
    * @param list
    * @param board
    * @param listType
    * @param visitedLists
    * @private
    */
-  private async parseLists(
+  private collectCards(
     list: TrelloList,
     board: Board,
     listType?: PosterType,
     visitedLists: Set<string> = new Set(),
-  ): Promise<Poster[]> {
+  ): CardEntry[] {
     if (!list.id || visitedLists.has(list.id)) return [];
     visitedLists.add(list.id);
 
@@ -36,46 +45,67 @@ export class TrelloPosterManager {
     const cards = allCards?.filter((card) => card.idList === list.id) || [];
 
     const now = new Date();
+    const entries: CardEntry[] = [];
 
-    const posters = await Promise.all(
-      cards.map(async (card) => {
-        const labels = card.labels?.map((l) => l.name ?? '') ?? [];
-        const checklists =
-          allChecklists?.filter((checklist) => card.idChecklists?.includes(checklist.id)) ?? [];
+    for (const card of cards) {
+      const labels = card.labels?.map((l) => l.name ?? '') ?? [];
+      const checklists =
+        allChecklists?.filter((checklist) => card.idChecklists?.includes(checklist.id)) ?? [];
 
-        // A card can be two things: a poster, or a reference to a new list of cards.
-        // If it has the correct label ("Posterlist"), it means the card is a reference to a list
-        if (labels.includes('Posterlist')) {
-          const newList = allLists?.find((l) => l.name === card.name);
-          if (newList) {
-            return this.parseLists(newList, board, card.desc as PosterType, visitedLists);
-          }
-          throw new Error(`Unknown list: ${card.name}`);
-        }
+      // A card can be two things: a poster, or a reference to a new list of cards.
+      // If it has the correct label ("Posterlist"), it means the card is a reference to a list
+      if (labels.includes('Posterlist')) {
+        const newList = allLists?.find((l) => l.name === card.name);
+        if (!newList) throw new Error(`Unknown list: ${card.name}`);
+        entries.push(...this.collectCards(newList, board, card.desc as PosterType, visitedLists));
+        continue;
+      }
 
-        const borrelMode = labels.includes('BorrelMode');
+      // If the card has a due date and this due date is in the past, skip this card
+      if (card.due && new Date(card.due) < now) continue;
 
-        // If the card has a due date and this due date is in the past, skip this card
-        if (card.due && new Date(card.due) < now) return undefined;
+      let type: PosterType | undefined;
+      switch (listType) {
+        case 'img':
+          type = PosterType.IMAGE;
+          break;
+        case 'video':
+          type = PosterType.VIDEO;
+          break;
+        case 'extern':
+          type = PosterType.EXTERNAL;
+          break;
+        case 'photo':
+          type = PosterType.PHOTO;
+          break;
+        default:
+          break;
+      }
 
-        switch (listType) {
-          case 'img':
-            return this.parseMediaPoster(card, checklists, PosterType.IMAGE);
-          case 'video':
-            return this.parseMediaPoster(card, checklists, PosterType.VIDEO);
-          case 'extern':
-            return this.parseExternalPoster(card, checklists);
-          case 'photo':
-            return this.parsePhotoPoster(card, checklists);
-          default:
-            break;
-        }
+      if (type) entries.push({ card, checklists, type });
+    }
 
+    return entries;
+  }
+
+  /**
+   * Create a single local poster from a resolved card entry.
+   * @param entry
+   * @private
+   */
+  private async createPoster(entry: CardEntry): Promise<Poster | undefined> {
+    const { card, checklists, type } = entry;
+    switch (type) {
+      case PosterType.IMAGE:
+      case PosterType.VIDEO:
+        return this.parseMediaPoster(card, checklists, type);
+      case PosterType.EXTERNAL:
+        return this.parseExternalPoster(card, checklists);
+      case PosterType.PHOTO:
+        return this.parsePhotoPoster(card, checklists);
+      default:
         return undefined;
-      }),
-    );
-
-    return posters.filter((p) => p !== undefined).flat() as Poster[];
+    }
   }
 
   /**
@@ -280,10 +310,35 @@ export class TrelloPosterManager {
     if (!list) throw new Error(`Could not find the list called "${basePosterListName}"`);
 
     const service = new PosterService();
+    const repo = dataSource.getRepository(Poster);
 
-    await service.deleteTrelloPosters();
+    const desired = this.collectCards(list, board);
+    const desiredById = new Map(desired.filter((d) => d.card.id).map((d) => [d.card.id!, d]));
 
-    await this.parseLists(list, board);
+    const existing = (await service.getAllPosters()).filter((p) => p.trello);
+    const existingById = new Map(
+      existing.filter((p) => p.trelloCardId).map((p) => [p.trelloCardId!, p]),
+    );
+
+    for (const poster of existing) {
+      const entry = poster.trelloCardId ? desiredById.get(poster.trelloCardId) : undefined;
+      if (!entry || poster.trelloLastActivity !== entry.card.dateLastActivity) {
+        await service.deletePoster(poster.id);
+      }
+    }
+
+    for (const entry of desired) {
+      const previous = entry.card.id ? existingById.get(entry.card.id) : undefined;
+      if (previous && previous.trelloLastActivity === entry.card.dateLastActivity) continue;
+
+      const created = await this.createPoster(entry);
+      if (created) {
+        await repo.update(created.id, {
+          trelloCardId: entry.card.id,
+          trelloLastActivity: entry.card.dateLastActivity,
+        });
+      }
+    }
 
     if (this.refreshTimeout) clearTimeout(this.refreshTimeout);
     this.refreshTimeout = setTimeout(this.reloadPosters.bind(this), DEFAULT_POSTER_REFRESH);

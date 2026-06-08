@@ -138,34 +138,24 @@ export default class PosterService {
   }
 
   /**
-   * Creates a new Local Poster with the media type in the database.
-   * This does not yet contain the actual image or video of the poster.
-   * @param params Metadata of the poster as specified in the MediaPosterParams interface.
+   * Creates a new Local Poster of the given type in the database.
+   * For media posters this does not yet contain the actual image or video.
+   * @param params Metadata of the poster as specified in CreatePosterRequest.
    */
-  public async createMediaPoster(params: MediaPosterRequest): Promise<Poster> {
-    const {
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      trello,
-    } = params;
+  public async createPoster(params: CreatePosterRequest): Promise<Poster> {
     return this.repo.save({
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      trello,
+      name: params.name,
+      label: params.label,
+      type: params.type,
+      startDate: params.startDate,
+      expirationDate: params.expirationDate,
+      accentColor: params.accentColor,
+      footerSize: params.footerSize,
+      defaultTimeout: params.defaultTimeout,
+      borrelMode: params.borrelMode,
+      trello: params.trello,
+      uri: params.type === PosterType.EXTERNAL ? params.uri : undefined,
+      albums: params.type === PosterType.PHOTO ? params.albums : undefined,
     });
   }
 
@@ -193,72 +183,6 @@ export default class PosterService {
       await this.storage.deleteFile(fileParams);
       throw error;
     }
-  }
-
-  /**
-   * Creates a new Local Poster of the url type.
-   * @param params The specifics of the poster as specified in the UrlPosterParams interface.
-   */
-  public async createExternalPoster(params: ExternalPosterRequest): Promise<Poster> {
-    const {
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      uri,
-      trello,
-    } = params;
-    return this.repo.save({
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      uri,
-      trello,
-    });
-  }
-
-  /**
-   * Creates a new Local Poster of the photo type.
-   * @param params The specifics of the poster as specified in the PhotoPosterParams interface.
-   */
-  public async createPhotoPoster(params: PhotoPosterRequest): Promise<Poster> {
-    const {
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      albums,
-      trello,
-    } = params;
-    return this.repo.save({
-      name,
-      label,
-      type,
-      startDate,
-      expirationDate,
-      accentColor,
-      footerSize,
-      defaultTimeout,
-      borrelMode,
-      albums,
-      trello,
-    });
   }
 
   /**
@@ -299,14 +223,6 @@ export default class PosterService {
     const poster = await this.getSinglePoster(id);
     poster.enabled = enabled;
     return this.repo.save(poster);
-  }
-
-  /**
-   * Deletes every poster with the trello flag from the database.
-   */
-  public async deleteTrelloPosters(): Promise<void> {
-    const posters = await this.repo.find({ where: { trello: true } });
-    await Promise.all(posters.map((poster) => this.deletePoster(poster.id)));
   }
 
   /**

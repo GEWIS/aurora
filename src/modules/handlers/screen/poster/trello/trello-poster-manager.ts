@@ -171,7 +171,7 @@ export class TrelloPosterManager {
     }
 
     const service = new PosterService();
-    let localPoster = await service.createMediaPoster({
+    let localPoster = await service.createPoster({
       name: poster.name,
       type: type,
       label: poster.label,
@@ -233,7 +233,7 @@ export class TrelloPosterManager {
 
     const poster = this.parseBasePoster(card, checklists, borrelMode);
     const service = new PosterService();
-    return service.createPhotoPoster({
+    return service.createPoster({
       name: poster.name,
       type: PosterType.PHOTO,
       label: poster.label,
@@ -282,7 +282,7 @@ export class TrelloPosterManager {
     const poster = this.parseBasePoster(card, checklists, borrelMode);
     const service = new PosterService();
 
-    return service.createExternalPoster({
+    return service.createPoster({
       name: poster.name,
       type: PosterType.EXTERNAL,
       label: poster.label,

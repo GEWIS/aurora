@@ -8,7 +8,7 @@ import PosterService, {
   PosterResponse,
   UpdatePosterRequest,
 } from './poster-service';
-import Poster, { PosterType } from './poster';
+import { PosterType } from './poster';
 import { lookup } from 'mime-types';
 import { FeatureEnabled } from '../../../../server-settings';
 
@@ -51,22 +51,11 @@ export class PosterController extends Controller {
     @Res()
     invalidPosterTypeResponse: TsoaResponse<HttpStatusCode.BadRequest, 'Unknown Poster Type'>,
   ): Promise<PosterResponse> {
-    let poster: Poster;
-    switch (body.type) {
-      case PosterType.IMAGE:
-      case PosterType.VIDEO:
-        poster = await this.service.createMediaPoster(body);
-        break;
-      case PosterType.EXTERNAL:
-        poster = await this.service.createExternalPoster(body);
-        break;
-      case PosterType.PHOTO:
-        poster = await this.service.createPhotoPoster(body);
-        break;
-      default: {
-        return invalidPosterTypeResponse(HttpStatusCode.BadRequest, 'Unknown Poster Type');
-      }
+    const validTypes = [PosterType.IMAGE, PosterType.VIDEO, PosterType.EXTERNAL, PosterType.PHOTO];
+    if (!validTypes.includes(body.type)) {
+      return invalidPosterTypeResponse(HttpStatusCode.BadRequest, 'Unknown Poster Type');
     }
+    const poster = await this.service.createPoster(body);
     return this.service.toResponse(poster);
   }
 

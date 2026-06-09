@@ -66,6 +66,7 @@ export interface PosterResponse {
   defaultTimeout: number;
   borrelMode: boolean;
   protected: boolean;
+  trello: boolean;
   uri?: string;
   albums?: number[];
   files: FileResponse[];
@@ -112,6 +113,7 @@ export default class PosterService {
       defaultTimeout: poster.defaultTimeout,
       borrelMode: poster.borrelMode,
       protected: poster.protected,
+      trello: poster.trello,
       uri: poster.uri ?? undefined,
       albums: poster.albums ?? undefined,
       files,

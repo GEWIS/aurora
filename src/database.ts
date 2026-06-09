@@ -11,7 +11,7 @@ import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
 import StaticPoster from './modules/handlers/screen/poster/static/static-poster';
 import Poster from './modules/handlers/screen/poster/local/poster';
-import Carousel, { CarouselPoster } from './modules/handlers/screen/poster/local/local-carousel';
+import Carousel from './modules/handlers/screen/poster/local/local-carousel';
 
 const dataSource = new DataSource({
   host: process.env.TYPEORM_HOST,
@@ -47,7 +47,6 @@ const dataSource = new DataSource({
     StaticPoster,
     Poster,
     Carousel,
-    CarouselPoster,
   ],
 });
 

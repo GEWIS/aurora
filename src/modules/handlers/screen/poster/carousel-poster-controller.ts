@@ -14,6 +14,7 @@ import { Controller } from '@tsoa/runtime';
 import { ISettings } from '../../../server-settings/server-setting';
 import { PosterResponse } from './local/poster-service';
 import Poster from './local/poster';
+import CarouselPosterService, { CAROUSEL_ID } from './local/carousel-poster-service';
 
 export interface BorrelModeParams {
   enabled: boolean;
@@ -30,6 +31,10 @@ export interface EnabledParams {
 export interface CarouselResponse {
   posters: PosterResponse[];
   borrelMode: boolean;
+}
+
+export interface CarouselOrderParams {
+  posterIds: number[];
 }
 
 @Route('handler/screen/poster/carousel')
@@ -64,10 +69,30 @@ export class CarouselPosterController extends Controller {
       visible = this.screenHandler.borrelMode ? active : active.filter((p) => !p.borrelMode);
     }
 
+    const order = await new CarouselPosterService().getOrder(CAROUSEL_ID);
+    const rank = new Map(order.map((id, i) => [id, i]));
+    visible.sort((a, b) => (rank.get(a.id) ?? Infinity) - (rank.get(b.id) ?? Infinity));
+
     return {
       posters: visible.map((p) => this.screenHandler.posterService.toResponse(p)),
       borrelMode: this.screenHandler.borrelMode,
     };
+  }
+
+  @Security(SecurityNames.LOCAL, securityGroups.poster.base)
+  @Get('order')
+  public async getCarouselOrder(): Promise<number[]> {
+    return new CarouselPosterService().getOrder(CAROUSEL_ID);
+  }
+
+  @Security(SecurityNames.LOCAL, securityGroups.poster.privileged)
+  @Put('order')
+  public async setCarouselOrder(
+    @Request() req: ExpressRequest,
+    @Body() body: CarouselOrderParams,
+  ): Promise<void> {
+    logger.audit(req.user, 'Reorder poster carousel.');
+    await new CarouselPosterService().setOrder(CAROUSEL_ID, body.posterIds);
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.poster.privileged)

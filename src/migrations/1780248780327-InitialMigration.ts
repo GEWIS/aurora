@@ -1,0 +1,290 @@
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class InitialMigration1780248780327 implements MigrationInterface {
+  name = 'InitialMigration1780248780327';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE \`server_setting\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`key\` varchar(255) NOT NULL, \`value\` varchar(255) NOT NULL, UNIQUE INDEX \`IDX_47b83d413b2f2d6684c1046865\` (\`key\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_par_shutter_options\` (\`shutterOption\` varchar(255) NOT NULL, \`channelValue\` tinyint UNSIGNED NOT NULL, \`fixtureId\` int NOT NULL, PRIMARY KEY (\`shutterOption\`, \`fixtureId\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_par\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`nrChannels\` tinyint UNSIGNED NOT NULL, \`resetChannelAndValue\` varchar(255) NULL, \`colorMasterdimchannel\` tinyint UNSIGNED NULL, \`colorShutterchannel\` tinyint UNSIGNED NULL, \`colorRedchannel\` tinyint UNSIGNED NOT NULL, \`colorGreenchannel\` tinyint UNSIGNED NOT NULL, \`colorBluechannel\` tinyint UNSIGNED NOT NULL, \`colorColdwhitechannel\` tinyint UNSIGNED NULL, \`colorWarmwhitechannel\` tinyint UNSIGNED NULL, \`colorAmberchannel\` tinyint UNSIGNED NULL, \`colorUvchannel\` tinyint UNSIGNED NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_group_pars\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`positionX\` double UNSIGNED NOT NULL, \`positionY\` double UNSIGNED NOT NULL DEFAULT '0', \`firstChannel\` smallint UNSIGNED NOT NULL, \`masterRelativeBrightness\` double NOT NULL DEFAULT '1', \`groupId\` int NULL, \`fixtureId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_moving_head_wheel_shutter_options\` (\`shutterOption\` varchar(255) NOT NULL, \`channelValue\` tinyint UNSIGNED NOT NULL, \`fixtureId\` int NOT NULL, PRIMARY KEY (\`shutterOption\`, \`fixtureId\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_wheel_color_channel_value\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`value\` smallint UNSIGNED NOT NULL, \`movingHeadId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_wheel_gobo_channel_value\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`value\` smallint UNSIGNED NOT NULL, \`movingHeadId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_wheel_rotate_channel_value\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`value\` smallint UNSIGNED NOT NULL, \`movingHeadId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_moving_head_wheel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`nrChannels\` tinyint UNSIGNED NOT NULL, \`resetChannelAndValue\` varchar(255) NULL, \`movementPanchannel\` tinyint UNSIGNED NOT NULL, \`movementBasepanvalue\` double UNSIGNED NOT NULL DEFAULT '0', \`movementMirrorpan\` tinyint NOT NULL DEFAULT 0, \`movementFinepanchannel\` tinyint UNSIGNED NULL, \`movementTiltchannel\` tinyint UNSIGNED NOT NULL, \`movementMirrortilt\` tinyint NOT NULL DEFAULT 0, \`movementFinetiltchannel\` tinyint UNSIGNED NULL, \`movementMovingspeedchannel\` tinyint UNSIGNED NULL, \`wheelMasterdimchannel\` tinyint UNSIGNED NOT NULL, \`wheelShutterchannel\` tinyint UNSIGNED NULL, \`wheelColorchannel\` tinyint UNSIGNED NOT NULL, \`wheelGobochannel\` tinyint UNSIGNED NOT NULL, \`wheelGoborotatechannel\` tinyint UNSIGNED NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_group_moving_head_wheels\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`positionX\` double UNSIGNED NOT NULL, \`positionY\` double UNSIGNED NOT NULL DEFAULT '0', \`firstChannel\` smallint UNSIGNED NOT NULL, \`masterRelativeBrightness\` double NOT NULL DEFAULT '1', \`groupId\` int NULL, \`fixtureId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_moving_head_rgb_shutter_options\` (\`shutterOption\` varchar(255) NOT NULL, \`channelValue\` tinyint UNSIGNED NOT NULL, \`fixtureId\` int NOT NULL, PRIMARY KEY (\`shutterOption\`, \`fixtureId\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_moving_head_rgb\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`nrChannels\` tinyint UNSIGNED NOT NULL, \`resetChannelAndValue\` varchar(255) NULL, \`movementPanchannel\` tinyint UNSIGNED NOT NULL, \`movementBasepanvalue\` double UNSIGNED NOT NULL DEFAULT '0', \`movementMirrorpan\` tinyint NOT NULL DEFAULT 0, \`movementFinepanchannel\` tinyint UNSIGNED NULL, \`movementTiltchannel\` tinyint UNSIGNED NOT NULL, \`movementMirrortilt\` tinyint NOT NULL DEFAULT 0, \`movementFinetiltchannel\` tinyint UNSIGNED NULL, \`movementMovingspeedchannel\` tinyint UNSIGNED NULL, \`colorMasterdimchannel\` tinyint UNSIGNED NULL, \`colorShutterchannel\` tinyint UNSIGNED NULL, \`colorRedchannel\` tinyint UNSIGNED NOT NULL, \`colorGreenchannel\` tinyint UNSIGNED NOT NULL, \`colorBluechannel\` tinyint UNSIGNED NOT NULL, \`colorColdwhitechannel\` tinyint UNSIGNED NULL, \`colorWarmwhitechannel\` tinyint UNSIGNED NULL, \`colorAmberchannel\` tinyint UNSIGNED NULL, \`colorUvchannel\` tinyint UNSIGNED NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_group_moving_head_rgbs\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`positionX\` double UNSIGNED NOT NULL, \`positionY\` double UNSIGNED NOT NULL DEFAULT '0', \`firstChannel\` smallint UNSIGNED NOT NULL, \`masterRelativeBrightness\` double NOT NULL DEFAULT '1', \`groupId\` int NULL, \`fixtureId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_group\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`currentHandler\` varchar(255) NULL, \`defaultHandler\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`socketIds\` varchar(255) NULL, \`groupInMiddle\` tinyint NOT NULL DEFAULT 1, \`gridSizeX\` double UNSIGNED NOT NULL, \`gridSizeY\` double UNSIGNED NOT NULL DEFAULT '0', \`controllerId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_scene_effect\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`sceneId\` int NOT NULL, \`effectName\` varchar(255) NOT NULL, \`effectProps\` varchar(255) NOT NULL, \`groupId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_scene\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`favorite\` tinyint NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_predefined_effect\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`buttonId\` int UNSIGNED NOT NULL, \`properties\` varchar(255) NOT NULL, \`icon\` varchar(255) NULL, \`name\` varchar(255) NULL, UNIQUE INDEX \`IDX_dceafb8efe85aecbbe4f0af59a\` (\`buttonId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_track_effect\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`trackUri\` varchar(255) NOT NULL, \`timestamp\` int NOT NULL, \`duration\` int NOT NULL, \`effect\` varchar(255) NOT NULL, \`effectProps\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_switch\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`dmxChannel\` tinyint UNSIGNED NOT NULL, \`onValue\` tinyint UNSIGNED NOT NULL, \`name\` varchar(255) NOT NULL, \`controllerId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_controller\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`currentHandler\` varchar(255) NULL, \`defaultHandler\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`socketIds\` varchar(255) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`audio\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`currentHandler\` varchar(255) NULL, \`defaultHandler\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`socketIds\` varchar(255) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`screen\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`currentHandler\` varchar(255) NULL, \`defaultHandler\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`socketIds\` varchar(255) NULL, \`scaleFactor\` int NOT NULL DEFAULT '1', PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`session\` (\`expiredAt\` bigint NOT NULL, \`id\` varchar(255) NOT NULL, \`json\` text NOT NULL, \`destroyedAt\` datetime(6) NULL, INDEX \`IDX_28c5d1d16da7908c97c9bc2f74\` (\`expiredAt\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`integration_user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`lastSeen\` varchar(255) NULL, \`endpoints\` varchar(255) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`api_key\` (\`key\` varchar(255) NOT NULL, \`screenId\` int NULL, \`lightsControllerId\` int NULL, \`audioId\` int NULL, \`integrationUserId\` int NULL, UNIQUE INDEX \`REL_c6434de1c248d2217ea75f87e7\` (\`screenId\`), UNIQUE INDEX \`REL_0b4071cb24d515a9411db0ce34\` (\`lightsControllerId\`), UNIQUE INDEX \`REL_a042499471c24d7aeda918de18\` (\`audioId\`), UNIQUE INDEX \`REL_63f687bd8a998a479f504069ab\` (\`integrationUserId\`), PRIMARY KEY (\`key\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`file\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`relativeDirectory\` varchar(255) NOT NULL, \`name\` varchar(255) NOT NULL, \`originalName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`audit_log_entry\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`userId\` varchar(255) NOT NULL, \`userName\` varchar(255) NOT NULL, \`action\` varchar(255) NOT NULL, INDEX \`IDX_2cab840c3505baebe9b51878f2\` (\`userId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`spotify_user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`spotifyId\` varchar(255) NOT NULL, \`name\` varchar(255) NOT NULL, \`active\` tinyint NOT NULL, \`tokenAccess_token\` varchar(255) NOT NULL, \`tokenExpires\` bigint UNSIGNED NOT NULL, \`tokenExpires_in\` int NOT NULL, \`tokenRefresh_token\` varchar(255) NOT NULL, \`tokenToken_type\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`timed_event\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`cronExpression\` varchar(255) NOT NULL, \`eventSpec\` varchar(255) NOT NULL, \`skipNext\` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`local_poster\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`uri\` varchar(255) NULL, \`fileId\` int NULL, UNIQUE INDEX \`REL_148ccb05f5a86819c7dae1c03d\` (\`fileId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`lights_track_effect_light_groups_lights_group\` (\`lightsTrackEffectId\` int NOT NULL, \`lightsGroupId\` int NOT NULL, INDEX \`IDX_060843627d49dedcdf8407697f\` (\`lightsTrackEffectId\`), INDEX \`IDX_29578efadc1103dd42476c4212\` (\`lightsGroupId\`), PRIMARY KEY (\`lightsTrackEffectId\`, \`lightsGroupId\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_par_shutter_options\` ADD CONSTRAINT \`FK_69524b584ba17868921c6d57f59\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_par\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_pars\` ADD CONSTRAINT \`FK_6989f235529a904d84241a5485e\` FOREIGN KEY (\`groupId\`) REFERENCES \`lights_group\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_pars\` ADD CONSTRAINT \`FK_79ff4e4b7d00864314fd4f24230\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_par\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_moving_head_wheel_shutter_options\` ADD CONSTRAINT \`FK_0150d5e357775f96e84fd984ec4\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_moving_head_wheel\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_color_channel_value\` ADD CONSTRAINT \`FK_110f9087aedf1f3c0259c571939\` FOREIGN KEY (\`movingHeadId\`) REFERENCES \`lights_moving_head_wheel\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_gobo_channel_value\` ADD CONSTRAINT \`FK_59e17900e66ce1898acff9e5f4a\` FOREIGN KEY (\`movingHeadId\`) REFERENCES \`lights_moving_head_wheel\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_rotate_channel_value\` ADD CONSTRAINT \`FK_c20c11e4f6626c4779965226168\` FOREIGN KEY (\`movingHeadId\`) REFERENCES \`lights_moving_head_wheel\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_wheels\` ADD CONSTRAINT \`FK_6cc69fbed08de3844286640bf4d\` FOREIGN KEY (\`groupId\`) REFERENCES \`lights_group\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_wheels\` ADD CONSTRAINT \`FK_0ffc23e3e5992eb8924776c30b9\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_moving_head_wheel\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_moving_head_rgb_shutter_options\` ADD CONSTRAINT \`FK_b673fe140c904c775ed904af135\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_moving_head_rgb\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_rgbs\` ADD CONSTRAINT \`FK_a4783eae0802b4b78d8b53324e4\` FOREIGN KEY (\`groupId\`) REFERENCES \`lights_group\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_rgbs\` ADD CONSTRAINT \`FK_e947eb4f50da689a6fc2f45ace5\` FOREIGN KEY (\`fixtureId\`) REFERENCES \`lights_moving_head_rgb\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group\` ADD CONSTRAINT \`FK_33dcdca9b68919bcd8164a0ba73\` FOREIGN KEY (\`controllerId\`) REFERENCES \`lights_controller\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_scene_effect\` ADD CONSTRAINT \`FK_b6f3eacffe9b32448e618ab569e\` FOREIGN KEY (\`sceneId\`) REFERENCES \`lights_scene\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_scene_effect\` ADD CONSTRAINT \`FK_5cf3fd9f4bb043032530e8d69b9\` FOREIGN KEY (\`groupId\`) REFERENCES \`lights_group\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_switch\` ADD CONSTRAINT \`FK_df4a5c06a7d202c3d2b23aa903a\` FOREIGN KEY (\`controllerId\`) REFERENCES \`lights_controller\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` ADD CONSTRAINT \`FK_c6434de1c248d2217ea75f87e79\` FOREIGN KEY (\`screenId\`) REFERENCES \`screen\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` ADD CONSTRAINT \`FK_0b4071cb24d515a9411db0ce347\` FOREIGN KEY (\`lightsControllerId\`) REFERENCES \`lights_controller\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` ADD CONSTRAINT \`FK_a042499471c24d7aeda918de182\` FOREIGN KEY (\`audioId\`) REFERENCES \`audio\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` ADD CONSTRAINT \`FK_63f687bd8a998a479f504069ab2\` FOREIGN KEY (\`integrationUserId\`) REFERENCES \`integration_user\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`local_poster\` ADD CONSTRAINT \`FK_148ccb05f5a86819c7dae1c03d5\` FOREIGN KEY (\`fileId\`) REFERENCES \`file\`(\`id\`) ON DELETE SET NULL ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_track_effect_light_groups_lights_group\` ADD CONSTRAINT \`FK_060843627d49dedcdf8407697fc\` FOREIGN KEY (\`lightsTrackEffectId\`) REFERENCES \`lights_track_effect\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_track_effect_light_groups_lights_group\` ADD CONSTRAINT \`FK_29578efadc1103dd42476c42126\` FOREIGN KEY (\`lightsGroupId\`) REFERENCES \`lights_group\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE \`lights_track_effect_light_groups_lights_group\` DROP FOREIGN KEY \`FK_29578efadc1103dd42476c42126\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_track_effect_light_groups_lights_group\` DROP FOREIGN KEY \`FK_060843627d49dedcdf8407697fc\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`local_poster\` DROP FOREIGN KEY \`FK_148ccb05f5a86819c7dae1c03d5\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` DROP FOREIGN KEY \`FK_63f687bd8a998a479f504069ab2\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` DROP FOREIGN KEY \`FK_a042499471c24d7aeda918de182\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` DROP FOREIGN KEY \`FK_0b4071cb24d515a9411db0ce347\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`api_key\` DROP FOREIGN KEY \`FK_c6434de1c248d2217ea75f87e79\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_switch\` DROP FOREIGN KEY \`FK_df4a5c06a7d202c3d2b23aa903a\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_scene_effect\` DROP FOREIGN KEY \`FK_5cf3fd9f4bb043032530e8d69b9\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_scene_effect\` DROP FOREIGN KEY \`FK_b6f3eacffe9b32448e618ab569e\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group\` DROP FOREIGN KEY \`FK_33dcdca9b68919bcd8164a0ba73\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_rgbs\` DROP FOREIGN KEY \`FK_e947eb4f50da689a6fc2f45ace5\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_rgbs\` DROP FOREIGN KEY \`FK_a4783eae0802b4b78d8b53324e4\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_moving_head_rgb_shutter_options\` DROP FOREIGN KEY \`FK_b673fe140c904c775ed904af135\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_wheels\` DROP FOREIGN KEY \`FK_0ffc23e3e5992eb8924776c30b9\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_moving_head_wheels\` DROP FOREIGN KEY \`FK_6cc69fbed08de3844286640bf4d\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_rotate_channel_value\` DROP FOREIGN KEY \`FK_c20c11e4f6626c4779965226168\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_gobo_channel_value\` DROP FOREIGN KEY \`FK_59e17900e66ce1898acff9e5f4a\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_wheel_color_channel_value\` DROP FOREIGN KEY \`FK_110f9087aedf1f3c0259c571939\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_moving_head_wheel_shutter_options\` DROP FOREIGN KEY \`FK_0150d5e357775f96e84fd984ec4\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_pars\` DROP FOREIGN KEY \`FK_79ff4e4b7d00864314fd4f24230\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_group_pars\` DROP FOREIGN KEY \`FK_6989f235529a904d84241a5485e\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`lights_par_shutter_options\` DROP FOREIGN KEY \`FK_69524b584ba17868921c6d57f59\``,
+    );
+    await queryRunner.query(
+      `DROP INDEX \`IDX_29578efadc1103dd42476c4212\` ON \`lights_track_effect_light_groups_lights_group\``,
+    );
+    await queryRunner.query(
+      `DROP INDEX \`IDX_060843627d49dedcdf8407697f\` ON \`lights_track_effect_light_groups_lights_group\``,
+    );
+    await queryRunner.query(`DROP TABLE \`lights_track_effect_light_groups_lights_group\``);
+    await queryRunner.query(`DROP INDEX \`REL_148ccb05f5a86819c7dae1c03d\` ON \`local_poster\``);
+    await queryRunner.query(`DROP TABLE \`local_poster\``);
+    await queryRunner.query(`DROP TABLE \`timed_event\``);
+    await queryRunner.query(`DROP TABLE \`spotify_user\``);
+    await queryRunner.query(`DROP INDEX \`IDX_2cab840c3505baebe9b51878f2\` ON \`audit_log_entry\``);
+    await queryRunner.query(`DROP TABLE \`audit_log_entry\``);
+    await queryRunner.query(`DROP TABLE \`file\``);
+    await queryRunner.query(`DROP INDEX \`REL_63f687bd8a998a479f504069ab\` ON \`api_key\``);
+    await queryRunner.query(`DROP INDEX \`REL_a042499471c24d7aeda918de18\` ON \`api_key\``);
+    await queryRunner.query(`DROP INDEX \`REL_0b4071cb24d515a9411db0ce34\` ON \`api_key\``);
+    await queryRunner.query(`DROP INDEX \`REL_c6434de1c248d2217ea75f87e7\` ON \`api_key\``);
+    await queryRunner.query(`DROP TABLE \`api_key\``);
+    await queryRunner.query(`DROP TABLE \`integration_user\``);
+    await queryRunner.query(`DROP INDEX \`IDX_28c5d1d16da7908c97c9bc2f74\` ON \`session\``);
+    await queryRunner.query(`DROP TABLE \`session\``);
+    await queryRunner.query(`DROP TABLE \`screen\``);
+    await queryRunner.query(`DROP TABLE \`audio\``);
+    await queryRunner.query(`DROP TABLE \`lights_controller\``);
+    await queryRunner.query(`DROP TABLE \`lights_switch\``);
+    await queryRunner.query(`DROP TABLE \`lights_track_effect\``);
+    await queryRunner.query(
+      `DROP INDEX \`IDX_dceafb8efe85aecbbe4f0af59a\` ON \`lights_predefined_effect\``,
+    );
+    await queryRunner.query(`DROP TABLE \`lights_predefined_effect\``);
+    await queryRunner.query(`DROP TABLE \`lights_scene\``);
+    await queryRunner.query(`DROP TABLE \`lights_scene_effect\``);
+    await queryRunner.query(`DROP TABLE \`lights_group\``);
+    await queryRunner.query(`DROP TABLE \`lights_group_moving_head_rgbs\``);
+    await queryRunner.query(`DROP TABLE \`lights_moving_head_rgb\``);
+    await queryRunner.query(`DROP TABLE \`lights_moving_head_rgb_shutter_options\``);
+    await queryRunner.query(`DROP TABLE \`lights_group_moving_head_wheels\``);
+    await queryRunner.query(`DROP TABLE \`lights_moving_head_wheel\``);
+    await queryRunner.query(`DROP TABLE \`lights_wheel_rotate_channel_value\``);
+    await queryRunner.query(`DROP TABLE \`lights_wheel_gobo_channel_value\``);
+    await queryRunner.query(`DROP TABLE \`lights_wheel_color_channel_value\``);
+    await queryRunner.query(`DROP TABLE \`lights_moving_head_wheel_shutter_options\``);
+    await queryRunner.query(`DROP TABLE \`lights_group_pars\``);
+    await queryRunner.query(`DROP TABLE \`lights_par\``);
+    await queryRunner.query(`DROP TABLE \`lights_par_shutter_options\``);
+    await queryRunner.query(`DROP INDEX \`IDX_47b83d413b2f2d6684c1046865\` ON \`server_setting\``);
+    await queryRunner.query(`DROP TABLE \`server_setting\``);
+  }
+}

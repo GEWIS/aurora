@@ -1,3 +1,4 @@
+import './env';
 import { DataSource } from 'typeorm';
 import fs from 'fs';
 import ServerSetting from './modules/server-settings/server-setting';
@@ -12,6 +13,7 @@ import { Entities as TimedEventsEntities } from './modules/timed-events/entities
 import StaticPoster from './modules/handlers/screen/poster/static/static-poster';
 import Poster from './modules/handlers/screen/poster/local/poster';
 import Carousel from './modules/handlers/screen/poster/local/local-carousel';
+import { InitialMigration1780248780327 } from './migrations/1780248780327-InitialMigration';
 
 const dataSource = new DataSource({
   host: process.env.TYPEORM_HOST,
@@ -29,6 +31,7 @@ const dataSource = new DataSource({
     : {}),
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
+  migrations: [InitialMigration1780248780327],
   extra: {
     authPlugins: {
       mysql_clear_password: () => () => Buffer.from(`${process.env.TYPEORM_PASSWORD}\0`),

@@ -3,6 +3,7 @@ import PosterService from '../local/poster-service';
 import axios from 'axios';
 import Poster, { FooterSize, PosterType } from '../local/poster';
 import dataSource from '../../../../../database';
+import { FeatureEnabled } from '../../../../server-settings';
 
 interface CardEntry {
   card: Card;
@@ -13,6 +14,7 @@ interface CardEntry {
 const DEFAULT_POSTER_TIMEOUT = 15;
 const DEFAULT_POSTER_REFRESH = 1000 * 60 * 15;
 
+@FeatureEnabled('Poster.Trello')
 export class TrelloPosterManager {
   private client: TrelloClient;
 

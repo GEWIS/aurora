@@ -89,7 +89,12 @@ async function createApp(): Promise<void> {
     await SpotifyTrackHandler.getInstance().init(emitterStore.musicEmitter);
   }
 
-  if (process.env.TRELLO_BOARD_ID && process.env.TRELLO_KEY && process.env.TRELLO_TOKEN) {
+  if (
+    process.env.TRELLO_BOARD_ID &&
+    process.env.TRELLO_KEY &&
+    process.env.TRELLO_TOKEN &&
+    featureFlagManager.flagIsEnabled('Poster.Trello')
+  ) {
     logger.info('Initialize Trello posters...');
     const trelloPosterManager = new TrelloPosterManager();
     trelloPosterManager.reloadPosters().catch((e) => logger.error(e));

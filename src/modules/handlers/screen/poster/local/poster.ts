@@ -30,10 +30,7 @@ export default class Poster extends BaseEntity {
   @Column()
   name: string;
 
-  @Column({
-    type: 'text',
-    enum: PosterType,
-  })
+  @Column()
   type: PosterType;
 
   @Column({ default: true })
@@ -57,11 +54,7 @@ export default class Poster extends BaseEntity {
   @Column({ default: false })
   borrelMode: boolean;
 
-  @Column({
-    type: 'text',
-    enum: FooterSize,
-    default: FooterSize.FULL,
-  })
+  @Column({ default: FooterSize.FULL })
   footerSize: FooterSize;
 
   @Column({ default: 15 })

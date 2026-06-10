@@ -10,10 +10,10 @@ import { Entities as AuditEntities } from './modules/audit/entities';
 import { Entities as SpotifyEntities } from './modules/spotify/entities';
 import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
-import StaticPoster from './modules/handlers/screen/poster/static/static-poster';
 import Poster from './modules/handlers/screen/poster/local/poster';
 import Carousel from './modules/handlers/screen/poster/local/local-carousel';
 import { InitialMigration1780248780327 } from './migrations/1780248780327-InitialMigration';
+import { PosterMigration1781087463209 } from './migrations/1781087463209-PosterMigration';
 
 const dataSource = new DataSource({
   host: process.env.TYPEORM_HOST,
@@ -31,7 +31,7 @@ const dataSource = new DataSource({
     : {}),
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
-  migrations: [InitialMigration1780248780327],
+  migrations: [InitialMigration1780248780327, PosterMigration1781087463209],
   extra: {
     authPlugins: {
       mysql_clear_password: () => () => Buffer.from(`${process.env.TYPEORM_PASSWORD}\0`),
@@ -47,7 +47,6 @@ const dataSource = new DataSource({
     ...AuditEntities,
     ...SpotifyEntities,
     ...LightsEntities,
-    StaticPoster,
     Poster,
     Carousel,
   ],

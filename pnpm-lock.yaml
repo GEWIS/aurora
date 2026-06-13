@@ -120,6 +120,9 @@ importers:
       '@types/async-lock':
         specifier: 1.4.2
         version: 1.4.2
+      '@types/body-parser':
+        specifier: 1.19.6
+        version: 1.19.6
       '@types/cookie-parser':
         specifier: 1.4.10
         version: 1.4.10(@types/express@5.0.6)
@@ -129,6 +132,9 @@ importers:
       '@types/express':
         specifier: 5.0.6
         version: 5.0.6
+      '@types/express-serve-static-core':
+        specifier: 5.1.1
+        version: 5.1.1
       '@types/express-session':
         specifier: 1.18.2
         version: 1.18.2
@@ -150,12 +156,12 @@ importers:
       '@types/passport-strategy':
         specifier: 0.2.38
         version: 0.2.38
+      '@types/qs':
+        specifier: 6.15.1
+        version: 6.15.1
       '@types/swagger-ui-express':
         specifier: 4.1.8
         version: 4.1.8
-      '@types/uuid':
-        specifier: 11.0.0
-        version: 11.0.0
       '@typescript-eslint/eslint-plugin':
         specifier: 8.53.1
         version: 8.53.1(@typescript-eslint/parser@8.53.1(eslint@9.39.2(supports-color@5.5.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(supports-color@5.5.0))(supports-color@5.5.0)(typescript@5.9.3)
@@ -550,10 +556,6 @@ packages:
 
   '@types/swagger-ui-express@4.1.8':
     resolution: {integrity: sha512-AhZV8/EIreHFmBV5wAs0gzJUNq9JbbSXgJLQubCC0jtIo6prnI9MIRRxnU4MZX9RB9yXxF1V4R7jtLl/Wcj31g==}
-
-  '@types/uuid@11.0.0':
-    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
-    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -3345,10 +3347,6 @@ snapshots:
     dependencies:
       '@types/express': 5.0.6
       '@types/serve-static': 2.2.0
-
-  '@types/uuid@11.0.0':
-    dependencies:
-      uuid: 13.0.0
 
   '@types/ws@8.18.1':
     dependencies:

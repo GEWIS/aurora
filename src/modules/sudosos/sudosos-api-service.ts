@@ -19,7 +19,7 @@ import {
   UsersApi,
   VatGroupsApi,
   DebtorsApi,
-} from '@sudosos/sudosos-client';
+} from '@gewis/sudosos-client';
 import axios, { AxiosInstance } from 'axios';
 
 // Create an axios instance

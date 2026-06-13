@@ -22,22 +22,17 @@ jobs:
         with:
           persist-credentials: 'false'
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
       - name: Set Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-
-      - name: Enable corepack
-        run: corepack enable
+          cache: 'pnpm'
 
       - name: Install dependencies
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install
-          dir: ${{ inputs.working-directory }}
+        run: pnpm install --frozen-lockfile
 
       - name: Validate the project
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: validate
-          dir: ${{ inputs.working-directory }}
+        run: pnpm validate

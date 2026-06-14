@@ -22,6 +22,10 @@ import LightsMovingHeadWheelShutterOptions from '../lights/entities/lights-movin
 import LightsFixtureShutterOptions, {
   ShutterOption,
 } from '../lights/entities/lights-fixture-shutter-options';
+import LightsWheelColorChannelValue from '../lights/entities/lights-wheel-color-channel-value';
+import LightsWheelGoboChannelValue from '../lights/entities/lights-wheel-gobo-channel-value';
+import LightsWheelRotateChannelValue from '../lights/entities/lights-wheel-rotate-channel-value';
+
 import { WheelColor } from '../lights/color-definitions';
 import { IColorsWheel } from '../lights/entities/colors-wheel';
 import LightsSwitchManager from './lights-switch-manager';
@@ -633,6 +637,24 @@ export default class RootLightsService {
       movingHead,
       params.shutterOptionValues,
     )) as LightsMovingHeadWheelShutterOptions[];
+    const colorValueRepo = dataSource.getRepository(LightsWheelColorChannelValue);
+    const goboValueRepo = dataSource.getRepository(LightsWheelGoboChannelValue);
+    const rotateValueRepo = dataSource.getRepository(LightsWheelRotateChannelValue);
+    movingHead.wheel.colorChannelValues = await Promise.all(
+      params.colorWheelChannelValues.map((v) =>
+        colorValueRepo.save({ movingHead, name: v.name as WheelColor, value: v.value }),
+      ),
+    ) as unknown as LightsWheelColorChannelValue[];
+    movingHead.wheel.goboChannelValues = await Promise.all(
+      params.goboWheelChannelValues.map((v) =>
+        goboValueRepo.save({ movingHead, name: v.name, value: v.value }),
+      ),
+    ) as unknown as LightsWheelGoboChannelValue[];
+    movingHead.wheel.goboRotateChannelValues = await Promise.all(
+      (params.goboRotateChannelValues ?? []).map((v) =>
+        rotateValueRepo.save({ movingHead, name: v.name, value: v.value }),
+      ),
+    ) as unknown as LightsWheelRotateChannelValue[];
     return movingHead;
   }
 

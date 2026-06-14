@@ -34,7 +34,7 @@ export const SettingsDefaults: ISettings = {
  */
 @Entity()
 export default class ServerSetting<T extends keyof ISettings = keyof ISettings> extends BaseEntity {
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'varchar' })
   public key: T;
 
   /**

@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "dist",
+    "types": ["node", "vitest/globals"],
+    "skipLibCheck": true
+  },
+  "include": ["integration-test/**/*.ts", "src/types.d.ts"],
+  "paths": {
+    "@aurora/*": ["src/*"]
+  }
+}

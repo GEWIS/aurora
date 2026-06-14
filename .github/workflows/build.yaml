@@ -16,3 +16,4 @@ jobs:
       lint: true
       format: true
       build: true
+      test: true

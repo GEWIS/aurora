@@ -32,5 +32,10 @@
 
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true,
+
+    /* Path aliases */
+    "paths": {
+      "@aurora/*": ["src/*"]
+    }
   }
 }

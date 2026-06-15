@@ -6,8 +6,5 @@
     "types": ["node", "vitest/globals"],
     "skipLibCheck": true
   },
-  "include": ["integration-test/**/*.ts", "src/types.d.ts"],
-  "paths": {
-    "@aurora/*": ["src/*"]
-  }
+  "include": ["integration-test", "src/types.d.ts"]
 }

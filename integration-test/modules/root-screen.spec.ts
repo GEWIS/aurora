@@ -1,7 +1,6 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
-import type { ScreenResponse } from '../../src/modules/root/root-screen-service';
 
 let testApp: TestApp;
 
@@ -33,7 +32,7 @@ describe('GET /api/screen', () => {
 
     // ASSERT
     expect(res.status).toBe(200);
-    const ids = (res.body as ScreenResponse[]).map((s) => s.id);
+    const ids = res.body.map((s: { id: number }) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });

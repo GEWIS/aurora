@@ -1,7 +1,13 @@
 import { Express } from 'express';
-import { DataSource } from 'typeorm';
-import supertest from 'supertest';
-import TestAgent from 'supertest/lib/agent';
+import supertest, { type Agent as TestAgent } from 'supertest';
+import dataSource from '@aurora/database';
+import { createServer } from 'http';
+import { Server as SocketIoServer } from 'socket.io';
+import ServerSettingsStore from '@aurora/modules/server-settings/server-settings-store';
+import { EmitterStore } from '@aurora/modules/events';
+import { BeatManager } from '@aurora/modules/beats';
+import HandlerManager from '@aurora/modules/root/handler-manager';
+import httpModule from '@aurora/http';
 
 export interface TestApp {
   app: Express;
@@ -12,7 +18,6 @@ export interface TestApp {
 export class TestEnvironment {
   private static instance: TestEnvironment | null = null;
   private app: Express | null = null;
-  private dataSource: DataSource | null = null;
   private initPromise: Promise<Express> | null = null;
 
   private constructor() {}
@@ -47,28 +52,15 @@ export class TestEnvironment {
     // Memoize the initialization promise to resolve concurrent race conditions
     if (!this.initPromise) {
       this.initPromise = (async () => {
-        const dbModule = await import('../../src/database');
-        this.dataSource = dbModule.default;
-        if (!this.dataSource.isInitialized) {
-          await this.dataSource.initialize();
+        if (!dataSource.isInitialized) {
+          await dataSource.initialize();
         }
 
-        const { default: ServerSettingsStore } =
-          await import('../../src/modules/server-settings/server-settings-store');
         await ServerSettingsStore.getInstance().initialize();
-
-        const { default: EmitterStore } = await import('../../src/modules/events/emitter-store');
-        const { default: BeatManager } = await import('../../src/modules/beats/beat-manager');
         const emitterStore = EmitterStore.getInstance();
         BeatManager.getInstance().init(emitterStore.beatEmitter);
 
-        const { createServer } = await import('http');
-        const { Server: SocketIoServer } = await import('socket.io');
-        const { default: HandlerManager } = await import('../../src/modules/root/handler-manager');
-
-        // Temporarily initialize an empty Express instance if httpServer requires it prior to loading httpModule
-        const httpModule = await import('../../src/http');
-        this.app = await httpModule.default();
+        this.app = await httpModule();
 
         const httpServer = createServer(this.app);
         const io = new SocketIoServer(httpServer);
@@ -83,10 +75,9 @@ export class TestEnvironment {
   }
 
   public async destroyTestApp(): Promise<void> {
-    if (this.dataSource?.isInitialized) {
-      await this.dataSource.destroy();
+    if (dataSource.isInitialized) {
+      await dataSource.destroy();
     }
-    this.dataSource = null;
     this.app = null;
     this.initPromise = null;
     TestEnvironment.instance = null;

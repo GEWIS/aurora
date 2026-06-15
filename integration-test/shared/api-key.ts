@@ -1,28 +1,23 @@
 import crypto from 'crypto';
+import dataSource from '@aurora/database';
+import integrationUser from '@aurora/modules/auth/integration/entities/integration-user';
+import apiKey from '@aurora/modules/auth/entities/api-key';
 
 export async function createApiKey(): Promise<string> {
-  const db = await import('../../src/database');
-  const ApiKey = (await import('../../src/modules/auth/entities/api-key')).default;
+  const { default: apiKey } = await import('@aurora/modules/auth/entities/api-key');
   const key = 'test-' + crypto.randomBytes(8).toString('hex');
-  await db.default.getRepository(ApiKey).save({ key });
+  await dataSource.getRepository(apiKey).save({ key });
   return key;
 }
 
 export async function createIntegrationKey(endpoints: string[]): Promise<string> {
-  const db = await import('../../src/database');
-  const ds = db.default;
-
-  const IntegrationUser = (
-    await import('../../src/modules/auth/integration/entities/integration-user')
-  ).default;
-  const user = await ds.getRepository(IntegrationUser).save({
+  const user = await dataSource.getRepository(integrationUser).save({
     name: 'Test Integration',
     endpoints,
   });
 
-  const ApiKey = (await import('../../src/modules/auth/entities/api-key')).default;
   const key = 'test-int-' + crypto.randomBytes(8).toString('hex');
-  await ds.getRepository(ApiKey).save({
+  await dataSource.getRepository(apiKey).save({
     key,
     integrationUser: user,
   });

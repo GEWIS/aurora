@@ -1,9 +1,5 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
-import type {
-  IntegrationUserResponse,
-  IntegrationUserCreateRequest,
-} from '../../src/modules/auth/integration/integration-user-service';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 
 let testApp: TestApp;
@@ -12,11 +8,12 @@ beforeAll(async () => {
   testApp = await TestEnvironment.getInstance().getTestApp();
 });
 
-async function createIntegrationUser(
-  body: IntegrationUserCreateRequest,
-): Promise<IntegrationUserResponse> {
+async function createIntegrationUser(body: {
+  name: string;
+  endpoints: string[];
+}): Promise<{ id: number }> {
   const res = await testApp.authorizedAgent.post('/api/user/integration').send(body);
-  return res.body as IntegrationUserResponse;
+  return res.body;
 }
 
 describe('GET /api/user/integration/endpoints', () => {

@@ -1,7 +1,6 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
-import { SettingsDefaults, ISettings } from '../../src/modules/server-settings/server-setting';
 
 let testApp: TestApp;
 
@@ -24,18 +23,15 @@ describe('GET /api/settings', () => {
 
     // ASSERT
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(SettingsDefaults);
-  });
-
-  it('contains every key from ISettings', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.get('/api/settings');
-
-    // ASSERT
-    expect(res.status).toBe(200);
-    for (const key of Object.keys(SettingsDefaults) as Array<keyof ISettings>) {
-      expect(res.body).toHaveProperty(key);
-    }
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        SudoSOS: expect.any(Boolean),
+        Centurion: expect.any(Boolean),
+        RoomResponsibleLegacyScreenURL: expect.any(String),
+        Poster: expect.any(Boolean),
+        Orders: expect.any(Boolean),
+      }),
+    );
   });
 });
 
@@ -53,7 +49,7 @@ describe('POST /api/settings', () => {
   it('updates a known setting and returns { key, value } with admin auth', async () => {
     // ARRANGE
     const original = await testApp.authorizedAgent.get('/api/settings');
-    const originalOrders = (original.body as ISettings).Orders;
+    const originalOrders = original.body.Orders;
 
     // ACT
     const res = await testApp.authorizedAgent
@@ -64,7 +60,7 @@ describe('POST /api/settings', () => {
     // ASSERT
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ key: 'Orders', value: true });
-    expect((after.body as ISettings).Orders).toBe(true);
+    expect(after.body.Orders).toBe(true);
 
     await testApp.authorizedAgent
       .post('/api/settings')

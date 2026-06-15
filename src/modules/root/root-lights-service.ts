@@ -26,9 +26,8 @@ import LightsWheelColorChannelValue from '../lights/entities/lights-wheel-color-
 import LightsWheelGoboChannelValue from '../lights/entities/lights-wheel-gobo-channel-value';
 import LightsWheelRotateChannelValue from '../lights/entities/lights-wheel-rotate-channel-value';
 
-import { WheelColor } from '../lights/color-definitions';
-import { IColorsWheel } from '../lights/entities/colors-wheel';
 import LightsSwitchManager from './lights-switch-manager';
+import { WheelColor } from '../lights/color-definitions';
 
 export interface LightsControllerResponse extends Pick<
   LightsController,
@@ -534,13 +533,13 @@ export default class RootLightsService {
     } as Movement;
   }
 
-  private toColorWheel(
-    params: LightsMovingHeadWheelCreateParams,
-  ): IColorsWheel & { colorChannel: number } {
+  private toWheel(params: LightsMovingHeadWheelCreateParams) {
     return {
+      masterDimChannel: params.masterDimChannel,
+      shutterChannel: params.shutterOptionValues ? params.shutterChannel : undefined,
       colorChannel: params.colorWheelChannel,
       goboChannel: params.goboWheelChannel,
-      goboRotateChannel: params.goboRotateChannel,
+      goboRotateChannel: params.goboRotateChannel ?? null,
     };
   }
 
@@ -578,6 +577,15 @@ export default class RootLightsService {
         channelValue: params.strobe,
       }),
     ]);
+  }
+
+  private persistWheelChannelValues(
+    repo: Repository<any>,
+    movingHead: LightsMovingHeadWheel,
+    params: Array<{ name: string; value: number }> | undefined,
+  ) {
+    if (!params?.length) return Promise.resolve([]);
+    return repo.save(params.map((v) => ({ ...v, movingHead })));
   }
 
   public async createLightsPar(params: LightsParCreateParams): Promise<LightsPar> {
@@ -622,39 +630,47 @@ export default class RootLightsService {
   public async createMovingHeadWheel(
     params: LightsMovingHeadWheelCreateParams,
   ): Promise<LightsMovingHeadWheel> {
-    const repository = dataSource.getRepository(LightsMovingHeadWheel);
-    const movingHead = await repository.save({
+    const movingHead = await dataSource.getRepository(LightsMovingHeadWheel).save({
       ...this.toFixture(params),
       movement: this.toMovement(params),
-      wheel: {
-        ...this.toColorWheel(params),
-        masterDimChannel: params.masterDimChannel,
-        shutterChannel: params.shutterOptionValues ? params.shutterChannel : undefined,
-      },
+      wheel: this.toWheel(params),
     });
-    movingHead.shutterOptions = (await this.createFixtureShutterOptions(
-      dataSource.getRepository(LightsMovingHeadWheelShutterOptions),
-      movingHead,
-      params.shutterOptionValues,
-    )) as LightsMovingHeadWheelShutterOptions[];
-    const colorValueRepo = dataSource.getRepository(LightsWheelColorChannelValue);
-    const goboValueRepo = dataSource.getRepository(LightsWheelGoboChannelValue);
-    const rotateValueRepo = dataSource.getRepository(LightsWheelRotateChannelValue);
-    movingHead.wheel.colorChannelValues = await Promise.all(
-      params.colorWheelChannelValues.map((v) =>
-        colorValueRepo.save({ movingHead, name: v.name as WheelColor, value: v.value }),
+    return this.populateMovingHeadWheelChildren(movingHead, params);
+  }
+
+  private async populateMovingHeadWheelChildren(
+    movingHead: LightsMovingHeadWheel,
+    params: LightsMovingHeadWheelCreateParams,
+  ): Promise<LightsMovingHeadWheel> {
+    // save() does not populate the wheel's eager child relations, and the
+    // response mapper reads them straight off the in-memory entity. Persist
+    // each child collection in parallel and attach the saved rows.
+    const [shutterOptions, colorValues, goboValues, goboRotateValues] = await Promise.all([
+      this.createFixtureShutterOptions(
+        dataSource.getRepository(LightsMovingHeadWheelShutterOptions),
+        movingHead,
+        params.shutterOptionValues,
       ),
-    ) as unknown as LightsWheelColorChannelValue[];
-    movingHead.wheel.goboChannelValues = await Promise.all(
-      params.goboWheelChannelValues.map((v) =>
-        goboValueRepo.save({ movingHead, name: v.name, value: v.value }),
+      this.persistWheelChannelValues(
+        dataSource.getRepository(LightsWheelColorChannelValue),
+        movingHead,
+        params.colorWheelChannelValues,
       ),
-    ) as unknown as LightsWheelGoboChannelValue[];
-    movingHead.wheel.goboRotateChannelValues = await Promise.all(
-      (params.goboRotateChannelValues ?? []).map((v) =>
-        rotateValueRepo.save({ movingHead, name: v.name, value: v.value }),
+      this.persistWheelChannelValues(
+        dataSource.getRepository(LightsWheelGoboChannelValue),
+        movingHead,
+        params.goboWheelChannelValues,
       ),
-    ) as unknown as LightsWheelRotateChannelValue[];
+      this.persistWheelChannelValues(
+        dataSource.getRepository(LightsWheelRotateChannelValue),
+        movingHead,
+        params.goboRotateChannelValues,
+      ),
+    ]);
+    movingHead.shutterOptions = shutterOptions as LightsMovingHeadWheelShutterOptions[];
+    movingHead.wheel.colorChannelValues = colorValues;
+    movingHead.wheel.goboChannelValues = goboValues;
+    movingHead.wheel.goboRotateChannelValues = goboRotateValues;
     return movingHead;
   }
 

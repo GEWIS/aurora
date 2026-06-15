@@ -20,14 +20,14 @@ to play on the beat of the music without having to set the tempo yourself (manua
 
 ## Development setup
 1. Copy `.env.example` to `.env` and fill in the environment variables.
-1. Run `yarn install`.
-1. Run `yarn dev`.
+1. Run `pnpm install`.
+1. Run `pnpm dev`.
 1. The application is now running at http://localhost:3000. The API documentation can be found at http://localhost:3000/api-docs.
 
-To get started more easily, you can seed the database using `yarn seed:gewis` or `yarn seed:hubble`.
+To get started more easily, you can seed the database using `pnpm seed:gewis` or `pnpm seed:hubble`.
 You can then find the API keys for all the subscribers in the `api_key` SQL table.
 
-When running `yarn dev`, authentication is handled automatically by using mock endpoints. It is not needed to set up anything for this.
+When running `pnpm dev`, authentication is handled automatically by using mock endpoints. It is not needed to set up anything for this.
 
 ### Integration with external services
 To fully utilize all functionality of Aurora, some extra environment variables are required:

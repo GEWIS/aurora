@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-lint:
-    uses: GEWIS/actions/.github/workflows/lint-and-build-yarn.yml@v1
+    uses: GEWIS/actions/.github/workflows/lint-and-build-pnpm.yml@v1
     with:
       node-version: "22.x"
       lint: true

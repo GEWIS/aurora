@@ -3,7 +3,8 @@ import {
   Configuration,
   DineroObjectResponse,
   UserResponse,
-} from '@sudosos/sudosos-client';
+  UserType,
+} from '@gewis/sudosos-client';
 import { SudoSOSClient } from './sudosos-api-service';
 import { ServerSettingsStore, FeatureEnabled } from '../server-settings';
 import { SudoSOSSettings } from './sudosos-settings';
@@ -49,8 +50,10 @@ export default class SudoSOSService {
    */
   async initialize(): Promise<SudoSOSService> {
     const response = await new SudoSOSClient(this.url).authenticate.keyAuthentication({
-      userId: Number(process.env.SUDOSOS_USER_ID),
-      key: process.env.SUDOSOS_KEY!,
+      authenticationKeyRequest: {
+        userId: Number(process.env.SUDOSOS_USER_ID),
+        key: process.env.SUDOSOS_KEY!,
+      },
     });
 
     this.client = new SudoSOSClient(
@@ -71,8 +74,9 @@ export default class SudoSOSService {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // eslint-disable-next-line no-await-in-loop,@typescript-eslint/naming-convention
-      const { records, _pagination } = (await this.client.user.getAllUsers(10000, users.length))
-        .data;
+      const { records, _pagination } = (
+        await this.client.user.getAllUsers({ take: 10000, skip: users.length })
+      ).data;
       if (records.length === 0) {
         if (_pagination.count !== users.length) {
           throw new Error('Missing some users!!!');
@@ -89,24 +93,17 @@ export default class SudoSOSService {
    * @private
    */
   public async getDebtors(): Promise<SudoSOSDebtorResponse[]> {
-    const userTypes = ['MEMBER', 'LOCAL_USER'];
+    const userTypes: UserType[] = [UserType.Member, UserType.LocalUser];
     const response = (
-      await this.client.balance.getAllBalance(
-        undefined,
-        undefined,
-        -500,
-        undefined,
-        undefined,
-        undefined,
-        userTypes as any,
-        'amount',
-        'ASC',
-        undefined,
-        false,
-        50,
-      )
+      await this.client.balance.getAllBalance({
+        maxBalance: -500,
+        userTypes,
+        orderBy: 'amount',
+        orderDirection: 'ASC',
+        inactive: false,
+        take: 50,
+      })
     ).data;
-    // @ts-ignore
     const balances: BalanceResponse[] = response.records;
     const users = await this.getUsers();
 
@@ -121,7 +118,7 @@ export default class SudoSOSService {
 
     const bac =
       bacGroupId > 0
-        ? (await this.client.user.getOrganMembers(bacGroupId)).data.records
+        ? (await this.client.user.getOrganMembers({ id: bacGroupId })).data.records
         : undefined;
 
     return balances
@@ -154,7 +151,7 @@ export default class SudoSOSService {
     const posID = ServerSettingsStore.getInstance().getSetting(
       'SudoSOS.BorrelmodePOSID',
     ) as SudoSOSSettings['SudoSOS.BorrelmodePOSID'];
-    const response = await this.client.pos.getAllPointOfSaleProducts(posID);
+    const response = await this.client.pos.getAllPointOfSaleProducts({ id: posID });
     return response.data.filter((p) => p.priceList);
   }
 }

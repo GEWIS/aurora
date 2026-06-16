@@ -1,13 +1,13 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "incremental": true,
     "outDir": "dist",
-    "types": ["node"],
+    "types": ["node"]
   },
-  "include": ["src"],
+  "include": ["src", "build", "build/swagger.json"],
   "exclude": ["src/test"],
   "ts-node": {
-    "files": true,
+    "files": true
   }
 }

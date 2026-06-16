@@ -1,4 +1,4 @@
-import { TrackChangeEvent, BeatEvent } from 'src/modules/events/music-emitter-events';
+import { TrackChangeEvent, BeatEvent } from '../../../modules/events/music-emitter-events';
 import BaseScreenHandler from '../base-screen-handler';
 
 export default class StageEffectsHandler extends BaseScreenHandler {

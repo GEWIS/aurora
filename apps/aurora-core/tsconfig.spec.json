@@ -1,10 +1,14 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "incremental": true,
     "outDir": "dist",
     "types": ["node", "vitest/globals"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@aurora/*": ["src/*"]
+    }
   },
-  "include": ["integration-test", "src/types.d.ts"]
+  "include": ["integration-test", "src", "build", "build/swagger.json"]
 }

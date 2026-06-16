@@ -1,3 +1,6 @@
 allowBuilds:
   sqlite3: true
   "@scarf/scarf": true
+
+packages:
+  - "apps/*"

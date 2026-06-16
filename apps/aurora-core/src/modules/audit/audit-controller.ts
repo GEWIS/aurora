@@ -1,6 +1,9 @@
 import { Controller, Queries } from '@tsoa/runtime';
 import { Get, Route, Security, Tags } from 'tsoa';
-import AuditService, { GetAuditLogEntryParams } from './audit-service';
+import AuditService, {
+  GetAuditLogEntryParams,
+  PaginatedAuditLogEntryResponse,
+} from './audit-service';
 import { SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';
 
@@ -9,7 +12,9 @@ import { securityGroups } from '../../helpers/security-groups';
 export class AuditController extends Controller {
   @Get()
   @Security(SecurityNames.LOCAL, securityGroups.audit.base)
-  public async getAuditLogs(@Queries() params: GetAuditLogEntryParams) {
+  public async getAuditLogs(
+    @Queries() params: GetAuditLogEntryParams,
+  ): Promise<PaginatedAuditLogEntryResponse> {
     const queryParams = {
       ...params,
       take: params.take ?? 50,

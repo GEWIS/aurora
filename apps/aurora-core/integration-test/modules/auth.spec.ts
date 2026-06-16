@@ -1,7 +1,6 @@
 import { describe, beforeAll, it, expect, vi } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
-import { SecurityGroup } from '../../src/helpers/security';
 
 let testApp: TestApp;
 
@@ -115,7 +114,7 @@ describe('GET /api/auth/groups', () => {
 
     // ASSERT
     expect(res.status).toBe(200);
-    expect(res.body.user.base).toContain(SecurityGroup.ADMIN);
+    expect(res.body.user.base).toContain('admin');
   });
 
   it('returns admin as the integrationUsers privileged', async () => {
@@ -124,7 +123,7 @@ describe('GET /api/auth/groups', () => {
 
     // ASSERT
     expect(res.status).toBe(200);
-    expect(res.body.integrationUsers.privileged).toEqual([SecurityGroup.ADMIN]);
+    expect(res.body.integrationUsers.privileged).toEqual(['admin']);
   });
 });
 

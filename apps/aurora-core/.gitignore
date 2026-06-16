@@ -1,0 +1,9 @@
+# Project-related
+**/build/routes.ts
+*.sqlite
+
+# Local storage
+private
+public/posters
+public/local-posters
+

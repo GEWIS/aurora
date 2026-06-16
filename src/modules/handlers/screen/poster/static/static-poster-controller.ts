@@ -54,17 +54,10 @@ export class StaticPosterController extends Controller {
   @Post('clock')
   public async setStaticPosterClock(
     @Request() req: ExpressRequest,
-    @Body() body: SetClockRequest,
+    @Body() { visible }: SetClockRequest,
   ): Promise<void> {
-    const { visible } = body;
-    if (visible) {
-      logger.audit(req.user, 'Make clock in StaticPosterHandler visible.');
-    } else {
-      logger.audit(req.user, 'Make clock in StaticPosterHandler invisible.');
-    }
-
+    logger.audit(req.user, `Make clock in StaticPosterHandler ${visible ? 'visible' : 'invisible'}.`);
     this.screenHandler.setClockVisibility(visible);
-  }
 
   /**
    * Show the given static poster on all screens using the StaticPosterHandler.

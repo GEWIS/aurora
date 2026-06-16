@@ -129,8 +129,8 @@ export default class PosterService {
    * @param id The id of the poster to fetch.
    */
   public async getSinglePoster(id: number): Promise<Poster> {
-    const poster = await this.repo.findOne({ where: { id } });
-    if (poster == null) {
+    const poster = await this.repo.findOneBy({ id });
+    if (poster === null) {
       throw new HttpApiException(HttpStatusCode.NotFound, `Poster with ID "${id}" not found.`);
     }
     return poster;
@@ -143,16 +143,7 @@ export default class PosterService {
    */
   public async createPoster(params: CreatePosterRequest): Promise<Poster> {
     return this.repo.save({
-      name: params.name,
-      label: params.label,
-      type: params.type,
-      startDate: params.startDate,
-      expirationDate: params.expirationDate,
-      accentColor: params.accentColor,
-      footerSize: params.footerSize,
-      defaultTimeout: params.defaultTimeout,
-      borrelMode: params.borrelMode,
-      trello: params.trello,
+      ...params
       uri: params.type === PosterType.EXTERNAL ? params.uri : undefined,
       albums: params.type === PosterType.PHOTO ? params.albums : undefined,
     });
@@ -219,8 +210,6 @@ export default class PosterService {
    * @param enabled The state to put the poster in.
    */
   public async togglePosterEnable(id: number, enabled: boolean): Promise<Poster> {
-    const poster = await this.getSinglePoster(id);
-    poster.enabled = enabled;
-    return this.repo.save(poster);
+    return this.repo.update({ id }, { enabled })
   }
 }

@@ -73,7 +73,7 @@ export class PosterController extends Controller {
     @Res()
     invalidFileTypeResponse: TsoaResponse<
       HttpStatusCode.UnsupportedMediaType,
-      'Invalid file type, expected an image or a video.'
+      string
     >,
   ): Promise<PosterResponse> {
     const mimeType = lookup(file.originalname);

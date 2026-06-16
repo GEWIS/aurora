@@ -56,18 +56,15 @@ export class CarouselPosterController extends Controller {
     const posters = await this.screenHandler.posterService.getAllPosters();
 
     let visible: Poster[];
-    if (includeHidden) {
-      visible = posters;
-    } else {
-      const now = new Date();
-      const active = posters.filter(
+  const visible = includeHidden
+    ? posters
+    : posters.filter(
         (p) =>
           p.enabled &&
-          (p.startDate == null || p.startDate <= now) &&
-          (p.expirationDate == null || p.expirationDate > now),
+          (!p.startDate || p.startDate <= now) &&
+          (!p.expirationDate || p.expirationDate > now) &&
+          (this.screenHandler.borrelMode || !p.borrelMode)
       );
-      visible = this.screenHandler.borrelMode ? active : active.filter((p) => !p.borrelMode);
-    }
 
     const order = await new CarouselPosterService().getOrder(CAROUSEL_ID);
     const rank = new Map(order.map((id, i) => [id, i]));

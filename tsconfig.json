@@ -1,44 +1,8 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    /* Basic Options */
-    "incremental": true,
-    "target": "esnext",
-    "module": "commonjs",
-    "outDir": "dist",
     "types": ["node"],
-
-    /* Strict Type-Checking Options */
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": false,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-
-    /* Additional Checks */
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* Module Resolution Options */
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-
-    /* Experimental Options */
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    /* Advanced Options */
-    "forceConsistentCasingInFileNames": true,
-
+    "skipLibCheck": true
   },
-  /* Additional Types TSNode */
-  "ts-node": {
-    "files": true,
-  }
+  "include": ["src", "integration-test"]
 }

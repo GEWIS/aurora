@@ -5,11 +5,15 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon -x npx tsoa spec-and-routes\"",
-    "build": "tsoa spec-and-routes && tsc",
+    "build": "tsoa spec-and-routes && tsc -p tsconfig.app.json",
+    "typecheck": "tsoa spec-and-routes && tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.spec.json",
     "start": "node dist/src/index.js",
+    "test": "tsoa spec-and-routes && vitest run",
+    "test:watch": "vitest",
+    "test:build": "tsoa spec-and-routes && vitest run",
     "tsoa": "tsoa spec-and-routes",
-    "lint": "eslint ./src --max-warnings=0",
-    "lint-fix": "eslint ./src --fix",
+    "lint": "eslint ./src ./integration-test --max-warnings=0",
+    "lint-fix": "eslint ./src ./integration-test --fix",
     "format": "prettier --ignore-path .gitignore --check ./src/",
     "format-fix": "prettier --ignore-path .gitignore --write ./src",
     "migrate": "typeorm-ts-node-commonjs migration:run -d src/database.ts",
@@ -21,7 +25,7 @@
     "seed:gewis-posters": "ts-node src/seed/index.ts --gewis-posters",
     "seed:hubble": "ts-node src/seed/index.ts --hubble",
     "prepare-husky": "husky",
-    "validate": "ts-node src/validate.ts"
+    "validate": "ts-node -P tsconfig.app.json src/validate.ts"
   },
   "keywords": [],
   "author": "",
@@ -79,6 +83,7 @@
     "@types/passport": "1.0.17",
     "@types/passport-strategy": "0.2.38",
     "@types/qs": "6.15.1",
+    "@types/supertest": "^7.2.0",
     "@types/swagger-ui-express": "4.1.8",
     "@typescript-eslint/eslint-plugin": "8.53.1",
     "@typescript-eslint/parser": "8.53.1",
@@ -90,8 +95,11 @@
     "lint-staged": "16.2.7",
     "nodemon": "3.1.11",
     "prettier": "3.8.1",
+    "supertest": "^7.2.2",
     "ts-node": "10.9.2",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "engines": {
     "node": ">=22.0.0"

@@ -13,8 +13,7 @@ import { Entities as TimedEventsEntities } from './modules/timed-events/entities
 import Poster from './modules/handlers/screen/poster/local/poster';
 import Carousel from './modules/handlers/screen/poster/local/local-carousel';
 import CarouselPoster from './modules/handlers/screen/poster/local/local-carousel-poster';
-import { InitialMigration1780248780327 } from './migrations/1780248780327-InitialMigration';
-import { PosterMigration1781087463209 } from './migrations/1781087463209-PosterMigration';
+import { Migrations } from './migrations';
 
 const dataSource = new DataSource({
   host: process.env.TYPEORM_HOST,
@@ -32,7 +31,7 @@ const dataSource = new DataSource({
     : {}),
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
-  migrations: [InitialMigration1780248780327, PosterMigration1781087463209],
+  migrations: Migrations,
   extra: {
     authPlugins: {
       mysql_clear_password: () => () => Buffer.from(`${process.env.TYPEORM_PASSWORD}\0`),

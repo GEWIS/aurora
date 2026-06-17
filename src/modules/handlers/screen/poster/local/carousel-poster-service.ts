@@ -15,11 +15,11 @@ export default class CarouselPosterService {
    */
   public async getOrder(carouselId: number): Promise<number[]> {
     const rows = await dataSource.getRepository(CarouselPoster).find({
-      where: { carousel: { id: carouselId } },
+      where: { carouselId },
       order: { ordering: 'ASC' },
-      loadRelationIds: true,
+      select: { posterId: true },
     });
-    return rows.map((row) => row.poster as unknown as number);
+    return rows.map((row) => row.posterId);
   }
 
   /**
@@ -35,12 +35,12 @@ export default class CarouselPosterService {
         (await carouselRepo.save(carouselRepo.create({ id: carouselId, name: 'default' })));
 
       const repo = manager.getRepository(CarouselPoster);
-      await repo.delete({ carousel: { id: carousel.id } });
+      await repo.delete({ carouselId: carousel.id });
       if (posterIds.length > 0) {
         await repo.insert(
           posterIds.map((posterId, ordering) => ({
-            carousel: { id: carousel.id },
-            poster: { id: posterId },
+            carouselId: carousel.id,
+            posterId,
             ordering,
           })),
         );

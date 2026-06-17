@@ -18,6 +18,8 @@ const DEFAULT_POSTER_REFRESH = 1000 * 60 * 15;
 export class TrelloPosterManager {
   private client: TrelloClient;
 
+  private service = new PosterService();
+
   private refreshTimeout: NodeJS.Timeout | undefined = undefined;
 
   constructor() {
@@ -172,8 +174,7 @@ export class TrelloPosterManager {
       return undefined;
     }
 
-    const service = new PosterService();
-    let localPoster = await service.createPoster({
+    let localPoster = await this.service.createPoster({
       name: poster.name,
       type: type,
       label: poster.label,
@@ -202,7 +203,7 @@ export class TrelloPosterManager {
         responseType: 'arraybuffer',
         headers,
       });
-      localPoster = await service.attachMedia(
+      localPoster = await this.service.attachMedia(
         localPoster.id,
         attachment.fileName,
         Buffer.from(resp.data),
@@ -234,8 +235,7 @@ export class TrelloPosterManager {
     const albums = checkList.checkItems.map((item: any) => item.name.split(' ')[0]);
 
     const poster = this.parseBasePoster(card, checklists, borrelMode);
-    const service = new PosterService();
-    return service.createPoster({
+    return this.service.createPoster({
       name: poster.name,
       type: PosterType.PHOTO,
       label: poster.label,
@@ -282,9 +282,8 @@ export class TrelloPosterManager {
     }
 
     const poster = this.parseBasePoster(card, checklists, borrelMode);
-    const service = new PosterService();
 
-    return service.createPoster({
+    return this.service.createPoster({
       name: poster.name,
       type: PosterType.EXTERNAL,
       label: poster.label,
@@ -311,13 +310,12 @@ export class TrelloPosterManager {
     const list = lists.find((l) => l.name === basePosterListName);
     if (!list) throw new Error(`Could not find the list called "${basePosterListName}"`);
 
-    const service = new PosterService();
     const repo = dataSource.getRepository(Poster);
 
     const desired = this.collectCards(list, board);
     const desiredById = new Map(desired.filter((d) => d.card.id).map((d) => [d.card.id!, d]));
 
-    const existing = (await service.getAllPosters()).filter((p) => p.trello);
+    const existing = (await this.service.getAllPosters()).filter((p) => p.trello);
     const existingById = new Map(
       existing.filter((p) => p.trelloCardId).map((p) => [p.trelloCardId!, p]),
     );
@@ -325,7 +323,7 @@ export class TrelloPosterManager {
     for (const poster of existing) {
       const entry = poster.trelloCardId ? desiredById.get(poster.trelloCardId) : undefined;
       if (!entry || poster.trelloLastActivity !== entry.card.dateLastActivity) {
-        await service.deletePoster(poster.id);
+        await this.service.deletePoster(poster.id);
       }
     }
 
@@ -345,6 +343,6 @@ export class TrelloPosterManager {
     if (this.refreshTimeout) clearTimeout(this.refreshTimeout);
     this.refreshTimeout = setTimeout(this.reloadPosters.bind(this), DEFAULT_POSTER_REFRESH);
 
-    return await service.getAllPosters();
+    return await this.service.getAllPosters();
   }
 }

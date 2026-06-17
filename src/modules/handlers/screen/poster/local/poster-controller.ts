@@ -9,7 +9,7 @@ import PosterService, {
   UpdatePosterRequest,
 } from './poster-service';
 import { PosterType } from './poster';
-import { lookup } from 'mime-types';
+import { fromBuffer } from 'file-type';
 import { FeatureEnabled } from '../../../../server-settings';
 
 @Route('handler/screen/poster')
@@ -73,8 +73,8 @@ export class PosterController extends Controller {
     @Res()
     invalidFileTypeResponse: TsoaResponse<HttpStatusCode.UnsupportedMediaType, string>,
   ): Promise<PosterResponse> {
-    const mimeType = lookup(file.originalname);
-    if (!mimeType || !(mimeType.startsWith('image/') || mimeType.startsWith('video/'))) {
+    const fileType = await fromBuffer(file.buffer);
+    if (!fileType || !(fileType.mime.startsWith('image/') || fileType.mime.startsWith('video/'))) {
       return invalidFileTypeResponse(
         HttpStatusCode.UnsupportedMediaType,
         'Invalid file type, expected an image or a video.',

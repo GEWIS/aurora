@@ -6,7 +6,7 @@ import { ServerSettingsStore } from '../../../server-settings';
 import { ISettings } from '../../../server-settings/server-setting';
 import { SecurityNames } from '../../../../helpers/security';
 import { securityGroups } from '../../../../helpers/security-groups';
-import { lookup } from 'mime-types';
+import { fromBuffer } from 'file-type';
 
 export interface PosterScreenSettingsResponse {
   defaultMinimal: boolean;
@@ -60,17 +60,13 @@ export class BasePosterScreenController extends Controller {
 
     const res = request?.res;
     if (logo && res) {
-      const mimeType = lookup(logo.originalName);
-      let contentType: string;
-      if (!mimeType) {
-        contentType = 'application/octet-stream';
-      } else {
-        contentType = mimeType;
-      }
+      const buffer = await fileStorage.getFile(logo);
+      const fileType = await fromBuffer(buffer);
+      const contentType = fileType?.mime ?? 'application/octet-stream';
 
       res.setHeader('Content-Disposition', 'attachment; filename=' + logo.originalName);
       res.setHeader('Content-Type', contentType);
-      res.send(await fileStorage.getFile(logo));
+      res.send(buffer);
     }
   }
 
@@ -90,17 +86,13 @@ export class BasePosterScreenController extends Controller {
 
     const res = request?.res;
     if (stylesheet && res) {
-      const mimeType = lookup(stylesheet.originalName);
-      let contentType: string;
-      if (!mimeType) {
-        contentType = 'application/octet-stream';
-      } else {
-        contentType = mimeType;
-      }
+      const buffer = await fileStorage.getFile(stylesheet);
+      const fileType = await fromBuffer(buffer);
+      const contentType = fileType?.mime ?? 'application/octet-stream';
 
       res.setHeader('Content-Disposition', 'attachment; filename=' + stylesheet.originalName);
       res.setHeader('Content-Type', contentType);
-      res.send(await fileStorage.getFile(stylesheet));
+      res.send(buffer);
     }
   }
 }

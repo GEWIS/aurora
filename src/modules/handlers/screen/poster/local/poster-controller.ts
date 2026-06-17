@@ -12,7 +12,7 @@ import { PosterType } from './poster';
 import { lookup } from 'mime-types';
 import { FeatureEnabled } from '../../../../server-settings';
 
-@Route('/handler/screen/poster')
+@Route('handler/screen/poster')
 @Tags('Handlers')
 @FeatureEnabled('Poster')
 export class PosterController extends Controller {

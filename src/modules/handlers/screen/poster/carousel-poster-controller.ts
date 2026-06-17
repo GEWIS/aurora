@@ -55,16 +55,16 @@ export class CarouselPosterController extends Controller {
   public async getPosters(@Query() includeHidden?: boolean): Promise<CarouselResponse> {
     const posters = await this.screenHandler.posterService.getAllPosters();
 
-    let visible: Poster[];
-  const visible = includeHidden
-    ? posters
-    : posters.filter(
-        (p) =>
-          p.enabled &&
-          (!p.startDate || p.startDate <= now) &&
-          (!p.expirationDate || p.expirationDate > now) &&
-          (this.screenHandler.borrelMode || !p.borrelMode)
-      );
+    const now = new Date();
+    const visible = includeHidden
+      ? posters
+      : posters.filter(
+          (p) =>
+            p.enabled &&
+            (!p.startDate || p.startDate <= now) &&
+            (!p.expirationDate || p.expirationDate > now) &&
+            (this.screenHandler.borrelMode || !p.borrelMode),
+        );
 
     const order = await new CarouselPosterService().getOrder(CAROUSEL_ID);
     const rank = new Map(order.map((id, i) => [id, i]));

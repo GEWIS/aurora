@@ -143,7 +143,7 @@ export default class PosterService {
    */
   public async createPoster(params: CreatePosterRequest): Promise<Poster> {
     return this.repo.save({
-      ...params
+      ...params,
       uri: params.type === PosterType.EXTERNAL ? params.uri : undefined,
       albums: params.type === PosterType.PHOTO ? params.albums : undefined,
     });
@@ -210,6 +210,7 @@ export default class PosterService {
    * @param enabled The state to put the poster in.
    */
   public async togglePosterEnable(id: number, enabled: boolean): Promise<Poster> {
-    return this.repo.update({ id }, { enabled })
+    await this.repo.update({ id }, { enabled });
+    return this.getSinglePoster(id);
   }
 }

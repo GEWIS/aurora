@@ -14,7 +14,7 @@ export class PosterMigration1781087463209 implements MigrationInterface {
       `CREATE TABLE \`carousel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`active\` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`carousel_poster\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`carouselId\` int NOT NULL, \`posterId\` int NOT NULL, \`ordering\` int NOT NULL, UNIQUE INDEX \`UQ_4239bae6dd3039260e96cbc9cc1\` (\`carouselId\`, \`ordering\`), UNIQUE INDEX \`UQ_dc2e911dd482ee95273c7bb5461\` (\`carouselId\`, \`posterId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`carousel_poster\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`carouselId\` int NOT NULL, \`posterId\` int NOT NULL, \`ordering\` int NOT NULL, UNIQUE INDEX \`IDX_4239bae6dd3039260e96cbc9cc\` (\`carouselId\`, \`ordering\`), UNIQUE INDEX \`IDX_dc2e911dd482ee95273c7bb546\` (\`carouselId\`, \`posterId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`poster_files_file\` (\`posterId\` int NOT NULL, \`fileId\` int NOT NULL, INDEX \`IDX_b19b6773fc34c90a859006b2fa\` (\`posterId\`), INDEX \`IDX_445c020e803ef2f8d6778588ac\` (\`fileId\`), PRIMARY KEY (\`posterId\`, \`fileId\`)) ENGINE=InnoDB`,
@@ -121,8 +121,8 @@ export class PosterMigration1781087463209 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE \`carousel_poster\` DROP FOREIGN KEY \`FK_2c4e84aa873aa23fddc43a18b41\``,
     );
-    await queryRunner.query(`DROP INDEX \`UQ_dc2e911dd482ee95273c7bb5461\` ON \`carousel_poster\``);
-    await queryRunner.query(`DROP INDEX \`UQ_4239bae6dd3039260e96cbc9cc1\` ON \`carousel_poster\``);
+    await queryRunner.query(`DROP INDEX \`IDX_dc2e911dd482ee95273c7bb546\` ON \`carousel_poster\``);
+    await queryRunner.query(`DROP INDEX \`IDX_4239bae6dd3039260e96cbc9cc\` ON \`carousel_poster\``);
     await queryRunner.query(`DROP TABLE \`carousel_poster\``);
     await queryRunner.query(
       `ALTER TABLE \`poster_files_file\` DROP FOREIGN KEY \`FK_445c020e803ef2f8d6778588ac9\``,

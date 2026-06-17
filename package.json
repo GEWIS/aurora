@@ -22,6 +22,7 @@
     "migrate:generate": "TS_NODE_PROJECT=tsconfig.app.json typeorm-ts-node-commonjs migration:generate src/migrations/Migration -d src/database.ts",
     "seed": "ts-node -P tsconfig.app.json src/seed/index.ts",
     "seed:gewis": "ts-node -P tsconfig.app.json src/seed/index.ts --gewis",
+    "seed:gewis-posters": "ts-node -P tsconfig.app.json src/seed/index.ts --gewis-posters",
     "seed:hubble": "ts-node -P tsconfig.app.json src/seed/index.ts --hubble",
     "prepare-husky": "husky",
     "validate": "ts-node -P tsconfig.app.json src/validate.ts"

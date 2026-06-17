@@ -60,15 +60,14 @@ export class TestEnvironment {
         const emitterStore = EmitterStore.getInstance();
         BeatManager.getInstance().init(emitterStore.beatEmitter);
 
-        const app = await httpModule();
-        this.app = app;
+        this.app = await httpModule();
 
-        const httpServer = createServer(app);
+        const httpServer = createServer(this.app);
         const io = new SocketIoServer(httpServer);
         HandlerManager.getInstance(io, emitterStore);
         await HandlerManager.getInstance().init();
 
-        return app;
+        return this.app;
       })();
     }
 

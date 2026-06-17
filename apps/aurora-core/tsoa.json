@@ -1,9 +1,7 @@
 {
   "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": [
-    "src/**/*-controller.ts"
-  ],
+  "controllerPathGlobs": ["src/**/*-controller.ts"],
   "spec": {
     "basePath": "/api",
     "securityDefinitions": {
@@ -21,10 +19,7 @@
     "outputDirectory": "build",
     "host": "",
     "specVersion": 3,
-    "schemes": [
-      "http",
-      "https"
-    ],
+    "schemes": ["http", "https"],
     "specMerging": "recursive",
     "spec": {
       "components": {
@@ -74,9 +69,7 @@
             },
             "security": [],
             "parameters": [],
-            "tags": [
-              "Authentication"
-            ],
+            "tags": ["Authentication"],
             "requestBody": {
               "content": {
                 "application/json": {
@@ -105,9 +98,7 @@
             },
             "security": [],
             "parameters": [],
-            "tags": [
-              "Authentication"
-            ],
+            "tags": ["Authentication"],
             "requestBody": {
               "required": true,
               "content": {
@@ -137,9 +128,7 @@
             },
             "security": [],
             "parameters": [],
-            "tags": [
-              "Authentication"
-            ],
+            "tags": ["Authentication"],
             "requestBody": {
               "content": {
                 "application/json": {

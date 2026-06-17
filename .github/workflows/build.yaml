@@ -2,17 +2,17 @@ name: Lint and build
 
 on:
   push:
-    branches: 
-    - develop
+    branches:
+      - develop
   pull_request:
-    branches: 
-    - develop
+    branches:
+      - develop
 
 jobs:
   build-and-lint:
     uses: GEWIS/actions/.github/workflows/lint-and-build-pnpm.yml@v1
     with:
-      node-version: "22.x"
+      node-version: '22.x'
       lint: true
       format: true
       build: true

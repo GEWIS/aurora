@@ -2,8 +2,8 @@ name: Semantic release
 
 on:
   push:
-    branches: 
-    - master
+    branches:
+      - master
 
 jobs:
   versioning:
@@ -16,11 +16,9 @@ jobs:
     with:
       projects: '["."]'
       version: ${{ needs.versioning.outputs.next-version }}
-      docker-registry: "abc.docker-registry.gewis.nl"
+      docker-registry: 'abc.docker-registry.gewis.nl'
       docker-paths: '["nc/aurora/core"]'
-      github-registry: "true"
+      github-registry: 'true'
     secrets:
       REGISTRY_USERNAME: ${{ secrets.SVC_GH_ABCNC_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.SVC_GH_ABCNC_PWD }}
-
-

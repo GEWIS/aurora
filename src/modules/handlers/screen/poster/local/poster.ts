@@ -66,8 +66,11 @@ export default class Poster extends BaseEntity {
   @Column({ type: 'simple-array', nullable: true })
   albums?: number[];
 
-  @ManyToMany(() => File, { eager: true })
-  @JoinTable()
+  @ManyToMany(() => File, { eager: true, onDelete: 'CASCADE' })
+  @JoinTable({
+    joinColumn: { name: 'posterId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
+  })
   files: File[];
 
   @Column({ default: false })

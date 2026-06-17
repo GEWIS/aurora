@@ -16,10 +16,11 @@ type BasePosterFields =
   | 'accentColor'
   | 'footerSize'
   | 'defaultTimeout'
-  | 'borrelMode'
-  | 'trello';
+  | 'borrelMode';
 
-export interface BasePosterParams extends Pick<Poster, BasePosterFields> {}
+export interface BasePosterParams extends Pick<Poster, BasePosterFields> {
+  trello?: boolean;
+}
 
 export interface MediaPosterRequest extends BasePosterParams {
   type: PosterType.IMAGE | PosterType.VIDEO;
@@ -168,9 +169,11 @@ export default class PosterService {
 
     const fileParams = await this.storage.saveFile(filename, filedata);
     try {
-      const file = await this.fileRepo.save(fileParams);
-      poster.files = [...(poster.files ?? []), file];
-      return this.repo.save(poster);
+      return await dataSource.transaction(async (manager) => {
+        const file = await manager.getRepository(File).save(fileParams);
+        poster.files = [...(poster.files ?? []), file];
+        return manager.getRepository(Poster).save(poster);
+      });
     } catch (error) {
       await this.storage.deleteFile(fileParams);
       throw error;

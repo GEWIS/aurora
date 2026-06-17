@@ -11,7 +11,10 @@ export class PosterMigration1781087463209 implements MigrationInterface {
       `CREATE TABLE \`poster\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`type\` varchar(255) NOT NULL, \`enabled\` tinyint NOT NULL DEFAULT 1, \`label\` varchar(255) NULL, \`startDate\` datetime NULL, \`expirationDate\` datetime NULL, \`accentColor\` varchar(255) NULL, \`protected\` tinyint NOT NULL DEFAULT 0, \`borrelMode\` tinyint NOT NULL DEFAULT 0, \`footerSize\` varchar(255) NOT NULL DEFAULT 'full', \`defaultTimeout\` int NOT NULL DEFAULT '15', \`uri\` varchar(255) NULL, \`albums\` text NULL, \`trello\` tinyint NOT NULL DEFAULT 0, \`trelloCardId\` text NULL, \`trelloLastActivity\` text NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`carousel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`active\` tinyint NOT NULL DEFAULT 1, \`posterOrder\` text NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`carousel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`name\` varchar(255) NOT NULL, \`active\` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`carousel_poster\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`carouselId\` int NOT NULL, \`posterId\` int NOT NULL, \`ordering\` int NOT NULL, UNIQUE INDEX \`UQ_4239bae6dd3039260e96cbc9cc1\` (\`carouselId\`, \`ordering\`), UNIQUE INDEX \`UQ_dc2e911dd482ee95273c7bb5461\` (\`carouselId\`, \`posterId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`poster_files_file\` (\`posterId\` int NOT NULL, \`fileId\` int NOT NULL, INDEX \`IDX_b19b6773fc34c90a859006b2fa\` (\`posterId\`), INDEX \`IDX_445c020e803ef2f8d6778588ac\` (\`fileId\`), PRIMARY KEY (\`posterId\`, \`fileId\`)) ENGINE=InnoDB`,
@@ -21,6 +24,12 @@ export class PosterMigration1781087463209 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`poster_files_file\` ADD CONSTRAINT \`FK_445c020e803ef2f8d6778588ac9\` FOREIGN KEY (\`fileId\`) REFERENCES \`file\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`carousel_poster\` ADD CONSTRAINT \`FK_2c4e84aa873aa23fddc43a18b41\` FOREIGN KEY (\`carouselId\`) REFERENCES \`carousel\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`carousel_poster\` ADD CONSTRAINT \`FK_b26069880f6a35bc2c81d1c5481\` FOREIGN KEY (\`posterId\`) REFERENCES \`poster\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
 
     await this.migrateLocalPosters(queryRunner);
@@ -106,6 +115,15 @@ export class PosterMigration1781087463209 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Schema-only reversal: posters migrated from local_poster are not converted back.
+    await queryRunner.query(
+      `ALTER TABLE \`carousel_poster\` DROP FOREIGN KEY \`FK_b26069880f6a35bc2c81d1c5481\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`carousel_poster\` DROP FOREIGN KEY \`FK_2c4e84aa873aa23fddc43a18b41\``,
+    );
+    await queryRunner.query(`DROP INDEX \`UQ_dc2e911dd482ee95273c7bb5461\` ON \`carousel_poster\``);
+    await queryRunner.query(`DROP INDEX \`UQ_4239bae6dd3039260e96cbc9cc1\` ON \`carousel_poster\``);
+    await queryRunner.query(`DROP TABLE \`carousel_poster\``);
     await queryRunner.query(
       `ALTER TABLE \`poster_files_file\` DROP FOREIGN KEY \`FK_445c020e803ef2f8d6778588ac9\``,
     );

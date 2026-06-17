@@ -187,12 +187,9 @@ export default class PosterService {
   public async deletePoster(id: number): Promise<void> {
     const poster = await this.getSinglePoster(id);
     const files = poster.files ?? [];
-    // Removing the poster clears the owning-side join-table rows, after which
-    // the now-orphaned files can be deleted from the database and disk.
     await this.repo.remove(poster);
     await Promise.all(
       files.map(async (file) => {
-        await this.fileRepo.delete(file.id);
         await this.storage.deleteFile(file);
       }),
     );
@@ -204,9 +201,15 @@ export default class PosterService {
    * @param params The fields of the poster to be updated as specified in UpdatePosterParams.
    */
   public async updatePoster(id: number, params: UpdatePosterRequest): Promise<Poster> {
-    const poster = await this.getSinglePoster(id);
-    Object.assign(poster, params);
-    return this.repo.save(poster);
+    return dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(Poster);
+      const poster = await repo.findOneBy({ id });
+      if (poster === null) {
+        throw new HttpApiException(HttpStatusCode.NotFound, `Poster with ID "${id}" not found.`);
+      }
+      Object.assign(poster, params);
+      return repo.save(poster);
+    });
   }
 
   /**

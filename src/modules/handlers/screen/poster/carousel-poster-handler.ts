@@ -5,6 +5,7 @@ import { TrelloPosterManager } from './trello/trello-poster-manager';
 import { TrackChangeEvent } from '../../../events/music-emitter-events';
 import { PosterManager } from './poster-manager';
 import { ISettings } from '../../../server-settings/server-setting';
+import { MockPosterManager } from './mock/mock-poster-manager';
 
 @FeatureEnabled('Poster')
 export default class CarouselPosterHandler extends BaseScreenHandler {
@@ -21,7 +22,12 @@ export default class CarouselPosterHandler extends BaseScreenHandler {
       // Check whether we need to enable/disable borrel mode
       this.borrelModeInterval = setInterval(this.checkBorrelMode.bind(this), 60 * 1000);
     }
-    this.posterManager = new TrelloPosterManager();
+    // Overwrite with mock poster manager if we are in development and the trello board id is set to "mock"
+    if (process.env.NODE_ENV === 'development' && process.env.TRELLO_BOARD_ID === 'mock') {
+      this.posterManager = new MockPosterManager();
+    } else {
+      this.posterManager = new TrelloPosterManager();
+    }
   }
 
   forceUpdate(): void {

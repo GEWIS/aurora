@@ -12,6 +12,7 @@ import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
 import Poster from './modules/handlers/screen/poster/local/poster';
 import Carousel from './modules/handlers/screen/poster/local/local-carousel';
+import CarouselPoster from './modules/handlers/screen/poster/local/local-carousel-poster';
 import { InitialMigration1780248780327 } from './migrations/1780248780327-InitialMigration';
 import { PosterMigration1781087463209 } from './migrations/1781087463209-PosterMigration';
 
@@ -49,6 +50,7 @@ const dataSource = new DataSource({
     ...LightsEntities,
     Poster,
     Carousel,
+    CarouselPoster,
   ],
 });
 

@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
+import CarouselPoster from './local-carousel-poster';
 
 @Entity()
 export default class Carousel extends BaseEntity {
@@ -9,6 +10,6 @@ export default class Carousel extends BaseEntity {
   @Column({ default: true })
   active: boolean;
 
-  @Column({ type: 'simple-array', nullable: true })
-  posterOrder?: number[];
+  @OneToMany(() => CarouselPoster, (carouselPoster) => carouselPoster.carousel)
+  posters: CarouselPoster[];
 }

@@ -71,10 +71,7 @@ export class PosterController extends Controller {
     id: number,
     @UploadedFile() file: Express.Multer.File,
     @Res()
-    invalidFileTypeResponse: TsoaResponse<
-      HttpStatusCode.UnsupportedMediaType,
-      string
-    >,
+    invalidFileTypeResponse: TsoaResponse<HttpStatusCode.UnsupportedMediaType, string>,
   ): Promise<PosterResponse> {
     const mimeType = lookup(file.originalname);
     if (!mimeType || !(mimeType.startsWith('image/') || mimeType.startsWith('video/'))) {

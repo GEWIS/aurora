@@ -8,45 +8,47 @@ import { HttpApiException } from '../../../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 import FileResponse from '../../../../files/entities/file-response';
 
-interface BasePosterParams {
-  name: string;
-  label?: string;
-  startDate?: Date;
-  expirationDate?: Date;
-  accentColor?: string;
-  footerSize?: FooterSize;
-  defaultTimeout?: number;
-  borrelMode?: boolean;
-  trello?: boolean;
-}
+type BasePosterFields =
+  | 'name'
+  | 'label'
+  | 'startDate'
+  | 'expirationDate'
+  | 'accentColor'
+  | 'footerSize'
+  | 'defaultTimeout'
+  | 'borrelMode'
+  | 'trello';
+
+export interface BasePosterParams extends Pick<Poster, BasePosterFields> {}
 
 export interface MediaPosterRequest extends BasePosterParams {
   type: PosterType.IMAGE | PosterType.VIDEO;
 }
 
-export interface ExternalPosterRequest extends BasePosterParams {
+export interface ExternalPosterRequest extends BasePosterParams, Required<Pick<Poster, 'uri'>> {
   type: PosterType.EXTERNAL;
-  uri: string;
 }
 
-export interface PhotoPosterRequest extends BasePosterParams {
+export interface PhotoPosterRequest extends BasePosterParams, Required<Pick<Poster, 'albums'>> {
   type: PosterType.PHOTO;
-  albums: number[];
 }
 
 export type CreatePosterRequest = MediaPosterRequest | ExternalPosterRequest | PhotoPosterRequest;
 
-export interface UpdatePosterRequest {
-  name?: string;
-  label?: string;
-  startDate?: Date;
-  expirationDate?: Date;
-  accentColor?: string;
-  footerSize?: FooterSize;
-  defaultTimeout?: number;
-  borrelMode?: boolean;
-  albums?: number[];
-}
+export interface UpdatePosterRequest extends Partial<
+  Pick<
+    Poster,
+    | 'name'
+    | 'label'
+    | 'startDate'
+    | 'expirationDate'
+    | 'accentColor'
+    | 'footerSize'
+    | 'defaultTimeout'
+    | 'borrelMode'
+    | 'albums'
+  >
+> {}
 
 export interface PosterResponse {
   id: number;

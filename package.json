@@ -11,8 +11,8 @@
     "lint-fix": "pnpm -r run lint-fix",
     "format": "prettier --check .",
     "format-fix": "prettier --write .",
-    "sync": "pnpm --filter aurora-core run sync && pnpm --filter api-client run sync",
-    "sync-check": "pnpm --filter aurora-core run sync-check && pnpm --filter api-client run sync-check",
+    "sync": "pnpm --filter @gewis/aurora-core run sync && pnpm --filter @gewis/aurora-api-client run sync",
+    "sync-check": "pnpm --filter @gewis/aurora-core run sync-check && pnpm --filter @gewis/aurora-api-client run sync-check",
     "prepare-husky": "husky"
   },
   "keywords": [],

@@ -1,5 +1,5 @@
 {
-  "name": "api-client",
+  "name": "@gewis/aurora-api-client",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",

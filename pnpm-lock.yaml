@@ -23,6 +23,9 @@ importers:
       '@fostertheweb/spotify-web-sdk':
         specifier: 1.3.0
         version: 1.3.0
+      '@gewis/aurora-api-client':
+        specifier: workspace:*
+        version: link:../../libs/aurora-api-client
       '@gewis/sudosos-client':
         specifier: 1.34.0
         version: 1.34.0

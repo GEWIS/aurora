@@ -1,5 +1,5 @@
 {
-  "name": "aurora",
+  "name": "@gewis/aurora",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -13,8 +13,7 @@
     "format-fix": "prettier --write .",
     "sync": "pnpm --filter aurora-core run sync && pnpm --filter api-client run sync",
     "sync-check": "pnpm --filter aurora-core run sync-check && pnpm --filter api-client run sync-check",
-    "prepare-husky": "husky",
-    "prepare": "pnpm sync"
+    "prepare-husky": "husky"
   },
   "keywords": [],
   "license": "AGPL-3.0-only",

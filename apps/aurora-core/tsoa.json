@@ -3,7 +3,7 @@
   "noImplicitAdditionalProperties": "throw-on-extras",
   "controllerPathGlobs": ["src/**/*-controller.ts"],
   "spec": {
-    "name": "Aurora Core API",
+    "name": "Aurora Core API - CHANGE",
     "version": "1.0.0",
     "description": "API contract for the Aurora Core service.",
     "license": {

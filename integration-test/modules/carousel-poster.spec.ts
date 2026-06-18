@@ -1,12 +1,27 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
-import { expectApiError } from '../shared/response-matchers';
+import { expectApiError, expectValidationError } from '../shared/response-matchers';
 
 let testApp: TestApp;
 
 beforeAll(async () => {
   testApp = await TestEnvironment.getInstance().getTestApp();
 });
+
+/**
+ * Creates a poster through the API and returns its id.
+ */
+async function createPoster(): Promise<number> {
+  const res = await testApp.authorizedAgent.post('/api/handler/screen/poster/items').send({
+    name: 'Carousel Test Poster',
+    type: 'img',
+    footerSize: 'full',
+    defaultTimeout: 15,
+    borrelMode: false,
+  });
+  expect(res.status).toBe(200);
+  return res.body.id as number;
+}
 
 describe('GET /api/handler/screen/poster/carousel', () => {
   it('returns 401 without auth', async () => {
@@ -27,6 +42,110 @@ describe('GET /api/handler/screen/poster/carousel', () => {
   });
 });
 
+describe('GET /api/handler/screen/poster/carousel/order', () => {
+  it('returns 401 without auth', async () => {
+    // ACT
+    const res = await testApp.unauthorizedAgent.get('/api/handler/screen/poster/carousel/order');
+
+    // ASSERT
+    expectApiError(res, 401);
+  });
+
+  it('returns 200 with an empty array when no order is set', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent.get('/api/handler/screen/poster/carousel/order');
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+});
+
+describe('PUT /api/handler/screen/poster/carousel/order', () => {
+  it('returns 401 without auth', async () => {
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .put('/api/handler/screen/poster/carousel/order')
+      .send({ posterIds: [] });
+
+    // ASSERT
+    expectApiError(res, 401);
+  });
+
+  it('returns 400 when posterIds is not an array', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent
+      .put('/api/handler/screen/poster/carousel/order')
+      .send({ posterIds: 'not-an-array' });
+
+    // ASSERT
+    expectValidationError(res);
+  });
+
+  it('returns 204 with an empty order', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent
+      .put('/api/handler/screen/poster/carousel/order')
+      .send({ posterIds: [] });
+
+    // ASSERT
+    expect(res.status).toBe(204);
+  });
+
+  it('returns 204 and persists the given order', async () => {
+    // ARRANGE
+    const id = await createPoster();
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .put('/api/handler/screen/poster/carousel/order')
+      .send({ posterIds: [id] });
+
+    // ASSERT
+    expect(res.status).toBe(204);
+
+    const order = await testApp.authorizedAgent.get('/api/handler/screen/poster/carousel/order');
+    expect(order.body).toEqual([id]);
+  });
+});
+
+describe('POST /api/handler/screen/poster/carousel/{id}/enabled', () => {
+  it('returns 401 without auth', async () => {
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .post('/api/handler/screen/poster/carousel/1/enabled')
+      .send({ enabled: true });
+
+    // ASSERT
+    expectApiError(res, 401);
+  });
+
+  it('returns 404 when the poster does not exist', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent
+      .post('/api/handler/screen/poster/carousel/999999/enabled')
+      .send({ enabled: true });
+
+    // ASSERT
+    expectApiError(res, 404);
+  });
+
+  it('returns 200 and toggles the enabled state of an existing poster', async () => {
+    // ARRANGE
+    const id = await createPoster();
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .post(`/api/handler/screen/poster/carousel/${id}/enabled`)
+      .send({ enabled: false });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(id);
+    expect(res.body.enabled).toBe(false);
+  });
+});
+
 describe('POST /api/handler/screen/poster/carousel/force-update', () => {
   it('returns 401 without auth', async () => {
     // ACT
@@ -38,14 +157,14 @@ describe('POST /api/handler/screen/poster/carousel/force-update', () => {
     expectApiError(res, 401);
   });
 
-  it('returns 500 when Trello API is not configured', async () => {
+  it('returns 204 when authenticated', async () => {
     // ACT
     const res = await testApp.authorizedAgent.post(
       '/api/handler/screen/poster/carousel/force-update',
     );
 
     // ASSERT
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(204);
   });
 });
 

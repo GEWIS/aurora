@@ -45,7 +45,7 @@ export default class Poster extends BaseEntity {
   /**
    * Type of the poster. Should be a valid PosterType.
    */
-  @Column()
+  @Column({ type: 'varchar' })
   type: PosterType;
 
   /**
@@ -93,7 +93,7 @@ export default class Poster extends BaseEntity {
   /**
    * The size of the footer. Should be a valid FooterSize.
    */
-  @Column({ default: FooterSize.FULL })
+  @Column({ type: 'varchar', default: FooterSize.FULL })
   footerSize: FooterSize;
 
   /**

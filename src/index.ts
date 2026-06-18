@@ -25,6 +25,7 @@ import Types from './types';
 import { OrderManager } from './modules/orders';
 import TimedEventsService from './modules/timed-events/timed-events-service';
 import LightsSwitchManager from './modules/root/lights-switch-manager';
+import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
 
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
@@ -86,6 +87,17 @@ async function createApp(): Promise<void> {
     logger.info('Initialize Spotify...');
     await SpotifyApiHandler.getInstance().init();
     await SpotifyTrackHandler.getInstance().init(emitterStore.musicEmitter);
+  }
+
+  if (
+    process.env.TRELLO_BOARD_ID &&
+    process.env.TRELLO_KEY &&
+    process.env.TRELLO_TOKEN &&
+    featureFlagManager.flagIsEnabled('Poster.Trello')
+  ) {
+    logger.info('Initialize Trello posters...');
+    const trelloPosterManager = new TrelloPosterManager();
+    trelloPosterManager.reloadPosters().catch((e) => logger.error(e));
   }
 
   if (featureFlagManager.flagIsEnabled('Orders')) {

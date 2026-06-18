@@ -7,9 +7,9 @@ import HandlerManager from '../root/handler-manager';
 import RootAudioService from '../root/root-audio-service';
 import RootLightsService from '../root/root-lights-service';
 import RootScreenService from '../root/root-screen-service';
-import LocalPosterService from '../handlers/screen/poster/local/local-poster-service';
 import { Screen } from '../root/entities';
 import { StaticPosterHandler } from '../handlers/screen';
+import PosterService from '../handlers/screen/poster/local/poster-service';
 
 export class CronExpressionError extends Error {}
 
@@ -157,8 +157,8 @@ export default class CronManager {
           return;
 
         case 'timed-event-set-static-poster': {
-          const service = new LocalPosterService();
-          const poster = await service.getSingleLocalPoster(spec.params.posterId);
+          const service = new PosterService();
+          const poster = await service.getSinglePoster(spec.params.posterId);
           const handler = HandlerManager.getInstance()
             .getHandlers(Screen)
             .filter(

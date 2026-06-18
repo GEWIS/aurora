@@ -43,6 +43,11 @@ export interface PosterScreenHandlerSettings {
    * Whether the double-dots (:) in the middle of the clock should flicker
    */
   'Poster.ClockShouldTick': boolean;
+
+  /**
+   * Whether the Trello poster sync is enabled.
+   */
+  'Poster.Trello': boolean;
 }
 
 export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = {
@@ -54,4 +59,5 @@ export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = 
   'Poster.BorrelModePresent': true,
   'Poster.CustomStylesheet': '',
   'Poster.ClockShouldTick': true,
+  'Poster.Trello': true,
 };

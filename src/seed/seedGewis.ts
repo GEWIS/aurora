@@ -1,6 +1,6 @@
 import RootAudioService from '../modules/root/root-audio-service';
 import RootScreenService from '../modules/root/root-screen-service';
-import RootLightsService, { LightsInGroup } from '../modules/root/root-lights-service';
+import RootLightsService from '../modules/root/root-lights-service';
 import dataSource from '../database';
 import { LightsGroup, LightsMovingHeadWheel, LightsSwitch } from '../modules/lights/entities';
 import { RgbColor, WheelColor } from '../modules/lights/color-definitions';
@@ -20,8 +20,8 @@ import { FixedPositionCreateParams } from '../modules/lights/effects/movement/fi
 import { ColorEffects } from '../modules/lights/effects/color/color-effects';
 import { MovementEffects } from '../modules/lights/effects/movement/movement-effetcs';
 import { TimedEvent } from '../modules/timed-events/entities';
-import AuthService from '../modules/auth/auth-service';
 import { IntegrationUserService } from '../modules/auth/integration';
+import Poster, { FooterSize, PosterType } from '../modules/handlers/screen/poster/local/poster';
 
 export default async function seedDatabase() {
   const timedEventsRepo = dataSource.getRepository(TimedEvent);
@@ -774,4 +774,77 @@ export async function seedOpeningSequence(
 
   await addStep(borrelRuimte, 285000, 15000, [room]);
   await addStep(borrelBar, 285000, 15000, [bar]);
+}
+
+export async function seedPosters() {
+  const repo = dataSource.getRepository(Poster);
+
+  await repo.save([
+    {
+      name: 'Logo',
+      type: PosterType.LOGO,
+      enabled: true,
+      label: 'GEWIS Logo',
+      protected: true,
+      borrelMode: false,
+      footerSize: FooterSize.FULL,
+      defaultTimeout: 15,
+      trello: false,
+    },
+    {
+      name: 'Trains',
+      type: PosterType.TRAINS,
+      enabled: true,
+      label: 'Trains',
+      protected: true,
+      borrelMode: false,
+      footerSize: FooterSize.MINIMAL,
+      defaultTimeout: 30,
+      trello: false,
+    },
+    {
+      name: 'Borrel Logo',
+      type: PosterType.BORREL_LOGO,
+      enabled: true,
+      label: 'Borrel Logo',
+      protected: true,
+      borrelMode: true,
+      footerSize: FooterSize.FULL,
+      defaultTimeout: 15,
+      trello: false,
+    },
+    {
+      name: 'Borrel Price List',
+      type: PosterType.BORREL_PRICE_LIST,
+      enabled: true,
+      label: 'Borrel Price List',
+      protected: true,
+      borrelMode: true,
+      footerSize: FooterSize.MINIMAL,
+      defaultTimeout: 15,
+      trello: false,
+    },
+    {
+      name: 'Borrel Wall of Shame',
+      type: PosterType.BORREL_WALL_OF_SHAME,
+      enabled: true,
+      label: 'Borrel Wall of Shame',
+      protected: true,
+      borrelMode: true,
+      footerSize: FooterSize.MINIMAL,
+      defaultTimeout: 15,
+      trello: false,
+    },
+    {
+      name: 'Olympics',
+      type: PosterType.OLYMPICS,
+      enabled: false,
+      label: 'Olympics',
+      protected: true,
+      borrelMode: false,
+      footerSize: FooterSize.FULL,
+      defaultTimeout: 15,
+      trello: false,
+    },
+  ] as Poster[]);
 }

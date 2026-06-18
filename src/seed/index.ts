@@ -1,7 +1,7 @@
 import '../env';
 import { Command, Option } from 'commander';
 import dataSource from '../database';
-import seedDatabase, { seedBorrelLights, seedOpeningSequence } from './seedGewis';
+import seedDatabase, { seedBorrelLights, seedOpeningSequence, seedPosters } from './seedGewis';
 import logger from '../logger';
 import seedDatabaseHubble from './seedHubble';
 import { seedDiscoFloor } from './seedDiscoFloor';
@@ -14,9 +14,26 @@ const program = new Command();
 program
   .name('aurora-seeder')
   .description('Functions to seed the database.')
-  .addOption(new Option('--gewis', 'Seed for GEWIS').conflicts(['hubble', 'disco-floor']))
-  .addOption(new Option('--hubble', 'Seed for Hubble').conflicts(['gewis', 'disco-floor']))
-  .addOption(new Option('--disco-floor', 'Seed the disco floor').conflicts(['gewis', 'hubble']))
+  .addOption(
+    new Option('--gewis', 'Seed for GEWIS').conflicts(['gewis-posters', 'hubble', 'disco-floor']),
+  )
+  .addOption(
+    new Option('--gewis-posters', 'Seed for GEWIS (Default posters only)').conflicts([
+      'gewis',
+      'hubble',
+      'disco-floor',
+    ]),
+  )
+  .addOption(
+    new Option('--hubble', 'Seed for Hubble').conflicts(['gewis', 'gewis-posters', 'disco-floor']),
+  )
+  .addOption(
+    new Option('--disco-floor', 'Seed the disco floor').conflicts([
+      'gewis',
+      'gewis-posters',
+      'hubble',
+    ]),
+  )
   .option('-w, --width <number>', 'Width of the disco floor (int)', parseInt)
   .option('-h, --height <number>', 'Height of the disco floor (int)', parseInt)
   .option(
@@ -48,6 +65,10 @@ async function createSeeder() {
     const [room, bar, lounge, movingHeadsGEWIS, movingHeadsRoy] = await seedDatabase();
     await seedBorrelLights(room!, bar!, lounge!, movingHeadsGEWIS!);
     await seedOpeningSequence(room!, bar!, movingHeadsGEWIS!, movingHeadsRoy!);
+    await seedPosters();
+  } else if (program.opts().gewisPosters) {
+    console.info('Seeding default posters for GEWIS');
+    await seedPosters();
   } else if (program.opts().discoFloor) {
     console.info('Seeding database for disco floor');
     const { width, height, channelOrder } = program.opts();

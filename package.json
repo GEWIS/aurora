@@ -11,11 +11,13 @@
     "lint-fix": "pnpm -r run lint-fix",
     "format": "prettier --ignore-path .gitignore --check .",
     "format-fix": "prettier --ignore-path .gitignore --write .",
+    "sync": "pnpm --filter aurora-core run sync && pnpm --filter api-client run sync",
+    "sync-check": "pnpm --filter aurora-core run sync-check && pnpm --filter api-client run sync-check",
     "validate": "pnpm -r run validate",
     "prepare-husky": "husky"
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "husky": "9.1.7",
     "lint-staged": "16.2.7",

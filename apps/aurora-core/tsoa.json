@@ -3,6 +3,18 @@
   "noImplicitAdditionalProperties": "throw-on-extras",
   "controllerPathGlobs": ["src/**/*-controller.ts"],
   "spec": {
+    "name": "Aurora Core API",
+    "version": "1.0.0",
+    "description": "API contract for the Aurora Core service.",
+    "license": {
+      "name": "AGPL-3.0",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    "contact": {
+      "name": "GEWIS",
+      "url": "https://www.gewis.nl",
+      "email": "abc@gewis.nl"
+    },
     "basePath": "/api",
     "securityDefinitions": {
       "local": {
@@ -16,7 +28,8 @@
         "in": "header"
       }
     },
-    "outputDirectory": "build",
+    "outputDirectory": "../../libs/aurora-api-client",
+    "specFileBaseName": "openapi",
     "host": "",
     "specVersion": 3,
     "schemes": ["http", "https"],

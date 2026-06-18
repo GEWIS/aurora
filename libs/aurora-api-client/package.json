@@ -1,0 +1,28 @@
+{
+  "name": "api-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "sync": "tsx scripts/sync.ts",
+    "sync-check": "tsx scripts/sync.ts --check"
+  },
+  "exports": {
+    "./openapi.json": "./openapi.json",
+    ".": "./src/api-client/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "@hey-api/client-fetch": "0.10.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.66.7",
+    "tsx": "^4.22.4"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@11.6.0"
+}

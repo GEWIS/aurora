@@ -9,7 +9,7 @@ import { SudoSOSClient } from './sudosos-api-service';
 import { ServerSettingsStore, FeatureEnabled } from '../server-settings';
 import { SudoSOSSettings } from './sudosos-settings';
 
-interface SudoSOSDebtorResponse {
+export interface SudoSOSDebtorResponse {
   userId: number;
   firstName: string;
   nickName?: string;

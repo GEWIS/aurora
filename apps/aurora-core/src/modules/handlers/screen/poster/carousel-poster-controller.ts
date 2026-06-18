@@ -8,7 +8,7 @@ import logger from '../../../../logger';
 import { Request as ExpressRequest } from 'express';
 import NsTrainsService, { TrainResponse } from './ns-trains-service';
 import GEWISPosterService, { GEWISPhotoAlbumParams } from './gewis-poster-service';
-import OlympicsService from './olympics-service';
+import OlympicsService, { MedalTableRecord } from './olympics-service';
 import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
 import { Controller } from '@tsoa/runtime';
 import { ISettings } from '../../../server-settings/server-setting';
@@ -146,7 +146,7 @@ export class CarouselPosterController extends Controller {
 
   @Security(SecurityNames.LOCAL, securityGroups.poster.base)
   @Get('olympics/medal-table')
-  public async getOlympicsMedalTable() {
+  public async getOlympicsMedalTable(): Promise<MedalTableRecord[]> {
     return new OlympicsService().getMedalTable();
   }
 

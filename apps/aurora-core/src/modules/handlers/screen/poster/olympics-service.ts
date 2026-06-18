@@ -1,4 +1,4 @@
-interface MedalTableRecord {
+export interface MedalTableRecord {
   countryName: string;
   flagUrl: string;
   rank?: number;
@@ -8,7 +8,7 @@ interface MedalTableRecord {
   total: number;
 }
 
-interface CountryMedalResponse extends MedalTableRecord {
+export interface CountryMedalResponse extends MedalTableRecord {
   medals: OlympicMedal[];
 }
 

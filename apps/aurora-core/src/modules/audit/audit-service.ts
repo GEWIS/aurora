@@ -45,7 +45,7 @@ export interface AuditLogEntryResponse extends Pick<
   'id' | 'createdAt' | 'updatedAt' | 'userId' | 'userName' | 'action'
 > {}
 
-interface PaginatedAuditLogEntryResponse {
+export interface PaginatedAuditLogEntryResponse {
   records: AuditLogEntryResponse[];
   pagination: {
     take: number;

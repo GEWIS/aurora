@@ -1,56 +1,128 @@
-# Aurora Core
+<p align="center">
+  <img src="https://raw.githubusercontent.com/GEWIS/aurora-backoffice/develop/public/layout/images/helmet-black.svg" alt="Aurora" width="120"/>
+</p>
 
-Aurora is the software suite that integrates and synchronizes DMX lighting, narrowcasting screens and currently playing music.
-The system is designed around a publish-subscribe architecture, where executing clients connect to the core using SocketIO Websockets.
-End users can send commands to Aurora by using HTTP (in the backoffice).
+<h1 align="center">Aurora</h1>
 
-This repository is the publisher or "core" of the system. All other applications connect to this central hub.
-The other repositories can be found here:
-- [Aurora Backoffice](https://github.com/gewis/aurora-backoffice), used by humans to control the behaviour of Aurora.
-- [Aurora Narrowcasting Client](https://github.com/gewis/aurora-client), the subscriber for screens.
-- [Aurora Audio Player](https://github.com/gewis/aurora-lights-proxy), the subscriber for audio players.
-- [Aurora DMX Lights Proxy](https://github.com/gewis/aurora-audio-player), the subscriber for DMX controllers.
-- [Aurora Lights Simulator](https://github.com/GEWIS/aurora-lights-simulator), to develop lights effects without
-having access to physical hardware.
-- [Aurora Real Time Beat Detector](https://github.com/GEWIS/aurora-beat-detector), if you want lights effects
-to play on the beat of the music without having to set the tempo yourself (manually).
+<p align="center">
+  <b>Software suite for DMX lighting, narrowcasting, and music integration</b>
+</p>
+
+<p align="center">
+  <a href="https://github.com/GEWIS/aurora-core/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GEWIS/aurora-core.svg" alt="License"></a>
+  <a href="https://github.com/GEWIS/aurora-core/issues"><img src="https://img.shields.io/github/issues/GEWIS/aurora-core" alt="Issues"></a>
+  <a href="https://github.com/GEWIS/aurora-core/commits/develop"><img src="https://img.shields.io/github/commit-activity/m/GEWIS/aurora-core" alt="Commit Activity"></a>
+  <a href="https://github.com/GEWIS/aurora-core"><img src="https://img.shields.io/github/languages/code-size/GEWIS/aurora-core" alt="Code Size"></a>
+</p>
+
+---
+
+## Overview
+
+Aurora is the software suite that integrates and synchronizes DMX lighting, narrowcasting screens, and currently playing music — developed by and for [Study Association GEWIS](https://gewis.nl).
+
+The system is built around a **publish-subscribe architecture**. The **core** serves as the central hub: it receives commands and state changes, and pushes them in real time to all connected subscribers over SocketIO WebSockets. End users control Aurora through the **backoffice** web interface, which communicates with the core over HTTP.
+
+## Architecture
+
+```
+┌─────────────┐  HTTP   ┌──────────────┐  SocketIO    ┌─────────────────────┐
+│  Backoffice │ ──────▶ │              │ ──────────▶  │ Narrowcasting Screen│
+│  (web UI)   │         │  Aurora Core │              └─────────────────────┘
+└─────────────┘         │              │  SocketIO    ┌─────────────────────┐
+                        │  (publisher) │ ──────────▶  │  Audio Player       │
+┌─────────────┐  HTTP   │              │              └─────────────────────┘
+│ Beat        │ ──────▶ │              │  SocketIO    ┌─────────────────────┐
+│ Detector    │         │              │ ──────────▶  │  DMX Lights Proxy   │
+└─────────────┘         └──────────────┘              └─────────────────────┘
+                                │
+                             SocketIO
+                                │
+                        ┌───────▼────────┐
+                        │ Lights         │
+                        │ Simulator      │
+                        └────────────────┘
+```
+
+All subscribers authenticate with an API key, then maintain a persistent SocketIO connection to receive real-time commands. Subscribers may additionally fetch data from the core over HTTP as needed.
+
+## Repositories
+
+| Repository                                                                  | Role                                                                                       | Tech                         |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------- |
+| [aurora-core](https://github.com/GEWIS/aurora-core)                         | Central publisher — receives commands and pushes state to all subscribers                  | TypeScript, NodeJS, SocketIO |
+| [aurora-backoffice](https://github.com/GEWIS/aurora-backoffice)             | Web management UI for humans to control Aurora                                             | TypeScript, React, SocketIO  |
+| [aurora-client](https://github.com/GEWIS/aurora-client)                     | Narrowcasting screen client — displays posters and information on screens                  | TypeScript, NodeJS, SocketIO |
+| [aurora-audio-player](https://github.com/GEWIS/aurora-audio-player)         | Audio subscriber — plays music as commanded by the core                                    | TypeScript, NodeJS           |
+| [aurora-lights-proxy](https://github.com/GEWIS/aurora-lights-proxy)         | DMX controller bridge — forwards DMX packets from core to ArtNet hardware                  | Python, Art-Net              |
+| [aurora-lights-simulator](https://github.com/GEWIS/aurora-lights-simulator) | Lights effect development tool — simulate DMX output without physical hardware             | TypeScript, NodeJS           |
+| [aurora-beat-detector](https://github.com/GEWIS/aurora-beat-detector)       | Real-time beat detection — sends beat events to core so lights sync to music automatically | TypeScript, NodeJS           |
 
 ## Prerequisites
-- NodeJS 22.
 
-## Development setup
-1. Copy `.env.example` to `.env` and fill in the environment variables.
-1. Run `pnpm install`.
-1. Run `pnpm dev`.
-1. The application is now running at http://localhost:3000. The API documentation can be found at http://localhost:3000/api-docs.
+- **Node.js 22+** — [Download](https://nodejs.org/)
+- **pnpm** — [Install](https://pnpm.io/installation) (enabled via `corepack enable` on Node.js 16.13+)
+- **Git** — [Download](https://git-scm.com/)
 
-To get started more easily, you can seed the database using `pnpm seed:gewis` or `pnpm seed:hubble`.
-You can then find the API keys for all the subscribers in the `api_key` SQL table.
+## Quick Start
 
-When running `pnpm dev`, authentication is handled automatically by using mock endpoints. It is not needed to set up anything for this.
+This repository contains the Aurora Core. For development setup of the core itself, see [apps/aurora-core/README.md](apps/aurora-core/README.md).
 
-### Integration with external services
-To fully utilize all functionality of Aurora, some extra environment variables are required:
-- To use Spotify integration, create an app in the [Spotify Developer dashboard](https://developer.spotify.com/dashboard).
-- To use the narrowcasting poster screen, create a Trello board and have a [Trello API Key and Token](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#passing-token-and-key-in-api-requests).
-- To use the "train departures" poster on the narrowcasting poster screen, you need an [NS](https://ns.nl) key.
-- To use GEWIS photos on the narrowcasting poster screen, you need an internal GEWIS website token.
-- To use SudoSOS borrel posters, you need at least a [SudoSOS API key](https://github.com/GEWIS/sudosos-backend). 
+```bash
+# Clone the repository
+git clone https://github.com/GEWIS/aurora-core.git
+cd aurora-core
 
-### External services integrating with Aurora
-To read more about how you can integrate your own services with Aurora (to fetch data or send commands),
-visit the [README about Integrations](src/modules/auth/integration/README.md).
+# Install all dependencies (monorepo)
+pnpm install
 
-## Deployment
-Aurora can easily be deployed by using Docker Compose. Note that this only includes the core, backoffice and narrowcasting client.
-The audio player and DMX lights proxy need to be installed manually onto their destined systems, as those applications require an audio output and connected ARTnet controller respectively.
+# Set up environment
+cp apps/aurora-core/.env.example apps/aurora-core/.env
 
-## Copyright
-Copyright © 2023-2025 Study Association GEWIS - Some rights reserved.
-You can use our software freely within the limits of our license.
-However, we worked very hard on this project and invested a lot of time in it
-so we ask you to leave our copyright marks in place when modifying our software.
-Of course, you are free to add your own.
+# Start developing
+cd apps/aurora-core && pnpm dev
+```
+
+The core will be running at `http://localhost:3000`. API documentation is available at `http://localhost:3000/api-docs`.
+
+### Running the full suite locally
+
+For local development with the backoffice and narrowcasting client, use the Docker Compose setup:
+
+```bash
+docker compose up
+```
+
+This starts the core, backoffice, and narrowcasting client together. The audio player and DMX lights proxy need to be installed on their destined hardware (they require audio output and an ArtNet DMX controller respectively).
+
+## External Integrations
+
+Aurora Core integrates with several external services for extended functionality:
+
+| Service                                                | Purpose                                              | Required Env      |
+| ------------------------------------------------------ | ---------------------------------------------------- | ----------------- |
+| [Spotify](https://developer.spotify.com/dashboard)     | Currently playing track display                      | `SPOTIFY_*`       |
+| [Trello](https://developer.atlassian.com/cloud/trello) | Poster content management for narrowcasting          | `TRELLO_*`        |
+| [NS](https://ns.nl)                                    | Train departure information on narrowcasting posters | `NS_API_KEY`      |
+| [SudoSOS](https://github.com/GEWIS/sudosos-backend)    | Borrel (event) poster generation                     | `SUDOSOS_API_URL` |
+
+## Integration API
+
+If you want to integrate your own service with Aurora — to fetch data, send commands, or build a custom subscriber — see the [Integrations README](apps/aurora-core/src/modules/auth/integration/README.md) in the core for detailed documentation on authentication and the available endpoints.
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feat/your-feature-name`.
+3. Make your changes.
+4. Run tests: `pnpm --filter aurora-core test`.
+5. Run linting: `pnpm --filter aurora-core lint-fix`.
+6. Commit using [Conventional Commits](https://www.conventionalcommits.org/): `git commit -m "feat: add your feature"`.
+7. Push: `git push origin feat/your-feature-name`.
+8. Open a Pull Request.
 
 ## License
-Aurora uses the AGPL-3.0 license.
+
+Copyright © 2023-2025 Study Association GEWIS — Some rights reserved.
+
+Aurora is licensed under the **GNU Affero General Public License v3.0 or later**. See the [LICENSE](LICENSE) file for details.

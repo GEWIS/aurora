@@ -1,4 +1,4 @@
-import { BeatEvent } from 'src/modules/events/music-emitter-events';
+import { BeatEvent } from '../../../../modules/events/music-emitter-events';
 import EffectProgressionStrategy from './effect-progression-strategy';
 
 export default class EffectProgressionBeatStrategy extends EffectProgressionStrategy {

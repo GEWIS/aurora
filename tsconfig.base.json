@@ -3,6 +3,7 @@
     /* Basic Options */
     "target": "esnext",
     "module": "commonjs",
+    "composite": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -31,11 +32,6 @@
     "emitDecoratorMetadata": true,
 
     /* Advanced Options */
-    "forceConsistentCasingInFileNames": true,
-
-    /* Path aliases */
-    "paths": {
-      "@aurora/*": ["src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   }
 }

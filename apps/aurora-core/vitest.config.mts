@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
 const baseTest = {
   environment: 'node' as const,
   testTimeout: 30_000,
@@ -21,14 +22,14 @@ export default defineConfig({
     ...baseTest,
     projects: [
       {
-        plugins: [tsconfigPaths()],
+        plugins: [tsconfigPaths({ projects: ['./tsconfig.spec.json'] })],
         test: {
           name: 'unit',
           include: ['**/src/**/*.spec.ts'],
         },
       },
       {
-        plugins: [tsconfigPaths()],
+        plugins: [tsconfigPaths({ projects: ['./tsconfig.spec.json'] })],
         test: {
           env: {
             TYPEORM_CONNECTION: 'sqlite',

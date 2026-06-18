@@ -1,5 +1,4 @@
 name: Content validation
-description: Validate the contents of Aurora Core (see src/validation.ts for the list of checks present).
 
 on:
   push:
@@ -35,4 +34,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Validate the project
-        run: pnpm validate
+        run: pnpm --filter aurora-core run validate

@@ -9,7 +9,28 @@ on:
       - develop
 
 jobs:
-  build-and-lint:
+  sync_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run sync-check
+        run: pnpm sync-check
+
+  build_and_lint:
+    needs: sync_check
     uses: GEWIS/actions/.github/workflows/lint-and-build-pnpm.yml@v1
     with:
       node-version: '22.x'

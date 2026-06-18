@@ -13,8 +13,8 @@
     "format-fix": "prettier --ignore-path .gitignore --write .",
     "sync": "pnpm --filter aurora-core run sync && pnpm --filter api-client run sync",
     "sync-check": "pnpm --filter aurora-core run sync-check && pnpm --filter api-client run sync-check",
-    "validate": "pnpm -r run validate",
-    "prepare-husky": "husky"
+    "prepare-husky": "husky",
+    "prepare": "pnpm sync"
   },
   "keywords": [],
   "license": "AGPL-3.0-only",

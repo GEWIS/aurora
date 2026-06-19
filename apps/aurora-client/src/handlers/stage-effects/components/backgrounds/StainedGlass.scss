@@ -1,0 +1,69 @@
+@use 'sass:math';
+
+@mixin dots($count) {
+  $text-shadow: ();
+  @for $i from 0 through $count {
+    $text-shadow:
+      $text-shadow,
+      (-0.5+ (math.random()) * 3) + em (-0.5+ (math.random()) * 3) + em 2px hsla(math.random() * 360, 100%, 50%, 0.9);
+  }
+  text-shadow: $text-shadow;
+}
+
+.stained-glass {
+  font: 5vmin/1.3 Serif;
+  overflow: hidden;
+  background: #123;
+}
+
+.stained-glass,
+.stained-glass {
+  display: block;
+  font-size: 52px;
+  color: transparent;
+}
+
+.stained-glass::before,
+.stained-glass::after {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 3em;
+  height: 3em;
+  content: 'X';
+  mix-blend-mode: screen;
+  animation: 44s -27s move infinite ease-in-out alternate;
+}
+
+.stained-glass::before {
+  @include dots(40);
+  animation-duration: 44s;
+  animation-delay: -27s;
+}
+
+.stained-glass::after {
+  @include dots(40);
+  animation-duration: 43s;
+  animation-delay: -32s;
+}
+
+.stained-glass::before {
+  @include dots(40);
+  animation-duration: 42s;
+  animation-delay: -23s;
+}
+
+.stained-glass::after {
+  @include dots(40);
+  animation-duration: 41s;
+  animation-delay: -19s;
+}
+
+@keyframes move {
+  from {
+    transform: rotate(0deg) scale(12) translateX(-20px);
+  }
+  to {
+    transform: rotate(360deg) scale(18) translateX(20px);
+  }
+}

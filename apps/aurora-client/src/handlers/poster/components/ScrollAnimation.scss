@@ -1,0 +1,17 @@
+@keyframes vertical-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(min(calc(-100% + 100vh), 100%));
+  }
+}
+
+@keyframes horizontal-marquee {
+  from {
+    transform: translateX(calc(25% + 100vw));
+  }
+  to {
+    transform: translateX(-125%);
+  }
+}

@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "."
+    schedule:
+      interval: "weekly"
+    target-branch: "develop"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 15
+    groups:
+      development_minors_and_patches:
+        dependency-type: "development"
+        update-types:
+        - "minor"
+        - "patch"
+      production_patches:
+        dependency-type: "production"
+        update-types:
+        - "patch"
+

@@ -1,0 +1,43 @@
+/* Height of the progress bar */
+.progress-bar-height {
+}
+
+/* All progress bar elements */
+#poster #progress-bar {
+}
+
+/* Aurora Watermark shown on the first poster of the carousel. Hidden otherwise */
+#poster #progress-bar #watermark {
+}
+
+/* The full-width box the slider is contained in */
+#poster #progress-bar #progress-bar-slider-outer {
+}
+
+/* The slider showing the progress of the poster */
+#poster #progress-bar #progress-bar-slider-outer #progress-bar-slider-inner {
+}
+
+/* The semi-opaque contents of the progress bar */
+#poster #progress-bar #progress-bar-container {
+}
+
+/* The outer div containing one or more logos */
+#poster #progress-bar #progress-bar-container #progress-bar-logos {
+}
+
+/* Your uploaded logo */
+#poster #progress-bar #progress-bar-container #progress-bar-logos svg:first-child {
+}
+
+/* The borrel mode logo (SudoSOS) */
+#poster #progress-bar #progress-bar-container #progress-bar-logos svg#progress-bar-logo-borrelmode {
+}
+
+/* The div containing the title in the progress bar */
+#poster #progress-bar #progress-bar-container #progress-bar-title {
+}
+
+/* The div containing the clock of the progress bar */
+#poster #progress-bar #progress-bar-container #progress-bar-clock {
+}

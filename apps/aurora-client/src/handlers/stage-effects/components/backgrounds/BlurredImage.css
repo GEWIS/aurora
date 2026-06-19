@@ -1,0 +1,28 @@
+@keyframes moving-background {
+  from {
+    transform: rotate(0deg) translateX(4%) rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg) translateX(4%) rotate(360deg);
+  }
+}
+
+.blurred-image {
+  /* The image used */
+  opacity: 0.5;
+
+  /* Add the blur effect */
+  filter: blur(2vh);
+  -webkit-filter: blur(2vh);
+
+  /* Full height */
+  height: 120%;
+  width: 120%;
+  margin: -5%;
+
+  /* Center and scale the image nicely*/
+  background-position: center center;
+  background-size: cover;
+
+  animation: moving-background 120s linear infinite;
+}

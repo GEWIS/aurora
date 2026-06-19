@@ -1,0 +1,22 @@
+@keyframes beatPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

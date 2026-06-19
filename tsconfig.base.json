@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "commonjs",
     "composite": true,
+    "incremental": true,
 
     /* Strict Type-Checking Options */
     "strict": true,

@@ -12,7 +12,7 @@
     "format": "prettier --check .",
     "format-fix": "prettier --write .",
     "sync": "pnpm --filter @gewis/aurora-core run sync && pnpm --filter @gewis/aurora-api-client run sync",
-    "sync-check": "pnpm --filter @gewis/aurora-core run sync-check && pnpm --filter @gewis/aurora-api-client run sync-check",
+    "sync-check": "pnpm -r run sync-check",
     "prepare-husky": "husky"
   },
   "keywords": [],

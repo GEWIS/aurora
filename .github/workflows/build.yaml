@@ -29,12 +29,20 @@ jobs:
       - name: Run sync-check
         run: pnpm sync-check
 
-  build_and_lint:
-    needs: sync_check
-    uses: GEWIS/actions/.github/workflows/lint-and-build-pnpm.yml@v1
-    with:
-      node-version: '22.x'
-      lint: true
-      format: true
-      build: true
-      test: true
+      - name: Run sync (generate files)
+        run: pnpm sync
+
+      - name: Run format
+        run: pnpm format
+
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run build
+        run: pnpm build
+
+      - name: Run test
+        run: pnpm test

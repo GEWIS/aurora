@@ -9,7 +9,7 @@ async function validateSpecification(activeDirectory: string, outputDirectory: s
     const generatedSpecification = await readFile(join(outputDirectory, 'openapi.json'), 'utf8');
 
     if (currentSpecification !== generatedSpecification) {
-      throw new Error('Generated specification does not match the current specification.');
+      throw new Error('OpenAPI specification is not up to date.');
     }
   } finally {
     await rm(outputDirectory, { recursive: true, force: true });

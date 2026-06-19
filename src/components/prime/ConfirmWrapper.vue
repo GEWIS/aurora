@@ -1,5 +1,5 @@
 <template>
-  <span />
+  <span class="hidden" />
 </template>
 
 <script setup lang="ts">

@@ -58,14 +58,9 @@ const router = createRouter({
           path: '/poster',
           children: [
             {
-              path: 'carousel',
-              component: () => import('@/views/Poster/CarouselPosterList.vue'),
-              name: 'carouselPosterList',
-            },
-            {
-              path: 'static',
-              component: () => import('@/views/Poster/StaticPosterView.vue'),
-              name: 'staticPoster',
+              path: 'posters',
+              component: () => import('@/views/Poster/PosterView.vue'),
+              name: 'posters',
             },
           ],
           meta: {

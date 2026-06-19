@@ -1,18 +1,23 @@
 <template>
-  <div class="h-full flex flex-row align-items-center justify-content-center gap-1">
-    Borrel mode
+  <div class="flex flex-row items-center justify-center gap-2">
+    <label for="poster-borrel-mode-switch">Borrel mode</label>
     <ToggleSwitch
-      :disabled="store.isLoading"
-      :model-value="store.isBorrelModeActive"
-      @change="store.setBorrelMode!(!store.isBorrelModeActive)"
+      id="poster-borrel-mode-switch"
+      :disabled="store.loading || !isPrivileged"
+      :model-value="store.carousel.borrelModeActive"
+      @change="store.setBorrelMode!(!store.carousel.borrelModeActive)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useCarouselPosterStore } from '@/stores/carousel-poster-store';
+import { computed } from 'vue';
+import { usePosterStore } from '@/stores/poster/poster.store';
+import { useAuthStore } from '@/stores/auth.store';
 
-const store = useCarouselPosterStore();
+const store = usePosterStore();
+const authStore = useAuthStore();
+const isPrivileged = computed(() => authStore.isInSecurityGroup('poster', 'privileged'));
 </script>
 
 <style scoped></style>

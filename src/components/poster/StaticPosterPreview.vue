@@ -1,16 +1,8 @@
 <template>
-  <Image
-    v-if="getPosterType(poster) === 'image'"
-    :alt="poster.file?.name ?? getUrl(poster)"
-    :class="previewClass"
-    image-class="w-full rounded-lg"
-    :src="getUrl(poster)"
-    :title="poster.file?.name ?? getUrl(poster)"
-  />
-  <video v-else-if="getPosterType(poster) === 'video'" :class="previewClass" controls muted>
-    <source :src="getUrl(poster)" />
-  </video>
-  <div v-else :class="previewClass">
+  <div v-if="getPosterType(poster) === 'image' || getPosterType(poster) === 'video'" :class="previewClass">
+    <PosterMediaGallery :files="poster.files" :is-video="getPosterType(poster) === 'video'" :name="poster.name" />
+  </div>
+  <div v-else-if="getPosterType(poster) === 'external'" :class="previewClass">
     <a :href="getUrl(poster)" target="_blank">
       <div
         class="hover:brightness-50 transition duration-200 w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast p-3"
@@ -22,34 +14,41 @@
       </div>
     </a>
   </div>
+  <div v-else :class="previewClass">
+    <div class="w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast">
+      {{ capitalize(poster.type) }}
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { LocalPosterResponse } from '@/api';
+import { type PosterResponse, PosterType } from '@/api';
+import PosterMediaGallery from '@/components/poster/PosterMediaGallery.vue';
 
 const props = defineProps<{
-  poster: LocalPosterResponse;
+  poster: PosterResponse;
   class?: string | undefined;
 }>();
 
 const previewClass = computed(() => props.class);
 
-const getUrl = (poster: LocalPosterResponse) => {
-  return poster.file?.location ?? poster.uri ?? '';
+const getUrl = (poster: PosterResponse) => {
+  return poster.files?.[0]?.location ?? poster.uri ?? '';
 };
 
-const getPosterType = (poster: LocalPosterResponse): 'external' | 'image' | 'video' => {
-  const url = getUrl(poster);
-
-  if (url === '') return 'external';
-  const extension = url.split('.').pop();
-  if (!extension) return 'external';
-
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
-  if (['mp4', 'avi', 'mkv'].includes(extension)) return 'video';
-  return 'external';
+const getPosterType = (poster: PosterResponse): 'image' | 'video' | 'external' | 'placeholder' => {
+  switch (poster.type) {
+    case PosterType.IMG:
+      return 'image';
+    case PosterType.VIDEO:
+      return 'video';
+    case PosterType.EXTERN:
+      return 'external';
+    default:
+      return 'placeholder';
+  }
 };
+
+const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 </script>
-
-<style scoped></style>

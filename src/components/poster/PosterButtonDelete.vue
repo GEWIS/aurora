@@ -1,5 +1,11 @@
 <template>
-  <Button class="flex-1" icon="pi pi-trash" severity="danger" @click="confirmRef?.confirmDialog" />
+  <Button
+    class="flex-1"
+    :disabled="!deletable"
+    icon="pi pi-trash"
+    severity="danger"
+    @click="confirmRef?.confirmDialog"
+  />
   <ConfirmWrapper
     ref="confirmRef"
     accept-label="Delete"
@@ -16,19 +22,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
-import { useStaticPosterStore } from '@/stores/poster/static-poster.store';
-import type { LocalPosterResponse } from '@/api';
+import { type PosterResponse, PosterType } from '@/api';
+import { usePosterStore } from '@/stores/poster/poster.store';
 
-const store = useStaticPosterStore();
+const store = usePosterStore();
 
 const props = defineProps<{
-  poster: LocalPosterResponse;
+  poster: PosterResponse;
+  disabled?: boolean;
 }>();
 
 const confirmRef = ref();
 const loading = ref<boolean>(false);
+
+const deletable = computed(
+  () =>
+    !props.disabled &&
+    [PosterType.PHOTO, PosterType.IMG, PosterType.VIDEO, PosterType.EXTERN].includes(props.poster.type),
+);
 </script>
 
 <style scoped></style>

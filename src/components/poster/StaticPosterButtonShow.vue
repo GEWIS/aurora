@@ -1,23 +1,50 @@
 <template>
-  <Button class="flex-1" icon="pi pi-eye" label="Show" :loading="loading" severity="success" @click="handleShow" />
+  <Button
+    class="flex-1"
+    :disabled="disabled"
+    icon="pi pi-eye"
+    :loading="loading"
+    severity="success"
+    @click="confirmShow"
+  />
+
+  <ConfirmPopup />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useStaticPosterStore } from '@/stores/poster/static-poster.store';
-import type { LocalPosterResponse } from '@/api';
+import { useConfirm } from 'primevue/useconfirm';
+import type { PosterResponse } from '@/api';
+import { usePosterStore } from '@/stores/poster/poster.store';
 
-const store = useStaticPosterStore();
+const store = usePosterStore();
+const confirm = useConfirm();
 
 const loading = ref<boolean>(false);
-const props = defineProps<{
-  poster: LocalPosterResponse;
-}>();
+const props = withDefaults(
+  defineProps<{
+    poster: PosterResponse;
+    disabled?: boolean;
+  }>(),
+  { disabled: false },
+);
 
 const handleShow = () => {
   loading.value = true;
-  void store.setActivePoster(props.poster.id).finally(() => {
+  void store.setStaticActivePoster(props.poster.id).finally(() => {
     loading.value = false;
+  });
+};
+
+const confirmShow = () => {
+  confirm.require({
+    message: `Set ALL static poster screens to this poster?`,
+    header: 'Confirm',
+    acceptLabel: 'Confirm',
+    rejectLabel: 'Cancel',
+    accept: () => {
+      handleShow();
+    },
   });
 };
 </script>

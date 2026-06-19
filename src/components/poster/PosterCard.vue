@@ -1,72 +1,86 @@
 <template>
-  <AppBox class="h-full">
-    <div v-if="poster.type == PosterTypeImage.IMG">
-      <div class="w-full">
-        <Carousel
-          v-if="poster.source.length > 1"
-          :autoplay-interval="3000"
-          circular
-          class="left rounded-lg"
-          container-class="relative"
-          :next-button-props="{ class: 'absolute right-0', style: { zIndex: 100 } }"
-          :num-scroll="1"
-          :num-visible="1"
-          :prev-button-props="{ class: 'absolute left-0', style: { zIndex: 100 } }"
-          :show-indicators="false"
-          :value="poster.source"
-        >
-          <template #item="slotProps">
-            <Image :alt="poster.name" class="w-full" image-class="w-full rounded-lg" preview :src="slotProps.data" />
-          </template>
-        </Carousel>
-        <Image
-          v-else
-          :alt="poster.name"
-          class="w-full"
-          image-class="w-full rounded-lg"
-          preview
-          :src="poster.source[0]"
-        />
-      </div>
-    </div>
-    <div v-else-if="poster.type === PosterTypeExternal.EXTERN">
-      <a :href="poster.source[0]" target="_blank">
-        <div
-          class="hover:brightness-50 transition duration-200 w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast"
-        >
-          {{ capitalize(poster.type) }}
-        </div>
+  <AppBox class="h-full flex flex-col gap-3">
+    <div class="relative">
+      <PosterMediaGallery
+        v-if="poster.type === PosterType.IMG || poster.type === PosterType.VIDEO"
+        :files="poster.files"
+        :is-video="poster.type === PosterType.VIDEO"
+        :name="poster.name"
+      />
+      <a
+        v-else-if="poster.type === PosterType.EXTERN"
+        class="w-full aspect-video rounded-lg overflow-hidden bg-surface-300 text-primary-contrast flex justify-center items-center hover:brightness-50 transition duration-200"
+        :href="mediaUrl"
+        target="_blank"
+      >
+        {{ capitalize(poster.type) }}
       </a>
-    </div>
-    <div v-else>
-      <div class="w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast">
+      <div
+        v-else-if="poster.type === PosterType.PHOTO"
+        class="w-full aspect-video rounded-lg overflow-hidden bg-surface-300 text-primary-contrast flex flex-col justify-center items-center"
+      >
+        <i class="pi pi-images text-2xl" />
+        <span>{{ poster.albums?.length ?? 0 }} album(s)</span>
+      </div>
+      <div
+        v-else
+        class="w-full aspect-video rounded-lg overflow-hidden bg-surface-300 text-primary-contrast flex justify-center items-center"
+      >
         {{ capitalize(poster.type) }}
       </div>
+      <PosterStatusIndicator class="absolute top-2 right-2 z-10 ring-2 ring-black/30" :poster="poster" />
     </div>
-    <div class="flex flex-col gap-1">
-      <div>{{ poster.label }}</div>
-      <div class="font-bold text-ellipsis whitespace-nowrap overflow-hidden" :title="poster.name">
+
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="font-bold truncate" :title="poster.name">
         {{ poster.name }}
       </div>
-      <div class="text-sm mt-2 italic opacity-50">
-        <i class="pi pi-clock" />
-        {{ poster.timeout }} seconds
+      <div
+        v-if="poster.type !== PosterType.PHOTO"
+        class="min-h-[1.25rem] text-sm truncate"
+        :class="poster.label ? 'opacity-70' : 'opacity-40 italic'"
+      >
+        {{ poster.label || '(no title)' }}
       </div>
+      <div class="text-xs italic opacity-50">
+        <i class="pi pi-clock" />
+        {{ poster.defaultTimeout }} seconds
+      </div>
+    </div>
+
+    <div class="mt-auto flex flex-row items-center gap-2">
+      <span v-tooltip.top="poster.trello ? 'Managed via Trello' : undefined" class="flex-1 flex">
+        <PosterButtonDelete :disabled="poster.trello || !isPrivileged" :poster="poster" />
+      </span>
+      <span v-tooltip.top="poster.trello ? 'Managed via Trello' : undefined" class="flex-1 flex">
+        <PosterEdit :disabled="poster.trello || !isPrivileged" :poster="poster" />
+      </span>
+      <StaticPosterButtonShow :disabled="poster.type === PosterType.PHOTO || !isPrivileged" :poster="poster" />
     </div>
   </AppBox>
 </template>
 
 <script setup lang="ts">
-import { type Poster, PosterTypeExternal, PosterTypeImage } from '@/api';
+import { computed } from 'vue';
+import { type PosterResponse, PosterType } from '@/api';
+import { useAuthStore } from '@/stores/auth.store';
 import AppBox from '@/layout/AppBox.vue';
+import PosterButtonDelete from '@/components/poster/PosterButtonDelete.vue';
+import PosterEdit from '@/components/poster/PosterEdit.vue';
+import PosterMediaGallery from '@/components/poster/PosterMediaGallery.vue';
+import PosterStatusIndicator from '@/components/poster/PosterStatusIndicator.vue';
+import StaticPosterButtonShow from '@/components/poster/StaticPosterButtonShow.vue';
+
+const props = defineProps<{
+  poster: PosterResponse;
+}>();
+
+const authStore = useAuthStore();
+const isPrivileged = computed(() => authStore.isInSecurityGroup('poster', 'privileged'));
+
+const mediaUrl = computed(() => props.poster.files?.[0]?.location ?? props.poster.uri ?? '');
 
 const capitalize = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
-
-defineProps<{
-  poster: Poster;
-}>();
 </script>
-
-<style scoped></style>

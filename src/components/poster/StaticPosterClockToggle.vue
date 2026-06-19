@@ -3,24 +3,27 @@
     <label for="static-poster-clock-toggle">Clock</label>
     <ToggleSwitch
       id="static-poster-clock-toggle"
-      :disabled="loading"
-      :model-value="store.clockVisible"
+      :disabled="loading || !isPrivileged"
+      :model-value="store.static.clockVisible"
       @click="handleClick"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useStaticPosterStore } from '@/stores/poster/static-poster.store';
+import { ref, computed } from 'vue';
+import { usePosterStore } from '@/stores/poster/poster.store';
+import { useAuthStore } from '@/stores/auth.store';
 
-const store = useStaticPosterStore();
+const store = usePosterStore();
+const authStore = useAuthStore();
+const isPrivileged = computed(() => authStore.isInSecurityGroup('poster', 'privileged'));
 
 const loading = ref<boolean>(false);
 
 const handleClick = async () => {
   loading.value = true;
-  await store.setClockVisibility(!store.clockVisible);
+  await store.setStaticClockVisibility(!store.static.clockVisible);
   loading.value = false;
 };
 </script>

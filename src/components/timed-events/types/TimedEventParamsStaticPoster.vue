@@ -33,15 +33,15 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useStaticPosterStore } from '@/stores/poster/static-poster.store';
 import type { CreateTimedEventRequest, TimedEventSetStaticPoster } from '@/api';
 import StaticPosterPreview from '@/components/poster/StaticPosterPreview.vue';
 import TimedEventDialogSaveButton from '@/components/timed-events/types/TimedEventDialogSaveButton.vue';
 import type { TimedEventParamsProps } from '@/components/timed-events/types/TimedEventParamsProps';
+import { usePosterStore } from '@/stores/poster/poster.store';
 
 const props = defineProps<TimedEventParamsProps<TimedEventSetStaticPoster['params']>>();
 
-const posterStore = useStaticPosterStore();
+const posterStore = usePosterStore();
 void posterStore.init();
 
 const selectedPosterId = ref<number | undefined>(props.originalEventSpecParams?.posterId ?? undefined);

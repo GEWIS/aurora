@@ -18,7 +18,6 @@ jobs:
           repository: gewis/aurora-core
           ref: develop
           path: aurora-core
-      
       - name: Enable Corepack for core
         run: cd aurora-core && corepack enable
 
@@ -27,17 +26,18 @@ jobs:
         with:
           node-version: "22.x"
 
-      - name: Install dependencies
-        uses: borales/actions-yarn@v5
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          cmd: install
-          dir: ./aurora-core
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./aurora-core
 
       - name: Run tsoa
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: tsoa
-          dir: ./aurora-core
+        run: pnpm tsoa
+        working-directory: ./aurora-core/apps/aurora-core
 
       - name: Checkout client
         uses: actions/checkout@v4

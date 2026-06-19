@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: '../aurora-core/build/swagger.json',
+  input: '../aurora-core/apps/aurora-core/build/swagger.json',
   output: `./src/api`,
   plugins: [
     '@hey-api/client-fetch',

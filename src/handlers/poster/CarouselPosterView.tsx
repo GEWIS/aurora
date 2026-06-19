@@ -1,7 +1,7 @@
 import './components/index.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import { FooterSize, getPosters, getPosterSettings, Poster, PosterScreenSettingsResponse } from '../../api';
+import { FooterSize, getPosters, getPosterSettings, PosterResponse, PosterScreenSettingsResponse } from '../../api';
 import ChangeTrackOverlay from '../../overlays/ChangeTrackOverlay';
 import PosterCarousel from './components/Carousel';
 import ProgressBar from './components/ProgressBar';
@@ -14,13 +14,15 @@ interface Props {
 
 export default function CarouselPosterView({ socket }: Props) {
   const [settings, setSettings] = useState<PosterScreenSettingsResponse | undefined>();
-  const [posters, setPosters] = useState<Poster[]>();
+  const [posters, setPosters] = useState<PosterResponse[]>();
   const [borrelMode, setBorrelMode] = useState(false);
   const [posterIndex, setPosterIndex] = useState<number>();
   // ReturnType used instead of number as one of the dependencies uses @types/node as dependency
   const [posterTimeout, setPosterTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('');
+  const postersRef = useRef(posters);
+  postersRef.current = posters;
 
   const refreshPosters = async () => {
     setLoading(true);
@@ -47,19 +49,28 @@ export default function CarouselPosterView({ socket }: Props) {
   };
 
   useEffect(() => {
-    if (!posters || posters.length === 0 || posterIndex === undefined) return;
+    if (!posters || posters.length === 0 || posterIndex === undefined || posterIndex >= posters.length) return;
     if (posterTimeout) clearTimeout(posterTimeout);
 
-    if (posterIndex === 0) {
-      refreshPosters().catch((e) => console.error(e));
-    }
-
     const nextPoster = posters[posterIndex];
-    const timeout = setTimeout(() => setPosterIndex((i) => (i! + 1) % posters.length), nextPoster.timeout * 1000);
+    const timeout = setTimeout(
+      () =>
+        setPosterIndex((i) => {
+          const len = postersRef.current?.length ?? 0;
+          return len > 0 ? (i! + 1) % len : 0;
+        }),
+      nextPoster.defaultTimeout * 1000,
+    );
     setPosterTimeout(timeout);
 
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO; should these be exhaustive?
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posterIndex]);
+
+  useEffect(() => {
+    if (posterIndex === 0) {
+      refreshPosters().catch((e) => console.error(e));
+    }
   }, [posterIndex]);
 
   useEffect(() => {
@@ -81,15 +92,29 @@ export default function CarouselPosterView({ socket }: Props) {
   }, []);
 
   useEffect(() => {
-    if (posters && !posterTimeout && !loading) {
-      const randomIndex = Math.floor(Math.random() * posters.length);
-      setPosterIndex(randomIndex);
+    if (!posters || posters.length === 0 || loading) return;
+    if (posterIndex === undefined || posterIndex >= posters.length) {
+      setPosterIndex(Math.floor(Math.random() * posters.length));
     }
-  }, [posters, loading, posterTimeout]);
+  }, [posters, loading, posterIndex]);
+
+  useEffect(() => {
+    const handleUpdatePosters = () => {
+      refreshPosters().catch((e) => console.error(e));
+    };
+
+    socket.on('update_posters', handleUpdatePosters);
+
+    return () => {
+      socket.removeListener('update_posters', handleUpdatePosters);
+    };
+  }, [socket]);
 
   const selectedPoster = posters && posters.length > 0 && posterIndex !== undefined ? posters[posterIndex] : undefined;
 
-  const progressBarMinimal = settings?.defaultMinimal || selectedPoster?.footer === FooterSize.MINIMAL;
+  const progressBarHidden = selectedPoster?.footerSize === FooterSize.HIDDEN;
+  const progressBarMinimal =
+    !progressBarHidden && (settings?.defaultMinimal || selectedPoster?.footerSize === FooterSize.MINIMAL);
 
   return (
     <>
@@ -103,22 +128,23 @@ export default function CarouselPosterView({ socket }: Props) {
           <PosterCarousel posters={posters || []} currentPoster={!posterIndex ? 0 : posterIndex} setTitle={setTitle} />
           <PosterWatermark
             posterIndex={posterIndex ?? -1}
-            progressBarMinimal={progressBarMinimal}
-            progressBarLogo={settings?.progressBarLogo}
+            progressBarMinimal={progressBarMinimal || progressBarHidden}
+            progressBarLogo={!progressBarHidden && settings?.progressBarLogo}
             borrelMode={borrelMode}
           />
           <ProgressBar
             // poster={selectedPoster}
             title={title}
-            seconds={posterTimeout !== undefined ? selectedPoster?.timeout : undefined}
+            seconds={posterTimeout !== undefined ? selectedPoster?.defaultTimeout : undefined}
             posterIndex={posterIndex}
             minimal={progressBarMinimal}
+            hide={progressBarHidden}
             nextPoster={nextPoster}
             pausePoster={pausePoster}
             borrelMode={borrelMode}
             logo={settings?.progressBarLogo ? URL_PROGRESS_BAR_LOGO : ''}
-            progressBarColor={selectedPoster?.color || settings?.defaultProgressBarColor}
-            clockColor={selectedPoster?.color}
+            progressBarColor={selectedPoster?.accentColor || settings?.defaultProgressBarColor}
+            clockColor={selectedPoster?.accentColor}
             clockTick={settings?.clockShouldTick}
           />
         </div>

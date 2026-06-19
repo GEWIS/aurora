@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function VideoPoster({ source, visible }: Props) {
-  let sourceUrl: string;
+  let sourceUrl: string | undefined;
   if (Array.isArray(source)) {
     const index = Math.floor(Math.random() * source.length);
     sourceUrl = source[index];
@@ -17,9 +17,16 @@ export default function VideoPoster({ source, visible }: Props) {
   const ref = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (!visible || !ref || !ref.current) return;
-    ref.current.play().catch(console.error);
+    if (!ref.current) return;
+    if (visible) {
+      ref.current.currentTime = 0;
+      ref.current.play().catch(console.error);
+    } else {
+      ref.current.pause();
+    }
   }, [visible]);
+
+  if (!sourceUrl) return <div className="w-full h-full bg-black" />;
 
   return (
     <video className="w-full h-full" muted loop ref={ref} controls={false}>

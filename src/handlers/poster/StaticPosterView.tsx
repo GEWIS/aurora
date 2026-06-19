@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   getPosterSettings,
   getStaticPosterHandlerState,
+  PosterResponse,
   PosterScreenSettingsResponse,
   StaticPosterHandlerState,
 } from '../../api';
@@ -12,6 +13,12 @@ import ChangeTrackOverlay from '../../overlays/ChangeTrackOverlay';
 import ImagePoster from './types/ImagePoster';
 import VideoPoster from './types/VideoPoster';
 import ExternalPoster from './types/ExternalPoster';
+import LogoPoster from './types/LogoPoster';
+import BorrelLogoPoster from './types/BorrelLogoPoster';
+import BorrelPriceListPoster from './types/BorrelPriceListPoster';
+import BorrelWallOfShamePoster from './types/BorrelWallOfShame';
+import TrainPoster from './types/TrainPoster';
+import OlympicsPoster from './types/OlympicsPoster';
 import ProgressBar from './components/ProgressBar';
 import { URL_CUSTOM_STYLESHEET, URL_PROGRESS_BAR_LOGO } from './constants';
 
@@ -21,17 +28,11 @@ interface Props {
 
 export default function StaticPosterView({ socket }: Props) {
   const [settings, setSettings] = useState<PosterScreenSettingsResponse | undefined>();
-  const [url, setUrl] = useState('');
+  const [activePoster, setActivePoster] = useState<PosterResponse | null>(null);
   const [clock, setClock] = useState(false);
 
   const handlePosterChange = (payload: StaticPosterHandlerState) => {
-    if (payload.activePoster && payload.activePoster.file) {
-      setUrl(payload.activePoster.file.location);
-    } else if (payload.activePoster && payload.activePoster.uri) {
-      setUrl(payload.activePoster.uri);
-    } else {
-      setUrl('');
-    }
+    setActivePoster(payload.activePoster);
     setClock(payload.clockVisible);
   };
 
@@ -85,17 +86,29 @@ export default function StaticPosterView({ socket }: Props) {
   };
 
   const renderPoster = () => {
-    if (url === '') return renderDefaultScreen();
+    if (!activePoster) return renderDefaultScreen();
 
-    const extension = url.split('.').pop();
-    if (!extension) return renderDefaultScreen();
-
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
-      return <ImagePoster source={url} />;
-    } else if (['mp4', 'webm', 'avi', 'mkv'].includes(extension)) {
-      return <VideoPoster source={url} visible />;
-    } else {
-      return <ExternalPoster url={url} visible />;
+    switch (activePoster.type as string) {
+      case 'logo':
+        return <LogoPoster />;
+      case 'img':
+        return <ImagePoster source={activePoster.files.map((f) => f.location)} />;
+      case 'extern':
+        return <ExternalPoster url={activePoster.uri!} visible />;
+      case 'video':
+        return <VideoPoster source={activePoster.files.map((f) => f.location)} visible />;
+      case 'borrel-logo':
+        return <BorrelLogoPoster />;
+      case 'borrel-wall-of-shame':
+        return <BorrelWallOfShamePoster visible />;
+      case 'borrel-price-list':
+        return <BorrelPriceListPoster visible />;
+      case 'train':
+        return <TrainPoster visible timeout={activePoster.defaultTimeout} />;
+      case 'olympics':
+        return <OlympicsPoster visible />;
+      default:
+        return renderDefaultScreen();
     }
   };
 
@@ -106,13 +119,12 @@ export default function StaticPosterView({ socket }: Props) {
         because the precedence is that the last CSS definition will be used */}
         {settings?.stylesheet && <link rel="stylesheet" href={URL_CUSTOM_STYLESHEET} />}
         <div className="overflow-hidden absolute w-full h-full">{renderPoster()}</div>
-        {clock && (
-          <ProgressBar
-            logo={settings?.progressBarLogo ? URL_PROGRESS_BAR_LOGO : ''}
-            clockTick={settings?.clockShouldTick}
-            minimal={settings?.defaultMinimal}
-          />
-        )}
+        <ProgressBar
+          logo={settings?.progressBarLogo ? URL_PROGRESS_BAR_LOGO : ''}
+          clockTick={settings?.clockShouldTick}
+          minimal={settings?.defaultMinimal}
+          hide={!clock}
+        />
       </div>
       <ChangeTrackOverlay socket={socket} />
     </>

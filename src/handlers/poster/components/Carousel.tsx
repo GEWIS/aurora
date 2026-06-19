@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { MediaPoster, PhotoPoster as ClientPhotoPoster, Poster, PosterTypePhoto } from '../../../api';
+import { PosterResponse, PosterType } from '../../../api';
 import LogoPoster from '../types/LogoPoster';
 import ImagePoster from '../types/ImagePoster';
 import ExternalPoster from '../types/ExternalPoster';
@@ -12,16 +12,19 @@ import TrainPoster from '../types/TrainPoster';
 import OlympicsPoster from '../types/OlympicsPoster';
 
 interface Props {
-  posters: Poster[];
+  posters: PosterResponse[];
   currentPoster: number;
   setTitle: (title: string) => void;
 }
 
 export default function PosterCarousel({ posters, currentPoster, setTitle }: Props) {
-  const previousPoster = useMemo(() => (currentPoster - 1) % posters.length, [currentPoster, posters.length]);
+  const previousPoster = useMemo(
+    () => (currentPoster - 1 + posters.length) % posters.length,
+    [currentPoster, posters.length],
+  );
   const nextPoster = useMemo(() => (currentPoster + 1) % posters.length, [currentPoster, posters.length]);
 
-  const renderPoster = (poster: Poster, index: number) => {
+  const renderPoster = (poster: PosterResponse, index: number) => {
     if (index !== previousPoster && index !== currentPoster && index !== nextPoster) return null;
 
     const visible = index === currentPoster || index === previousPoster;
@@ -30,15 +33,19 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
       case 'logo':
         return <LogoPoster key={poster.name} />;
       case 'img':
-        return <ImagePoster key={poster.name} source={(poster as MediaPoster).source} />;
+        return <ImagePoster key={poster.name} source={poster.files.map((f) => f.location)} />;
       case 'extern':
-        return <ExternalPoster key={poster.name} url={(poster as MediaPoster).source[0]} visible={visible} />;
+        return <ExternalPoster key={poster.name} url={poster.uri!} visible={visible} />;
       case 'video':
-        return <VideoPoster key={poster.name} source={(poster as MediaPoster).source} visible={visible} />;
-      case 'photo':
         return (
-          <PhotoPoster key={poster.name} poster={poster as ClientPhotoPoster} visible={visible} setTitle={setTitle} />
+          <VideoPoster
+            key={poster.name}
+            source={poster.files.map((f) => f.location)}
+            visible={index === currentPoster}
+          />
         );
+      case 'photo':
+        return <PhotoPoster key={poster.name} poster={poster} visible={visible} setTitle={setTitle} />;
       case 'borrel-logo':
         return <BorrelLogoPoster key={poster.name} />;
       case 'borrel-wall-of-shame':
@@ -46,7 +53,7 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
       case 'borrel-price-list':
         return <BorrelPriceListPoster key={poster.name} visible={visible} />;
       case 'train':
-        return <TrainPoster key={poster.name} visible={visible} timeout={poster.timeout} />;
+        return <TrainPoster key={poster.name} visible={visible} timeout={poster.defaultTimeout} />;
       case 'olympics':
         return <OlympicsPoster key={poster.name} visible={visible} />;
       default:
@@ -56,8 +63,8 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
 
   useEffect(() => {
     const poster = posters[currentPoster];
-    if (poster && poster.type !== PosterTypePhoto.PHOTO) {
-      setTitle(poster.label);
+    if (poster && poster.type !== PosterType.PHOTO) {
+      setTitle(poster.label ?? '');
     }
   }, [posters, currentPoster, setTitle]);
 
@@ -70,7 +77,7 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
             absolute w-full h-full top-0 left-0
             transition-opacity duration-500
             ${[previousPoster, currentPoster].includes(i) ? 'opacity-100' : 'opacity-0'}
-            ${[currentPoster, nextPoster].includes(i) ? 'z-10' : 'z-0'}
+            ${i === currentPoster ? 'z-20' : i === previousPoster ? 'z-10' : 'z-0'}
           `}
         >
           {renderPoster(p, i)}

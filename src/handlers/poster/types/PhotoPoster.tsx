@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { PhotoPoster as IPhotoPoster, GewisPhotoAlbumParams, getPhoto } from '../../../api';
+import { GewisPhotoAlbumParams, getPhoto, PosterResponse } from '../../../api';
 import ImagePoster from './ImagePoster';
 
 interface Props {
-  poster: IPhotoPoster;
+  poster: PosterResponse;
   visible: boolean;
   setTitle: (title: string) => void;
 }
@@ -17,6 +17,12 @@ export default function PhotoPoster({ poster, visible, setTitle }: Props) {
   }, [label, setTitle, visible]);
 
   useEffect(() => {
+    if (!poster.albums || poster.albums.length === 0) {
+      setUrl('');
+      setLabel('');
+      return;
+    }
+
     const body: GewisPhotoAlbumParams = {
       albumIds: poster.albums,
     };

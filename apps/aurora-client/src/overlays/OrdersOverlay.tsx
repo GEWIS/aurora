@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io-client';
 import { useCallback, useEffect, useState } from 'react';
-import { getAllOrders, Order } from '../api';
+import { getAllOrders, Order } from '@gewis/aurora-api-client';
 import OrderList from '../components/OrderList';
 
 interface ShowOrdersEvent {
@@ -39,7 +39,8 @@ export default function OrdersOverlay({ socket }: Props) {
     let shortestTimeTillEnd = 360 * 1000;
 
     for (let i = 0; i < orders.length; i++) {
-      const timeTillOrderEnd = new Date(orders[i].startTime).getTime() + orders[i].timeoutSeconds * 1000 - Date.now();
+      const timeTillOrderEnd =
+        new Date(orders[i].startTime).getTime() + orders[i].timeoutSeconds * 1000 - Date.now();
 
       if (timeTillOrderEnd < 0) {
         setOrders(orders.toSpliced(i, 1));

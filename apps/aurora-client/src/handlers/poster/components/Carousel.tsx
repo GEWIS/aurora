@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { PosterResponse, PosterType } from '../../../api';
+import { PosterResponse, PosterType } from '@gewis/aurora-api-client';
 import LogoPoster from '../types/LogoPoster';
 import ImagePoster from '../types/ImagePoster';
 import ExternalPoster from '../types/ExternalPoster';
@@ -22,7 +22,10 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
     () => (currentPoster - 1 + posters.length) % posters.length,
     [currentPoster, posters.length],
   );
-  const nextPoster = useMemo(() => (currentPoster + 1) % posters.length, [currentPoster, posters.length]);
+  const nextPoster = useMemo(
+    () => (currentPoster + 1) % posters.length,
+    [currentPoster, posters.length],
+  );
 
   const renderPoster = (poster: PosterResponse, index: number) => {
     if (index !== previousPoster && index !== currentPoster && index !== nextPoster) return null;
@@ -45,7 +48,9 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
           />
         );
       case 'photo':
-        return <PhotoPoster key={poster.name} poster={poster} visible={visible} setTitle={setTitle} />;
+        return (
+          <PhotoPoster key={poster.name} poster={poster} visible={visible} setTitle={setTitle} />
+        );
       case 'borrel-logo':
         return <BorrelLogoPoster key={poster.name} />;
       case 'borrel-wall-of-shame':

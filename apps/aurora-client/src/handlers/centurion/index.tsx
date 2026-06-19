@@ -9,7 +9,7 @@ import {
   LightsColorResponse,
   getAllLightsColors,
   HexColor,
-} from '../../api';
+} from '@gewis/aurora-api-client';
 import Background from './components/Background';
 import styles from './centurion.module.css';
 import Strobe from './components/Strobe';
@@ -191,7 +191,9 @@ export default function CenturionView({ socket }: Props) {
 
   const renderHornCount = () => {
     if (hornCount === undefined) return null;
-    return <div className="text-white text-[36rem] -m-20">{makeTextDrunk(hornCount.toString())}</div>;
+    return (
+      <div className="text-white text-[36rem] -m-20">{makeTextDrunk(hornCount.toString())}</div>
+    );
   };
 
   const renderBackground = () => {
@@ -214,7 +216,12 @@ export default function CenturionView({ socket }: Props) {
   return (
     <>
       {mixtape && status !== Status.PLAYING && (
-        <Information title={mixtape.name} artist={mixtape.artist} albumCover={mixtape.coverUrl} description={status} />
+        <Information
+          title={mixtape.name}
+          artist={mixtape.artist}
+          albumCover={mixtape.coverUrl}
+          description={status}
+        />
       )}
 
       {status === Status.PLAYING && (

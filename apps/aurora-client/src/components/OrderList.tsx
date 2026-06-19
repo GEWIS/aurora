@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import { Order } from '../api';
+import { Order } from '@gewis/aurora-api-client';
 import GlassCard from './GlassCard';
 
 interface Props {
@@ -37,7 +37,13 @@ export default function OrderList({ orders }: Props) {
         >
           <AnimatePresence>
             {orders.map((order) => (
-              <motion.li key={order.number} initial={animationInitial} animate={animationIn} exit={animationOut} layout>
+              <motion.li
+                key={order.number}
+                initial={animationInitial}
+                animate={animationIn}
+                exit={animationOut}
+                layout
+              >
                 <GlassCard className="text-center px-4 py-7 min-w-36">{order.number}</GlassCard>
               </motion.li>
             ))}

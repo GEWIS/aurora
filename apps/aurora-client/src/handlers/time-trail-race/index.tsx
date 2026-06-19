@@ -16,7 +16,7 @@ import {
   TimeTrailRaceStatePlayerRegistered,
   TimeTrailRaceStateScoreboard,
   TimeTrailRaceStateStarted,
-} from '../../api';
+} from '@gewis/aurora-api-client';
 import StopWatch from './components/StopWatch';
 import NextPlayer from './components/NextPlayer';
 import Scoreboard from './components/Scoreboard';
@@ -72,33 +72,45 @@ export default function TimeTrailRaceView({ socket }: Props) {
       },
     );
 
-    socket.on('race-player-ready', ([{ state: s, player: p, sessionName: n }]: RacePlayerReadyEvent[]) => {
-      setState(s);
-      setSessionName(n);
-      setPlayer(p);
-    });
+    socket.on(
+      'race-player-ready',
+      ([{ state: s, player: p, sessionName: n }]: RacePlayerReadyEvent[]) => {
+        setState(s);
+        setSessionName(n);
+        setPlayer(p);
+      },
+    );
 
-    socket.on('race-started', ([{ state: s, sessionName: n, player: p, startTime: t }]: RaceStartedEvent[]) => {
-      setState(s);
-      setSessionName(n);
-      setPlayer(p);
-      setStartTime(new Date(t));
-    });
+    socket.on(
+      'race-started',
+      ([{ state: s, sessionName: n, player: p, startTime: t }]: RaceStartedEvent[]) => {
+        setState(s);
+        setSessionName(n);
+        setPlayer(p);
+        setStartTime(new Date(t));
+      },
+    );
 
-    socket.on('race-finished', ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceFinishedEvent[]) => {
-      setState(s);
-      setSessionName(n);
-      setPlayer(p);
-      setScoreboard(sb);
-      setStartTime(undefined);
-    });
+    socket.on(
+      'race-finished',
+      ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceFinishedEvent[]) => {
+        setState(s);
+        setSessionName(n);
+        setPlayer(p);
+        setScoreboard(sb);
+        setStartTime(undefined);
+      },
+    );
 
-    socket.on('race-scoreboard', ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceScoreboardEvent[]) => {
-      setState(s);
-      setSessionName(n);
-      setPlayer(p);
-      setScoreboard(sb);
-    });
+    socket.on(
+      'race-scoreboard',
+      ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceScoreboardEvent[]) => {
+        setState(s);
+        setSessionName(n);
+        setPlayer(p);
+        setScoreboard(sb);
+      },
+    );
 
     return () => {
       socket.removeAllListeners();

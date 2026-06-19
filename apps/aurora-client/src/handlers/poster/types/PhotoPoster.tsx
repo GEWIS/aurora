@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GewisPhotoAlbumParams, getPhoto, PosterResponse } from '../../../api';
+import { GewisPhotoAlbumParams, getPhoto, PosterResponse } from '@gewis/aurora-api-client';
 import ImagePoster from './ImagePoster';
 
 interface Props {

@@ -1,5 +1,5 @@
 import { CSSProperties, useEffect, useState } from 'react';
-import { getSudoSosWallOfShame, SudoSosDebtorResponse } from '../../../api';
+import { getSudoSosWallOfShame, SudoSosDebtorResponse } from '@gewis/aurora-api-client';
 import VerticalScroll from '../../../components/VerticalScroll';
 import { bacShadow, redShadow } from '../../../style/shadows';
 

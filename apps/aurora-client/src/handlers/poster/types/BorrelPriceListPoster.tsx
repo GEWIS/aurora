@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getSudoSosPriceList, ProductCategoryResponse, ProductResponse } from '../../../api';
+import {
+  getSudoSosPriceList,
+  ProductCategoryResponse,
+  ProductResponse,
+} from '@gewis/aurora-api-client';
 import VerticalScroll from '../../../components/VerticalScroll';
 
 interface Props {
@@ -8,7 +12,9 @@ interface Props {
 
 export default function BorrelPriceListPoster({ visible }: Props) {
   const [products, setProducts] = useState<Map<number, ProductResponse[]>>(new Map());
-  const [productCategories, setProductCategories] = useState<Map<number, ProductCategoryResponse>>(new Map());
+  const [productCategories, setProductCategories] = useState<Map<number, ProductCategoryResponse>>(
+    new Map(),
+  );
 
   useEffect(() => {
     // TODO what to do if data is not fetched?

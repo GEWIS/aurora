@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { PlayerParams, ScoreboardItem } from '../../../api';
+import { PlayerParams, ScoreboardItem } from '@gewis/aurora-api-client';
 import { toStopwatchString } from '../helpers/time';
 import '../../poster/components/ScrollAnimation.scss';
 import VerticalScroll from '../../../components/VerticalScroll';

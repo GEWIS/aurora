@@ -6,7 +6,7 @@ import {
   PosterResponse,
   PosterScreenSettingsResponse,
   StaticPosterHandlerState,
-} from '../../api';
+} from '@gewis/aurora-api-client';
 import BackgroundStarryNight from '../../components/backgrounds/StarryNight';
 import { LogoCentered } from '../../components/aurora-logos/LogoCentered';
 import ChangeTrackOverlay from '../../overlays/ChangeTrackOverlay';
@@ -53,7 +53,8 @@ export default function StaticPosterView({ socket }: Props) {
       })
       .catch((e) => console.error(e));
 
-    const handlePosterChangeEvent = (payload: StaticPosterHandlerState[]) => handlePosterChange(payload[0]);
+    const handlePosterChangeEvent = (payload: StaticPosterHandlerState[]) =>
+      handlePosterChange(payload[0]);
 
     socket.on('update_static_poster', handlePosterChangeEvent);
 

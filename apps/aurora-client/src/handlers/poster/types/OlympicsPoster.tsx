@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMedal, faPlus, faRankingStar } from '@fortawesome/free-solid-svg-icons';
-import { CountryMedalResponse, getDutchOlympicMedals, getOlympicsMedalTable, MedalTableRecord } from '../../../api';
+import {
+  CountryMedalResponse,
+  getDutchOlympicMedals,
+  getOlympicsMedalTable,
+  MedalTableRecord,
+} from '@gewis/aurora-api-client';
 import VerticalScroll from '../../../components/VerticalScroll';
 
 interface Props {
@@ -53,7 +58,10 @@ export default function OlympicsPoster({ visible }: Props) {
             className="bg-black text-white bg-opacity-60 rounded-xl flex-1 h-full p-8 flex flex-col"
             style={{ maxHeight: 800 }}
           >
-            <div className="text-center text-6xl font-medium pb-5" style={{ fontFamily: 'Olympics2024' }}>
+            <div
+              className="text-center text-6xl font-medium pb-5"
+              style={{ fontFamily: 'Olympics2024' }}
+            >
               Medal table
             </div>
             <div className="w-full flex-1 overflow-hidden block">
@@ -132,13 +140,20 @@ export default function OlympicsPoster({ visible }: Props) {
               </div>
             </div>
             <div style={{ maxHeight: 570 }}>
-              <VerticalScroll visible={visible} items={dutchMedals?.medals.length ?? 0} scrollEmptySpace>
+              <VerticalScroll
+                visible={visible}
+                items={dutchMedals?.medals.length ?? 0}
+                scrollEmptySpace
+              >
                 <table>
                   <tbody>
                     {dutchMedals?.medals.map((medal) => (
                       <tr key={medal.participantId + medal.eventId}>
                         <td className="pb-4 pr-4 text-6xl">
-                          <FontAwesomeIcon style={{ color: getMedalColor(medal.medal) }} icon={faMedal} />
+                          <FontAwesomeIcon
+                            style={{ color: getMedalColor(medal.medal) }}
+                            icon={faMedal}
+                          />
                         </td>
                         <td className="pb-4">
                           <p className="text-5xl">

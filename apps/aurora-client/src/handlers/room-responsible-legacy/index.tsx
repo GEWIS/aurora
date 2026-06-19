@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LoadingView } from '../default';
-import { getRoomResponsibleLegacyUrl } from '../../api';
+import { getRoomResponsibleLegacyUrl } from '@gewis/aurora-api-client';
 
 export default function RoomResponsibleLegacyView() {
   const [url, setUrl] = useState('');

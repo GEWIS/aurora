@@ -1,6 +1,13 @@
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ApiKeyParameters, authKey, AuthUser, getInformation, getOwnScreen, ScreenResponse } from '../api';
+import {
+  ApiKeyParameters,
+  authKey,
+  AuthUser,
+  getInformation,
+  getOwnScreen,
+  ScreenResponse,
+} from '@gewis/aurora-api-client';
 
 interface IAuthContext {
   user: AuthUser | null;

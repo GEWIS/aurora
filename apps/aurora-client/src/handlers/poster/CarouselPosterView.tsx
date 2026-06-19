@@ -1,7 +1,13 @@
 import './components/index.scss';
 import { useEffect, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import { FooterSize, getPosters, getPosterSettings, PosterResponse, PosterScreenSettingsResponse } from '../../api';
+import {
+  FooterSize,
+  getPosters,
+  getPosterSettings,
+  PosterResponse,
+  PosterScreenSettingsResponse,
+} from '@gewis/aurora-api-client';
 import ChangeTrackOverlay from '../../overlays/ChangeTrackOverlay';
 import PosterCarousel from './components/Carousel';
 import ProgressBar from './components/ProgressBar';
@@ -49,7 +55,13 @@ export default function CarouselPosterView({ socket }: Props) {
   };
 
   useEffect(() => {
-    if (!posters || posters.length === 0 || posterIndex === undefined || posterIndex >= posters.length) return;
+    if (
+      !posters ||
+      posters.length === 0 ||
+      posterIndex === undefined ||
+      posterIndex >= posters.length
+    )
+      return;
     if (posterTimeout) clearTimeout(posterTimeout);
 
     const nextPoster = posters[posterIndex];
@@ -110,11 +122,13 @@ export default function CarouselPosterView({ socket }: Props) {
     };
   }, [socket]);
 
-  const selectedPoster = posters && posters.length > 0 && posterIndex !== undefined ? posters[posterIndex] : undefined;
+  const selectedPoster =
+    posters && posters.length > 0 && posterIndex !== undefined ? posters[posterIndex] : undefined;
 
   const progressBarHidden = selectedPoster?.footerSize === FooterSize.HIDDEN;
   const progressBarMinimal =
-    !progressBarHidden && (settings?.defaultMinimal || selectedPoster?.footerSize === FooterSize.MINIMAL);
+    !progressBarHidden &&
+    (settings?.defaultMinimal || selectedPoster?.footerSize === FooterSize.MINIMAL);
 
   return (
     <>
@@ -125,7 +139,11 @@ export default function CarouselPosterView({ socket }: Props) {
       >
         {settings?.stylesheet && <link rel="stylesheet" href={URL_CUSTOM_STYLESHEET} />}
         <div className="overflow-hidden w-full h-full">
-          <PosterCarousel posters={posters || []} currentPoster={!posterIndex ? 0 : posterIndex} setTitle={setTitle} />
+          <PosterCarousel
+            posters={posters || []}
+            currentPoster={!posterIndex ? 0 : posterIndex}
+            setTitle={setTitle}
+          />
           <PosterWatermark
             posterIndex={posterIndex ?? -1}
             progressBarMinimal={progressBarMinimal || progressBarHidden}

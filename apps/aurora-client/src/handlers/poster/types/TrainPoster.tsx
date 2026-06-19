@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTrains, TrainResponse } from '../../../api';
+import { getTrains, TrainResponse } from '@gewis/aurora-api-client';
 import './TrainPoster.scss';
 import VerticalScroll from '../../../components/VerticalScroll';
 
@@ -43,7 +43,9 @@ export default function TrainPoster({ visible, timeout }: Props) {
 
   const renderDeparture = (t: TrainResponse) => {
     const departure = new Date(t.plannedDateTime);
-    const relativeDeparture = Math.floor((departure.getTime() - new Date().getTime()) / 60000 + t.delay);
+    const relativeDeparture = Math.floor(
+      (departure.getTime() - new Date().getTime()) / 60000 + t.delay,
+    );
     const formatter = new Intl.ListFormat('en-gb', { style: 'long', type: 'conjunction' });
 
     return (
@@ -61,7 +63,12 @@ export default function TrainPoster({ visible, timeout }: Props) {
             <div className="flex flex-col justify-start">
               <div>
                 <span className="italic">
-                  <img className="inline-block" src={`trains/${t.operator}.svg`} alt={`${t.operator}`} /> {t.trainType}
+                  <img
+                    className="inline-block"
+                    src={`trains/${t.operator}.svg`}
+                    alt={`${t.operator}`}
+                  />{' '}
+                  {t.trainType}
                 </span>{' '}
                 {t.routeStations.length > 0 && `via ${formatter.format(t.routeStations)}`}
               </div>

@@ -1,9 +1,17 @@
 {
-  "name": "narrowcasting-client",
+  "name": "@gewis/aurora-client",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "dev": "vite",
+    "serve": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "eslint src --max-warnings=1",
+    "lint-fix": "eslint src --fix"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@gewis/aurora-api-client": "workspace:*",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@giphy/js-fetch-api": "^5.7.0",
@@ -24,22 +32,10 @@
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^6.0.4"
   },
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "serve": "vite preview",
-    "lint": "eslint src --max-warnings=1",
-    "lint-fix": "eslint src --fix",
-    "format": "prettier --ignore-path .gitignore --check ./src/",
-    "format-fix": "prettier --ignore-path .gitignore --write ./src/",
-    "gen-client": "openapi-ts",
-    "prepare": "husky"
-  },
   "devDependencies": {
     "@gewis/eslint-config-react": "^2.4.0",
     "@gewis/eslint-config-typescript": "^2.4.0",
     "@gewis/prettier-config": "^2.2.2",
-    "@hey-api/openapi-ts": "^0.90.9",
     "@types/node": "^25.0.10",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
@@ -48,16 +44,13 @@
     "@vitejs/plugin-react-swc": "^4.2.2",
     "autoprefixer": "^10.4.23",
     "eslint": "^9.39.2",
-    "husky": "^9.1.7",
     "openapi-typescript-codegen": "^0.30.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.8.1",
     "sass": "^1.93.2",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=22.0.0"
-  },
-  "packageManager": "yarn@4.12.0"
+  }
 }

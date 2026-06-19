@@ -2,6 +2,8 @@
   "name": "@gewis/aurora",
   "version": "1.0.0",
   "description": "",
+  "license": "AGPL-3.0-only",
+  "keywords": [],
   "author": "",
   "scripts": {
     "build": "pnpm -r run build",
@@ -15,8 +17,6 @@
     "sync-check": "pnpm -r run sync-check",
     "prepare-husky": "husky"
   },
-  "keywords": [],
-  "license": "AGPL-3.0-only",
   "devDependencies": {
     "husky": "9.1.7",
     "lint-staged": "16.2.7",

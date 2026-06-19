@@ -1,0 +1,4 @@
+apps/aurora-core/build/routes.ts
+libs/aurora-api-client/src/api-client
+libs/aurora-api-client/openapi.json
+pnpm-lock.yaml

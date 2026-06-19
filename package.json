@@ -1,5 +1,5 @@
 {
-  "name": "aurora",
+  "name": "@gewis/aurora",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -9,13 +9,14 @@
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
     "lint-fix": "pnpm -r run lint-fix",
-    "format": "prettier --ignore-path .gitignore --check .",
-    "format-fix": "prettier --ignore-path .gitignore --write .",
-    "validate": "pnpm -r run validate",
+    "format": "prettier --check .",
+    "format-fix": "prettier --write .",
+    "sync": "pnpm --filter @gewis/aurora-core run sync && pnpm --filter @gewis/aurora-api-client run sync",
+    "sync-check": "pnpm -r run sync-check",
     "prepare-husky": "husky"
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "husky": "9.1.7",
     "lint-staged": "16.2.7",

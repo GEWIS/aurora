@@ -1,12 +1,20 @@
 {
 	"openapi": "3.0.0",
 	"info": {
-		"title": "aurora-core",
+		"title": "Aurora Core API",
 		"version": "1.0.0",
+		"description": "API contract for the Aurora Core service.",
 		"license": {
-			"name": "ISC"
+			"name": {
+				"name": "AGPL-3.0",
+				"url": "https://www.gnu.org/licenses/agpl-3.0.html"
+			}
 		},
-		"contact": {}
+		"contact": {
+			"name": "GEWIS",
+			"url": "https://www.gewis.nl",
+			"email": "abc@gewis.nl"
+		}
 	},
 	"servers": [
 		{
@@ -822,6 +830,10 @@
 						"type": "boolean",
 						"description": "Whether the double-dots (:) in the middle of the clock should flicker"
 					},
+					"Poster.Trello": {
+						"type": "boolean",
+						"description": "Whether the Trello poster sync is enabled."
+					},
 					"Orders": {
 						"type": "boolean"
 					},
@@ -855,6 +867,7 @@
 					"Poster.BorrelModePresent",
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
+					"Poster.Trello",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
@@ -883,6 +896,7 @@
 							"Poster.BorrelModePresent",
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
+							"Poster.Trello",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
@@ -3079,7 +3093,28 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PosterType": {
+				"description": "List of every supported poster type.",
+				"enum": [
+					"unknown",
+					"error",
+					"agenda",
+					"infima",
+					"train",
+					"img",
+					"logo",
+					"extern",
+					"photo",
+					"video",
+					"borrel-logo",
+					"borrel-price-list",
+					"borrel-wall-of-shame",
+					"olympics"
+				],
+				"type": "string"
+			},
 			"FooterSize": {
+				"description": "List of possible footersizes.",
 				"enum": [
 					"full",
 					"minimal",
@@ -3087,10 +3122,27 @@
 				],
 				"type": "string"
 			},
-			"BasePoster": {
+			"FileResponse": {
+				"properties": {
+					"location": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"location",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PosterResponse": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"name": {
 						"type": "string"
@@ -3098,272 +3150,84 @@
 					"label": {
 						"type": "string"
 					},
-					"due": {
+					"type": {
+						"$ref": "#/components/schemas/PosterType"
+					},
+					"enabled": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string"
+					},
+					"startDate": {
 						"type": "string",
 						"format": "date-time"
 					},
-					"timeout": {
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"accentColor": {
+						"type": "string"
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize"
+					},
+					"defaultTimeout": {
 						"type": "number",
 						"format": "double"
 					},
-					"footer": {
-						"$ref": "#/components/schemas/FooterSize"
-					},
 					"borrelMode": {
-						"type": "boolean",
-						"description": "Whether this poster should only be shown when in BorrelMode"
+						"type": "boolean"
 					},
-					"color": {
+					"protected": {
+						"type": "boolean"
+					},
+					"trello": {
+						"type": "boolean"
+					},
+					"uri": {
 						"type": "string"
+					},
+					"albums": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"files": {
+						"items": {
+							"$ref": "#/components/schemas/FileResponse"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
 					"id",
 					"name",
-					"label",
-					"timeout",
-					"footer"
+					"type",
+					"enabled",
+					"createdAt",
+					"updatedAt",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode",
+					"protected",
+					"trello",
+					"files"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PosterType.AGENDA": {
-				"enum": [
-					"agenda"
-				],
-				"type": "string"
-			},
-			"PosterType.INFIMA": {
-				"enum": [
-					"infima"
-				],
-				"type": "string"
-			},
-			"PosterType.LOGO": {
-				"enum": [
-					"logo"
-				],
-				"type": "string"
-			},
-			"PosterType.TRAINS": {
-				"enum": [
-					"train"
-				],
-				"type": "string"
-			},
-			"PosterType.BORREL_LOGO": {
-				"enum": [
-					"borrel-logo"
-				],
-				"type": "string"
-			},
-			"PosterType.BORREL_PRICE_LIST": {
-				"enum": [
-					"borrel-price-list"
-				],
-				"type": "string"
-			},
-			"PosterType.BORREL_WALL_OF_SHAME": {
-				"enum": [
-					"borrel-wall-of-shame"
-				],
-				"type": "string"
-			},
-			"PosterType.OLYMPICS": {
-				"enum": [
-					"olympics"
-				],
-				"type": "string"
-			},
-			"PosterType.UNKNOWN": {
-				"enum": [
-					"unknown"
-				],
-				"type": "string"
-			},
-			"LocalPosterType": {
-				"anyOf": [
-					{
-						"$ref": "#/components/schemas/PosterType.AGENDA"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.INFIMA"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.LOGO"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.TRAINS"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.BORREL_LOGO"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.BORREL_PRICE_LIST"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.BORREL_WALL_OF_SHAME"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.OLYMPICS"
-					},
-					{
-						"$ref": "#/components/schemas/PosterType.UNKNOWN"
-					}
-				]
-			},
-			"LocalPoster": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/BasePoster"
-					},
-					{
-						"properties": {
-							"type": {
-								"$ref": "#/components/schemas/LocalPosterType"
-							}
-						},
-						"required": [
-							"type"
-						],
-						"type": "object"
-					}
-				]
-			},
-			"PosterType.IMAGE": {
-				"enum": [
-					"img"
-				],
-				"type": "string"
-			},
-			"PosterType.VIDEO": {
-				"enum": [
-					"video"
-				],
-				"type": "string"
-			},
-			"PosterType.EXTERNAL": {
-				"enum": [
-					"extern"
-				],
-				"type": "string"
-			},
-			"MediaPoster": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/BasePoster"
-					},
-					{
-						"properties": {
-							"source": {
-								"items": {
-									"type": "string"
-								},
-								"type": "array"
-							},
-							"type": {
-								"anyOf": [
-									{
-										"$ref": "#/components/schemas/PosterType.IMAGE"
-									},
-									{
-										"$ref": "#/components/schemas/PosterType.VIDEO"
-									},
-									{
-										"$ref": "#/components/schemas/PosterType.EXTERNAL"
-									}
-								]
-							}
-						},
-						"required": [
-							"source",
-							"type"
-						],
-						"type": "object"
-					}
-				]
-			},
-			"PosterType.PHOTO": {
-				"enum": [
-					"photo"
-				],
-				"type": "string"
-			},
-			"PhotoPoster": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/BasePoster"
-					},
-					{
-						"properties": {
-							"albums": {
-								"items": {
-									"type": "number",
-									"format": "double"
-								},
-								"type": "array"
-							},
-							"type": {
-								"$ref": "#/components/schemas/PosterType.PHOTO"
-							}
-						},
-						"required": [
-							"albums",
-							"type"
-						],
-						"type": "object"
-					}
-				]
-			},
-			"PosterType.ERROR": {
-				"enum": [
-					"error"
-				],
-				"type": "string"
-			},
-			"ErrorPoster": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/BasePoster"
-					},
-					{
-						"properties": {
-							"message": {
-								"type": "string"
-							},
-							"type": {
-								"$ref": "#/components/schemas/PosterType.ERROR"
-							}
-						},
-						"required": [
-							"message",
-							"type"
-						],
-						"type": "object"
-					}
-				]
-			},
-			"Poster": {
-				"anyOf": [
-					{
-						"$ref": "#/components/schemas/LocalPoster"
-					},
-					{
-						"$ref": "#/components/schemas/MediaPoster"
-					},
-					{
-						"$ref": "#/components/schemas/PhotoPoster"
-					},
-					{
-						"$ref": "#/components/schemas/ErrorPoster"
-					}
-				]
-			},
-			"PosterResponse": {
+			"CarouselResponse": {
 				"properties": {
 					"posters": {
 						"items": {
-							"$ref": "#/components/schemas/Poster"
+							"$ref": "#/components/schemas/PosterResponse"
 						},
 						"type": "array"
 					},
@@ -3374,6 +3238,22 @@
 				"required": [
 					"posters",
 					"borrelMode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CarouselOrderParams": {
+				"properties": {
+					"posterIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"posterIds"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3395,6 +3275,18 @@
 				"additionalProperties": false
 			},
 			"BorrelModeParams": {
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EnabledParams": {
 				"properties": {
 					"enabled": {
 						"type": "boolean"
@@ -3651,55 +3543,12 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"FileResponse": {
-				"properties": {
-					"location": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"location",
-					"name"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LocalPosterResponse": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdAt": {
-						"type": "string"
-					},
-					"updatedAt": {
-						"type": "string"
-					},
-					"file": {
-						"$ref": "#/components/schemas/FileResponse"
-					},
-					"uri": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"StaticPosterHandlerState": {
 				"properties": {
 					"activePoster": {
 						"allOf": [
 							{
-								"$ref": "#/components/schemas/LocalPosterResponse"
+								"$ref": "#/components/schemas/PosterResponse"
 							}
 						],
 						"nullable": true
@@ -3724,6 +3573,275 @@
 				"required": [
 					"visible"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PosterType.IMAGE": {
+				"enum": [
+					"img"
+				],
+				"type": "string"
+			},
+			"PosterType.VIDEO": {
+				"enum": [
+					"video"
+				],
+				"type": "string"
+			},
+			"MediaPosterRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"trello": {
+						"type": "boolean"
+					},
+					"type": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/PosterType.IMAGE"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.VIDEO"
+							}
+						]
+					}
+				},
+				"required": [
+					"name",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PosterType.EXTERNAL": {
+				"enum": [
+					"extern"
+				],
+				"type": "string"
+			},
+			"ExternalPosterRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"trello": {
+						"type": "boolean"
+					},
+					"uri": {
+						"type": "string",
+						"description": "If the poster is of type external this holds the link to the resource."
+					},
+					"type": {
+						"$ref": "#/components/schemas/PosterType.EXTERNAL"
+					}
+				},
+				"required": [
+					"name",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode",
+					"uri",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PosterType.PHOTO": {
+				"enum": [
+					"photo"
+				],
+				"type": "string"
+			},
+			"PhotoPosterRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"trello": {
+						"type": "boolean"
+					},
+					"albums": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\npick from."
+					},
+					"type": {
+						"$ref": "#/components/schemas/PosterType.PHOTO"
+					}
+				},
+				"required": [
+					"name",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode",
+					"albums",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePosterRequest": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/MediaPosterRequest"
+					},
+					{
+						"$ref": "#/components/schemas/ExternalPosterRequest"
+					},
+					{
+						"$ref": "#/components/schemas/PhotoPosterRequest"
+					}
+				]
+			},
+			"UpdatePosterRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"albums": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\npick from."
+					}
+				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -6272,6 +6390,7 @@
 											"Poster.BorrelModePresent",
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
+											"Poster.Trello",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",
@@ -9874,7 +9993,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PosterResponse"
+									"$ref": "#/components/schemas/CarouselResponse"
 								}
 							}
 						}
@@ -9901,13 +10020,84 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "alwaysReturnBorrelPosters",
+						"name": "includeHidden",
 						"required": false,
 						"schema": {
 							"type": "boolean"
 						}
 					}
 				]
+			}
+		},
+		"/handler/screen/poster/carousel/order": {
+			"get": {
+				"operationId": "GetCarouselOrder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "number",
+										"format": "double"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "SetCarouselOrder",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CarouselOrderParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/handler/screen/poster/carousel/force-update": {
@@ -10000,6 +10190,56 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/BorrelModeParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/poster/carousel/{id}/enabled": {
+			"post": {
+				"operationId": "TogglePosterEnable",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EnabledParams"
 							}
 						}
 					}
@@ -10303,7 +10543,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Chang the visibility of the clock on-screen",
+				"description": "Change the visibility of the clock on-screen",
 				"tags": [
 					"Handlers"
 				],
@@ -10327,193 +10567,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/handler/screen/poster/static/items": {
-			"get": {
-				"operationId": "GetAllStaticPosters",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LocalPosterResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get all static posters from the database.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/handler/screen/poster/static/items/file": {
-			"post": {
-				"operationId": "CreateStaticPosterFile",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LocalPosterResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "string",
-									"enum": [
-										"Invalid file type, expected an image or a video."
-									],
-									"nullable": false
-								}
-							}
-						}
-					}
-				},
-				"description": "Create a new static poster based on a file (image or video).",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"file": {
-										"type": "string",
-										"format": "binary"
-									}
-								},
-								"required": [
-									"file"
-								]
-							}
-						}
-					}
-				}
-			}
-		},
-		"/handler/screen/poster/static/items/url": {
-			"post": {
-				"operationId": "CreateStaticPosterUrl",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LocalPosterResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Create a new static poster based on a URL",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"url": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"url"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/handler/screen/poster/static/items/{id}": {
-			"delete": {
-				"operationId": "DeleteStaticPoster",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Permanently delete a static poster.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
 			}
 		},
 		"/handler/screen/poster/static/items/{id}/show": {
@@ -10553,6 +10606,306 @@
 						}
 					}
 				]
+			}
+		},
+		"/handler/screen/poster/items": {
+			"get": {
+				"operationId": "GetAllPosters",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/PosterResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all posters from the database.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreatePoster",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Unknown Poster Type"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new poster of the given type.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "Body specifying the poster to be created.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePosterRequest",
+								"description": "Body specifying the poster to be created."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/poster/items/{id}": {
+			"get": {
+				"operationId": "GetPoster",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets a single poster from the database.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster to get.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeletePoster",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Deletes a specific poster from the database.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Indicates the poster to be deleted.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdatePoster",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the updatable fields of a specific poster.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the to be updated poster.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The new values of the fields to be changed as specified in UpdatePosterParams.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdatePosterRequest",
+								"description": "The new values of the fields to be changed as specified in UpdatePosterParams."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/poster/items/{id}/media": {
+			"put": {
+				"operationId": "AttachMedia",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Attaches uploaded file to existing media poster.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Id of the poster.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"file": {
+										"type": "string",
+										"format": "binary",
+										"description": "File to be attached, has to be an image or video."
+									}
+								},
+								"required": [
+									"file"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/handler/lights/set-effects/{id}/color": {

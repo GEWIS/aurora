@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import { pinoHttp } from 'pino-http';
 import { RegisterRoutes } from '../build/routes';
-import apiDocs from '../build/swagger.json';
+import apiDocs from '@gewis/aurora-api-client/openapi.json';
 import { SessionMiddleware, apiKeyMiddleware } from './modules/auth';
 import { setupErrorHandler } from './error';
 import { authResponse } from './modules/auth/passport';

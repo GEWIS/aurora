@@ -1,0 +1,30 @@
+{
+  "name": "@gewis/aurora-api-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "pnpm -w run sync && tsc -p tsconfig.lib.json",
+    "typecheck": "pnpm -w run sync && tsc --noEmit -p tsconfig.lib.json",
+    "sync": "openapi-ts"
+  },
+  "exports": {
+    "./openapi.json": "./openapi.json",
+    ".": "./src/api-client/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "@hey-api/client-fetch": "0.10.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.66.7",
+    "tsx": "^4.22.4",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@11.6.0"
+}

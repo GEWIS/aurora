@@ -1,3 +1,0 @@
-FORCE_COLOR=1
-npx lint-staged
-npm run build

@@ -43,7 +43,11 @@ export default function ProgressBar({
           id="progress-bar-slider-outer"
         >
           {seconds !== undefined && posterIndex !== undefined && (
-            <ProgressBarSlider seconds={seconds} posterIndex={posterIndex} color={progressBarColor} />
+            <ProgressBarSlider
+              seconds={seconds}
+              posterIndex={posterIndex}
+              color={progressBarColor}
+            />
           )}
         </div>
         <div
@@ -70,7 +74,13 @@ export default function ProgressBar({
                       viewBox="0 0 100 100"
                       id="progress-bar-logo-borrelmode"
                     >
-                      <image x="0" y="0" height="100%" width="100%" xlinkHref={'/borrel/sudosos.svg'} />
+                      <image
+                        x="0"
+                        y="0"
+                        height="100%"
+                        width="100%"
+                        xlinkHref={'/borrel/sudosos.svg'}
+                      />
                     </svg>
                   )}
                 </>

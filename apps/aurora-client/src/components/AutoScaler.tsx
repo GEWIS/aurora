@@ -8,7 +8,8 @@ export default function AutoScaler() {
 
   useEffect(() => {
     if (screen) {
-      document.documentElement.style.fontSize = Math.round(DEFAULT_FONT_SIZE * screen.scaleFactor) + 'px';
+      document.documentElement.style.fontSize =
+        Math.round(DEFAULT_FONT_SIZE * screen.scaleFactor) + 'px';
     }
   }, [screen]);
 

@@ -2,7 +2,9 @@ import { io } from 'socket.io-client';
 import { Dispatch, SetStateAction } from 'react';
 import { Handlers } from '../HandlerSwitcher';
 
-export default function registerRootHandler(setCurrentHandler: Dispatch<SetStateAction<Handlers | null>>) {
+export default function registerRootHandler(
+  setCurrentHandler: Dispatch<SetStateAction<Handlers | null>>,
+) {
   const rootSocket = io('/', {
     path: '/socket.io/',
   });

@@ -4,7 +4,7 @@
     "module": "es2022",
     "outDir": "dist",
     "rootDir": "src",
-    "declaration": true,
+    "declaration": true
   },
   "include": ["src"],
   "ts-node": {

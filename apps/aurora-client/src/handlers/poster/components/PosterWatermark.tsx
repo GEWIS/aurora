@@ -7,7 +7,12 @@ interface Props {
   borrelMode?: boolean;
 }
 
-export default function PosterWatermark({ posterIndex, progressBarMinimal, progressBarLogo, borrelMode }: Props) {
+export default function PosterWatermark({
+  posterIndex,
+  progressBarMinimal,
+  progressBarLogo,
+  borrelMode,
+}: Props) {
   if (posterIndex !== 0) return null;
 
   const hasLogo = progressBarLogo || borrelMode;

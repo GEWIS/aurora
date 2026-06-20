@@ -1,8 +1,8 @@
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
+import { client } from '@gewis/aurora-api-client/client';
 import AuthContextProvider from './contexts/AuthContext';
 import ErrorBoundary from './ErrorBoundary';
-import { client } from '@gewis/aurora-api-client/client';
 import ClientView from './ClientView';
 import AutoScaler from './components/AutoScaler';
 export default function App() {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import BlurredImage from '../stage-effects/components/backgrounds/BlurredImage';
 import { getSpotifyCurrentlyPlaying, TrackChangeEvent } from '@gewis/aurora-api-client';
+import BlurredImage from '../stage-effects/components/backgrounds/BlurredImage';
 
 interface Props {
   socket: Socket;

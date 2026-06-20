@@ -28,7 +28,8 @@ export default function ReloadCountdown() {
 
   return (
     <p>
-      Reloading in <span style={{ fontFamily: 'monospace' }}>{secondsLeft.toFixed(0).padStart(2, '0')}s</span>
+      Reloading in{' '}
+      <span style={{ fontFamily: 'monospace' }}>{secondsLeft.toFixed(0).padStart(2, '0')}s</span>
     </p>
   );
 }

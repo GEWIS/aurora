@@ -4,10 +4,10 @@
   "tasks": {
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
     "typecheck": { "dependsOn": ["^sync"] },
-    "lint": {},
-    "lint-fix": {},
-    "test": {},
-    "sync": { "cache": false },
+    "lint": { "dependsOn": ["^build"] },
+    "lint-fix": { "dependsOn": ["^build"] },
+    "test": { "dependsOn": ["^sync"] },
+    "sync": {},
     "sync-check": {}
   },
   "futureFlags": {

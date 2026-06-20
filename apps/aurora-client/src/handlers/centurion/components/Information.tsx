@@ -16,7 +16,10 @@ export default function Information(props: Props) {
     <div className="h-screen flex flex-col items-center justify-center text-white">
       <div
         className="w-full h-32 p-8"
-        style={{ backgroundImage: 'linear-gradient(rgba(0, 0, 0, 1), rgba(0,0,0,0.7) 70%, rgb(0, 0, 0, 0) 100%)' }}
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(0, 0, 0, 1), rgba(0,0,0,0.7) 70%, rgb(0, 0, 0, 0) 100%)',
+        }}
       >
         <div className="w-full flex justify-center h-full opacity-90">
           <LogoLine variant="left" size="2rem" />
@@ -24,9 +27,13 @@ export default function Information(props: Props) {
       </div>
       <div className="flex-grow"></div>
       <div
-        className={clsx('w-full h-96 flex items-center justify-center drop-shadow-xl', styles.displayText)}
+        className={clsx(
+          'w-full h-96 flex items-center justify-center drop-shadow-xl',
+          styles.displayText,
+        )}
         style={{
-          backgroundImage: 'linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0,0,0,0.7) 70%, rgb(0, 0, 0, 0) 100%)',
+          backgroundImage:
+            'linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0,0,0,0.7) 70%, rgb(0, 0, 0, 0) 100%)',
         }}
       >
         <img alt="albumCover" className="h-3/4 mr-6" src={albumCover} />

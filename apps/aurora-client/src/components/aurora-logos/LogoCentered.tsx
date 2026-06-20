@@ -11,7 +11,10 @@ export function LogoCentered({ size, dark }: Props) {
         alt="Aurora"
         style={{ filter: 'invert(10%)', height: `calc(${size} * 5)` }}
       />
-      <span className={[!dark ? 'text-neutral-100' : 'text-black'].join(' ')} style={{ fontSize: size }}>
+      <span
+        className={[!dark ? 'text-neutral-100' : 'text-black'].join(' ')}
+        style={{ fontSize: size }}
+      >
         Powered by Aurora
       </span>
       <span

@@ -5,7 +5,12 @@
   @for $i from 0 through $count {
     $text-shadow:
       $text-shadow,
-      (-0.5+ (math.random()) * 3) + em (-0.5+ (math.random()) * 3) + em 2px hsla(math.random() * 360, 100%, 50%, 0.9);
+      (-0.5+ (math.random()) * 3) +
+        em
+        (-0.5+ (math.random()) * 3) +
+        em
+        2px
+        hsla(math.random() * 360, 100%, 50%, 0.9);
   }
   text-shadow: $text-shadow;
 }

@@ -19,7 +19,10 @@ export function LogoLine({ variant, size, dark }: Props) {
     <div className="flex flex-row items-center">
       {variant === 'left' && renderHelmet()}
       <div className={'flex flex-col ' + (variant === 'left' ? 'items-start' : 'items-end')}>
-        <span className={[!dark ? 'text-neutral-100' : 'text-black'].join(' ')} style={{ fontSize: size }}>
+        <span
+          className={[!dark ? 'text-neutral-100' : 'text-black'].join(' ')}
+          style={{ fontSize: size }}
+        >
           Powered by Aurora
         </span>
         <span

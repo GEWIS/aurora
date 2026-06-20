@@ -8,7 +8,13 @@ interface Props extends PropsWithChildren {
   delay?: number;
 }
 
-export default function VerticalScroll({ children, visible, timeout, items, scrollEmptySpace }: Props) {
+export default function VerticalScroll({
+  children,
+  visible,
+  timeout,
+  items,
+  scrollEmptySpace,
+}: Props) {
   // ReturnType used instead of number as one of the dependencies uses @types/node as dependency
   const [timeoutRef, setTimeoutRef] = useState<ReturnType<typeof setTimeout> | undefined>();
   const [iteration, setIteration] = useState(0);

@@ -1,7 +1,12 @@
 {
   /* https://codepen.io/mpirdimpirdis/pen/dWwGKa */
 }
-export function lavalampJavascript(startColor: string, endColor: string, progression: number, scaleFactor: number = 1) {
+export function lavalampJavascript(
+  startColor: string,
+  endColor: string,
+  progression: number,
+  scaleFactor: number = 1,
+) {
   return `
         var canvas;
         var gl;

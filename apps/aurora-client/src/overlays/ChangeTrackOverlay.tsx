@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { AnimatePresence, motion } from 'framer-motion';
-import GlassCard from '../components/GlassCard';
 import { TrackChangeEvent } from '@gewis/aurora-api-client';
+import GlassCard from '../components/GlassCard';
 
 const TIME_VISIBLE_MS = 8000;
 

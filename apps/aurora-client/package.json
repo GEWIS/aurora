@@ -4,21 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "build": "tsc -b --noEmit && vite build",
     "serve": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint src --max-warnings=1",
-    "lint-fix": "eslint src --fix"
+    "lint-fix": "eslint src --fix",
+    "docker-build": "pnpm turbo prune @gewis/aurora-client --docker && docker build -f Dockerfile -t aurora-client ../../out"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
-    "@gewis/aurora-api-client": "workspace:*",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
+    "@gewis/aurora-api-client": "workspace:*",
     "@giphy/js-fetch-api": "^5.7.0",
     "@giphy/react-components": "^10.1.1",
     "@hey-api/client-fetch": "^0.13.1",
     "@tailwindcss/postcss": "^4.1.18",
     "clsx": "^2.1.1",
+    "events": "^3.3.0",
     "framer-motion": "^12.29.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

@@ -14,6 +14,7 @@
     "lint-fix": "eslint ./src ./integration-test --fix",
     "sync": "tsx scripts/sync.ts",
     "sync-check": "tsx scripts/sync.ts --check",
+    "docker-build": "pnpm turbo prune @gewis/aurora-core --docker && docker build -f Dockerfile -t aurora-core ../../out",
     "migrate": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:run -d src/database.ts",
     "migrate:revert": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:revert -d src/database.ts",
     "migrate:show": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:show -d src/database.ts",

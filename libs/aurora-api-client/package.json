@@ -3,25 +3,32 @@
   "version": "1.0.0",
   "description": "",
   "license": "AGPL-3.0-only",
-  "keywords": [],
-  "author": "",
   "scripts": {
-    "build": "pnpm -w run sync && tsc -p tsconfig.lib.json",
-    "typecheck": "pnpm -w run sync && tsc --noEmit -p tsconfig.lib.json",
+    "build": "tsc -b tsconfig.lib.json",
+    "typecheck": "tsc -b --noEmit tsconfig.lib.json",
+    "prepublishOnly": "tsc -b tsconfig.lib.json",
     "sync": "openapi-ts"
   },
   "main": "src/api-client/index.ts",
+  "types": "src/api-client/index.ts",
   "exports": {
     "./openapi.json": "./openapi.json",
     ".": {
-      "default": "./src/api-client/index.ts",
-      "types": "./src/api-client/index.ts"
+      "development": "./src/api-client/index.ts",
+      "types": "./dist/api-client/index.d.ts",
+      "default": "./dist/api-client/index.js"
     },
     "./client": {
-      "default": "./src/api-client/client.gen.ts",
-      "types": "./src/api-client/client.gen.ts"
+      "development": "./src/api-client/client.gen.ts",
+      "types": "./dist/api-client/client.gen.d.ts",
+      "default": "./dist/api-client/client.gen.js"
     }
   },
+  "files": [
+    "dist",
+    "openapi.json",
+    "README.md"
+  ],
   "dependencies": {
     "@hey-api/client-fetch": "0.10.0"
   },

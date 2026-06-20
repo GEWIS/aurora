@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json"],
+  "tasks": {
+    "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
+    "typecheck": { "dependsOn": ["^sync"] },
+    "lint": {},
+    "lint-fix": {},
+    "test": {},
+    "sync": { "cache": false },
+    "sync-check": {}
+  },
+  "futureFlags": {
+    "pruneIncludesGlobalFiles": true
+  }
+}

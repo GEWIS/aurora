@@ -1,34 +1,25 @@
 # Aurora Client
-This repository contains the narrowcasting application of the Aurora software suite.
-It is the subscriber that is used by _Screen_ entities.
-After authenticating using HTTP, the client will connect to the core using SocketIO
-to listen for incoming commands. It will then execute these commands accordingly.
-However, if extra information is needed (for example to render a certain poster),
-the client can make HTTP calls to the core to request this data.
+
+This is the **narrowcasting client** of the Aurora suite — the subscriber used by _Screen_ entities.
+After authenticating over HTTP, the client connects to the core using SocketIO to
+listen for incoming commands and render posters, stage effects, and other content.
+See the root [README](../README.md) for the full architecture overview and list of all Aurora repositories.
 
 ## Prerequisites
-- NodeJS 22.
-- A locally running copy of [aurora-core](https://github.com/gewis/narrowcasting-core).
-  The client repository should be cloned next to the core repository, so in the folder `../aurora-core`.
-  This is necessary to generate the required API client files (installation step 2).
 
-## Installation
-1. Run `yarn install`.
-2. Run `yarn gen-client` to generate the Typescript files required to communicate with the core.
-3. Run `yarn dev`.
-4. The application should now be running at http://localhost:8081.
-You can authenticate a screen on the client by going to the URL https://localhost:8081/?key=KEY_HERE.
+- NodeJS 22.
+
+## Development setup
+
+1. Copy `.env.example` to `.env` and fill in the environment variables.
+1. Run `pnpm install` from the monorepo root.
+1. Run `pnpm dev`.
+1. The application is now running at http://localhost:8081.
+   You can authenticate by visiting `http://localhost:8081/?key=KEY_HERE`.
+
+The API client is automatically generated during `pnpm install` or `pnpm dev` (turbo runs the `sync` task).
 
 ## Deployment
-Deployment is done using Docker-compose in the core repository.
-This should work out of the box if you meet the prerequisites.
 
-## Copyright
-Copyright © 2023-2026 Study Association GEWIS - Some rights reserved.
-You can use our software freely within the limits of our license.
-However, we worked very hard on this project and invested a lot of time in it
-so we ask you to leave our copyright marks in place when modifying our software.
-Of course, you are free to add your own.
-
-## License
-Aurora uses the [AGPL-3.0 license](LICENSE).
+Deployment is handled by Docker Compose from the monorepo root alongside Aurora Core.
+The client can be built standalone with `pnpm docker-build` from this directory.

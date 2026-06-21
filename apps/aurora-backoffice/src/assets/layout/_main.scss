@@ -1,0 +1,38 @@
+@use './_variables' as *;
+
+:root {
+  --surface-ground: var(--p-surface-100);
+  --surface-hover: var(--p-surface-100);
+}
+
+.dark-mode {
+  --surface-ground: var(--p-surface-950) !important;
+  --surface-hover: var(--p-surface-800) !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  font-size: $scale;
+}
+
+body {
+  font-family: 'Inter var', sans-serif;
+  background-color: var(--surface-ground);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+}
+
+.layout-wrapper {
+  min-height: 100vh;
+}

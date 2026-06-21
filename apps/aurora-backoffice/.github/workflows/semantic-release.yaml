@@ -1,0 +1,24 @@
+name: Semantic release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  versioning:
+    uses: GEWIS/actions/.github/workflows/versioning.yml@v1
+
+  release:
+    uses: GEWIS/actions/.github/workflows/docker-release.yml@v1
+    needs: versioning
+    if: ${{ needs.versioning.outputs.next-version != '' }}
+    with:
+      projects: "['.']"
+      version: ${{ needs.versioning.outputs.next-version }}
+      docker-registry: "abc.docker-registry.gewis.nl"
+      docker-paths: "['nc/aurora/backoffice']"
+      github-registry: "true"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.SVC_GH_ABCNC_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.SVC_GH_ABCNC_PWD }}

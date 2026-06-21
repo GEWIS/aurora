@@ -1,0 +1,4 @@
+{
+  "./src/**/*.{ts,vue}": ["yarn format", "yarn lint"]
+
+}

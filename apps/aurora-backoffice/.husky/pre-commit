@@ -1,0 +1,3 @@
+FORCE_COLOR=1
+npx lint-staged
+yarn build

@@ -1,0 +1,17 @@
+@import 'https://fonts.googleapis.com/css?family=Source+Code+Pro';
+@import 'https://fonts.googleapis.com/css?family=Raleway:400,700';
+@import 'https://fonts.googleapis.com/css?family=Lato';
+@import 'tailwindcss';
+
+.font-lato {
+  font-family: 'Lato', monospace;
+}
+
+.font-raleway {
+  font-family: 'Raleway', sans-serif;
+}
+
+@font-face {
+  font-family: CrayonCrumble;
+  src: url('/base/dk-crayon-crumble-ddll.ttf');
+}

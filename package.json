@@ -2,25 +2,27 @@
   "name": "@gewis/aurora",
   "version": "1.0.0",
   "description": "",
+  "license": "AGPL-3.0-only",
+  "keywords": [],
   "author": "",
   "scripts": {
-    "build": "pnpm -r run build",
-    "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r run test",
-    "lint": "pnpm -r run lint",
-    "lint-fix": "pnpm -r run lint-fix",
+    "build": "turbo run build",
+    "docker-build": "pnpm -r --workspace-concurrency=1 run docker-build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "lint-fix": "turbo run lint -- --fix",
+    "sync": "turbo run sync",
+    "sync-check": "turbo run sync-check",
     "format": "prettier --check .",
     "format-fix": "prettier --write .",
-    "sync": "pnpm --filter @gewis/aurora-core run sync && pnpm --filter @gewis/aurora-api-client run sync",
-    "sync-check": "pnpm -r run sync-check",
     "prepare-husky": "husky"
   },
-  "keywords": [],
-  "license": "AGPL-3.0-only",
   "devDependencies": {
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
-    "prettier": "3.8.1"
+    "prettier": "3.8.1",
+    "turbo": "^2.9.18"
   },
   "engines": {
     "node": ">=22.0.0"

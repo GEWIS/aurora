@@ -1,0 +1,14 @@
+/* Height of the progress bar */
+.progress-bar-height {
+  height: 14vh;
+}
+
+/* The full-width box the slider is contained in */
+#poster #progress-bar #progress-bar-slider-outer {
+  height: 3%;
+}
+
+/* The div containing the clock of the progress bar */
+#poster #progress-bar #progress-bar-container #progress-bar-clock {
+  font-size: 8vh;
+}

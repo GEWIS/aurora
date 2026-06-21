@@ -13,11 +13,12 @@ jobs:
     uses: GEWIS/actions/.github/workflows/docker-release.yml@v1
     needs: versioning
     if: ${{ needs.versioning.outputs.next-version != '' }}
+
     with:
-      projects: '["."]'
+      projects: '["apps/aurora-core", "apps/aurora-client"]'
       version: ${{ needs.versioning.outputs.next-version }}
       docker-registry: 'abc.docker-registry.gewis.nl'
-      docker-paths: '["nc/aurora/core"]'
+      docker-paths: '["nc/aurora/core", "nc/aurora/client"]'
       github-registry: 'true'
     secrets:
       REGISTRY_USERNAME: ${{ secrets.SVC_GH_ABCNC_USERNAME }}

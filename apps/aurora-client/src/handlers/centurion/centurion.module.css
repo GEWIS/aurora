@@ -1,0 +1,124 @@
+:root {
+  --start-color-animation: #ee7752;
+  --end-color-animation: #23d5ab;
+  --start-color-backdrop: #ee7752;
+  --end-color-backdrop: #23d5ab;
+  --random-rotation: 6deg;
+  --random-time: 10s;
+}
+
+/* General styling */
+.text {
+  font-family: 'Bebas Neue', sans-serif;
+  text-shadow: #777777 0 0 20px;
+}
+
+/* Strobe animations */
+@-webkit-keyframes strobeAnimation {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #000;
+  }
+  99% {
+    background-color: #000;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+@-moz-keyframes strobeAnimation {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #000;
+  }
+  99% {
+    background-color: #000;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+@keyframes strobeAnimation {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #000;
+  }
+  99% {
+    background-color: #000;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+.strobe {
+  -webkit-animation: strobeAnimation 0.1s infinite;
+  -moz-animation: strobeAnimation 0.1s infinite;
+  animation: strobeAnimation 0.1s infinite;
+}
+
+.wallpaper {
+  filter: brightness(95%);
+  background: -webkit-linear-gradient(
+    left top,
+    var(--start-color-animation),
+    var(--end-color-animation)
+  ); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(
+    bottom right,
+    var(--start-color-animation),
+    var(--end-color-animation)
+  ); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(
+    bottom right,
+    var(--start-color-animation),
+    var(--end-color-animation)
+  ); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(
+    to bottom right,
+    var(--start-color-animation),
+    var(--end-color-animation)
+  ); /* Standard syntax */
+}
+
+.fullscreen {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Text effects */
+@keyframes drunkAnimation {
+  0% {
+    transform: rotate(var(--random-rotation));
+  }
+  50% {
+    transform: rotate(calc(var(--random-rotation) * -1));
+  }
+  100% {
+    transform: rotate(var(--random-rotation));
+  }
+}
+
+.drunk {
+  animation: ease-in-out drunkAnimation var(--random-time) infinite;
+}

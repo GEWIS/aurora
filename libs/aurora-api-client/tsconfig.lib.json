@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "module": "es2022",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true
   },
   "include": ["src"],
   "ts-node": {

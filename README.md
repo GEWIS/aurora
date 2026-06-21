@@ -83,7 +83,6 @@ cp apps/aurora-core/.env.example apps/aurora-core/.env
 cd apps/aurora-core && pnpm dev
 ```
 
-
 ## Development with Docker Compose
 
 The monorepo includes a one-command Docker Compose setup that runs the core, client (narrowcasting), and their dependencies together.
@@ -101,6 +100,7 @@ pnpm dev-up
 ```
 
 This will:
+
 1. Start the **core** (`http://localhost:3000`) with a pre-seeded SQLite database (GEWIS data set)
 2. Start the **client** (`http://localhost:8081`) with Vite dev server proxying API calls to the core
 3. Wait for the core to be ready and the database seeded

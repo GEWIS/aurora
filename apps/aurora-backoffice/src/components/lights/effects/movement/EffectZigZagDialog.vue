@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { ZigZagCreateParams } from '@/api';
+import type { ZigZagCreateParams } from '@gewis/aurora-api-client';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectZigZag from '@/components/lights/effects/movement/EffectZigZag.vue';
 

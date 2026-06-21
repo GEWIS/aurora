@@ -14,7 +14,7 @@ import {
   setAudioHandler,
   setLightsHandler,
   setScreenHandler,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 type Handler = HandlerResponseAudioResponse | HandlerResponseLightsGroupResponse | HandlerResponseScreenResponse;
 

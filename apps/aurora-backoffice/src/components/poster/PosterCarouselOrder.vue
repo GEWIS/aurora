@@ -1,5 +1,7 @@
 <template>
-  <div v-if="orderedPosters.length === 0" class="text-center italic opacity-70 py-4">No posters to order</div>
+  <div v-if="orderedPosters.length === 0" class="text-center italic opacity-70 py-4">
+    No posters to order
+  </div>
   <ul v-else class="flex flex-col gap-1">
     <li
       v-for="(poster, index) in orderedPosters"
@@ -29,7 +31,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { type PosterResponse } from '@/api';
+import { type PosterResponse } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -70,7 +72,10 @@ const buildOrdered = () => {
   orderedPosters.value = ordered;
 };
 
-watch(() => [store.posters, store.carousel.carouselOrder], buildOrdered, { immediate: true, deep: true });
+watch(() => [store.posters, store.carousel.carouselOrder], buildOrdered, {
+  immediate: true,
+  deep: true,
+});
 
 const onDragStart = (index: number) => {
   dragIndex.value = index;

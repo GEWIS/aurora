@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useSocketStore } from '@/stores/socket.store';
-import { getSpotifyCurrentlyPlaying, type TrackChangeEvent } from '@/api';
+import { getSpotifyCurrentlyPlaying, type TrackChangeEvent } from '@gewis/aurora-api-client';
 
 interface CurrentlyPlayingStore {
   currentlyPlaying: TrackChangeEvent | null;

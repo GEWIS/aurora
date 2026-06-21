@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { type AuditLogEntryResponse, getAuditLogs } from '@/api';
+import { type AuditLogEntryResponse, getAuditLogs } from '@gewis/aurora-api-client';
 import { useSocketStore } from '@/stores/socket.store';
 
 /**

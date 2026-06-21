@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
-import { type BeatFadeOutCreateParams } from '@/api';
+import { type BeatFadeOutCreateParams } from '@gewis/aurora-api-client';
 import EffectBeatFadeOut from '@/components/lights/effects/color/EffectBeatFadeOut.vue';
 
 defineEmits<{

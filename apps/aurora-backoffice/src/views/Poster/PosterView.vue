@@ -46,7 +46,11 @@
     <div class="lg:col-span-1 order-1 lg:order-2 flex flex-col gap-4">
       <AppContainer icon="pi-image" title="Static Poster">
         <div class="flex flex-col gap-2">
-          <StaticPosterPreview v-if="activeStaticPoster" class="w-full" :poster="activeStaticPoster" />
+          <StaticPosterPreview
+            v-if="activeStaticPoster"
+            class="w-full"
+            :poster="activeStaticPoster"
+          />
           <div
             v-else
             class="w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast"
@@ -75,7 +79,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { PosterType } from '@/api';
+import type { PosterType } from '@gewis/aurora-api-client';
 import { getPosterStatus, posterStatusLabels, type PosterStatus } from '@/utils/posterUtils';
 import AppContainer from '@/layout/AppContainer.vue';
 import { usePosterStore } from '@/stores/poster/poster.store';

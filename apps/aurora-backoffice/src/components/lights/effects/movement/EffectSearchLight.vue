@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { MovementEffectsSearchLight, type SearchLightCreateParams } from '@/api';
+import { MovementEffectsSearchLight, type SearchLightCreateParams } from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   defaultModelValue?: SearchLightCreateParams;

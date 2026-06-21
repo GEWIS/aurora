@@ -13,7 +13,12 @@
     <form class="flex flex-col gap-4 w-[32rem] max-w-full" @submit.prevent="onSubmit">
       <div class="flex flex-col gap-2">
         <label for="poster-edit-name">Name</label>
-        <InputText id="poster-edit-name" v-model="name" :invalid="submitted && !name.trim()" placeholder="My poster" />
+        <InputText
+          id="poster-edit-name"
+          v-model="name"
+          :invalid="submitted && !name.trim()"
+          placeholder="My poster"
+        />
         <Message v-if="submitted && !name.trim()" severity="error" size="small" variant="simple">
           Name is required
         </Message>
@@ -34,7 +39,12 @@
           separator=","
           @add="onAlbumAdd"
         />
-        <Message v-if="submitted && albums.length === 0" severity="error" size="small" variant="simple">
+        <Message
+          v-if="submitted && albums.length === 0"
+          severity="error"
+          size="small"
+          variant="simple"
+        >
           Please add at least one album ID
         </Message>
         <Message v-else-if="albumError" severity="error" size="small" variant="simple">
@@ -96,7 +106,13 @@
 
       <div class="flex flex-row justify-end gap-2 mt-2">
         <Button label="Cancel" severity="secondary" type="button" @click="visible = false" />
-        <Button :disabled="loading" label="Save" :loading="loading" severity="success" type="submit" />
+        <Button
+          :disabled="loading"
+          label="Save"
+          :loading="loading"
+          severity="success"
+          type="submit"
+        />
       </div>
     </form>
   </Dialog>
@@ -106,7 +122,12 @@
 import { computed, ref } from 'vue';
 import DatePicker from 'primevue/datepicker';
 import InputChips from 'primevue/inputchips';
-import { FooterSize, type PosterResponse, PosterType, type UpdatePosterRequest } from '@/api';
+import {
+  FooterSize,
+  type PosterResponse,
+  PosterType,
+  type UpdatePosterRequest,
+} from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 
@@ -135,7 +156,9 @@ const expirationDate = ref<Date | null>(null);
 const borrelMode = ref<boolean>(false);
 
 const defaultAccentColor = computed(() =>
-  (settingsStore.serverSettings?.['Poster.DefaultProgressBarColor'] ?? '').replace(/^#/, '').toLowerCase(),
+  (settingsStore.serverSettings?.['Poster.DefaultProgressBarColor'] ?? '')
+    .replace(/^#/, '')
+    .toLowerCase(),
 );
 
 const accentColorInput = computed({

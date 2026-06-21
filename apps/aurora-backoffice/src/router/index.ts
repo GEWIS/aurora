@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import AppLayout from '@/layout/AppLayout.vue';
 import { useLayoutStore } from '@/stores/layout.store';
-import { type ISecurityGroups, type ISecuritySections, SecurityGroup } from '@/api';
+import { type ISecurityGroups, type ISecuritySections, SecurityGroup } from '@gewis/aurora-api-client';
 
 interface SecurityRole {
   securityGroup: keyof ISecurityGroups;
@@ -261,6 +261,8 @@ router.beforeEach(async (to) => {
     // If authenticated, but does not have rights to access the route
     return { name: 'unauthorized' };
   }
+  // Proceed if authenticated and has rights (or already on /auth)
+  return undefined;
 });
 
 export default router;

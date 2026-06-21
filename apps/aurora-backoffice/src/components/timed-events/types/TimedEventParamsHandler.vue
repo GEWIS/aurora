@@ -36,7 +36,7 @@ import type {
   TimedEventSwitchHandlerAudio,
   TimedEventSwitchHandlerLights,
   TimedEventSwitchHandlerScreen,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import TimedEventDialogSaveButton from '@/components/timed-events/types/TimedEventDialogSaveButton.vue';
 
 const props = defineProps<{

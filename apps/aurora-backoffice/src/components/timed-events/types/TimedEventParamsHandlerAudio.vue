@@ -16,7 +16,7 @@ import { computed } from 'vue';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 import { useHandlersStore } from '@/stores/handlers.store';
 import TimedEventParamsHandler from '@/components/timed-events/types/TimedEventParamsHandler.vue';
-import type { SwitchHandlerParams } from '@/api';
+import type { SwitchHandlerParams } from '@gewis/aurora-api-client';
 import type { TimedEventParamsProps } from '@/components/timed-events/types/TimedEventParamsProps';
 
 defineProps<TimedEventParamsProps<SwitchHandlerParams>>();

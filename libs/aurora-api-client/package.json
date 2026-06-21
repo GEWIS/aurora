@@ -22,6 +22,11 @@
       "development": "./src/api-client/client.gen.ts",
       "types": "./dist/api-client/client.gen.d.ts",
       "default": "./dist/api-client/client.gen.js"
+    },
+    "./schemas": {
+      "development": "./src/api-client/schemas.gen.ts",
+      "types": "./dist/api-client/schemas.gen.d.ts",
+      "default": "./dist/api-client/schemas.gen.js"
     }
   },
   "files": [

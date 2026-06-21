@@ -78,7 +78,7 @@ import {
   ColorEffectsWave,
   type LightsButtonEffectColor,
   type LightsEffectsColorCreateParams,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import LightsGroupsSelect from '@/components/lights/effects/button/LightsGroupsSelect.vue';
 import EffectBeatFadeOut from '@/components/lights/effects/color/EffectBeatFadeOut.vue';
 import EffectWave from '@/components/lights/effects/color/EffectWave.vue';

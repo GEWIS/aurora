@@ -1,7 +1,14 @@
 <template>
   <div class="relative text-sm">
-    <i :class="['pi cursor-pointer', statusIcon]" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false" />
-    <div v-if="showTooltip" class="tooltip absolute left-full top-0 ml-2 whitespace-nowrap rounded px-2 py-1 z-10">
+    <i
+      :class="['pi cursor-pointer', statusIcon]"
+      @mouseenter="showTooltip = true"
+      @mouseleave="showTooltip = false"
+    />
+    <div
+      v-if="showTooltip"
+      class="tooltip absolute left-full top-0 ml-2 whitespace-nowrap rounded px-2 py-1 z-10"
+    >
       <div v-if="connected && status">
         <div>{{ timeStatus }}</div>
         <div>Latency: {{ latency }}</div>
@@ -22,7 +29,7 @@ import type {
   LightsControllerResponse,
   PartialRecordSocketioNamespacesString,
   ScreenResponse,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   subscriber: AudioResponse | ScreenResponse | LightsControllerResponse;

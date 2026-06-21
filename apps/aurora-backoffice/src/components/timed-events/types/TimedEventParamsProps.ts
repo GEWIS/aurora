@@ -1,4 +1,4 @@
-import type { CreateTimedEventRequest } from '@/api';
+import type { CreateTimedEventRequest } from '@gewis/aurora-api-client';
 
 export type TimedEventParamsProps<T> = {
   originalEventSpecParams?: T;

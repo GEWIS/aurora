@@ -62,7 +62,7 @@ import router from './router';
 import App from './App.vue';
 import '@/utils/fetchInterceptor';
 import { AuraPreset } from '@/assets/preset';
-import { client } from '@/api/client.gen';
+import { client } from '@gewis/aurora-api-client/client';
 
 const app = createApp(App);
 

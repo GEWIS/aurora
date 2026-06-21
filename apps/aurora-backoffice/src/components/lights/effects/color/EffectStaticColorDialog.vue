@@ -16,7 +16,7 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectStaticColor from '@/components/lights/effects/color/EffectStaticColor.vue';
-import type { StaticColorCreateParams } from '@/api';
+import type { StaticColorCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: StaticColorCreateParams];

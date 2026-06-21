@@ -21,7 +21,7 @@ import {
   togglePosterEnable,
   updatePoster,
   type UpdatePosterRequest,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 interface PosterStore {
   posters: PosterResponse[];

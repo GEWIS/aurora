@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { type PosterResponse, PosterType } from '@/api';
+import { type PosterResponse, PosterType } from '@gewis/aurora-api-client';
 import PosterMediaGallery from '@/components/poster/PosterMediaGallery.vue';
 
 const props = defineProps<{

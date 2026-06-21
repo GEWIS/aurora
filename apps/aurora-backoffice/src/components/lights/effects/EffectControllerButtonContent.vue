@@ -20,7 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { type LightsButtonColors, type LightsPredefinedEffectResponse, RgbColor } from '@/api';
+import {
+  type LightsButtonColors,
+  type LightsPredefinedEffectResponse,
+  RgbColor,
+} from '@gewis/aurora-api-client';
 import ColorBox from '@/components/lights/effects/ColorBox.vue';
 import { useColorStore } from '@/stores/color.store';
 

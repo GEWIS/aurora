@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
-import { type PosterResponse, PosterType } from '@/api';
+import { type PosterResponse, PosterType } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 
 const store = usePosterStore();

@@ -6,14 +6,15 @@
     "dev": "vite",
     "preview": "vite preview",
     "build": "vite build",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc -b --noEmit",
     "lint": "eslint src --max-warnings=1",
     "lint-fix": "eslint src --fix"
   },
   "dependencies": {
+    "@gewis/aurora-api-client": "workspace:*",
     "@gewis/splash": "2.4.0",
-    "@hey-api/client-fetch": "0.10.0",
-    "@primevue/themes": "4.3.6",
+    "@primeuix/themes": "1.2.0",
+    "@primevue/core": "4.3.6",
     "@tailwindcss/postcss": "4.1.14",
     "@vee-validate/yup": "4.15.1",
     "cronstrue": "2.61.0",

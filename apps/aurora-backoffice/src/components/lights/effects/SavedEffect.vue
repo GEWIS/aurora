@@ -5,7 +5,11 @@
         <div>
           {{ effect.type }}
         </div>
-        <ColorBox v-for="color in colors" :key="color" :color="colorStore.getHexColor(color as RgbColor)" />
+        <ColorBox
+          v-for="color in colors"
+          :key="color"
+          :color="colorStore.getHexColor(color as RgbColor)"
+        />
       </div>
     </template>
   </Chip>
@@ -14,7 +18,11 @@
 <script setup lang="ts">
 import ColorBox from '@/components/lights/effects/ColorBox.vue';
 import { useColorStore } from '@/stores/color.store';
-import { type LightsEffectsColorCreateParams, type LightsEffectsMovementCreateParams, RgbColor } from '@/api';
+import {
+  type LightsEffectsColorCreateParams,
+  type LightsEffectsMovementCreateParams,
+  RgbColor,
+} from '@gewis/aurora-api-client';
 
 const colorStore = useColorStore();
 

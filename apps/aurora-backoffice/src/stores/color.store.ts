@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia';
-import { getAllLightsColors, type LightsColorResponse, type RgbColor } from '@/api';
+import {
+  getAllLightsColors,
+  type LightsColorResponse,
+  type RgbColor,
+} from '@gewis/aurora-api-client';
 
 interface ColorStore {
   colors: LightsColorResponse[];

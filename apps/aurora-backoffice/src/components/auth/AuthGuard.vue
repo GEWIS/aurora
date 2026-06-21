@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { type ISecurityGroups, type ISecuritySections } from '@/api';
+import { type ISecurityGroups, type ISecuritySections } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 
 const props = defineProps<{

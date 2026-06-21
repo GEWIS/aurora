@@ -1,5 +1,9 @@
 <template>
-  <EffectSettingsDialog :can-save="effect.props.colors.length === 1" effect-name="Wave" @save="$emit('save', effect)">
+  <EffectSettingsDialog
+    :can-save="effect.props.colors.length === 1"
+    effect-name="Wave"
+    @save="$emit('save', effect)"
+  >
     <EffectWave v-model="effect" :show-colors="true" />
   </EffectSettingsDialog>
 </template>
@@ -8,7 +12,12 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectWave from '@/components/lights/effects/color/EffectWave.vue';
-import { ColorEffectsWave, LightsEffectDirection, LightsEffectPattern, type WaveCreateParams } from '@/api';
+import {
+  ColorEffectsWave,
+  LightsEffectDirection,
+  LightsEffectPattern,
+  type WaveCreateParams,
+} from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [effect: WaveCreateParams];

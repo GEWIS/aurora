@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useSpotifyStore } from '@/stores/spotify.store';
-import type { SpotifyUserResponse } from '@/api';
+import type { SpotifyUserResponse } from '@gewis/aurora-api-client';
 import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
 
 const store = useSpotifyStore();

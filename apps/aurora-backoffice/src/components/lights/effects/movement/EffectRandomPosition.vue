@@ -13,7 +13,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { MovementEffectsRandomPosition, type RandomPositionCreateParams } from '@/api';
+import {
+  MovementEffectsRandomPosition,
+  type RandomPositionCreateParams,
+} from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   defaultModelValue?: RandomPositionCreateParams;

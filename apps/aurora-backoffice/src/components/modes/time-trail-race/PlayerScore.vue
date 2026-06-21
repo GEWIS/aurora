@@ -1,6 +1,8 @@
 <template>
   <div v-if="store.getCurrentPlayer !== undefined" class="flex flex-col gap-2">
-    <div class="text-2xl text-center font-semibold">{{ store.getCurrentPlayer.name }}'s final score</div>
+    <div class="text-2xl text-center font-semibold">
+      {{ store.getCurrentPlayer.name }}'s final score
+    </div>
     <div class="w-max-lg mx-auto">
       <table>
         <tbody>
@@ -22,7 +24,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { ScoreboardItem } from '@/api';
+import type { ScoreboardItem } from '@gewis/aurora-api-client';
 import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
 import { toStopwatchString } from '@/utils/timeUtils';
 

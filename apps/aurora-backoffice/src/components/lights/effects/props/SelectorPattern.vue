@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { LightsEffectPattern } from '@/api';
+import { LightsEffectPattern } from '@gewis/aurora-api-client';
 
 defineProps<{
   modelValue: LightsEffectPattern;

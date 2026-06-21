@@ -1,4 +1,4 @@
-import type { PosterResponse } from '@/api';
+import type { PosterResponse } from '@gewis/aurora-api-client';
 
 export type PosterStatus = 'live' | 'borrel' | 'expired' | 'scheduled' | 'disabled';
 

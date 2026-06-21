@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { clearSettingsFile, type FeatureFlagResponse, type ISettings, setSetting, setSettingFile } from '@/api';
-import { getFeatureFlags, getSettings } from '@/api';
+import { clearSettingsFile, type FeatureFlagResponse, type ISettings, setSetting, setSettingFile } from '@gewis/aurora-api-client';
+import { getFeatureFlags, getSettings } from '@gewis/aurora-api-client';
 
 interface ServerSettingsStore {
   serverSettings?: ISettings;

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import LightsGroupsSelect from '@/components/lights/effects/button/LightsGroupsSelect.vue';
-import type { LightsButtonStrobe } from '@/api';
+import type { LightsButtonStrobe } from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   defaultProperties?: LightsButtonStrobe;

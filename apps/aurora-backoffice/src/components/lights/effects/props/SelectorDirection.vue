@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { LightsEffectDirection } from '@/api';
+import { LightsEffectDirection } from '@gewis/aurora-api-client';
 
 defineProps<{
   modelValue: LightsEffectDirection;

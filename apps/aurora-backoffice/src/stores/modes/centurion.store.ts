@@ -11,7 +11,7 @@ import {
   startCenturion,
   stopCenturion,
   skipCenturion,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 /**
  * Centurion store

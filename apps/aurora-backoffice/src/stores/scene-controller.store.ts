@@ -7,7 +7,7 @@ import {
   deleteScene,
   applyScene,
   clearScene,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 interface SceneControllerStore {
   scenes: LightsSceneResponse[];

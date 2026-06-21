@@ -7,7 +7,7 @@ import {
   type SpotifyUserProfile,
   type SpotifyUserResponse,
   switchToSpotifyUser,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 interface SpotifyStore {
   loading: boolean;

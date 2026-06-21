@@ -16,7 +16,7 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectRandomPosition from '@/components/lights/effects/movement/EffectRandomPosition.vue';
-import type { RandomPositionCreateParams } from '@/api';
+import type { RandomPositionCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: RandomPositionCreateParams];

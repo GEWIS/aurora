@@ -18,7 +18,7 @@ import {
   type RegisterPlayerParams,
   type ScoreboardItem,
   TimeTrailRaceState,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import { useSocketStore } from '@/stores/socket.store';
 
 /**

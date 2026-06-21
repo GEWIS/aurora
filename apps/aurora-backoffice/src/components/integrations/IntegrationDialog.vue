@@ -16,7 +16,13 @@
       </div>
       <div class="flex flex-col gap-2">
         <label for="endpoints">Endpoints</label>
-        <MultiSelect v-model="endpoints" display="chip" filter :options="possibleEndpoints" show-clear>
+        <MultiSelect
+          v-model="endpoints"
+          display="chip"
+          filter
+          :options="possibleEndpoints"
+          show-clear
+        >
           <template #option="slotProps">
             <div
               v-if="!store.integrationEndpoints.includes(slotProps.option)"
@@ -50,7 +56,7 @@
 <script setup lang="ts">
 import { computed, type ComputedRef, ref } from 'vue';
 import { type IntegrationUser, useIntegrationsStore } from '@/stores/integrations.store';
-import type { IntegrationUserCreateRequest } from '@/api';
+import type { IntegrationUserCreateRequest } from '@gewis/aurora-api-client';
 
 const store = useIntegrationsStore();
 

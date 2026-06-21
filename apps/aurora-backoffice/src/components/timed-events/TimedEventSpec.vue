@@ -10,7 +10,9 @@
     label="Clean audit logs"
   />
   <TimedEventTag
-    v-else-if="props.eventSpec.type === 'switch-handler-audio' && props.eventSpec.params.handler !== ''"
+    v-else-if="
+      props.eventSpec.type === 'switch-handler-audio' && props.eventSpec.params.handler !== ''
+    "
     description=""
     :label="`Switch handler for audio '${getAudioName(props.eventSpec.params.id)}' to ${props.eventSpec.params.handler}`"
   />
@@ -20,7 +22,9 @@
     :label="`Remove handler for audio '${getAudioName(props.eventSpec.params.id)}'`"
   />
   <TimedEventTag
-    v-else-if="props.eventSpec.type === 'switch-handler-lights' && props.eventSpec.params.handler !== ''"
+    v-else-if="
+      props.eventSpec.type === 'switch-handler-lights' && props.eventSpec.params.handler !== ''
+    "
     description=""
     :label="`Switch handler for lights group '${getLightsGroupName(props.eventSpec.params.id)}' to ${props.eventSpec.params.handler}`"
   />
@@ -30,7 +34,9 @@
     :label="`Remove handler for lights group '${getLightsGroupName(props.eventSpec.params.id)}'`"
   />
   <TimedEventTag
-    v-else-if="props.eventSpec.type === 'switch-handler-screen' && props.eventSpec.params.handler !== ''"
+    v-else-if="
+      props.eventSpec.type === 'switch-handler-screen' && props.eventSpec.params.handler !== ''
+    "
     description=""
     :label="`Switch handler for screen '${getScreenName(props.eventSpec.params.id)}' to ${props.eventSpec.params.handler}`"
   />
@@ -47,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EventSpec } from '@/api';
+import type { EventSpec } from '@gewis/aurora-api-client';
 import TimedEventTag from '@/components/timed-events/TimedEventTag.vue';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 

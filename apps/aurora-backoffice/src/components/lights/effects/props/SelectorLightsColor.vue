@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { useColorStore } from '@/stores/color.store';
 import ColorBox from '@/components/lights/effects/ColorBox.vue';
-import { RgbColor } from '@/api';
+import { RgbColor } from '@gewis/aurora-api-client';
 
 const store = useColorStore();
 

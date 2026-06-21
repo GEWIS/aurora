@@ -16,7 +16,7 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectTableRotate from '@/components/lights/effects/movement/EffectTableRotate.vue';
-import type { TableRotateCreateParams } from '@/api';
+import type { TableRotateCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: TableRotateCreateParams];

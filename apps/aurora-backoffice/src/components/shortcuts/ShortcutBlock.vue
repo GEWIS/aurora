@@ -46,7 +46,7 @@ import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
 import DashboardShortcutItem from '@/components/shortcuts/ShortcutItem.vue';
 import { type IShortcutItem } from '@/components/shortcuts/IShortcutItem';
 import AppContainer from '@/layout/AppContainer.vue';
-import { disableAllModes } from '@/api';
+import { disableAllModes } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 
@@ -144,9 +144,11 @@ const lights = computed<IShortcutItem[] | boolean>(() => {
 // Add items based on the user's security groups
 const modes = computed<IShortcutItem[] | boolean>(() => {
   const showCenturion =
-    authStore.isInSecurityGroup('centurion', 'privileged') && settingsStore.featureEnabled('Centurion');
+    authStore.isInSecurityGroup('centurion', 'privileged') &&
+    settingsStore.featureEnabled('Centurion');
   const showTimeTrail =
-    authStore.isInSecurityGroup('timetrail', 'base') && settingsStore.featureEnabled('TimeTrailRace');
+    authStore.isInSecurityGroup('timetrail', 'base') &&
+    settingsStore.featureEnabled('TimeTrailRace');
   const showModes = authStore.isInSecurityGroup('mode', 'base') && (showCenturion || showTimeTrail);
 
   if (!(showModes || showCenturion || showTimeTrail)) {
@@ -163,7 +165,10 @@ const modes = computed<IShortcutItem[] | boolean>(() => {
             icon: 'pi-power-off',
             command: async () => {
               await disableAllModes();
-              await Promise.all([centurionModeStore.getCurrentCenturion(), timeTrailRaceModeStore.getTimeTrailMode()]);
+              await Promise.all([
+                centurionModeStore.getCurrentCenturion(),
+                timeTrailRaceModeStore.getTimeTrailMode(),
+              ]);
             },
           },
         showCenturion && {

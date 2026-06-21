@@ -16,7 +16,7 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectSparkle from '@/components/lights/effects/color/EffectSparkle.vue';
-import type { SparkleCreateParams } from '@/api';
+import type { SparkleCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: SparkleCreateParams];

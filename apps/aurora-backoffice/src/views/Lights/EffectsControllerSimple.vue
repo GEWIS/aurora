@@ -3,7 +3,13 @@
     <template #header>
       <div class="flex flex-row gap-6 items-center">
         <Button v-if="!editing" icon="pi pi-pencil" label="Edit" @click="editing = !editing" />
-        <Button v-if="editing" icon="pi pi-save" label="Save" severity="success" @click="editing = !editing" />
+        <Button
+          v-if="editing"
+          icon="pi pi-save"
+          label="Save"
+          severity="success"
+          @click="editing = !editing"
+        />
         <BeatVisualizer />
       </div>
     </template>
@@ -80,7 +86,10 @@ import BeatVisualizer from '@/components/audio/BeatVisualizer.vue';
 import AppContainer from '@/layout/AppContainer.vue';
 import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 import EffectControllerButtonDialog from '@/components/lights/effects/EffectControllerButtonDialog.vue';
-import { type LightsButtonSwitch, type LightsPredefinedEffectResponse } from '@/api';
+import {
+  type LightsButtonSwitch,
+  type LightsPredefinedEffectResponse,
+} from '@gewis/aurora-api-client';
 import EffectControllerButtonContent from '@/components/lights/effects/EffectControllerButtonContent.vue';
 
 const store = useEffectsControllerStore();

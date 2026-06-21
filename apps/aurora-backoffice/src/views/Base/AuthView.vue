@@ -6,7 +6,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
-import { getOidcParameters } from '@/api';
+import { getOidcParameters } from '@gewis/aurora-api-client';
 import LoadingView from '@/views/Base/LoadingView.vue';
 
 const authorizing = ref<boolean>(true);
@@ -22,7 +22,11 @@ onMounted(async () => {
     }
 
     const queryParameters = new URLSearchParams(route.hash.substring(1));
-    if (!queryParameters.get('code') || !queryParameters.get('state') || !queryParameters.get('session_state')) {
+    if (
+      !queryParameters.get('code') ||
+      !queryParameters.get('state') ||
+      !queryParameters.get('session_state')
+    ) {
       await router.push({ name: 'error' });
     }
 

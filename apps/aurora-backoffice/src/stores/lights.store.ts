@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { clearLightsGroupMasterDimmer, setLightsGroupMasterDimmer } from '@/api';
+import { clearLightsGroupMasterDimmer, setLightsGroupMasterDimmer } from '@gewis/aurora-api-client';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 
 interface LightsStore {

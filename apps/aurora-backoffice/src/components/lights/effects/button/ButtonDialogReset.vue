@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import type { LightsButtonReset } from '@/api';
+import type { LightsButtonReset } from '@gewis/aurora-api-client';
 import LightsGroupsSelect from '@/components/lights/effects/button/LightsGroupsSelect.vue';
 
 const props = defineProps<{

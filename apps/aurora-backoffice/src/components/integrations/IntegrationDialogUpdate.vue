@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { type IntegrationUser, useIntegrationsStore } from '@/stores/integrations.store';
-import type { IntegrationUserUpdateRequest } from '@/api';
+import type { IntegrationUserUpdateRequest } from '@gewis/aurora-api-client';
 import IntegrationDialog from '@/components/integrations/IntegrationDialog.vue';
 
 const store = useIntegrationsStore();

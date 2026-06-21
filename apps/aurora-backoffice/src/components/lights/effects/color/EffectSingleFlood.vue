@@ -17,7 +17,7 @@ import { ref } from 'vue';
 import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { ColorEffectsSingleFlood } from '@/api';
+import { ColorEffectsSingleFlood } from '@gewis/aurora-api-client';
 
 const store = useEffectsControllerStore();
 

@@ -47,8 +47,18 @@
           <i class="pi pi-times text-xl" />
         </template>
         <template #item="{ item }">
-          <img v-if="!isVideo" :alt="name" class="max-h-screen max-w-full object-contain" :src="item.location" />
-          <video v-else :key="item.location" class="max-h-screen max-w-full object-contain" controls>
+          <img
+            v-if="!isVideo"
+            :alt="name"
+            class="max-h-screen max-w-full object-contain"
+            :src="item.location"
+          />
+          <video
+            v-else
+            :key="item.location"
+            class="max-h-screen max-w-full object-contain"
+            controls
+          >
             <source :src="item.location" />
           </video>
         </template>
@@ -63,7 +73,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Galleria from 'primevue/galleria';
-import type { FileResponse } from '@/api';
+import type { FileResponse } from '@gewis/aurora-api-client';
 
 defineProps<{
   files: FileResponse[];

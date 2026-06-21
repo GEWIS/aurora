@@ -26,7 +26,7 @@
 import { onMounted, ref, watch } from 'vue';
 import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { ColorEffectsWave, LightsEffectDirection, LightsEffectPattern, RgbColor, type WaveCreateParams } from '@/api';
+import { ColorEffectsWave, LightsEffectDirection, LightsEffectPattern, RgbColor, type WaveCreateParams } from '@gewis/aurora-api-client';
 import SelectorDirection from '@/components/lights/effects/props/SelectorDirection.vue';
 import SelectorPattern from '@/components/lights/effects/props/SelectorPattern.vue';
 

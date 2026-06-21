@@ -5,7 +5,9 @@
       <div>
         <ul>
           <li>Pars: {{ lightsGroup.pars.length }}</li>
-          <li>MH's: {{ lightsGroup.movingHeadRgbs.length + lightsGroup.movingHeadWheels.length }}</li>
+          <li>
+            MH's: {{ lightsGroup.movingHeadRgbs.length + lightsGroup.movingHeadWheels.length }}
+          </li>
         </ul>
       </div>
     </div>
@@ -13,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LightsGroupResponse } from '@/api';
+import type { LightsGroupResponse } from '@gewis/aurora-api-client';
 
 defineProps<{
   lightsGroup: LightsGroupResponse;

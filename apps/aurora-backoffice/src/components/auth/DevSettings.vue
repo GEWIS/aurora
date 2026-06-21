@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import InputGroup from 'primevue/inputgroup';
 import { ref } from 'vue';
-import { SecurityGroup } from '@/api';
+import { SecurityGroup } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 
 const authStore = useAuthStore();

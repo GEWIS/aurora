@@ -58,7 +58,7 @@
 import { computed, ref } from 'vue';
 import SubscriberDetails from '@/components/modes/SubscribersDetails.vue';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
-import type { MixTapeResponse } from '@/api';
+import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import TapeDetails from '@/components/modes/centurion/TapeDetails.vue';
 import type { StepperStep } from '@/components/prime/StepperWrapper.vue';
 import StepperWrapper from '@/components/prime/StepperWrapper.vue';

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { useCenturionStore } from '@/stores/modes/centurion.store';
-import type { MixTapeResponse } from '@/api';
+import type { MixTapeResponse } from '@gewis/aurora-api-client';
 
 defineProps<{
   tape?: MixTapeResponse;

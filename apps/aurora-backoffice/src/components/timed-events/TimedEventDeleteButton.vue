@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { TimedEventResponse } from '@/api';
+import type { TimedEventResponse } from '@gewis/aurora-api-client';
 import { useTimedEventsStore } from '@/stores/timed-events.store';
 import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
 

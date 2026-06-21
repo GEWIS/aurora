@@ -159,7 +159,7 @@ import {
   unfreezeLightsGroup,
   unfreezeMovingHeadRgb,
   unfreezeMovingHeadWheel,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import { FixtureType } from '@/components/lights/fixtures/FixtureType';
 import { toastSuccess } from '@/utils/toastHandler';
 import AppContainer from '@/layout/AppContainer.vue';

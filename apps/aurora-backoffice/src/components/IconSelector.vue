@@ -50,8 +50,8 @@ const getNameFromValue = (value: string) => {
 };
 
 const options = computed(() => {
-  return Object.values(PrimeIcons).map((value: string) => {
-    const name = getNameFromValue(value);
+  return Object.values(PrimeIcons).map((value) => {
+    const name = getNameFromValue(value as string);
     return { value, name };
   });
 });

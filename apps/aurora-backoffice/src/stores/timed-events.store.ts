@@ -7,7 +7,7 @@ import {
   type TimedEventResponse,
   updateTimedEvent,
   type UpdateTimedEventRequest,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 interface TimedEventsStore {
   timedEvents: TimedEventResponse[];

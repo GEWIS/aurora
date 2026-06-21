@@ -16,7 +16,7 @@ import {
   LightsEffectDirection,
   LightsEffectPattern,
   RgbColor,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import SelectorPattern from '@/components/lights/effects/props/SelectorPattern.vue';
 import SelectorDirection from '@/components/lights/effects/props/SelectorDirection.vue';
 

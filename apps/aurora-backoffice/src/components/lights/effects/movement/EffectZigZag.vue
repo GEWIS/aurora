@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { MovementEffectsZigZag, type ZigZagCreateParams } from '@/api';
+import { MovementEffectsZigZag, type ZigZagCreateParams } from '@gewis/aurora-api-client';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 
 const props = defineProps<{

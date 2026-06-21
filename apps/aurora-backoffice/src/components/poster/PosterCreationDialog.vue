@@ -174,7 +174,7 @@ import {
   PosterTypeImage,
   PosterTypePhoto,
   PosterTypeVideo,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 import { useAuthStore } from '@/stores/auth.store';

@@ -102,7 +102,7 @@
 <script setup lang="ts">
 import { computed, type ComputedRef, type Ref, ref } from 'vue';
 import { toString as cronToString } from 'cronstrue';
-import type { CreateTimedEventRequest, EventSpec, TimedEventResponse } from '@/api';
+import type { CreateTimedEventRequest, EventSpec, TimedEventResponse } from '@gewis/aurora-api-client';
 import TimedEventParamsHandlerScreen from '@/components/timed-events/types/TimedEventParamsHandlerScreen.vue';
 import TimedEventParamsHandlerAudio from '@/components/timed-events/types/TimedEventParamsHandlerAudio.vue';
 import TimedEventParamsHandlerLights from '@/components/timed-events/types/TimedEventParamsHandlerLights.vue';

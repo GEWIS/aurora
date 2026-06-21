@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { type PosterResponse } from '@/api';
+import { type PosterResponse } from '@gewis/aurora-api-client';
 import { getPosterStatus, type PosterStatus } from '@/utils/posterUtils';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useAuthStore } from '@/stores/auth.store';

@@ -25,7 +25,12 @@
           <label for="lights-controller-button-type">Button function</label>
         </FloatLabel>
         <FloatLabel variant="on">
-          <InputText id="lights-controller-button-name" v-model="name" autocomplete="off" class="w-full" />
+          <InputText
+            id="lights-controller-button-name"
+            v-model="name"
+            autocomplete="off"
+            class="w-full"
+          />
           <label for="lights-controller-button-name">Name (optional)</label>
         </FloatLabel>
         <IconSelector v-model="icon" />
@@ -33,7 +38,9 @@
         <ButtonDialogColors
           v-if="type === ButtonTypes.LightsButtonColors"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonColors ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonColors
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -41,7 +48,9 @@
         <ButtonDialogEffectColor
           v-if="type === ButtonTypes.LightsButtonEffectColor"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonEffectColor ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonEffectColor
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -49,7 +58,9 @@
         <ButtonDialogEffectMovement
           v-if="type === ButtonTypes.LightsButtonEffectMovement"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonEffectMovement ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonEffectMovement
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -57,7 +68,9 @@
         <ButtonDialogReset
           v-if="type === ButtonTypes.LightsButtonReset"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonReset ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonReset
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -65,7 +78,9 @@
         <ButtonDialogStrobe
           v-if="type === ButtonTypes.LightsButtonStrobe"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonStrobe ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonStrobe
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -73,7 +88,9 @@
         <ButtonDialogSwitch
           v-if="type === ButtonTypes.LightsButtonSwitch"
           :default-properties="
-            button?.properties.type === ButtonTypes.LightsButtonSwitch ? button.properties : undefined
+            button?.properties.type === ButtonTypes.LightsButtonSwitch
+              ? button.properties
+              : undefined
           "
           @input-valid="(v) => (propertiesValid = v)"
           @update:model-value="(p) => (properties = p)"
@@ -106,7 +123,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
-import type { LightsPredefinedEffectProperties, LightsPredefinedEffectResponse } from '@/api';
+import type {
+  LightsPredefinedEffectProperties,
+  LightsPredefinedEffectResponse,
+} from '@gewis/aurora-api-client';
 import ButtonDialogColors from '@/components/lights/effects/button/ButtonDialogColors.vue';
 import ButtonDialogEffectColor from '@/components/lights/effects/button/ButtonDialogEffectColor.vue';
 import ButtonDialogEffectMovement from '@/components/lights/effects/button/ButtonDialogEffectMovement.vue';
@@ -158,7 +178,11 @@ const handleSave = async () => {
 
   saveLoading.value = true;
   if (!!props.button && props.button.id < 0) {
-    await store.createButtonEffect({ properties: properties.value, buttonId: props.button.buttonId, name: name.value });
+    await store.createButtonEffect({
+      properties: properties.value,
+      buttonId: props.button.buttonId,
+      name: name.value,
+    });
   } else if (!!props.button && props.button?.id >= 0) {
     await store.updateButtonEffect(props.button.id, {
       name: name.value,

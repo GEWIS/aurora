@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
-import { TimeTrailRaceState } from '@/api';
+import { TimeTrailRaceState } from '@gewis/aurora-api-client';
 import TimeTrailRaceRegisterPlayer from '@/components/modes/time-trail-race/PlayerRegister.vue';
 import TimeTrailRacePlaying from '@/components/modes/time-trail-race/PlayerTimer.vue';
 import TimeTrailRaceScore from '@/components/modes/time-trail-race/PlayerScore.vue';

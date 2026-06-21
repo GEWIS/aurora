@@ -21,7 +21,7 @@ import {
   turnOnLightsSwitch,
   updateLightsEffectColorColors,
   updatePredefinedLightsEffect,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import { useHandlersStore } from '@/stores/handlers.store';
 
 interface PushedEffect {

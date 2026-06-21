@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useSocketStore } from '@/stores/socket.store';
-import { type BeatGeneratorResponse, getAllBeatGenerators } from '@/api';
+import { type BeatGeneratorResponse, getAllBeatGenerators } from '@gewis/aurora-api-client';
 
 export interface GeneratorBeatEvent {
   id: string;
@@ -127,8 +127,14 @@ export const useMusicBeatStore = defineStore('music-beat', {
       if (!store.backofficeBeatSocket) return;
 
       store.backofficeBeatSocket.removeListener('beat', this.handleGeneratorBeat.bind(this));
-      store.backofficeBeatSocket.removeListener('generator_add', this.handleGeneratorAdd.bind(this));
-      store.backofficeBeatSocket.removeListener('generator_remove', this.handleGeneratorRemove.bind(this));
+      store.backofficeBeatSocket.removeListener(
+        'generator_add',
+        this.handleGeneratorAdd.bind(this),
+      );
+      store.backofficeBeatSocket.removeListener(
+        'generator_remove',
+        this.handleGeneratorRemove.bind(this),
+      );
       this.initializedGenerators = false;
 
       store.disconnectBeat();

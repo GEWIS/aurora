@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { CreateTimedEventRequest, TimedEventSetStaticPoster } from '@/api';
+import type { CreateTimedEventRequest, TimedEventSetStaticPoster } from '@gewis/aurora-api-client';
 import StaticPosterPreview from '@/components/poster/StaticPosterPreview.vue';
 import TimedEventDialogSaveButton from '@/components/timed-events/types/TimedEventDialogSaveButton.vue';
 import type { TimedEventParamsProps } from '@/components/timed-events/types/TimedEventParamsProps';

@@ -16,7 +16,7 @@
 import { ref } from 'vue';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectSearchLight from '@/components/lights/effects/movement/EffectSearchLight.vue';
-import type { SearchLightCreateParams } from '@/api';
+import type { SearchLightCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: SearchLightCreateParams];

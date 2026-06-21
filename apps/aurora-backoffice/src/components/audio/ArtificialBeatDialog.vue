@@ -19,8 +19,8 @@
         severity="info"
         @close="onHelpDialogClose"
       >
-        With the Artificial Beat Generator, you can set a custom BPM that Aurora will use. This BPM will override all
-        other beat inputs, like manual definitions or the real time beat detector.
+        With the Artificial Beat Generator, you can set a custom BPM that Aurora will use. This BPM
+        will override all other beat inputs, like manual definitions or the real time beat detector.
       </Message>
       <div v-if="!currentBpmLoading && currentBpm != null">Current BPM: {{ currentBpm }}</div>
       <div v-else-if="!currentBpmLoading">Artificial Beat Generator is inactive.</div>
@@ -63,7 +63,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { splitArrayIntoChunks } from '@/utils/arrayUtils';
-import { getArtificialBeatGenerator, startArtificialBeatGenerator, stopArtificialBeatGenerator } from '@/api';
+import {
+  getArtificialBeatGenerator,
+  startArtificialBeatGenerator,
+  stopArtificialBeatGenerator,
+} from '@gewis/aurora-api-client';
 
 const ARTIFICIAL_BEAT_DIALOG_HELP_CLOSED_SETTING = 'artificial-beat-dialog-help-closed';
 

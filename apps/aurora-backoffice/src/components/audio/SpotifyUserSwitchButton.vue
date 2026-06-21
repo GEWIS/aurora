@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { SpotifyUserResponse } from '@/api';
+import type { SpotifyUserResponse } from '@gewis/aurora-api-client';
 import { useSpotifyStore } from '@/stores/spotify.store';
 
 const store = useSpotifyStore();

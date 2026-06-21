@@ -15,7 +15,7 @@ import {
   type ISecuritySections,
   type OidcParameters,
   SecurityGroup,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
 import { useAuditStore } from '@/stores/audit.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';

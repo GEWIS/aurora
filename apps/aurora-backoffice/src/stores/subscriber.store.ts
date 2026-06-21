@@ -9,7 +9,7 @@ import {
   getSingleLightsGroup,
   type LightsGroupResponse,
   type ScreenResponse,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 interface SubscriberStore {
   audios: AudioResponse[];

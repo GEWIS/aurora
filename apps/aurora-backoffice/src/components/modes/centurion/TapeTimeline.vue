@@ -33,7 +33,7 @@
 import { computed } from 'vue';
 import type { MenuItem } from 'primevue/menuitem';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
-import type { MixTapeResponse, SongData, SongEvent } from '@/api';
+import type { MixTapeResponse, SongData, SongEvent } from '@gewis/aurora-api-client';
 import { formatDuration } from '@/utils/formatterUtils';
 
 interface TimelineItem extends MenuItem {

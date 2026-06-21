@@ -28,7 +28,10 @@
       >
         {{ capitalize(poster.type) }}
       </div>
-      <PosterStatusIndicator class="absolute top-2 right-2 z-10 ring-2 ring-black/30" :poster="poster" />
+      <PosterStatusIndicator
+        class="absolute top-2 right-2 z-10 ring-2 ring-black/30"
+        :poster="poster"
+      />
     </div>
 
     <div class="flex flex-col gap-1 min-w-0">
@@ -55,14 +58,17 @@
       <span v-tooltip.top="poster.trello ? 'Managed via Trello' : undefined" class="flex-1 flex">
         <PosterEdit :disabled="poster.trello || !isPrivileged" :poster="poster" />
       </span>
-      <StaticPosterButtonShow :disabled="poster.type === PosterType.PHOTO || !isPrivileged" :poster="poster" />
+      <StaticPosterButtonShow
+        :disabled="poster.type === PosterType.PHOTO || !isPrivileged"
+        :poster="poster"
+      />
     </div>
   </AppBox>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { type PosterResponse, PosterType } from '@/api';
+import { type PosterResponse, PosterType } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 import AppBox from '@/layout/AppBox.vue';
 import PosterButtonDelete from '@/components/poster/PosterButtonDelete.vue';

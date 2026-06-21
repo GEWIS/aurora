@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { LightsGroupResponse } from '@/api';
+import type { LightsGroupResponse } from '@gewis/aurora-api-client';
 import { useLightsStore } from '@/stores/lights.store';
 
 const store = useLightsStore();

@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { IFile, ISettings } from '@/api';
+import type { IFile, ISettings } from '@gewis/aurora-api-client';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 
 const props = defineProps<{

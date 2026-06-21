@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { ColorEffectsRandomColor, type RandomColorCreateParams, RgbColor } from '@/api';
+import { ColorEffectsRandomColor, type RandomColorCreateParams, RgbColor } from '@gewis/aurora-api-client';
 import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.vue';
 

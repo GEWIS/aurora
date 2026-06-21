@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { formatDuration } from '@/utils/formatterUtils';
-import type { MixTapeResponse } from '@/api';
+import type { MixTapeResponse } from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   tape: MixTapeResponse;

@@ -31,7 +31,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { type BackgroundPulseCreateParams, ColorEffectsBackgroundPulse, RgbColor } from '@/api';
+import {
+  type BackgroundPulseCreateParams,
+  ColorEffectsBackgroundPulse,
+  RgbColor,
+} from '@gewis/aurora-api-client';
 import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 

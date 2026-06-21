@@ -1,12 +1,12 @@
-import { type HttpApiException } from '@/api';
+import { type HttpApiException } from '@gewis/aurora-api-client';
 import { toastError } from '@/utils/toastHandler';
-import { client } from '@/api/client.gen';
+import { client } from '@gewis/aurora-api-client/client';
 
 /**
  * Fetch interceptor
  * Handles errors and toasts
  */
-client.interceptors.response.use((response) => {
+client.interceptors.response.use((response: Response) => {
   // Let toast implicitly handle each error
   if (response.status >= 400) {
     let httpException: HttpApiException | undefined;

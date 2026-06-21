@@ -64,7 +64,7 @@ import {
   MovementEffectsSearchLight,
   MovementEffectsTableRotate,
   MovementEffectsZigZag,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 import LightsGroupsSelect from '@/components/lights/effects/button/LightsGroupsSelect.vue';
 import EffectClassicRotate from '@/components/lights/effects/movement/EffectClassicRotate.vue';
 import EffectRandomPosition from '@/components/lights/effects/movement/EffectRandomPosition.vue';

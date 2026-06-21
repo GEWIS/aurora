@@ -20,7 +20,9 @@
             <ToggleSwitch
               :disabled="!editing || !slotProps.node.data.canEdit"
               :model-value="slotProps.node.data.value"
-              @update:model-value="(newValue: boolean) => store.setSetting(slotProps.node.key, newValue)"
+              @update:model-value="
+                (newValue: boolean) => store.setSetting(slotProps.node.key, newValue)
+              "
             ></ToggleSwitch>
           </div>
           <div v-else-if="slotProps.node.data.type === 'double'">
@@ -28,7 +30,9 @@
               :disabled="!editing || !slotProps.node.data.canEdit"
               :format="false"
               :model-value="slotProps.node.data.value"
-              @update:model-value="(newValue: number) => store.setSetting(slotProps.node.key, newValue)"
+              @update:model-value="
+                (newValue: number) => store.setSetting(slotProps.node.key, newValue)
+              "
             ></InputNumber>
           </div>
           <div v-else-if="slotProps.node.data.type === 'integer'">
@@ -36,7 +40,9 @@
               :disabled="!editing || !slotProps.node.data.canEdit"
               :format="false"
               :model-value="slotProps.node.data.value"
-              @update:model-value="(newValue: number) => store.setSetting(slotProps.node.key, newValue)"
+              @update:model-value="
+                (newValue: number) => store.setSetting(slotProps.node.key, newValue)
+              "
             ></InputNumber>
           </div>
           <div v-else-if="slotProps.node.data.type === 'string'">
@@ -46,13 +52,19 @@
               @update:model-value="
                 (newValue?: string): void => {
                   store
-                    .setSetting(slotProps.node.key, (newValue ?? '') as unknown as ISettings[keyof ISettings])
+                    .setSetting(
+                      slotProps.node.key,
+                      (newValue ?? '') as unknown as ISettings[keyof ISettings],
+                    )
                     .then(() => {});
                 }
               "
             ></InputText>
           </div>
-          <div v-else-if="slotProps.node.data.type === 'hexColor'" class="flex flex-row gap-2 items-center">
+          <div
+            v-else-if="slotProps.node.data.type === 'hexColor'"
+            class="flex flex-row gap-2 items-center"
+          >
             <ColorPicker
               :id="`color-picker-${slotProps.node.key}`"
               :disabled="!editing || !slotProps.node.data.canEdit"
@@ -60,7 +72,10 @@
               @update:model-value="
                 (newValue: string): void => {
                   store
-                    .setSetting(slotProps.node.key, `#${newValue}` as unknown as ISettings[keyof ISettings])
+                    .setSetting(
+                      slotProps.node.key,
+                      `#${newValue}` as unknown as ISettings[keyof ISettings],
+                    )
                     .then(() => {});
                 }
               "
@@ -72,7 +87,10 @@
               @update:model-value="
                 (newValue?: string): void => {
                   store
-                    .setSetting(slotProps.node.key, (newValue ?? '') as unknown as ISettings[keyof ISettings])
+                    .setSetting(
+                      slotProps.node.key,
+                      (newValue ?? '') as unknown as ISettings[keyof ISettings],
+                    )
                     .then(() => {});
                 }
               "
@@ -117,9 +135,9 @@ import TreeTable from 'primevue/treetable';
 import type { TreeNode } from 'primevue/treenode';
 import AppContainer from '@/layout/AppContainer.vue';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
-import { type ISettings } from '@/api';
+import { type ISettings } from '@gewis/aurora-api-client';
 import ServerSettingsFileUpload from '@/components/settings/ServerSettingsFileUpload.vue';
-import { ISettingsSchema } from '@/api/schemas.gen';
+import { ISettingsSchema } from '@gewis/aurora-api-client/schemas';
 
 const store = useServerSettingsStore();
 
@@ -144,7 +162,8 @@ const entries = computed(() => {
 
         // Current key ends with a dot, so we need to remove that dot
         const canEdit =
-          canEditParent && store.featureEnabled(currentKey.substring(0, currentKey.length - 1) as keyof ISettings);
+          canEditParent &&
+          store.featureEnabled(currentKey.substring(0, currentKey.length - 1) as keyof ISettings);
 
         usedKeys.push(nextKey);
         const setting = currentKey + remainder;

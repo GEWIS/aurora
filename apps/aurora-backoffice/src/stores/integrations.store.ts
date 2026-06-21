@@ -9,7 +9,7 @@ import {
   type IntegrationUserResponse,
   type IntegrationUserUpdateRequest,
   updateIntegrationUser,
-} from '@/api';
+} from '@gewis/aurora-api-client';
 
 export interface IntegrationUser extends IntegrationUserResponse {
   apiKey?: string;

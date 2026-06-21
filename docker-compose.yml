@@ -1,0 +1,49 @@
+volumes:
+  node_modules:
+
+services:
+  core:
+    image: node:22
+    entrypoint: ['node', '/app/scripts/entrypoint.ts']
+    working_dir: /app
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - TZ=Europe/Amsterdam
+      - TYPEORM_CONNECTION=sqlite
+      - TYPEORM_DATABASE=local.sqlite
+      - TYPEORM_SYNCHRONIZE=true
+      - TYPEORM_LOGGING=false
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8081
+      - COOKIE_SECRET=dev-secret
+      - SESSION_SECRET=dev-secret
+      - LOG_LEVEL=info
+      - LOG_AUDIO_BEATS=true
+      - OIDC_PROVIDER=KEYCLOAK
+      - ROLE_ADMIN=dev-admin
+      - ROLE_BOARD=dev-board
+      - ROLE_KEY_HOLDER=dev-key-holder
+      - ROLE_BAC=dev-bac
+      - ROLE_AVICO=dev-avico
+      - DEV_SEED=gewis
+    command: ['pnpm', '--filter', '@gewis/aurora-core', 'run', 'dev']
+
+  client:
+    image: node:22
+    entrypoint: ['node', '/app/scripts/entrypoint.ts']
+    working_dir: /app
+    ports:
+      - '8081:8081'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - core
+    environment:
+      - VITE_CORE_URL=http://core:3000
+    command: ['pnpm', '--filter', '@gewis/aurora-client', 'run', 'dev']

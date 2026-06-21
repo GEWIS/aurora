@@ -16,7 +16,9 @@
       </Column>
       <Column field="lastSeen" header="Last Seen">
         <template #body="slotProps">
-          <div v-if="slotProps.data.lastSeen">{{ new Date(slotProps.data.lastSeen).toLocaleString() }}</div>
+          <div v-if="slotProps.data.lastSeen">
+            {{ new Date(slotProps.data.lastSeen).toLocaleString() }}
+          </div>
           <div v-else class="italic">-</div>
         </template>
       </Column>

@@ -28,8 +28,14 @@ defineEmits<{
 const patterns = ref([
   { name: 'Horizontal', value: LightsEffectPattern.HORIZONTAL },
   { name: 'Vertical', value: LightsEffectPattern.VERTICAL },
-  { name: 'Diagonal (top left to bottom right)', value: LightsEffectPattern.DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT },
-  { name: 'Diagonal (bottom left to top right)', value: LightsEffectPattern.DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT },
+  {
+    name: 'Diagonal (top left to bottom right)',
+    value: LightsEffectPattern.DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT,
+  },
+  {
+    name: 'Diagonal (bottom left to top right)',
+    value: LightsEffectPattern.DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT,
+  },
   { name: 'Centered (circular)', value: LightsEffectPattern.CENTERED_CIRCULAR },
   { name: 'Centered (squared)', value: LightsEffectPattern.CENTERED_SQUARED },
   { name: 'Rotational', value: LightsEffectPattern.ROTATIONAL },

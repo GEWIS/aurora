@@ -5,8 +5,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useIntegrationsStore } from '@/stores/integrations.store';
 import type { IntegrationUserCreateRequest } from '@gewis/aurora-api-client';
+import { useIntegrationsStore } from '@/stores/integrations.store';
 import IntegrationDialog from '@/components/integrations/IntegrationDialog.vue';
 
 const store = useIntegrationsStore();

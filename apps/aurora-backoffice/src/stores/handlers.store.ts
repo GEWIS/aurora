@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useSocketStore } from '@/stores/socket.store';
 import {
   type AudioResponse,
   getAudioHandlers,
@@ -15,8 +14,12 @@ import {
   setLightsHandler,
   setScreenHandler,
 } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
 
-type Handler = HandlerResponseAudioResponse | HandlerResponseLightsGroupResponse | HandlerResponseScreenResponse;
+type Handler =
+  | HandlerResponseAudioResponse
+  | HandlerResponseLightsGroupResponse
+  | HandlerResponseScreenResponse;
 
 /**
  * HandlerStore
@@ -43,18 +46,17 @@ interface HandlersStore {
 }
 
 export const useHandlersStore = defineStore('handlers', {
-  state: (): HandlersStore =>
-    ({
-      audioHandlers: [],
-      lightsHandlers: [],
-      screenHandlers: [],
-      gettingAudio: false,
-      settingAudio: false,
-      gettingScreens: false,
-      settingScreens: false,
-      gettingLights: false,
-      settingLights: false,
-    }) as HandlersStore,
+  state: (): HandlersStore => ({
+    audioHandlers: [],
+    lightsHandlers: [],
+    screenHandlers: [],
+    gettingAudio: false,
+    settingAudio: false,
+    gettingScreens: false,
+    settingScreens: false,
+    gettingLights: false,
+    settingLights: false,
+  }),
   getters: {
     fetchAudioHandlers: (state) => state.audioHandlers,
     fetchLightsHandlers: (state) => state.lightsHandlers,
@@ -112,7 +114,10 @@ export const useHandlersStore = defineStore('handlers', {
       const socketStore = useSocketStore();
       socketStore.backofficeSocket?.on('handler_audio_update', this.getAudioHandlers.bind(this));
       socketStore.backofficeSocket?.on('handler_screen_update', this.getScreenHandlers.bind(this));
-      socketStore.backofficeSocket?.on('handler_lightsgroup_update', this.getLightsHandlers.bind(this));
+      socketStore.backofficeSocket?.on(
+        'handler_lightsgroup_update',
+        this.getLightsHandlers.bind(this),
+      );
 
       this.gettingAudio = this.gettingScreens = this.gettingLights = false;
     },

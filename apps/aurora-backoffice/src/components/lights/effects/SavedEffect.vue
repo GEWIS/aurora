@@ -16,13 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import ColorBox from '@/components/lights/effects/ColorBox.vue';
-import { useColorStore } from '@/stores/color.store';
 import {
   type LightsEffectsColorCreateParams,
   type LightsEffectsMovementCreateParams,
   RgbColor,
 } from '@gewis/aurora-api-client';
+import ColorBox from '@/components/lights/effects/ColorBox.vue';
+import { useColorStore } from '@/stores/color.store';
 
 const colorStore = useColorStore();
 
@@ -37,7 +37,7 @@ defineEmits<{
 
 let colors: Array<RgbColor>;
 if ('colors' in props.effect.props) {
-  colors = props.effect.props.colors as unknown as RgbColor[];
+  colors = props.effect.props.colors;
 } else if ('color' in props.effect.props) {
   colors = [props.effect.props.color] as unknown as RgbColor[];
 } else {

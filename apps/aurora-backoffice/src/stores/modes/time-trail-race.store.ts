@@ -216,7 +216,10 @@ export const useTimeTrailRaceStore = defineStore('time-trail-race', {
       await this.getTimeTrailMode();
 
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.on('race-player-registered', this.handleRegisterPlayer.bind(this));
+      socketStore.backofficeSocket?.on(
+        'race-player-registered',
+        this.handleRegisterPlayer.bind(this),
+      );
       socketStore.backofficeSocket?.on('race-player-ready', this.handleReady.bind(this));
       socketStore.backofficeSocket?.on('race-player-start', this.handleStart.bind(this));
       socketStore.backofficeSocket?.on('race-player-finish', this.handleFinish.bind(this));
@@ -238,11 +241,26 @@ export const useTimeTrailRaceStore = defineStore('time-trail-race', {
      */
     destroy() {
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.removeListener('race-player-registered', this.handleRegisterPlayer.bind(this));
-      socketStore.backofficeSocket?.removeListener('race-player-ready', this.handleReady.bind(this));
-      socketStore.backofficeSocket?.removeListener('race-player-start', this.handleStart.bind(this));
-      socketStore.backofficeSocket?.removeListener('race-player-finish', this.handleFinish.bind(this));
-      socketStore.backofficeSocket?.removeListener('race-scoreboard', this.handleRevealScore.bind(this));
+      socketStore.backofficeSocket?.removeListener(
+        'race-player-registered',
+        this.handleRegisterPlayer.bind(this),
+      );
+      socketStore.backofficeSocket?.removeListener(
+        'race-player-ready',
+        this.handleReady.bind(this),
+      );
+      socketStore.backofficeSocket?.removeListener(
+        'race-player-start',
+        this.handleStart.bind(this),
+      );
+      socketStore.backofficeSocket?.removeListener(
+        'race-player-finish',
+        this.handleFinish.bind(this),
+      );
+      socketStore.backofficeSocket?.removeListener(
+        'race-scoreboard',
+        this.handleRevealScore.bind(this),
+      );
     },
   },
 });

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Button :disabled="disabled" :loading="loading" severity="success" @click="$emit('click')"> Save changes </Button>
+    <Button :disabled="disabled" :loading="loading" severity="success" @click="$emit('click')">
+      Save changes
+    </Button>
   </div>
 </template>
 

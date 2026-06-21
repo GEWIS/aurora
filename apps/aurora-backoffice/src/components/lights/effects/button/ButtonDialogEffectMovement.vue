@@ -48,7 +48,9 @@
   <EffectZigZag
     v-if="chosenEffect === MovementEffectsZigZag.ZIG_ZAG"
     :default-model-value="
-      defaultProperties?.effectProps.type === MovementEffectsZigZag.ZIG_ZAG ? defaultProperties.effectProps : undefined
+      defaultProperties?.effectProps.type === MovementEffectsZigZag.ZIG_ZAG
+        ? defaultProperties.effectProps
+        : undefined
     "
     @update:model-value="(e) => (effect = e)"
   />
@@ -85,7 +87,9 @@ const chosenEffect = ref<LightsEffectsMovementCreateParams['type'] | undefined>(
   props.defaultProperties?.effectProps.type,
 );
 const lightsGroupIds = ref<number[]>(props.defaultProperties?.lightsGroupIds || []);
-const effect = ref<LightsEffectsMovementCreateParams | undefined>(props.defaultProperties?.effectProps || undefined);
+const effect = ref<LightsEffectsMovementCreateParams | undefined>(
+  props.defaultProperties?.effectProps || undefined,
+);
 
 const effectOptions = computed(() => {
   return [

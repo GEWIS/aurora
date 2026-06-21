@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { ClassicRotateCreateParams } from '@gewis/aurora-api-client';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectClassicRotate from '@/components/lights/effects/movement/EffectClassicRotate.vue';
-import type { ClassicRotateCreateParams } from '@gewis/aurora-api-client';
 
 defineEmits<{
   save: [params: ClassicRotateCreateParams];

@@ -50,7 +50,9 @@
                 :loading="steps[index].nextLoading"
                 @click="
                   steps[index].nextFunction?.();
-                  steps[index].overrideNextFunction ? null : activateCallback((index + 2).toString());
+                  steps[index].overrideNextFunction
+                    ? null
+                    : activateCallback((index + 2).toString());
                 "
               />
               <Button

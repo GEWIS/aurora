@@ -40,7 +40,9 @@
     <template #3>
       <div class="flex flex-col gap-2 mt-3 sm:mt-0">
         <div class="max-w-lg mx-auto">
-          <div class="sm:text-lg text-center mb-3 font-semibold">Confirm centurion initialization</div>
+          <div class="sm:text-lg text-center mb-3 font-semibold">
+            Confirm centurion initialization
+          </div>
           <TapeDetails v-if="selectedTape" :tape="selectedTape" />
           <SubscriberDetails
             class="mt-3"
@@ -56,9 +58,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import SubscriberDetails from '@/components/modes/SubscribersDetails.vue';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
-import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import TapeDetails from '@/components/modes/centurion/TapeDetails.vue';
 import type { StepperStep } from '@/components/prime/StepperWrapper.vue';
 import StepperWrapper from '@/components/prime/StepperWrapper.vue';

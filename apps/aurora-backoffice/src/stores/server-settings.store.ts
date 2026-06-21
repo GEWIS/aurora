@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia';
-import { clearSettingsFile, type FeatureFlagResponse, type ISettings, setSetting, setSettingFile } from '@gewis/aurora-api-client';
+import {
+  clearSettingsFile,
+  type FeatureFlagResponse,
+  type ISettings,
+  setSetting,
+  setSettingFile,
+} from '@gewis/aurora-api-client';
 import { getFeatureFlags, getSettings } from '@gewis/aurora-api-client';
 
 interface ServerSettingsStore {
@@ -16,7 +22,8 @@ export const useServerSettingsStore = defineStore('server-settings', {
   }),
   getters: {
     amountOfPosterScreenHandlers: (state) => {
-      return state.featureFlags.filter((f) => f.key.includes('PosterScreenHandler') && f.value).length;
+      return state.featureFlags.filter((f) => f.key.includes('PosterScreenHandler') && f.value)
+        .length;
     },
   },
   actions: {

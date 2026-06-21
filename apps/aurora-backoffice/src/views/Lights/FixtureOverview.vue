@@ -3,9 +3,19 @@
     <div>
       <div class="w-full mb-1 flex flex-wrap justify-end gap-5">
         <Button icon="pi pi-plus" label="Expand All" text variant="outlined" @click="expandAll" />
-        <Button icon="pi pi-minus" label="Collapse All" text variant="outlined" @click="collapseAll" />
+        <Button
+          icon="pi pi-minus"
+          label="Collapse All"
+          text
+          variant="outlined"
+          @click="collapseAll"
+        />
       </div>
-      <DataTable v-model:expanded-rows="expandedRows" data-key="id" :value="subscriberStore.lightsGroups">
+      <DataTable
+        v-model:expanded-rows="expandedRows"
+        data-key="id"
+        :value="subscriberStore.lightsGroups"
+      >
         <Column expander style="width: 5rem" />
         <Column field="name" header="Group name" />
         <Column header="Organization">
@@ -36,7 +46,9 @@
             <span v-if="activeLightsGroupIds.has(slotProps.data.id)">
               {{ getHandler(slotProps.data.id) }}
             </span>
-            <InlineMessage v-else severity="warn"> No handler set, all actions disabled </InlineMessage>
+            <InlineMessage v-else severity="warn">
+              No handler set, all actions disabled
+            </InlineMessage>
           </template>
         </Column>
         <Column header="Actions">
@@ -117,7 +129,10 @@
                     <i class="pi pi-play" />
                   </Button>
                   <Button
-                    :disabled="!activeLightsGroupIds.has(slotProps.data.id) || !slotProps2.data.fixture.canReset"
+                    :disabled="
+                      !activeLightsGroupIds.has(slotProps.data.id) ||
+                      !slotProps2.data.fixture.canReset
+                    "
                     size="small"
                     title="Hardware reset"
                     @click="handleHardwareReset(slotProps2.data.type, slotProps2.data.id)"
@@ -144,8 +159,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
 import type { PopoverMethods } from 'primevue';
-import { useHandlersStore } from '@/stores/handlers.store';
-import { useSubscriberStore } from '@/stores/subscriber.store';
 import {
   freezeGroupMovingHeadRgb,
   freezeGroupMovingHeadWheel,
@@ -160,6 +173,8 @@ import {
   unfreezeMovingHeadRgb,
   unfreezeMovingHeadWheel,
 } from '@gewis/aurora-api-client';
+import { useHandlersStore } from '@/stores/handlers.store';
+import { useSubscriberStore } from '@/stores/subscriber.store';
 import { FixtureType } from '@/components/lights/fixtures/FixtureType';
 import { toastSuccess } from '@/utils/toastHandler';
 import AppContainer from '@/layout/AppContainer.vue';

@@ -29,7 +29,12 @@
 
       <div v-if="type" class="flex flex-col gap-2">
         <label for="poster-name">Name</label>
-        <InputText id="poster-name" v-model="name" :invalid="submitted && !name.trim()" placeholder="My poster" />
+        <InputText
+          id="poster-name"
+          v-model="name"
+          :invalid="submitted && !name.trim()"
+          placeholder="My poster"
+        />
         <Message v-if="submitted && !name.trim()" severity="error" size="small" variant="simple">
           Name is required
         </Message>
@@ -51,7 +56,14 @@
 
       <div v-else-if="type === 'file'" class="flex flex-col gap-2">
         <label>Files</label>
-        <input ref="fileSelector" accept="image/*,video/*" hidden multiple type="file" @change="handleFileSelect" />
+        <input
+          ref="fileSelector"
+          accept="image/*,video/*"
+          hidden
+          multiple
+          type="file"
+          @change="handleFileSelect"
+        />
         <div class="flex flex-row gap-2 items-center">
           <Button
             icon="pi pi-upload"
@@ -65,7 +77,14 @@
         <ul v-if="files.length" class="flex flex-col gap-1 m-0 p-0 list-none">
           <li v-for="(f, i) in files" :key="i" class="flex flex-row gap-2 items-center text-sm">
             <span class="truncate flex-1 opacity-75">{{ f.name }}</span>
-            <Button icon="pi pi-times" severity="secondary" size="small" text type="button" @click="removeFile(i)" />
+            <Button
+              icon="pi pi-times"
+              severity="secondary"
+              size="small"
+              text
+              type="button"
+              @click="removeFile(i)"
+            />
           </li>
         </ul>
         <Message v-if="submitted && !files.length" severity="error" size="small" variant="simple">
@@ -86,7 +105,12 @@
           separator=","
           @add="onAlbumAdd"
         />
-        <Message v-if="submitted && albums.length === 0" severity="error" size="small" variant="simple">
+        <Message
+          v-if="submitted && albums.length === 0"
+          severity="error"
+          size="small"
+          variant="simple"
+        >
           Please add at least one album ID
         </Message>
         <Message v-else-if="albumError" severity="error" size="small" variant="simple">
@@ -155,7 +179,13 @@
 
       <div class="flex flex-row justify-end gap-2 mt-2">
         <Button label="Cancel" severity="secondary" type="button" @click="visible = false" />
-        <Button :disabled="loading" label="Create" :loading="loading" severity="success" type="submit" />
+        <Button
+          :disabled="loading"
+          label="Create"
+          :loading="loading"
+          severity="success"
+          type="submit"
+        />
       </div>
     </form>
   </Dialog>
@@ -206,7 +236,9 @@ const borrelMode = ref<boolean>(false);
 const fileSelector = ref<HTMLInputElement | null>(null);
 
 const defaultAccentColor = computed(() =>
-  (settingsStore.serverSettings?.['Poster.DefaultProgressBarColor'] ?? '').replace(/^#/, '').toLowerCase(),
+  (settingsStore.serverSettings?.['Poster.DefaultProgressBarColor'] ?? '')
+    .replace(/^#/, '')
+    .toLowerCase(),
 );
 
 const accentColorInput = computed({
@@ -313,7 +345,9 @@ const onSubmit = async () => {
   if (type.value === 'file') {
     if (!files.value.length || mixedMedia.value) return;
     loading.value = true;
-    const mediaType = files.value[0].type.startsWith('video/') ? PosterTypeVideo.VIDEO : PosterTypeImage.IMG;
+    const mediaType = files.value[0].type.startsWith('video/')
+      ? PosterTypeVideo.VIDEO
+      : PosterTypeImage.IMG;
     const params: MediaPosterRequest = { ...buildBase(), type: mediaType };
     await store.createPosterMedia(params, files.value);
   } else if (type.value === PosterTypeExternal.EXTERN) {

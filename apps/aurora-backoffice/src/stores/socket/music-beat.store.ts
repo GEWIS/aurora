@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { useSocketStore } from '@/stores/socket.store';
 import { type BeatGeneratorResponse, getAllBeatGenerators } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
 
 export interface GeneratorBeatEvent {
   id: string;

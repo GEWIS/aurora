@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
 import _ from 'lodash';
-import { useHandlersStore } from '@/stores/handlers.store';
-import { useColorStore } from '@/stores/color.store';
-import { useSocketStore } from '@/stores/socket.store';
-import { useSubscriberStore } from '@/stores/subscriber.store';
-import { useStatusStore } from '@/stores/status.store';
 import {
   authMock,
   authOidc,
@@ -16,6 +11,11 @@ import {
   type OidcParameters,
   SecurityGroup,
 } from '@gewis/aurora-api-client';
+import { useHandlersStore } from '@/stores/handlers.store';
+import { useColorStore } from '@/stores/color.store';
+import { useSocketStore } from '@/stores/socket.store';
+import { useSubscriberStore } from '@/stores/subscriber.store';
+import { useStatusStore } from '@/stores/status.store';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
 import { useAuditStore } from '@/stores/audit.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';

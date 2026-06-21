@@ -1,7 +1,14 @@
 <template>
   <div v-if="props.lightsGroup" class="rounded flex flex-col gap-4">
     <div class="flex flex-row gap-6 justify-center items-center pl-3">
-      <Slider v-model="brightness" class="w-full" :max="1" :min="0" name="brightness" :step="0.01" />
+      <Slider
+        v-model="brightness"
+        class="w-full"
+        :max="1"
+        :min="0"
+        name="brightness"
+        :step="0.01"
+      />
       <InputNumber class="w-1/2" input-class="w-full" :model-value="brightness" size="small" />
     </div>
     <div class="flex flex-row gap-3">

@@ -1,7 +1,12 @@
 <template>
   <AppContainer icon="pi-book" title="Logs">
     <div v-if="store.dashboardEntries.length > 0">
-      <DataTable class="mb-3" data-key="id" :loading="store.loading" :value="store.dashboardEntries">
+      <DataTable
+        class="mb-3"
+        data-key="id"
+        :loading="store.loading"
+        :value="store.dashboardEntries"
+      >
         <Column field="createdAt" header="Timestamp">
           <template #body="slotProps">
             {{ new Date(slotProps.data.createdAt).toLocaleString() }}

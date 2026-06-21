@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth.store';
 import { getOidcParameters } from '@gewis/aurora-api-client';
+import { useAuthStore } from '@/stores/auth.store';
 import LoadingView from '@/views/Base/LoadingView.vue';
 
 const authorizing = ref<boolean>(true);

@@ -8,9 +8,10 @@
     </template>
     <div class="flex flex-col gap-3">
       <Message icon="pi pi-info-circle" severity="info">
-        The table below shows all beat generators that are currently active. The one with the arrow is the generator
-        with precedence: this generator is authoritative and determines the beats through Aurora. It is not possible to
-        change the beat generators here; this window is purely for debugging purposes.
+        The table below shows all beat generators that are currently active. The one with the arrow
+        is the generator with precedence: this generator is authoritative and determines the beats
+        through Aurora. It is not possible to change the beat generators here; this window is purely
+        for debugging purposes.
       </Message>
       <DataTable
         v-if="store.generators.length > 0"
@@ -31,7 +32,9 @@
           </template>
         </Column>
       </DataTable>
-      <div v-else class="flex justify-center items-center italic mt-8">No beat generators are active.</div>
+      <div v-else class="flex justify-center items-center italic mt-8">
+        No beat generators are active.
+      </div>
     </div>
   </AppContainer>
 </template>

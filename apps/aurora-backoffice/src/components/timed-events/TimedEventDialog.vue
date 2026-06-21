@@ -22,7 +22,9 @@
         <Message v-if="cronInvalid" severity="error" size="small" variant="simple"
           >Please type a valid cron expression</Message
         >
-        <Message v-else severity="secondary" size="small" variant="simple">{{ cronToString(cronExpression) }}</Message>
+        <Message v-else severity="secondary" size="small" variant="simple">{{
+          cronToString(cronExpression)
+        }}</Message>
       </div>
       <div class="flex flex-col gap-2">
         <label for="event-type">Event type</label>
@@ -102,7 +104,11 @@
 <script setup lang="ts">
 import { computed, type ComputedRef, type Ref, ref } from 'vue';
 import { toString as cronToString } from 'cronstrue';
-import type { CreateTimedEventRequest, EventSpec, TimedEventResponse } from '@gewis/aurora-api-client';
+import type {
+  CreateTimedEventRequest,
+  EventSpec,
+  TimedEventResponse,
+} from '@gewis/aurora-api-client';
 import TimedEventParamsHandlerScreen from '@/components/timed-events/types/TimedEventParamsHandlerScreen.vue';
 import TimedEventParamsHandlerAudio from '@/components/timed-events/types/TimedEventParamsHandlerAudio.vue';
 import TimedEventParamsHandlerLights from '@/components/timed-events/types/TimedEventParamsHandlerLights.vue';
@@ -146,7 +152,7 @@ const skipNext = ref<boolean>(false);
 
 const onSaveWrapper = async (params: CreateTimedEventRequest, skipNext?: boolean) => {
   await props.onSave(params, skipNext);
-  emit('update:visible', false as never);
+  emit('update:visible', false);
 };
 
 const saveEvent = () => {

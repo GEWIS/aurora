@@ -6,13 +6,19 @@
     >
       <div v-for="audio in subscriberStore.audios.value" :key="audio.id">
         <SubscriberItemContent
-          :current-handler="handlersStore.fetchAudioHandlers.find((h) => !!h.entities.find((e) => e.id === audio.id))"
+          :current-handler="
+            handlersStore.fetchAudioHandlers.find(
+              (h) => !!h.entities.find((e) => e.id === audio.id),
+            )
+          "
           :disabled="!authStore.isInSecurityGroup('handler', 'privileged')"
           :loading="handlersStore.isGettingAudio || handlersStore.isSettingAudio"
           :possible-handlers="handlersStore.audioHandlers"
           :status="statusStore.audioStatus.get(audio.id)"
           :subscriber="audio"
-          @change="(newHandler: string | null) => handlersStore.setAudioHandler(audio.id, newHandler)"
+          @change="
+            (newHandler: string | null) => handlersStore.setAudioHandler(audio.id, newHandler)
+          "
         />
       </div>
     </div>

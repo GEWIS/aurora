@@ -34,6 +34,7 @@
   "devDependencies": {
     "@gewis/eslint-config-typescript": "2.3.0",
     "@gewis/eslint-config-vue": "2.3.0",
+    "@gewis/prettier-config": "2.2.2",
     "@tsconfig/node22": "22.0.2",
     "@types/lodash": "4.17.20",
     "@types/uuid": "10.0.0",

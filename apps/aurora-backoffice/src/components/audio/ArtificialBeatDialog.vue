@@ -62,12 +62,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { splitArrayIntoChunks } from '@/utils/arrayUtils';
 import {
   getArtificialBeatGenerator,
   startArtificialBeatGenerator,
   stopArtificialBeatGenerator,
 } from '@gewis/aurora-api-client';
+import { splitArrayIntoChunks } from '@/utils/arrayUtils';
 
 const ARTIFICIAL_BEAT_DIALOG_HELP_CLOSED_SETTING = 'artificial-beat-dialog-help-closed';
 

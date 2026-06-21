@@ -15,7 +15,11 @@
         </div>
       </template>
       <template #value="slotProps">
-        <StaticPosterPreview v-if="selectedPoster" class="w-64 inline-block" :poster="selectedPoster" />
+        <StaticPosterPreview
+          v-if="selectedPoster"
+          class="w-64 inline-block"
+          :poster="selectedPoster"
+        />
         <span v-else>{{ slotProps.placeholder }}</span>
       </template>
     </Select>
@@ -44,7 +48,9 @@ const props = defineProps<TimedEventParamsProps<TimedEventSetStaticPoster['param
 const posterStore = usePosterStore();
 void posterStore.init();
 
-const selectedPosterId = ref<number | undefined>(props.originalEventSpecParams?.posterId ?? undefined);
+const selectedPosterId = ref<number | undefined>(
+  props.originalEventSpecParams?.posterId ?? undefined,
+);
 const selectedPoster = computed(() => {
   return posterStore.staticPosters.find((poster) => poster.id === selectedPosterId.value);
 });

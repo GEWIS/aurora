@@ -42,7 +42,9 @@
   <EffectSparkle
     v-if="chosenEffect === ColorEffectsSparkle.SPARKLE"
     :default-model-value="
-      defaultProperties?.effectProps.type === ColorEffectsSparkle.SPARKLE ? defaultProperties.effectProps : undefined
+      defaultProperties?.effectProps.type === ColorEffectsSparkle.SPARKLE
+        ? defaultProperties.effectProps
+        : undefined
     "
     :show-colors="false"
     @update:model-value="(e) => (effect = e)"
@@ -60,7 +62,9 @@
   <EffectWave
     v-if="chosenEffect === ColorEffectsWave.WAVE"
     :default-model-value="
-      defaultProperties?.effectProps.type === ColorEffectsWave.WAVE ? defaultProperties.effectProps : undefined
+      defaultProperties?.effectProps.type === ColorEffectsWave.WAVE
+        ? defaultProperties.effectProps
+        : undefined
     "
     :show-colors="false"
     @update:model-value="(e) => (effect = e)"
@@ -96,9 +100,13 @@ const emit = defineEmits<{
   inputValid: [valid: boolean];
 }>();
 
-const chosenEffect = ref<LightsEffectsColorCreateParams['type'] | undefined>(props.defaultProperties?.effectProps.type);
+const chosenEffect = ref<LightsEffectsColorCreateParams['type'] | undefined>(
+  props.defaultProperties?.effectProps.type,
+);
 const lightsGroupIds = ref<number[]>(props.defaultProperties?.lightsGroupIds || []);
-const effect = ref<LightsEffectsColorCreateParams | undefined>(props.defaultProperties?.effectProps || undefined);
+const effect = ref<LightsEffectsColorCreateParams | undefined>(
+  props.defaultProperties?.effectProps || undefined,
+);
 
 const effectOptions = computed(() => {
   return [

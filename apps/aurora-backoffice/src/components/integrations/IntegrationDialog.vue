@@ -55,8 +55,8 @@
 
 <script setup lang="ts">
 import { computed, type ComputedRef, ref } from 'vue';
-import { type IntegrationUser, useIntegrationsStore } from '@/stores/integrations.store';
 import type { IntegrationUserCreateRequest } from '@gewis/aurora-api-client';
+import { type IntegrationUser, useIntegrationsStore } from '@/stores/integrations.store';
 
 const store = useIntegrationsStore();
 

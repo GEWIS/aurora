@@ -1,7 +1,11 @@
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
     <div class="flex flex-col gap-6">
-      <AppContainer v-if="authStore.isInSecurityGroup('spotify', 'privileged')" icon="pi-users" title="Spotify Users">
+      <AppContainer
+        v-if="authStore.isInSecurityGroup('spotify', 'privileged')"
+        icon="pi-users"
+        title="Spotify Users"
+      >
         <template #header>
           <Button as="a" href="/api/spotify/login" icon="pi pi-plus" label="Add user" />
         </template>

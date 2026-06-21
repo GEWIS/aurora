@@ -14,10 +14,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { ColorEffectsSingleFlood } from '@gewis/aurora-api-client';
 import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { ColorEffectsSingleFlood } from '@gewis/aurora-api-client';
 
 const store = useEffectsControllerStore();
 

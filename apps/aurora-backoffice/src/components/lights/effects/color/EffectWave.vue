@@ -24,9 +24,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import {
+  ColorEffectsWave,
+  LightsEffectDirection,
+  LightsEffectPattern,
+  RgbColor,
+  type WaveCreateParams,
+} from '@gewis/aurora-api-client';
 import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { ColorEffectsWave, LightsEffectDirection, LightsEffectPattern, RgbColor, type WaveCreateParams } from '@gewis/aurora-api-client';
 import SelectorDirection from '@/components/lights/effects/props/SelectorDirection.vue';
 import SelectorPattern from '@/components/lights/effects/props/SelectorPattern.vue';
 
@@ -42,7 +48,9 @@ const emit = defineEmits<{
 const colors = ref<RgbColor[]>(props.defaultModelValue?.props.colors || []);
 const nrWaves = ref<number>(props.defaultModelValue?.props.nrWaves || 1);
 const cycleTime = ref<number>(props.defaultModelValue?.props.cycleTime || 1000);
-const pattern = ref<LightsEffectPattern>(props.defaultModelValue?.props.pattern || LightsEffectPattern.HORIZONTAL);
+const pattern = ref<LightsEffectPattern>(
+  props.defaultModelValue?.props.pattern || LightsEffectPattern.HORIZONTAL,
+);
 const direction = ref<LightsEffectDirection>(
   props.defaultModelValue?.props.direction || LightsEffectDirection.FORWARDS,
 );

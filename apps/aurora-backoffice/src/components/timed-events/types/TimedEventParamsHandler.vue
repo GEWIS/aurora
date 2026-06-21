@@ -59,7 +59,12 @@ const selectedSubscriber = ref<number | undefined>(props.originalEventSpecParams
 const selectedHandler = ref<string>(props.originalEventSpecParams?.handler ?? '');
 
 const inputInvalid = computed(() => {
-  return loading.value || !props.cronValid || selectedSubscriber.value === undefined || selectedSubscriber.value < 0;
+  return (
+    loading.value ||
+    !props.cronValid ||
+    selectedSubscriber.value === undefined ||
+    selectedSubscriber.value < 0
+  );
 });
 
 const onSave = () => {

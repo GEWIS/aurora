@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import type { BackgroundPulseCreateParams } from '@gewis/aurora-api-client';
+import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectBackgroundPulse from '@/components/lights/effects/color/EffectBackgroundPulse.vue';
 
 defineEmits<{

@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 import type { LightsButtonSwitch } from '@gewis/aurora-api-client';
+import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 
 const props = defineProps<{
   defaultProperties?: LightsButtonSwitch;

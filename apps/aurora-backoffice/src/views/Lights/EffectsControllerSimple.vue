@@ -82,14 +82,14 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import BeatVisualizer from '@/components/audio/BeatVisualizer.vue';
-import AppContainer from '@/layout/AppContainer.vue';
-import { useEffectsControllerStore } from '@/stores/effects-controller.store';
-import EffectControllerButtonDialog from '@/components/lights/effects/EffectControllerButtonDialog.vue';
 import {
   type LightsButtonSwitch,
   type LightsPredefinedEffectResponse,
 } from '@gewis/aurora-api-client';
+import BeatVisualizer from '@/components/audio/BeatVisualizer.vue';
+import AppContainer from '@/layout/AppContainer.vue';
+import { useEffectsControllerStore } from '@/stores/effects-controller.store';
+import EffectControllerButtonDialog from '@/components/lights/effects/EffectControllerButtonDialog.vue';
 import EffectControllerButtonContent from '@/components/lights/effects/EffectControllerButtonContent.vue';
 
 const store = useEffectsControllerStore();

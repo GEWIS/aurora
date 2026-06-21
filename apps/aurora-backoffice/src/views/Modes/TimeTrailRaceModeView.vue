@@ -1,5 +1,11 @@
 <template>
-  <div :class="timeTrailInitialized ? 'grid grid-cols-1 xl:grid-cols-2 gap-10' : 'grid lg:grid-cols-6 xxl:grid-cols-4'">
+  <div
+    :class="
+      timeTrailInitialized
+        ? 'grid grid-cols-1 xl:grid-cols-2 gap-10'
+        : 'grid lg:grid-cols-6 xxl:grid-cols-4'
+    "
+  >
     <div v-if="!timeTrailInitialized" class="hidden lg:flex" />
     <AppContainer
       :class="timeTrailInitialized ? '' : 'lg:col-span-4 xxl:col-span-2'"

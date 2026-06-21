@@ -105,7 +105,10 @@ export const useAuditStore = defineStore('audit', {
      */
     destroy() {
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.removeListener('audit_log_create', this.handleAuditLogAddition.bind(this));
+      socketStore.backofficeSocket?.removeListener(
+        'audit_log_create',
+        this.handleAuditLogAddition.bind(this),
+      );
     },
   },
 });

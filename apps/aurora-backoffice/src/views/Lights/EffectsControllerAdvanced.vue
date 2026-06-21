@@ -100,7 +100,10 @@
         <template #content>
           <div class="overflow-y-scroll w-full">
             <div class="flex flex-row gap-5">
-              <div v-for="effect in effectsControllerStore.pastPushedEffects" :key="effect.timestamp.getTime()">
+              <div
+                v-for="effect in effectsControllerStore.pastPushedEffects"
+                :key="effect.timestamp.getTime()"
+              >
                 <EffectHistoryCard :effect="effect" />
               </div>
             </div>

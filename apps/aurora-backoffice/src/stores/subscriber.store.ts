@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-import { useSocketStore } from '@/stores/socket.store';
 import {
   type AudioResponse,
   getAudios,
@@ -10,6 +9,7 @@ import {
   type LightsGroupResponse,
   type ScreenResponse,
 } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
 
 interface SubscriberStore {
   audios: AudioResponse[];

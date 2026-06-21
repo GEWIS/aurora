@@ -27,8 +27,12 @@ const props = defineProps<{
   selectedLightGroups: number[];
 }>();
 
-const audios = computed(() => subscriberStore.audios.filter((a) => props.selectedAudios.includes(a.id)));
-const screens = computed(() => subscriberStore.screens.filter((a) => props.selectedScreens.includes(a.id)));
+const audios = computed(() =>
+  subscriberStore.audios.filter((a) => props.selectedAudios.includes(a.id)),
+);
+const screens = computed(() =>
+  subscriberStore.screens.filter((a) => props.selectedScreens.includes(a.id)),
+);
 const lightGroups = computed(() =>
   subscriberStore.lightsGroups.filter((a) => props.selectedLightGroups.includes(a.id)),
 );

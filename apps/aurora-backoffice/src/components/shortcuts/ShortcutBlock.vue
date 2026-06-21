@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { disableAllModes } from '@gewis/aurora-api-client';
 import { useHandlersStore } from '@/stores/handlers.store';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
@@ -46,7 +47,6 @@ import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
 import DashboardShortcutItem from '@/components/shortcuts/ShortcutItem.vue';
 import { type IShortcutItem } from '@/components/shortcuts/IShortcutItem';
 import AppContainer from '@/layout/AppContainer.vue';
-import { disableAllModes } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 
@@ -104,7 +104,7 @@ const defaults = computed<IShortcutItem[] | boolean>(() => {
         },
       ],
     },
-  ].filter(Boolean) as IShortcutItem[];
+  ].filter(Boolean);
 });
 
 // Add items based on the user's security groups
@@ -138,7 +138,7 @@ const lights = computed<IShortcutItem[] | boolean>(() => {
         },
       ],
     },
-  ].filter(Boolean) as IShortcutItem[];
+  ].filter(Boolean);
 });
 
 // Add items based on the user's security groups

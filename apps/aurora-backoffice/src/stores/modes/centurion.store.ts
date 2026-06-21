@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useSocketStore } from '@/stores/socket.store';
 import {
   type MixTapeResponse,
   type CenturionResponse,
@@ -12,6 +11,7 @@ import {
   stopCenturion,
   skipCenturion,
 } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
 
 /**
  * Centurion store
@@ -77,14 +77,20 @@ export const useCenturionStore = defineStore('centurion', {
       this.playing = this.currentTape?.playing ?? false;
 
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.on('mode_centurion_update', this.getCurrentCenturion.bind(this));
+      socketStore.backofficeSocket?.on(
+        'mode_centurion_update',
+        this.getCurrentCenturion.bind(this),
+      );
     },
     /**
      * Destroy the store
      */
     destroy() {
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.removeListener('mode_centurion_update', this.getCurrentCenturion.bind(this));
+      socketStore.backofficeSocket?.removeListener(
+        'mode_centurion_update',
+        this.getCurrentCenturion.bind(this),
+      );
     },
     /**
      * Initialize the centurion

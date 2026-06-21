@@ -21,14 +21,14 @@
 
 <script setup lang="ts">
 import { computed, type ComputedRef, onMounted, ref, watch } from 'vue';
-import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
-import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.vue';
-import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 import {
   ColorEffectsStaticColor,
   RgbColor,
   type StaticColorCreateParams,
 } from '@gewis/aurora-api-client';
+import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
+import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.vue';
+import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 
 const subscriberStore = useSubscriberStore();

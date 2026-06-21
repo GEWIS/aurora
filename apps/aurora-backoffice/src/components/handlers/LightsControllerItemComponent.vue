@@ -37,11 +37,11 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import type { LightsControllerResponse } from '@gewis/aurora-api-client';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 import { useHandlersStore } from '@/stores/handlers.store';
 import SubscriberHandlerChangeSelect from '@/components/handlers/SubscriberHandlerChangeSelect.vue';
 import StatusIcon from '@/components/handlers/StatusIcon.vue';
-import type { LightsControllerResponse } from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 import { useStatusStore } from '@/stores/status.store';
 import AppBox from '@/layout/AppBox.vue';

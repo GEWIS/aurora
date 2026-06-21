@@ -6,8 +6,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
-import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import { type LightsButtonColors, RgbColor } from '@gewis/aurora-api-client';
+import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import LightsGroupsSelect from '@/components/lights/effects/button/LightsGroupsSelect.vue';
 
 const props = defineProps<{

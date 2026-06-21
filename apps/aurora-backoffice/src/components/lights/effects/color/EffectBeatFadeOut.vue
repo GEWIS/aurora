@@ -8,8 +8,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
-import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.vue';
 import {
   type BeatFadeOutCreateParams,
   ColorEffectsBeatFadeOut,
@@ -17,6 +15,8 @@ import {
   LightsEffectPattern,
   RgbColor,
 } from '@gewis/aurora-api-client';
+import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
+import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.vue';
 import SelectorPattern from '@/components/lights/effects/props/SelectorPattern.vue';
 import SelectorDirection from '@/components/lights/effects/props/SelectorDirection.vue';
 
@@ -32,7 +32,9 @@ const emit = defineEmits<{
 const colors = ref<RgbColor[]>(props.defaultModelValue?.props.colors || []);
 const enableFade = ref<boolean>(props.defaultModelValue?.props.enableFade || false);
 const addBlacks = ref<boolean>(props.defaultModelValue?.props.nrBlacks !== 0 || false);
-const pattern = ref<LightsEffectPattern>(props.defaultModelValue?.props.pattern || LightsEffectPattern.HORIZONTAL);
+const pattern = ref<LightsEffectPattern>(
+  props.defaultModelValue?.props.pattern || LightsEffectPattern.HORIZONTAL,
+);
 const direction = ref<LightsEffectDirection>(
   props.defaultModelValue?.props.direction || LightsEffectDirection.FORWARDS,
 );

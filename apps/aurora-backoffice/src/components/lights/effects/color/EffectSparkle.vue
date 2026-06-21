@@ -31,9 +31,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { ColorEffectsSparkle, RgbColor, type SparkleCreateParams } from '@gewis/aurora-api-client';
 import SelectorLightsColor from '@/components/lights/effects/props/SelectorLightsColor.vue';
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
-import { ColorEffectsSparkle, RgbColor, type SparkleCreateParams } from '@gewis/aurora-api-client';
 
 const props = defineProps<{
   showColors: boolean;

@@ -87,14 +87,14 @@ export const useEffectsControllerStore = defineStore('effectsController', {
       let ids = lightGroupIds ?? this.selectedLightsGroupIds;
       // Only send request for lights groups that have the correct handler (prevents 4xx errors)
       ids = ids.filter(this.lightsGroupHasSetEffectsHandler.bind(this));
-      await Promise.all([
+      await Promise.all(
         ids.map(async (id) => {
           await applyLightsEffectColor({
             body: [effect],
             path: { id },
           });
         }),
-      ]);
+      );
       const pastEffect: PushedEffect = {
         colorEffect: { ...effect },
         lightGroupIds: [...ids],
@@ -106,14 +106,14 @@ export const useEffectsControllerStore = defineStore('effectsController', {
       let ids = lightGroupIds ?? this.selectedLightsGroupIds;
       // Only send request for lights groups that have the correct handler (prevents 4xx errors)
       ids = ids.filter(this.lightsGroupHasSetEffectsHandler.bind(this));
-      await Promise.all([
+      await Promise.all(
         ids.map(async (id) => {
           await applyLightsEffectMovement({
             body: [effect],
             path: { id },
           });
         }),
-      ]);
+      );
       const pastEffect: PushedEffect = {
         movementEffect: { ...effect },
         lightGroupIds: [...ids],
@@ -284,7 +284,10 @@ export const useEffectsControllerStore = defineStore('effectsController', {
           ids = ids.filter(this.lightsGroupHasSetEffectsHandler.bind(this));
           await Promise.all(
             ids.map(async (id) => {
-              await updateLightsEffectColorColors({ path: { id }, body: { colors: properties.colors } });
+              await updateLightsEffectColorColors({
+                path: { id },
+                body: { colors: properties.colors },
+              });
             }),
           );
 
@@ -299,7 +302,10 @@ export const useEffectsControllerStore = defineStore('effectsController', {
           return;
         }
         case 'LightsButtonEffectMovement': {
-          await this.setMovementEffect(button.properties.effectProps, button.properties.lightsGroupIds);
+          await this.setMovementEffect(
+            button.properties.effectProps,
+            button.properties.lightsGroupIds,
+          );
           return;
         }
         case 'LightsButtonReset': {

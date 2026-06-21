@@ -4,7 +4,9 @@
       <Card>
         <template #content>
           <div class="w-full py-8 px-5 sm:px-8 flex flex-col align-items-center rounded-2xl">
-            <div v-if="authorizing" class="text-900 font-bold text-3xl lg:text-5xl mb-5">Authorizing</div>
+            <div v-if="authorizing" class="text-900 font-bold text-3xl lg:text-5xl mb-5">
+              Authorizing
+            </div>
             <div v-else class="text-900 font-bold text-3xl lg:text-5xl mb-5">Connecting</div>
             <span class="font-bold text-3xl">
               <ProgressBar mode="indeterminate" style="height: 6px" />

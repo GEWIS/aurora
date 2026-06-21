@@ -21,8 +21,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 import { MovementEffectsTableRotate, type TableRotateCreateParams } from '@gewis/aurora-api-client';
+import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 
 const props = defineProps<{
   defaultModelValue?: TableRotateCreateParams;

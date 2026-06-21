@@ -133,11 +133,11 @@ import { computed, ref } from 'vue';
 import Column from 'primevue/column';
 import TreeTable from 'primevue/treetable';
 import type { TreeNode } from 'primevue/treenode';
+import { type ISettings } from '@gewis/aurora-api-client';
+import { ISettingsSchema } from '@gewis/aurora-api-client/schemas';
 import AppContainer from '@/layout/AppContainer.vue';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
-import { type ISettings } from '@gewis/aurora-api-client';
 import ServerSettingsFileUpload from '@/components/settings/ServerSettingsFileUpload.vue';
-import { ISettingsSchema } from '@gewis/aurora-api-client/schemas';
 
 const store = useServerSettingsStore();
 
@@ -188,17 +188,17 @@ const entries = computed(() => {
         }
         let description: string | undefined;
         if ('description' in spec) {
-          description = spec.description as string;
+          description = spec.description;
         }
         let type: string = '';
         if ('type' in spec) {
-          type = spec.type as string;
+          type = spec.type;
         } else if ('$ref' in spec) {
-          type = refToType(spec['$ref'] as string);
+          type = refToType(spec['$ref']);
         } else if ('anyOf' in spec) {
           for (const item of spec.anyOf) {
             if ('$ref' in item) {
-              type = refToType(item['$ref'] as string);
+              type = refToType(item['$ref']);
               break;
             }
           }

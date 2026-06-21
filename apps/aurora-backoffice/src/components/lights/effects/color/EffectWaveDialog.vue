@@ -10,14 +10,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
-import EffectWave from '@/components/lights/effects/color/EffectWave.vue';
 import {
   ColorEffectsWave,
   LightsEffectDirection,
   LightsEffectPattern,
   type WaveCreateParams,
 } from '@gewis/aurora-api-client';
+import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
+import EffectWave from '@/components/lights/effects/color/EffectWave.vue';
 
 defineEmits<{
   save: [effect: WaveCreateParams];

@@ -19,14 +19,14 @@
 </template>
 
 <script setup lang="ts">
-import SubscriberHandlerChangeSelect from '@/components/handlers/SubscriberHandlerChangeSelect.vue';
-import StatusIcon from '@/components/handlers/StatusIcon.vue';
-import type { Handler } from '@/stores/handlers.store';
 import type {
   AudioResponse,
   LightsControllerResponse,
   ScreenResponse,
 } from '@gewis/aurora-api-client';
+import SubscriberHandlerChangeSelect from '@/components/handlers/SubscriberHandlerChangeSelect.vue';
+import StatusIcon from '@/components/handlers/StatusIcon.vue';
+import type { Handler } from '@/stores/handlers.store';
 import type { Status } from '@/stores/status.store';
 
 const props = defineProps<{

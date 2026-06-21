@@ -17,12 +17,15 @@ const settingsStore = useServerSettingsStore();
 
 // Calculate all items in the menu based on the user's security groups
 const model = computed<MenuItem[]>(() => {
-  const showPosters = authStore.isInSecurityGroup('poster', 'base') && settingsStore.featureEnabled('Poster');
+  const showPosters =
+    authStore.isInSecurityGroup('poster', 'base') && settingsStore.featureEnabled('Poster');
   const showAudit = authStore.isInSecurityGroup('audit', 'base');
   const showCenturion =
-    authStore.isInSecurityGroup('centurion', 'privileged') && settingsStore.featureEnabled('Centurion');
+    authStore.isInSecurityGroup('centurion', 'privileged') &&
+    settingsStore.featureEnabled('Centurion');
   const showTimeTrail =
-    authStore.isInSecurityGroup('timetrail', 'base') && settingsStore.featureEnabled('TimeTrailRace');
+    authStore.isInSecurityGroup('timetrail', 'base') &&
+    settingsStore.featureEnabled('TimeTrailRace');
 
   const showEffects = authStore.isInSecurityGroup('effects', 'base');
   const showScenes = authStore.isInSecurityGroup('scenes', 'base');
@@ -73,13 +76,21 @@ const model = computed<MenuItem[]>(() => {
       label: 'Settings',
       items: [
         showSettings && { label: 'Server Settings', icon: 'pi pi-fw pi-cog', to: '/settings' },
-        showTimedEvents && { label: 'Timed Events', icon: 'pi pi-fw pi-calendar-clock', to: '/timed-events' },
+        showTimedEvents && {
+          label: 'Timed Events',
+          icon: 'pi pi-fw pi-calendar-clock',
+          to: '/timed-events',
+        },
         (showSpotifySettings || showBeatSettings) && {
           label: 'Music Settings',
           icon: 'pi pi-headphones',
           to: '/music',
         },
-        showIntegrationUsers && { label: 'Integrations', icon: 'pi pi-share-alt', to: '/integrations' },
+        showIntegrationUsers && {
+          label: 'Integrations',
+          icon: 'pi pi-share-alt',
+          to: '/integrations',
+        },
       ],
     },
   ].filter(Boolean) as MenuItem[];

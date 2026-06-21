@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
 import { type PosterResponse, PosterType } from '@gewis/aurora-api-client';
+import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
 import { usePosterStore } from '@/stores/poster/poster.store';
 
 const store = usePosterStore();
@@ -40,7 +40,9 @@ const loading = ref<boolean>(false);
 const deletable = computed(
   () =>
     !props.disabled &&
-    [PosterType.PHOTO, PosterType.IMG, PosterType.VIDEO, PosterType.EXTERN].includes(props.poster.type),
+    [PosterType.PHOTO, PosterType.IMG, PosterType.VIDEO, PosterType.EXTERN].includes(
+      props.poster.type,
+    ),
 );
 </script>
 

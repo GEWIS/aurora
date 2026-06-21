@@ -5,8 +5,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import TimedEventDialog from '@/components/timed-events/TimedEventDialog.vue';
 import type { CreateTimedEventRequest, TimedEventResponse } from '@gewis/aurora-api-client';
+import TimedEventDialog from '@/components/timed-events/TimedEventDialog.vue';
 import { useTimedEventsStore } from '@/stores/timed-events.store';
 
 const props = defineProps<{

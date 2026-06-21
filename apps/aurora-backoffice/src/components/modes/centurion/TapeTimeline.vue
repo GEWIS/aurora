@@ -32,8 +32,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { MenuItem } from 'primevue/menuitem';
-import { useCenturionStore } from '@/stores/modes/centurion.store';
 import type { MixTapeResponse, SongData, SongEvent } from '@gewis/aurora-api-client';
+import { useCenturionStore } from '@/stores/modes/centurion.store';
 import { formatDuration } from '@/utils/formatterUtils';
 
 interface TimelineItem extends MenuItem {
@@ -79,7 +79,7 @@ const timelineItems = computed((): Array<TimelineItem> => {
       }
 
       if (event.type === 'song') {
-        timelineItem.songs = getTracks(event as unknown as SongEvent);
+        timelineItem.songs = getTracks(event);
       }
 
       timelineItems.push(timelineItem);

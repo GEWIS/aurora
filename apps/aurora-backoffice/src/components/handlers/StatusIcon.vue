@@ -23,13 +23,13 @@
 
 <script setup lang="ts">
 import { computed, type ComputedRef, ref } from 'vue';
-import type { Status } from '@/stores/status.store';
 import type {
   AudioResponse,
   LightsControllerResponse,
   PartialRecordSocketioNamespacesString,
   ScreenResponse,
 } from '@gewis/aurora-api-client';
+import type { Status } from '@/stores/status.store';
 
 const props = defineProps<{
   subscriber: AudioResponse | ScreenResponse | LightsControllerResponse;

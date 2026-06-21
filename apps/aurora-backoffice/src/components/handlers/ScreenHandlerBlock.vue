@@ -6,13 +6,17 @@
     >
       <div v-for="screen in subscriberStore.screens.value" :key="screen.id">
         <SubscriberItemContent
-          :current-handler="handlersStore.screenHandlers.find((h) => !!h.entities.find((e) => e.id === screen.id))"
+          :current-handler="
+            handlersStore.screenHandlers.find((h) => !!h.entities.find((e) => e.id === screen.id))
+          "
           :disabled="!authStore.isInSecurityGroup('handler', 'privileged')"
           :loading="handlersStore.gettingScreens || handlersStore.settingScreens"
           :possible-handlers="handlersStore.screenHandlers"
           :status="statusStore.screenStatus.get(screen.id)"
           :subscriber="screen"
-          @change="(newHandler: string | null) => handlersStore.setScreenHandler(screen.id, newHandler)"
+          @change="
+            (newHandler: string | null) => handlersStore.setScreenHandler(screen.id, newHandler)
+          "
         />
       </div>
     </div>

@@ -27,11 +27,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
 import InitializeCenturion from '@/components/modes/centurion/InitializeCenturion.vue';
 import CoverPlayButton from '@/components/modes/centurion/CoverPlayButton.vue';
 import AppContainer from '@/layout/AppContainer.vue';
-import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import CenturionTapeTimeline from '@/components/modes/centurion/TapeTimeline.vue';
 import { useLayoutStore, TailwindWidth } from '@/stores/layout.store';
 import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';

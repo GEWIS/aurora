@@ -12,7 +12,9 @@ const interval = ref<number>();
 const timeTrailStore = useTimeTrailRaceStore();
 
 const timeString = computed(() => {
-  const totalDiffMs = timeTrailStore.startTime ? now.value.getTime() - timeTrailStore.startTime.getTime() : Number.NaN;
+  const totalDiffMs = timeTrailStore.startTime
+    ? now.value.getTime() - timeTrailStore.startTime.getTime()
+    : Number.NaN;
   return toStopwatchString(totalDiffMs);
 });
 

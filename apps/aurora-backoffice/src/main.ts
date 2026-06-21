@@ -58,11 +58,11 @@ import {
   TreeTable,
 } from 'primevue';
 import InputGroup from 'primevue/inputgroup';
+import { client } from '@gewis/aurora-api-client/client';
 import router from './router';
 import App from './App.vue';
 import '@/utils/fetchInterceptor';
 import { AuraPreset } from '@/assets/preset';
-import { client } from '@gewis/aurora-api-client/client';
 
 const app = createApp(App);
 

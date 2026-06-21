@@ -1,8 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import {
+  type ISecurityGroups,
+  type ISecuritySections,
+  SecurityGroup,
+} from '@gewis/aurora-api-client';
 import { useAuthStore } from '@/stores/auth.store';
 import AppLayout from '@/layout/AppLayout.vue';
 import { useLayoutStore } from '@/stores/layout.store';
-import { type ISecurityGroups, type ISecuritySections, SecurityGroup } from '@gewis/aurora-api-client';
 
 interface SecurityRole {
   securityGroup: keyof ISecurityGroups;
@@ -250,7 +254,10 @@ router.beforeEach(async (to) => {
         authStore.isInSecurityGroup(securityGroup, securitySection),
       );
     } else if (to.meta.security) {
-      hasRights = authStore.isInSecurityGroup(to.meta.security.securityGroup, to.meta.security.securitySection);
+      hasRights = authStore.isInSecurityGroup(
+        to.meta.security.securityGroup,
+        to.meta.security.securitySection,
+      );
     }
   }
 

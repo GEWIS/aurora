@@ -4,7 +4,9 @@
       <div class="flex flex-col items-center justify-center my-2">
         <ProgressSpinner v-if="loading" />
       </div>
-      <Message v-if="!loading && errorMessage" severity="error"> Login failed: {{ errorMessage }} </Message>
+      <Message v-if="!loading && errorMessage" severity="error">
+        Login failed: {{ errorMessage }}
+      </Message>
       <Message v-else-if="!loading" severity="success">
         Successfully logged in user {{ store.currentSpotifyProfile?.display_name }}
       </Message>
@@ -37,9 +39,13 @@ const handleClose = () => {
 onMounted(async () => {
   if (route.path === '/music/spotify/callback') {
     open.value = true;
-    const state = Array.isArray(route.query.state) ? route.query.state.join(',') : route.query.state;
+    const state = Array.isArray(route.query.state)
+      ? route.query.state.join(',')
+      : route.query.state;
     const code = Array.isArray(route.query.code) ? route.query.code.join(',') : route.query.code;
-    const error = Array.isArray(route.query.error) ? route.query.error.join(',') : route.query.error;
+    const error = Array.isArray(route.query.error)
+      ? route.query.error.join(',')
+      : route.query.error;
     const res = await store.loginCallback(state ?? '', code ?? undefined, error ?? undefined);
     if (res.success) {
       void store.init();

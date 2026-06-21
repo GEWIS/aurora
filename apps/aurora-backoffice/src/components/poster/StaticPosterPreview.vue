@@ -1,6 +1,13 @@
 <template>
-  <div v-if="getPosterType(poster) === 'image' || getPosterType(poster) === 'video'" :class="previewClass">
-    <PosterMediaGallery :files="poster.files" :is-video="getPosterType(poster) === 'video'" :name="poster.name" />
+  <div
+    v-if="getPosterType(poster) === 'image' || getPosterType(poster) === 'video'"
+    :class="previewClass"
+  >
+    <PosterMediaGallery
+      :files="poster.files"
+      :is-video="getPosterType(poster) === 'video'"
+      :name="poster.name"
+    />
   </div>
   <div v-else-if="getPosterType(poster) === 'external'" :class="previewClass">
     <a :href="getUrl(poster)" target="_blank">
@@ -15,7 +22,9 @@
     </a>
   </div>
   <div v-else :class="previewClass">
-    <div class="w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast">
+    <div
+      class="w-full flex justify-center items-center rounded-lg aspect-video bg-surface-300 text-primary-contrast"
+    >
       {{ capitalize(poster.type) }}
     </div>
   </div>

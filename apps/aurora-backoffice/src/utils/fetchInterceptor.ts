@@ -1,6 +1,6 @@
 import { type HttpApiException } from '@gewis/aurora-api-client';
-import { toastError } from '@/utils/toastHandler';
 import { client } from '@gewis/aurora-api-client/client';
+import { toastError } from '@/utils/toastHandler';
 
 /**
  * Fetch interceptor

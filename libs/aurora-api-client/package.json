@@ -15,17 +15,17 @@
     "./openapi.json": "./openapi.json",
     ".": {
       "development": "./src/api-client/index.ts",
-      "types": "./dist/api-client/index.d.ts",
+      "types": "./src/api-client/index.ts",
       "default": "./dist/api-client/index.js"
     },
     "./client": {
       "development": "./src/api-client/client.gen.ts",
-      "types": "./dist/api-client/client.gen.d.ts",
+      "types": "./src/api-client/client.gen.ts",
       "default": "./dist/api-client/client.gen.js"
     },
     "./schemas": {
       "development": "./src/api-client/schemas.gen.ts",
-      "types": "./dist/api-client/schemas.gen.d.ts",
+      "types": "./src/api-client/schemas.gen.ts",
       "default": "./dist/api-client/schemas.gen.js"
     }
   },

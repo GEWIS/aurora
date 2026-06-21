@@ -1,0 +1,59 @@
+{
+  "name": "@gewis/aurora-backoffice",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "vite build",
+    "typecheck": "vue-tsc -b --noEmit",
+    "lint": "eslint src --max-warnings=1",
+    "lint-fix": "eslint src --fix",
+    "docker-build": "pnpm turbo prune @gewis/aurora-backoffice --docker && docker build -f Dockerfile -t aurora-backoffice ../../out"
+  },
+  "dependencies": {
+    "@gewis/aurora-api-client": "workspace:*",
+    "@gewis/splash": "2.4.0",
+    "@primeuix/themes": "1.2.0",
+    "@primevue/core": "4.3.6",
+    "@tailwindcss/postcss": "4.1.14",
+    "@vee-validate/yup": "4.15.1",
+    "cronstrue": "2.61.0",
+    "dotenv": "16.6.1",
+    "pinia": "3.0.3",
+    "primeicons": "7.0.0",
+    "primevue": "4.3.6",
+    "socket.io-client": "4.8.1",
+    "tailwind": "4.0.0",
+    "tailwindcss-primeui": "0.6.1",
+    "uuid": "11.1.0",
+    "vue": "3.5.22",
+    "vue-router": "4.5.1",
+    "vue-timeago3": "2.3.2",
+    "yup": "1.6.1"
+  },
+  "devDependencies": {
+    "@gewis/eslint-config-typescript": "2.3.0",
+    "@gewis/eslint-config-vue": "2.3.0",
+    "@gewis/prettier-config": "2.2.2",
+    "@tsconfig/node22": "22.0.2",
+    "@types/lodash": "4.17.20",
+    "@types/uuid": "10.0.0",
+    "@vitejs/plugin-vue": "5.2.4",
+    "@vue/tsconfig": "0.7.0",
+    "autoprefixer": "10.4.21",
+    "eslint": "9.31.0",
+    "lodash": "4.17.21",
+    "npm-run-all": "4.1.5",
+    "postcss": "8.5.6",
+    "sass": "1.89.2",
+    "tailwindcss": "4.1.11",
+    "typescript": "5.8.3",
+    "vite": "6.3.5",
+    "vite-plugin-chunk-split": "0.5.0",
+    "vue-tsc": "2.2.12"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

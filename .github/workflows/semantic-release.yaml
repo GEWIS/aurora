@@ -15,10 +15,10 @@ jobs:
     if: ${{ needs.versioning.outputs.next-version != '' }}
 
     with:
-      projects: '["apps/aurora-core", "apps/aurora-client"]'
+      projects: '["apps/aurora-core", "apps/aurora-client", "apps/aurora-backoffice"]'
       version: ${{ needs.versioning.outputs.next-version }}
       docker-registry: 'abc.docker-registry.gewis.nl'
-      docker-paths: '["nc/aurora/core", "nc/aurora/client"]'
+      docker-paths: '["nc/aurora/core", "nc/aurora/client", "nc/aurora/backoffice"]'
       github-registry: 'true'
     secrets:
       REGISTRY_USERNAME: ${{ secrets.SVC_GH_ABCNC_USERNAME }}

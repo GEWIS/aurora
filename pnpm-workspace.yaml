@@ -4,6 +4,7 @@ allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   unrs-resolver: true
+  '@tailwindcss/oxide': true
   esbuild: true
   core-js: false
   core-js-pure: false

@@ -50,9 +50,9 @@ All subscribers authenticate with an API key, then maintain a persistent SocketI
 
 | Repository                                                                  | Role                                                                                       | Tech                         |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------- |
-| [aurora-core](https://github.com/GEWIS/aurora-core)                         | Central publisher — receives commands and pushes state to all subscribers                  | TypeScript, NodeJS, SocketIO |
-| [aurora-backoffice](https://github.com/GEWIS/aurora-backoffice)             | Web management UI for humans to control Aurora                                             | TypeScript, React, SocketIO  |
-| [aurora-client](https://github.com/GEWIS/aurora-client)                     | Narrowcasting screen client — displays posters and information on screens                  | TypeScript, NodeJS, SocketIO |
+| `aurora-core` (this repo)                                                   | Central publisher — receives commands and pushes state to all subscribers                  | TypeScript, NodeJS, SocketIO |
+| `aurora-backoffice` (this repo)                                             | Web management UI for humans to control Aurora                                             | TypeScript, Vue, PrimeVue    |
+| `aurora-client` (this repo)                                                 | Narrowcasting screen client — displays posters and information on screens                  | TypeScript, NodeJS, SocketIO |
 | [aurora-audio-player](https://github.com/GEWIS/aurora-audio-player)         | Audio subscriber — plays music as commanded by the core                                    | TypeScript, NodeJS           |
 | [aurora-lights-proxy](https://github.com/GEWIS/aurora-lights-proxy)         | DMX controller bridge — forwards DMX packets from core to ArtNet hardware                  | Python, Art-Net              |
 | [aurora-lights-simulator](https://github.com/GEWIS/aurora-lights-simulator) | Lights effect development tool — simulate DMX output without physical hardware             | TypeScript, NodeJS           |
@@ -85,7 +85,7 @@ cd apps/aurora-core && pnpm dev
 
 ## Development with Docker Compose
 
-The monorepo includes a one-command Docker Compose setup that runs the core, client (narrowcasting), and their dependencies together.
+The monorepo includes a one-command Docker Compose setup that runs the core, backoffice, client (narrowcasting), and their dependencies together.
 
 ### Prerequisites
 
@@ -96,27 +96,29 @@ The monorepo includes a one-command Docker Compose setup that runs the core, cli
 
 ```bash
 # Start everything
-pnpm dev-up
+pnpm dev
 ```
 
 This will:
 
 1. Start the **core** (`http://localhost:3000`) with a pre-seeded SQLite database (GEWIS data set)
-2. Start the **client** (`http://localhost:8081`) with Vite dev server proxying API calls to the core
-3. Wait for the core to be ready and the database seeded
-4. Extract the first screen's API key from the database
-5. Open `http://localhost:8081?key=<screen-key>` in your browser — you are authenticated as that screen
+2. Start the **backoffice** (`http://localhost:8080`)
+3. Start the **client** (`http://localhost:8081`) with Vite dev server proxying API calls to the core
+4. Wait for the core to be ready and the database seeded
+5. Extract the first screen's API key from the database
+6. Open the client, backoffice, and API docs in your browser
+7. Stay running in the foreground — press **Ctrl-C** to stop the environment gracefully
 
 ### Teardown
 
 ```bash
-pnpm dev-down
+docker compose down
 ```
 
 Containers are removed but the `node_modules` volume is kept for fast restarts. To fully reset:
 
 ```bash
-pnpm dev-down -v    # also removes cached node_modules
+docker compose down -v    # also removes cached node_modules
 ```
 
 ## External Integrations
@@ -139,8 +141,8 @@ If you want to integrate your own service with Aurora — to fetch data, send co
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feat/your-feature-name`.
 3. Make your changes.
-4. Run tests: `pnpm --filter aurora-core test`.
-5. Run linting: `pnpm --filter aurora-core lint-fix`.
+4. Run tests: `pnpm --filter @gewis/aurora-core test`.
+5. Run linting: `pnpm lint`.
 6. Commit using [Conventional Commits](https://www.conventionalcommits.org/): `git commit -m "feat: add your feature"`.
 7. Push: `git push origin feat/your-feature-name`.
 8. Open a Pull Request.

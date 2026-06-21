@@ -6,8 +6,7 @@
   "keywords": [],
   "author": "",
   "scripts": {
-    "dev-up": "tsx scripts/start-development.ts",
-    "dev-down": "docker compose down",
+    "dev": "tsx scripts/start-development.ts",
     "build": "turbo run build",
     "docker-build": "pnpm -r --workspace-concurrency=1 run docker-build",
     "typecheck": "turbo run typecheck",

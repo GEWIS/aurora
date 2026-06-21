@@ -71,7 +71,10 @@ async function main() {
   console.info('Fetching API key...');
   const key = await retry(() => getApiKey(CORE_DB), { timeoutMs: 20_000 });
 
-  console.info('\nDevelopment environment ready.');
+  console.info(
+    '\n\x1b[32mDevelopment environment ready.\x1b[0m\n' +
+      'Press Ctrl-C to stop the dev environment.\n',
+  );
 
   if (!key) {
     console.warn(
@@ -89,8 +92,16 @@ async function main() {
   Object.entries(endpoints).forEach(([name, url]) => {
     console.info(`  ${name.padEnd(11)}: \x1b[36m${url}\x1b[0m`);
   });
+  console.info('');
 
+  await delay(1000);
   [endpoints.Docs, endpoints.Client, endpoints.Backoffice].forEach((url) => open(url));
+
+  try {
+    execSync('docker compose up', { stdio: 'inherit' });
+  } catch {
+    process.exit(0);
+  }
 }
 
 main().catch((err) => {

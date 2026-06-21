@@ -96,7 +96,7 @@ The monorepo includes a one-command Docker Compose setup that runs the core, bac
 
 ```bash
 # Start everything
-pnpm dev-up
+pnpm dev
 ```
 
 This will:
@@ -107,17 +107,18 @@ This will:
 4. Wait for the core to be ready and the database seeded
 5. Extract the first screen's API key from the database
 6. Open the client, backoffice, and API docs in your browser
+7. Stay running in the foreground — press **Ctrl-C** to stop the environment gracefully
 
 ### Teardown
 
 ```bash
-pnpm dev-down
+docker compose down
 ```
 
 Containers are removed but the `node_modules` volume is kept for fast restarts. To fully reset:
 
 ```bash
-pnpm dev-down -v    # also removes cached node_modules
+docker compose down -v    # also removes cached node_modules
 ```
 
 ## External Integrations

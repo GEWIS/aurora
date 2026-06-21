@@ -1,37 +1,24 @@
 # Aurora Backoffice
 
-This repository contains the management interface of the Aurora software suite.
-The backoffice is primarily responsible for sending commands to the [core](https://github.com/gewis/aurora-core) over HTTP.
-To see the current state of Aurora, the backoffice can also receive SocketIO messages.
+This is the **management interface** of the Aurora suite — the web UI used to control DMX lighting, narrowcasting screens, and music playback. The backoffice sends commands to the core over HTTP and receives real-time state updates over SocketIO.
+See the root [README](../README.md) for the full architecture overview and list of all Aurora repositories.
 
 ## Prerequisites
 
 - NodeJS 22.
-- A locally running copy of [aurora-core](https://github.com/gewis/aurora-core).
-  The backoffice repository should be cloned next to the core repository, so in the folder `../aurora-core`.
-  This is necessary to generate the required API client files (installation step 2).
 
-## Installation
+## Development setup
 
-1. Run `yarn`.
-2. Run `yarn gen-client` to generate the Typescript files required to communicate with the core.
-3. Run `yarn dev`.
-4. The application is now running at http://localhost:8080.
-   In a development environment with a local copy of Aurora Core, you should be logged in automatically.
+1. Run `pnpm install` from the monorepo root.
+1. Run `pnpm dev`.
+1. The application is now running at http://localhost:8080.
+   In development mode, you are automatically logged in without OIDC credentials (mock auth).
+
+By default, the dev server proxies API requests to `http://localhost:3000`. To use a different core URL, set `VITE_CORE_URL` in the environment.
 
 ## Deployment
 
-Deployment is done using Docker-compose in the core repository.
-This should work out of the box if you meet the prerequisites.
+Deployment is handled by Docker Compose from the monorepo root alongside Aurora Core.
+The backoffice can be built standalone with `pnpm docker-build` from this directory.
 
-## Copyright
-
-Copyright © 2023-2024 Study Association GEWIS - Some rights reserved.
-You can use our software freely within the limits of our license.
-However, we worked very hard on this project and invested a lot of time in it
-so we ask you to leave our copyright marks in place when modifying our software.
-Of course, you are free to add your own.
-
-## License
-
-Aurora uses the [AGPL-3.0 license](LICENSE).
+In production, the backoffice authenticates via OIDC (Keycloak). The `VITE_OIDC_*` environment variables must be configured for the production build.

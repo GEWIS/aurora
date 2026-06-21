@@ -1,16 +1,29 @@
+x-pnpm-config: &pnpm-config
+  environment:
+    - npm_config_store_dir=/tmp/pnpm-store
+
 volumes:
   node_modules:
+  pnpm-store:
 
 services:
   core:
+    <<: *pnpm-config
     image: node:22
     entrypoint: ['node', '/app/scripts/entrypoint.ts']
     working_dir: /app
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/auth/groups']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     ports:
       - '3000:3000'
     volumes:
       - .:/app
       - node_modules:/app/node_modules
+      - pnpm-store:/tmp/pnpm-store
     environment:
       - NODE_ENV=development
       - PORT=3000
@@ -19,7 +32,7 @@ services:
       - TYPEORM_DATABASE=local.sqlite
       - TYPEORM_SYNCHRONIZE=true
       - TYPEORM_LOGGING=false
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:8081
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8081,http://localhost:8080
       - COOKIE_SECRET=dev-secret
       - SESSION_SECRET=dev-secret
       - LOG_LEVEL=info
@@ -30,10 +43,10 @@ services:
       - ROLE_KEY_HOLDER=dev-key-holder
       - ROLE_BAC=dev-bac
       - ROLE_AVICO=dev-avico
-      - DEV_SEED=gewis
     command: ['pnpm', '--filter', '@gewis/aurora-core', 'run', 'dev']
 
   client:
+    <<: *pnpm-config
     image: node:22
     entrypoint: ['node', '/app/scripts/entrypoint.ts']
     working_dir: /app
@@ -42,8 +55,29 @@ services:
     volumes:
       - .:/app
       - node_modules:/app/node_modules
+      - pnpm-store:/tmp/pnpm-store
     depends_on:
-      - core
+      core:
+        condition: service_healthy
     environment:
       - VITE_CORE_URL=http://core:3000
     command: ['pnpm', '--filter', '@gewis/aurora-client', 'run', 'dev']
+
+  backoffice:
+    <<: *pnpm-config
+    image: node:22
+    entrypoint: ['node', '/app/scripts/entrypoint.ts']
+    working_dir: /app
+    ports:
+      - '8080:8080'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - pnpm-store:/tmp/pnpm-store
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      - VITE_CORE_URL=http://core:3000
+      - VITE_NODE_ENV=development
+    command: ['pnpm', '--filter', '@gewis/aurora-backoffice', 'run', 'dev']

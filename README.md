@@ -83,17 +83,41 @@ cp apps/aurora-core/.env.example apps/aurora-core/.env
 cd apps/aurora-core && pnpm dev
 ```
 
-The core will be running at `http://localhost:3000`. API documentation is available at `http://localhost:3000/api-docs`.
+## Development with Docker Compose
 
-### Running the full suite locally
+The monorepo includes a one-command Docker Compose setup that runs the core, client (narrowcasting), and their dependencies together.
 
-For local development with the backoffice and narrowcasting client, use the Docker Compose setup:
+### Prerequisites
+
+- **Docker** with Compose V2 (included in Docker Desktop / Docker Engine 25+)
+- **Node.js 22+** with **pnpm** (for the dev scripts only)
+
+### Quick start
 
 ```bash
-docker compose up
+# Start everything
+pnpm dev-up
 ```
 
-This starts the core, backoffice, and narrowcasting client together. The audio player and DMX lights proxy need to be installed on their destined hardware (they require audio output and an ArtNet DMX controller respectively).
+This will:
+
+1. Start the **core** (`http://localhost:3000`) with a pre-seeded SQLite database (GEWIS data set)
+2. Start the **client** (`http://localhost:8081`) with Vite dev server proxying API calls to the core
+3. Wait for the core to be ready and the database seeded
+4. Extract the first screen's API key from the database
+5. Open `http://localhost:8081?key=<screen-key>` in your browser — you are authenticated as that screen
+
+### Teardown
+
+```bash
+pnpm dev-down
+```
+
+Containers are removed but the `node_modules` volume is kept for fast restarts. To fully reset:
+
+```bash
+pnpm dev-down -v    # also removes cached node_modules
+```
 
 ## External Integrations
 

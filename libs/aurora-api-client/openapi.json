@@ -3093,6 +3093,161 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"YoutubePhase": {
+				"type": "string",
+				"enum": [
+					"idle",
+					"downloading",
+					"transcoding",
+					"ready",
+					"playing",
+					"paused",
+					"error"
+				]
+			},
+			"YoutubeVideo": {
+				"properties": {
+					"videId": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string",
+						"nullable": true
+					},
+					"duration": {
+						"type": "number",
+						"format": "double"
+					},
+					"videoLocation": {
+						"type": "string"
+					},
+					"audioLocation": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"videId",
+					"title",
+					"duration",
+					"videoLocation",
+					"audioLocation"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"YoutubeScreenHandlerState": {
+				"properties": {
+					"phase": {
+						"$ref": "#/components/schemas/YoutubePhase"
+					},
+					"video": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/YoutubeVideo"
+							}
+						],
+						"nullable": true
+					},
+					"sync": {
+						"properties": {
+							"pausedAt": {
+								"type": "number",
+								"format": "double",
+								"nullable": true
+							},
+							"startEpoch": {
+								"type": "number",
+								"format": "double",
+								"nullable": true
+							}
+						},
+						"required": [
+							"pausedAt",
+							"startEpoch"
+						],
+						"type": "object"
+					},
+					"ingest": {
+						"properties": {
+							"error": {
+								"type": "string",
+								"nullable": true
+							},
+							"progress": {
+								"type": "number",
+								"format": "double",
+								"nullable": true
+							}
+						},
+						"required": [
+							"error",
+							"progress"
+						],
+						"type": "object"
+					},
+					"options": {
+						"properties": {
+							"audio": {
+								"type": "boolean"
+							},
+							"loop": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"audio",
+							"loop"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"phase",
+					"video",
+					"sync",
+					"ingest",
+					"options"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoadRequest": {
+				"properties": {
+					"url": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"url"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SeekRequest": {
+				"properties": {
+					"position": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"position"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SetOptionsRequest": {
+				"properties": {
+					"loop": {
+						"type": "boolean"
+					},
+					"audio": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PosterType": {
 				"description": "List of every supported poster type.",
 				"enum": [
@@ -9982,6 +10137,263 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/handler/screen/youtube": {
+			"get": {
+				"operationId": "GetYoutubeScreenHandlerState",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/YoutubeScreenHandlerState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Return the current state of the YouTube screen handler.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "ClearYoutubePlayback",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Clears the YouTube screen handler state.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/youtube/load": {
+			"post": {
+				"operationId": "StartYoutubeLoad",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Load YouTube URL and start downloading/transcoding.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoadRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/youtube/load/cancel": {
+			"post": {
+				"operationId": "CancelYoutubeLoad",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Cancel an ongoing load procedure.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/youtube/play": {
+			"post": {
+				"operationId": "StartYoutubePlayback",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Start loaded YouTube video.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/youtube/pause": {
+			"post": {
+				"operationId": "PauseYoutubePlayback",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Pause the currently playing YouTube video.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/youtube/resume": {
+			"post": {
+				"operationId": "ResumeYoutubePlayback",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Resumes paused YouTube video.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/youtube/seek": {
+			"post": {
+				"operationId": "SeekYoutubePlayback",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Seek to the given position in the YouTube video.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SeekRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/youtube/options": {
+			"post": {
+				"operationId": "SetYoutubePlaybackOptions",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Toggle the audio and/or looping options of the YouTube playback.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetOptionsRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/handler/screen/poster/carousel": {

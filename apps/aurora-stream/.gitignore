@@ -1,0 +1,2 @@
+# Local env overrides (root .gitignore already covers dist/, out/, .turbo, .env*)
+.env.local

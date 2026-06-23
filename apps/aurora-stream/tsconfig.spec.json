@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "paths": {
+      "@aurora/*": ["src/*"]
+    }
+  },
+  "include": ["src"]
+}

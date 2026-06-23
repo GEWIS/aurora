@@ -16,3 +16,4 @@ packages:
 
 overrides:
   '@types/express': '5.0.6'
+  '@types/node': '22.19.7'

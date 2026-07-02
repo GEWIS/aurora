@@ -40,7 +40,7 @@
     "express": "5.2.1",
     "express-session": "1.19.0",
     "file-type": "16.5.4",
-    "globals": "17.1.0",
+    "globals": "17.7.0",
     "joi": "18.0.2",
     "jwt-decode": "4.0.0",
     "mime-types": "3.0.2",

@@ -7,6 +7,7 @@
     "build": "tsc -p tsconfig.app.json",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.spec.json",
     "start": "node dist/src/index.js",
+    "docker-build": "pnpm turbo prune @gewis/aurora-stream --docker && docker build -f Dockerfile -t aurora-stream ../../out",
     "lint": "eslint ./src --max-warnings=0",
     "lint-fix": "eslint ./src --fix"
   },

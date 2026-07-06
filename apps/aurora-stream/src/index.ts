@@ -1,8 +1,8 @@
-/**
- * aurora-stream
- */
+import { spawnMediaMTX } from './mediamtx';
+
 export function main(): void {
-  // TODO: spawn mediamtx and start the resolver sidecar.
+  spawnMediaMTX();
+  // TODO: start the resolver sidecar HTTP server.
 }
 
 main();

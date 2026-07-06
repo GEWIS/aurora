@@ -63,6 +63,25 @@ services:
       - VITE_CORE_URL=http://core:3000
     command: ['pnpm', '--filter', '@gewis/aurora-client', 'run', 'dev']
 
+  stream:
+    <<: *pnpm-config
+    build:
+      context: .
+      dockerfile: apps/aurora-stream/Dockerfile
+      target: binaries
+    entrypoint: ['node', '/app/scripts/entrypoint.ts']
+    working_dir: /app
+    ports:
+      - '8889:8889'
+      - '8554:8554'
+      - '8189:8189/udp'
+      - '9000:9000'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - pnpm-store:/tmp/pnpm-store
+    command: ['pnpm', '--filter', '@gewis/aurora-stream', 'run', 'dev']
+
   backoffice:
     <<: *pnpm-config
     image: node:22

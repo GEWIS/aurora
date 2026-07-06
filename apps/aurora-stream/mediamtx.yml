@@ -1,0 +1,15 @@
+rtmp: true
+hls: true
+srt: true
+moq: true
+
+webrtc: true
+webrtcAddress: :8889
+webrtcEncryption: false
+webrtcAllowOrigins: ['*']
+webrtcLocalUDPAddress: :8189
+webrtcIPsFromInterfaces: true
+
+paths:
+  test_video:
+    source: publisher

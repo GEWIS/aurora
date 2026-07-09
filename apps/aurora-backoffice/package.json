@@ -9,7 +9,7 @@
     "typecheck": "vue-tsc -b --noEmit",
     "lint": "eslint src --max-warnings=1",
     "lint-fix": "eslint src --fix",
-    "docker-build": "pnpm turbo prune @gewis/aurora-backoffice --docker && docker build -f Dockerfile -t aurora-backoffice ../../out"
+    "docker-build": "docker build -f Dockerfile -t aurora-backoffice ../.."
   },
   "dependencies": {
     "@gewis/aurora-api-client": "workspace:*",

@@ -9,7 +9,7 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint src --max-warnings=1",
     "lint-fix": "eslint src --fix",
-    "docker-build": "pnpm turbo prune @gewis/aurora-client --docker && docker build -f Dockerfile -t aurora-client ../../out"
+    "docker-build": "docker build -f Dockerfile -t aurora-client ../.."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "7.1.0",

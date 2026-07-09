@@ -281,6 +281,9 @@ importers:
       '@gewis/sudosos-client':
         specifier: 1.34.0
         version: 1.34.0
+      '@tsoa/runtime':
+        specifier: 7.0.0-alpha.0
+        version: 7.0.0-alpha.0
       async-lock:
         specifier: 1.4.1
         version: 1.4.1
@@ -382,9 +385,6 @@ importers:
         specifier: 9.39.2
         version: 9.39.2
       '@tsoa/cli':
-        specifier: 7.0.0-alpha.0
-        version: 7.0.0-alpha.0
-      '@tsoa/runtime':
         specifier: 7.0.0-alpha.0
         version: 7.0.0-alpha.0
       '@types/async-lock':

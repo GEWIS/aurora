@@ -15,7 +15,8 @@ jobs:
     if: ${{ needs.versioning.outputs.next-version != '' }}
 
     with:
-      projects: '["apps/aurora-core", "apps/aurora-client", "apps/aurora-backoffice"]'
+      projects: '[".", ".", "."]'
+      dockerfiles: '["apps/aurora-core/Dockerfile", "apps/aurora-client/Dockerfile", "apps/aurora-backoffice/Dockerfile"]'
       version: ${{ needs.versioning.outputs.next-version }}
       docker-registry: 'abc.docker-registry.gewis.nl'
       docker-paths: '["nc/aurora/core", "nc/aurora/client", "nc/aurora/backoffice"]'

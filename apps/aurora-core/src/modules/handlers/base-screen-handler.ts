@@ -1,7 +1,7 @@
 import { Namespace } from 'socket.io';
 import { EventParams } from 'socket.io/dist/typed-events';
 import BaseHandler from './base-handler';
-import Screen from '../root/entities/screen';
+import Screen from '../common/entities/screen';
 import { TrackChangeEvent } from '../events/music-emitter-events';
 import { SocketioNamespaces } from '../../socketio-namespaces';
 import { ShowOrdersEvent } from '../events/order-emitter-events';

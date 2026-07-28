@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import SubscribeEntity from '../../common/entities/subscribe-entity';
+import SubscribeEntity from './subscribe-entity';
 
 @Entity()
 export default class Screen extends SubscribeEntity {

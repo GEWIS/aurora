@@ -1,5 +1,5 @@
 import BaseHandler from './base-handler';
-import Audio from '../root/entities/audio';
+import Audio from '../common/entities/audio';
 import type { MusicEmitter } from '../events/music-emitter';
 
 export default abstract class BaseAudioHandler extends BaseHandler<Audio> {

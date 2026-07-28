@@ -1,5 +1,4 @@
 import { Column, OneToMany } from 'typeorm';
-import LightsMovingHeadWheelShutterOptions from './lights-moving-head-wheel-shutter-options';
 import LightsWheelColorChannelValue from './lights-wheel-color-channel-value';
 import LightsWheelGoboChannelValue from './lights-wheel-gobo-channel-value';
 import LightsWheelRotateChannelValue from './lights-wheel-rotate-channel-value';

@@ -1,5 +1,5 @@
 import { BeatEvent } from '../../../../modules/events/music-emitter-events';
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import EffectProgressionStrategy from './effect-progression-strategy';
 
 export default class EffectProgressionTickStrategy extends EffectProgressionStrategy {

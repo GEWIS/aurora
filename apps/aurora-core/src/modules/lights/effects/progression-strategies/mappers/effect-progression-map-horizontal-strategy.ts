@@ -1,5 +1,5 @@
 import EffectProgressionMapStrategy from './effect-progression-map-strategy';
-import LightsGroupFixture from '../../../entities/lights-group-fixture';
+import type LightsGroupFixture from '../../../entities/lights-group-fixture';
 
 export default class EffectProgressionMapHorizontalStrategy extends EffectProgressionMapStrategy {
   public getNrFixtures(): number {

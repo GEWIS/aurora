@@ -1,6 +1,6 @@
 import { LightsEffectPattern } from '../../lights-effect-pattern';
 import EffectProgressionMapHorizontalStrategy from './effect-progression-map-horizontal-strategy';
-import { LightsGroup } from '../../../entities';
+import type { LightsGroup } from '../../../entities';
 import EffectProgressionMapStrategy from './effect-progression-map-strategy';
 import EffectProgressionMapVerticalStrategy from './effect-progression-map-vertical-strategy';
 import EffectProgressionMapDiagonalBottomLeftTopRightStrategy from './effect-progression-map-diagonal-bottom-left-top-right-strategy';

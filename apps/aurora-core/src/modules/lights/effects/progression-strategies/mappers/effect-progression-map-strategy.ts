@@ -1,5 +1,5 @@
-import { LightsGroup } from '../../../entities';
-import LightsGroupFixture from '../../../entities/lights-group-fixture';
+import type { LightsGroup } from '../../../entities';
+import type LightsGroupFixture from '../../../entities/lights-group-fixture';
 
 export default abstract class EffectProgressionMapStrategy {
   constructor(

@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import BaseScreenHandler from '../handlers/base-screen-handler';
 import type BaseHandler from '../handlers/base-handler';
+import SubscribeEntity from '../common/entities/subscribe-entity';
 import SimpleAudioHandler from '../handlers/audio/simple-audio-handler';
 import dataSource from '../../database';
 import { Audio, Screen } from './entities';

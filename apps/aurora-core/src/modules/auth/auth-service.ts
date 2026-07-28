@@ -3,7 +3,8 @@ import crypto from 'crypto';
 import { ApiKey } from './entities';
 import { IntegrationUser } from './integration/entities';
 import dataSource from '../../database';
-import { Audio, LightsController, Screen } from '../root/entities';
+import { Audio, Screen } from '../root/entities';
+import { LightsController } from '../lights/entities';
 
 export interface OidcConfig {
   authorization_endpoint: string;

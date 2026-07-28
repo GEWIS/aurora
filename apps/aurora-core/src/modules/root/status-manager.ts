@@ -2,7 +2,8 @@ import { Socket } from 'socket.io';
 import { AuthUser } from '../auth';
 import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';
 import dataSource from '../../database';
-import { Audio, LightsController, Screen } from './entities';
+import { Audio, Screen } from './entities';
+import { LightsController } from '../lights/entities';
 import logger from '../../logger';
 import SubscribeEntity from './entities/subscribe-entity';
 

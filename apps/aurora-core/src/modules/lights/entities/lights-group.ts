@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 // eslint-disable-next-line import/no-cycle
-import { LightsController } from '../../root/entities';
+import LightsController from './lights-controller';
 // eslint-disable-next-line import/no-cycle
 import LightsGroupPars from './lights-group-pars';
 // eslint-disable-next-line import/no-cycle

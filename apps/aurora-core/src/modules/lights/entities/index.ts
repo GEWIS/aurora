@@ -15,6 +15,7 @@ import LightsMovingHeadRgbShutterOptions from './lights-moving-head-rgb-shutter-
 import LightsMovingHeadWheelShutterOptions from './lights-moving-head-wheel-shutter-options';
 import LightsWheelRotateChannelValue from './lights-wheel-rotate-channel-value';
 import LightsSwitch from './lights-switch';
+import LightsController from './lights-controller';
 
 export { default as LightsGroup } from './lights-group';
 export { default as LightsPar } from './lights-par';
@@ -24,6 +25,7 @@ export { default as LightsGroupPars } from './lights-group-pars';
 export { default as LightsGroupMovingHeadRgbs } from './lights-group-moving-head-rgbs';
 export { default as LightsGroupMovingHeadWheels } from './lights-group-moving-head-wheels';
 export { default as LightsSwitch } from './lights-switch';
+export { default as LightsController } from './lights-controller';
 
 export const Entities = [
   LightsGroup,
@@ -40,6 +42,7 @@ export const Entities = [
   LightsGroupMovingHeadRgbs,
   LightsGroupMovingHeadWheels,
   LightsSwitch,
+  LightsController,
   LightsScene,
   LightsSceneEffect,
   LightsPredefinedEffect,

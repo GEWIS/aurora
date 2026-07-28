@@ -1,5 +1,5 @@
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { LightsController } from './entities';
+import { LightsController } from '../lights/entities';
 import {
   LightsGroup,
   LightsMovingHeadRgb,

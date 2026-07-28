@@ -1,7 +1,8 @@
 import { Entity, OneToMany } from 'typeorm';
 // eslint-disable-next-line import/no-cycle
-import { LightsGroup, LightsSwitch } from '../../lights/entities';
-import SubscribeEntity from './subscribe-entity';
+import LightsGroup from './lights-group';
+import LightsSwitch from './lights-switch';
+import SubscribeEntity from '../../root/entities/subscribe-entity';
 
 @Entity()
 export default class LightsController extends SubscribeEntity {

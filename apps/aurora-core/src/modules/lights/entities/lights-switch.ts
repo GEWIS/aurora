@@ -1,6 +1,6 @@
 import BaseEntity from '../../root/entities/base-entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import LightsController from '../../root/entities/lights-controller';
+import LightsController from './lights-controller';
 
 @Entity()
 export default class LightsSwitch extends BaseEntity {

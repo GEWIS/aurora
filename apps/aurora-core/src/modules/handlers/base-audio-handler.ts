@@ -1,7 +1,6 @@
 import BaseHandler from './base-handler';
 import Audio from '../root/entities/audio';
-// eslint-disable-next-line import/no-cycle -- TODO fix cyclic dependency
-import { MusicEmitter } from '../events';
+import type { MusicEmitter } from '../events/music-emitter';
 
 export default abstract class BaseAudioHandler extends BaseHandler<Audio> {
   protected constructor(musicEmitter: MusicEmitter) {

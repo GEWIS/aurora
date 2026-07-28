@@ -1,7 +1,18 @@
-import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Unique } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
-import Carousel from './local-carousel';
 import Poster from './poster';
+
+@Entity()
+export class Carousel extends BaseEntity {
+  @Column()
+  name: string;
+
+  @Column({ default: true })
+  active: boolean;
+
+  @OneToMany(() => CarouselPoster, (carouselPoster) => carouselPoster.carousel)
+  posters: CarouselPoster[];
+}
 
 /**
  * Join entity describing which posters belong to a carousel and in what order.
@@ -9,7 +20,7 @@ import Poster from './poster';
 @Entity()
 @Unique(['carousel', 'ordering'])
 @Unique(['carousel', 'poster'])
-export default class CarouselPoster extends BaseEntity {
+export class CarouselPoster extends BaseEntity {
   @Column()
   carouselId: number;
 

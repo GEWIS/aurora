@@ -1,5 +1,4 @@
-import Carousel from './local-carousel';
-import CarouselPoster from './local-carousel-poster';
+import { Carousel, CarouselPoster } from './poster-entities';
 import dataSource from '../../../../../database';
 
 /**

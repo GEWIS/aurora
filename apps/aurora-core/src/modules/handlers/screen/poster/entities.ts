@@ -1,9 +1,7 @@
 import Poster from './local/poster';
-import Carousel from './local/local-carousel';
-import CarouselPoster from './local/local-carousel-poster';
+import { Carousel, CarouselPoster } from './local/poster-entities';
 
 export { default as Poster } from './local/poster';
-export { default as Carousel } from './local/local-carousel';
-export { default as CarouselPoster } from './local/local-carousel-poster';
+export { Carousel, CarouselPoster } from './local/poster-entities';
 
 export const Entities = [Poster, Carousel, CarouselPoster];

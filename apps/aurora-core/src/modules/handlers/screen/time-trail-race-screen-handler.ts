@@ -1,5 +1,5 @@
 import BaseScreenHandler from '../base-screen-handler';
-import {
+import type {
   RaceFinishedEvent,
   RaceInitializedEvent,
   RacePlayerReadyEvent,

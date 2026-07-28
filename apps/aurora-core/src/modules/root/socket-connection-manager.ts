@@ -9,7 +9,7 @@ import { LightsController } from '../lights/entities';
 import BaseLightsHandler from '../handlers/base-lights-handler';
 import { LightsGroup } from '../lights/entities';
 import { SECURE_NAMESPACES, SocketioNamespaces } from '../../socketio-namespaces';
-import SubscribeEntity from './entities/subscribe-entity';
+import SubscribeEntity from '../common/entities/subscribe-entity';
 import BaseHandler from '../handlers/base-handler';
 import logger from '../../logger';
 import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';

@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
-import BaseEntity from '../../../../root/entities/base-entity';
+import BaseEntity from '../../../../common/entities/base-entity';
 import { File } from '../../../../files/entities';
 
 /**

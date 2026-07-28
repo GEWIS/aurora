@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import BaseEntity from '../../root/entities/base-entity';
+import BaseEntity from '../../common/entities/base-entity';
 
 export interface IFile {
   /**

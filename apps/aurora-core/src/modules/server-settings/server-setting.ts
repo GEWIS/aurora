@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import BaseEntity from '../root/entities/base-entity';
+import BaseEntity from '../common/entities/base-entity';
 import { SudoSOSSettings, SudoSOSSettingsDefault } from '../sudosos/sudosos-settings';
 import { ModeSettings, ModeSettingsDefaults } from '../modes/mode-settings';
 import {

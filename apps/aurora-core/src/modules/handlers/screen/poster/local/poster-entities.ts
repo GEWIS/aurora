@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Unique } from 'typeorm';
-import BaseEntity from '../../../../root/entities/base-entity';
+import BaseEntity from '../../../../common/entities/base-entity';
 import Poster from './poster';
 
 @Entity()

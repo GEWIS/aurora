@@ -1,4 +1,4 @@
-import BaseEntity from '../../../root/entities/base-entity';
+import BaseEntity from '../../../common/entities/base-entity';
 import { Column, Entity } from 'typeorm';
 import type { LightsEffectsColorCreateParams } from '../../effects/color';
 import type { LightsEffectsMovementCreateParams } from '../../effects/movement';

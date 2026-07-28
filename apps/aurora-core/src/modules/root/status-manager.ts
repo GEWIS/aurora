@@ -5,7 +5,7 @@ import dataSource from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsController } from '../lights/entities';
 import logger from '../../logger';
-import SubscribeEntity from './entities/subscribe-entity';
+import SubscribeEntity from '../common/entities/subscribe-entity';
 
 interface StatusUpdate {
   uptimeSeconds: number;

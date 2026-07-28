@@ -1,5 +1,5 @@
 import { Entity } from 'typeorm';
-import SubscribeEntity from './subscribe-entity';
+import SubscribeEntity from '../../common/entities/subscribe-entity';
 
 @Entity()
 export default class Audio extends SubscribeEntity {

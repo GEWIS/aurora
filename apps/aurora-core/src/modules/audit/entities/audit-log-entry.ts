@@ -1,5 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
-import BaseEntity from '../../root/entities/base-entity';
+import BaseEntity from '../../common/entities/base-entity';
 
 @Entity()
 export default class AuditLogEntry extends BaseEntity {

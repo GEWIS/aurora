@@ -3,7 +3,7 @@ import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
 import { Request as ExpressRequest } from 'express';
 import ModeManager from './mode-manager';
-import SubscribeEntity from '../root/entities/subscribe-entity';
+import SubscribeEntity from '../common/entities/subscribe-entity';
 import { LightsGroup } from '../lights/entities';
 import { Audio, Screen } from '../root/entities';
 import CenturionMode from './centurion/centurion-mode';

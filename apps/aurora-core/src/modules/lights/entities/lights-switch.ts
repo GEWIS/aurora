@@ -1,4 +1,4 @@
-import BaseEntity from '../../root/entities/base-entity';
+import BaseEntity from '../../common/entities/base-entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import LightsController from './lights-controller';
 

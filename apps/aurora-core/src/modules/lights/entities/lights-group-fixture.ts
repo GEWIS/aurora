@@ -1,4 +1,4 @@
-import BaseEntity from '../../root/entities/base-entity';
+import BaseEntity from '../../common/entities/base-entity';
 import { Column } from 'typeorm';
 
 export const DEFAULT_MASTER_DIMMER = 1;

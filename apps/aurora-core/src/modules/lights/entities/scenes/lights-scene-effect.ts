@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import BaseEntity from '../../../root/entities/base-entity';
+import BaseEntity from '../../../common/entities/base-entity';
 // eslint-disable-next-line import/no-cycle
 import LightsScene from './lights-scene';
 // eslint-disable-next-line import/no-cycle

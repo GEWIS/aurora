@@ -1,6 +1,6 @@
 import { Controller, Patch } from '@tsoa/runtime';
 import { Body, Delete, Get, Post, Route, Tags } from 'tsoa';
-import { Security } from '../index';
+import Security from '../endpoint-security';
 import { SecurityNames } from '../../../helpers/security';
 import { securityGroups } from '../../../helpers/security-groups';
 import IntegrationUserService, {

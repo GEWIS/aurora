@@ -1,15 +1,15 @@
 import BaseMode from '../base-mode';
 import { LightsGroup, LightsSwitch } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
-import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
-import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
+import type SetEffectsHandler from '../../handlers/lights/set-effects-handler';
+import type SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
 import MixTape, { FeedEvent, Horn, Song, SongData } from './tapes/mix-tape';
 import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
 import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
 import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
 import { MusicEmitter } from '../../events';
 import { TrackChangeEvent } from '../../events/music-emitter-events';
-import { CenturionScreenHandler } from '../../handlers/screen';
+import type { CenturionScreenHandler } from '../../handlers/screen';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import Wave from '../../lights/effects/color/wave';
 import Sparkle from '../../lights/effects/color/sparkle';

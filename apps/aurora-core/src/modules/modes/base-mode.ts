@@ -1,9 +1,9 @@
 import { LightsGroup } from '../lights/entities';
 import { Audio, Screen } from '../root/entities';
 import HandlerManager from '../root/handler-manager';
-import BaseLightsHandler from '../handlers/base-lights-handler';
-import BaseAudioHandler from '../handlers/base-audio-handler';
-import BaseScreenHandler from '../handlers/base-screen-handler';
+import type BaseLightsHandler from '../handlers/base-lights-handler';
+import type BaseAudioHandler from '../handlers/base-audio-handler';
+import type BaseScreenHandler from '../handlers/base-screen-handler';
 
 export default abstract class BaseMode<
   T extends BaseLightsHandler,

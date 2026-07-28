@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import BaseMode from '../base-mode';
-import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import TimeTrailRaceScreenHandler from '../../handlers/screen/time-trail-race-screen-handler';
+import type SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
+import type TimeTrailRaceScreenHandler from '../../handlers/screen/time-trail-race-screen-handler';
 import { LightsGroup } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
 import { TimeTrailRaceState } from './time-trail-race-state';
@@ -16,7 +16,7 @@ import {
   RaceStartedEvent,
 } from './time-trail-race-events';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
-import TimeTrailRaceLightsHandler from '../../handlers/lights/time-trail-race-lights-handler';
+import type TimeTrailRaceLightsHandler from '../../handlers/lights/time-trail-race-lights-handler';
 import { SimpleBeatGenerator, BeatManager, BeatPriorities } from '../../beats';
 import logger from '../../../logger';
 import { SpotifyTrackHandler } from '../../spotify';

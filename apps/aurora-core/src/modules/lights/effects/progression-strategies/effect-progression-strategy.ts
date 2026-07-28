@@ -1,4 +1,4 @@
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import { BeatEvent } from '../../../events/music-emitter-events';
 
 export default abstract class EffectProgressionStrategy {

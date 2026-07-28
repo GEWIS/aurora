@@ -1,5 +1,5 @@
 import LightsEffect, { BaseLightsEffectCreateParams, LightsEffectBuilder } from '../lights-effect';
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import { MovementEffects } from './movement-effetcs';
 
 export interface RandomPositionProps {

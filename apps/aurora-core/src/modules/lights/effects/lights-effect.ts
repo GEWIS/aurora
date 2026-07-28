@@ -1,7 +1,7 @@
 import { BeatEvent } from '../../events/music-emitter-events';
-import { LightsGroup } from '../entities';
+import type { LightsGroup } from '../entities';
 import EffectProgressionStrategy from './progression-strategies/effect-progression-strategy';
-import LightsGroupFixture from '../entities/lights-group-fixture';
+import type LightsGroupFixture from '../entities/lights-group-fixture';
 import { LightsEffectDirection, LightsEffectPattern } from './lights-effect-pattern';
 import EffectProgressionMapStrategy from './progression-strategies/mappers/effect-progression-map-strategy';
 import EffectProgressionMapFactory from './progression-strategies/mappers/effect-progression-map-factory';

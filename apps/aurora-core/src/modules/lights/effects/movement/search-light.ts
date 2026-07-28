@@ -4,7 +4,7 @@ import {
   BaseLightsEffectProps,
   LightsEffectBuilder,
 } from '../lights-effect';
-import { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
+import type { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
 import BaseRotate, { BaseRotateProps } from './base-rotate';
 import { MovementEffects } from './movement-effetcs';
 import { LightsEffectDirection, LightsEffectPattern } from '../lights-effect-pattern';

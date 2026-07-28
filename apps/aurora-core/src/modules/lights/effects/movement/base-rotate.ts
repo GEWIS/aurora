@@ -1,5 +1,5 @@
 import LightsEffect, { BaseLightsEffectProgressionProps } from '../lights-effect';
-import { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
+import type { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
 import { EffectProgressionTickStrategy } from '../progression-strategies';
 import { BeatEvent } from '../../../events/music-emitter-events';
 import EffectProgressionMapFactory from '../progression-strategies/mappers/effect-progression-map-factory';

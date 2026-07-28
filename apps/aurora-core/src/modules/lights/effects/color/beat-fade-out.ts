@@ -5,7 +5,7 @@ import LightsEffect, {
   LightsEffectBuilder,
 } from '../lights-effect';
 import { BeatEvent } from '../../../events/music-emitter-events';
-import {
+import type {
   LightsGroup,
   LightsGroupMovingHeadRgbs,
   LightsGroupMovingHeadWheels,
@@ -17,7 +17,7 @@ import {
   EffectProgressionTickStrategy,
 } from '../progression-strategies';
 import EffectProgressionStrategy from '../progression-strategies/effect-progression-strategy';
-import LightsGroupFixture from '../../entities/lights-group-fixture';
+import type LightsGroupFixture from '../../entities/lights-group-fixture';
 import EffectProgressionMapFactory from '../progression-strategies/mappers/effect-progression-map-factory';
 import { RgbColor } from '../../color-definitions';
 

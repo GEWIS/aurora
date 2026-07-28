@@ -4,7 +4,7 @@ import LightsEffect, {
   LightsEffectBuilder,
 } from '../lights-effect';
 import { ColorEffects } from './color-effects';
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import { RgbColor } from '../../color-definitions';
 import { BeatEvent } from '../../../events/music-emitter-events';
 

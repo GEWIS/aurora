@@ -4,7 +4,7 @@ import LightsEffect, {
   BaseLightsEffectProps,
   LightsEffectBuilder,
 } from '../lights-effect';
-import { LightsGroup, LightsGroupMovingHeadRgbs, LightsGroupPars } from '../../entities';
+import type { LightsGroup, LightsGroupMovingHeadRgbs, LightsGroupPars } from '../../entities';
 import { ColorEffects } from './color-effects';
 import { EffectProgressionTickStrategy } from '../progression-strategies';
 import EffectProgressionMapFactory from '../progression-strategies/mappers/effect-progression-map-factory';

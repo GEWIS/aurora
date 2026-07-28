@@ -3,7 +3,7 @@ import LightsEffect, {
   BaseLightsEffectProps,
   LightsEffectBuilder,
 } from '../lights-effect';
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import { ColorEffects } from './color-effects';
 import { RgbColor } from '../../color-definitions';
 

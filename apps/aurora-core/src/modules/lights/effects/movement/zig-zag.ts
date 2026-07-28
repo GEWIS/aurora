@@ -5,7 +5,7 @@ import {
   LightsEffectBuilder,
 } from '../lights-effect';
 import { MovementEffects } from './movement-effetcs';
-import { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
+import type { LightsGroup, LightsMovingHeadRgb, LightsMovingHeadWheel } from '../../entities';
 
 export interface ZigZagProps extends BaseRotateProps, BaseLightsEffectProgressionProps {
   /**

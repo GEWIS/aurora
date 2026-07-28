@@ -3,10 +3,10 @@ import LightsEffect, {
   BaseLightsEffectProps,
   LightsEffectBuilder,
 } from '../lights-effect';
-import { LightsGroup, LightsMovingHeadRgb, LightsPar } from '../../entities';
+import type { LightsGroup, LightsMovingHeadRgb, LightsPar } from '../../entities';
 import { RgbColor, rgbColorDefinitions, RgbColorSpecification } from '../../color-definitions';
 import { EffectProgressionTickStrategy } from '../progression-strategies';
-import { IColorsRgb } from '../../entities/colors-rgb';
+import type { IColorsRgb } from '../../entities/colors-rgb';
 import { ColorEffects } from './color-effects';
 
 export interface BackgroundPulseProps extends BaseLightsEffectProps {

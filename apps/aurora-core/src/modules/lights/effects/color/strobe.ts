@@ -1,5 +1,5 @@
 import LightsEffect, { BaseLightsEffectCreateParams, LightsEffectBuilder } from '../lights-effect';
-import { LightsGroup } from '../../entities';
+import type { LightsGroup } from '../../entities';
 import { ColorEffects } from './color-effects';
 
 export interface StrobeProps {

@@ -1,7 +1,7 @@
 import BaseEntity from '../../../root/entities/base-entity';
 import { Column, Entity } from 'typeorm';
-import { LightsEffectsColorCreateParams } from '../../effects/color';
-import { LightsEffectsMovementCreateParams } from '../../effects/movement';
+import type { LightsEffectsColorCreateParams } from '../../effects/color';
+import type { LightsEffectsMovementCreateParams } from '../../effects/movement';
 import { RgbColor } from '../../color-definitions';
 import { jsonTransformer } from '../../../../helpers/transformers';
 

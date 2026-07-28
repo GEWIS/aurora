@@ -1,6 +1,6 @@
 import { Controller, Security as TsoaSecurity } from '@tsoa/runtime';
 import { SecurityNames } from '../../helpers/security';
-import { IntegrationEndpointManager } from './integration';
+import IntegrationEndpointManager from './integration/integration-endpoint-manager';
 
 /**
  * Add TSOA Authorization to a controller or a controller endpoint.

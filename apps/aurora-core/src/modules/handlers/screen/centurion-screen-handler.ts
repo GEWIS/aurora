@@ -1,6 +1,6 @@
 import BaseScreenHandler from '../base-screen-handler';
 import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
-import MixTape from '../../modes/centurion/tapes/mix-tape';
+import type MixTape from '../../modes/centurion/tapes/mix-tape';
 import { RgbColor } from '../../lights/color-definitions';
 import { FeatureEnabled } from '../../server-settings';
 

@@ -1,4 +1,4 @@
-import { ColorChannel, IColorsRgb } from './entities/colors-rgb';
+import type { IColorsRgb } from './entities/colors-rgb';
 
 export enum WheelColor {
   WHITE = 'white',

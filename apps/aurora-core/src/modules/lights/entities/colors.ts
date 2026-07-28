@@ -1,4 +1,4 @@
-import { RgbColor } from '../color-definitions';
+import type { RgbColor } from '../color-definitions';
 import LightsFixtureShutterOptions from './lights-fixture-shutter-options';
 
 export default abstract class Colors {

@@ -38,8 +38,8 @@
     "@hey-api/client-fetch": "0.10.0"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "0.66.7",
-    "tsx": "^4.22.4",
+    "@hey-api/openapi-ts": "0.99.0",
+    "tsx": "^4.23.1",
     "typescript": "5.9.3"
   },
   "engines": {

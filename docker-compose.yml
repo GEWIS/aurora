@@ -80,6 +80,20 @@ services:
       - .:/app
       - node_modules:/app/node_modules
       - pnpm-store:/tmp/pnpm-store
+    environment:
+      - npm_config_store_dir=/tmp/pnpm-store
+      - NODE_ENV=development
+      - LOG_LEVEL=info
+      - STREAM_TOKEN=dev-secret
+      - CONTROL_PORT=9000
+      - AUTH_PORT=9001
+      - WEBRTC_PUBLIC=http://localhost:8889
+      # The one address MediaMTX advertises as an ICE candidate. Must be reachable from the
+      # browser, so it is the *host's* address for the published 8189/udp port, never the
+      # container's own IP. Set to your LAN IP if your browser gathers no loopback candidate.
+      - MTX_WEBRTCADDITIONALHOSTS=127.0.0.1
+      - RTSP_PUBLIC=rtsp://localhost:8554
+      - RTSP_INTERNAL=rtsp://localhost:8554
     command: ['pnpm', '--filter', '@gewis/aurora-stream', 'run', 'dev']
 
   backoffice:

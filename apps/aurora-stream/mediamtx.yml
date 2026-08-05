@@ -1,15 +1,34 @@
-rtmp: true
-hls: true
-srt: true
-moq: true
-
 webrtc: true
 webrtcAddress: :8889
 webrtcEncryption: false
 webrtcAllowOrigins: ['*']
 webrtcLocalUDPAddress: :8189
-webrtcIPsFromInterfaces: true
+
+webrtcIPsFromInterfaces: false
+webrtcAdditionalHosts: [127.0.0.1]
+
+rtsp: true
+rtspAddress: :8554
+
+rtmp: false
+hls: false
+srt: false
+moq: false
+
+api: true
+apiAddress: 127.0.0.1:9997
+
+authMethod: http
+authHTTPAddress: http://127.0.0.1:9001/auth
+authHTTPExclude:
+  - action: api
+  - action: metrics
+  - action: pprof
 
 paths:
-  test_video:
+  yt:
     source: publisher
+    runOnNotReady: curl -sf -m 2 -X POST "http://127.0.0.1:9001/not-ready?path=$MTX_PATH"
+  screenshare:
+    source: publisher
+    runOnNotReady: curl -sf -m 2 -X POST "http://127.0.0.1:9001/not-ready?path=$MTX_PATH"

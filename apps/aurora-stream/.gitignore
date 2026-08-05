@@ -2,3 +2,5 @@
 .env.local
 /auto.crt
 /auto.key
+/scripts/scrub.ts
+/scripts/share.ts

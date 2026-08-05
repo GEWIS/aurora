@@ -11,4 +11,4 @@ out
 .git
 *.md
 **/*.sqlite
-**/.env
+apps/aurora-stream/.env

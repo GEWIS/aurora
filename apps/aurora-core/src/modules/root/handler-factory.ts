@@ -21,6 +21,7 @@ import {
   StageEffectsHandler,
   StaticPosterHandler,
   TimeTrailRaceScreenHandler,
+  VideostreamHandler,
 } from '../handlers/screen';
 
 /**
@@ -85,6 +86,7 @@ export default class HandlerFactory {
       this.createHandler(StageEffectsHandler, () => new StageEffectsHandler(socket)),
       this.createHandler(StaticPosterHandler, () => new StaticPosterHandler(socket)),
       this.createHandler(TimeTrailRaceScreenHandler, () => new TimeTrailRaceScreenHandler(socket)),
+      this.createHandler(VideostreamHandler, () => new VideostreamHandler(socket)),
       this.createHandler(
         RoomResponsibleLegacyHandler,
         () => new RoomResponsibleLegacyHandler(socket),

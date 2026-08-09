@@ -7,6 +7,7 @@ const URLS = {
   core: process.env.VITE_CORE_URL ?? 'http://localhost:3000',
   client: 'http://localhost:8081',
   backoffice: 'http://localhost:8080',
+  stream: 'http://localhost:9000',
 };
 
 function sh(cmd: string): string {
@@ -32,7 +33,7 @@ async function retry<T>(
   throw new Error(`Timed out after ${timeoutMs / 1000}s`);
 }
 
-async function isCoreReady(url: string): Promise<boolean> {
+async function isReachable(url: string): Promise<boolean> {
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(3000) });
     return response.ok || response.status >= 400;
@@ -60,7 +61,12 @@ async function main() {
   sh('docker compose up -d');
 
   console.info('Waiting for core to start...');
-  await retry(() => isCoreReady(`${URLS.core}/api/auth/key`), { timeoutMs: 120_000 });
+  await retry(() => isReachable(`${URLS.core}/api/auth/key`), { timeoutMs: 120_000 });
+
+  console.info('Waiting for stream sidecar to start...');
+  const streamReady = await retry(() => isReachable(`${URLS.stream}/state`), {
+    timeoutMs: 60_000,
+  }).catch(() => false);
 
   const needsSeed = !existsSync(CORE_DB) || !getApiKey(CORE_DB);
   if (needsSeed) {
@@ -82,11 +88,18 @@ async function main() {
     );
   }
 
+  if (!streamReady) {
+    console.warn(
+      `\x1b[33mWarning: stream sidecar did not come up. The videostream handler will not work.\x1b[0m`,
+    );
+  }
+
   const endpoints = {
     Core: URLS.core,
     Docs: `${URLS.core}/api-docs`,
     Client: key ? `${URLS.client}?key=${key}` : URLS.client,
     Backoffice: URLS.backoffice,
+    Stream: streamReady ? URLS.stream : `${URLS.stream} (unreachable)`,
   };
 
   Object.entries(endpoints).forEach(([name, url]) => {

@@ -5,3 +5,4 @@ export { default as RoomResponsibleLegacyHandler } from './room-responsible-lega
 export { default as StageEffectsHandler } from './stage-effects-handler';
 export { default as StaticPosterHandler } from './poster/static-poster-handler';
 export { default as TimeTrailRaceScreenHandler } from './time-trail-race-screen-handler';
+export { default as VideostreamHandler} from './stream/videostream-handler';

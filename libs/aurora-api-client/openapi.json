@@ -3093,22 +3093,24 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"YoutubePhase": {
+			"VideostreamPhase": {
 				"type": "string",
 				"enum": [
 					"idle",
-					"downloading",
-					"transcoding",
 					"ready",
 					"playing",
 					"paused",
 					"error"
 				]
 			},
-			"YoutubeVideo": {
+			"VideostreamHandlerState": {
 				"properties": {
-					"videId": {
-						"type": "string"
+					"phase": {
+						"$ref": "#/components/schemas/VideostreamPhase"
+					},
+					"ref": {
+						"type": "string",
+						"nullable": true
 					},
 					"title": {
 						"type": "string",
@@ -3116,102 +3118,47 @@
 					},
 					"duration": {
 						"type": "number",
-						"format": "double"
-					},
-					"videoLocation": {
-						"type": "string"
-					},
-					"audioLocation": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"videId",
-					"title",
-					"duration",
-					"videoLocation",
-					"audioLocation"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"YoutubeScreenHandlerState": {
-				"properties": {
-					"phase": {
-						"$ref": "#/components/schemas/YoutubePhase"
-					},
-					"video": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/YoutubeVideo"
-							}
-						],
+						"format": "double",
 						"nullable": true
 					},
-					"sync": {
-						"properties": {
-							"pausedAt": {
-								"type": "number",
-								"format": "double",
-								"nullable": true
-							},
-							"startEpoch": {
-								"type": "number",
-								"format": "double",
-								"nullable": true
-							}
-						},
-						"required": [
-							"pausedAt",
-							"startEpoch"
-						],
-						"type": "object"
+					"seekable": {
+						"type": "boolean"
 					},
-					"ingest": {
-						"properties": {
-							"error": {
-								"type": "string",
-								"nullable": true
-							},
-							"progress": {
-								"type": "number",
-								"format": "double",
-								"nullable": true
-							}
-						},
-						"required": [
-							"error",
-							"progress"
-						],
-						"type": "object"
+					"whepUrl": {
+						"type": "string",
+						"nullable": true
 					},
-					"options": {
-						"properties": {
-							"audio": {
-								"type": "boolean"
-							},
-							"loop": {
-								"type": "boolean"
-							}
-						},
-						"required": [
-							"audio",
-							"loop"
-						],
-						"type": "object"
+					"startEpoch": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"pausedAt": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"error": {
+						"type": "string",
+						"nullable": true,
+						"description": "Why playback stopped on its own, set only in the error phase"
 					}
 				},
 				"required": [
 					"phase",
-					"video",
-					"sync",
-					"ingest",
-					"options"
+					"ref",
+					"title",
+					"duration",
+					"seekable",
+					"whepUrl",
+					"startEpoch",
+					"pausedAt",
+					"error"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LoadRequest": {
+			"ResolveStreamRequest": {
 				"properties": {
 					"url": {
 						"type": "string"
@@ -3223,7 +3170,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"SeekRequest": {
+			"SeekStreamRequest": {
 				"properties": {
 					"position": {
 						"type": "number",
@@ -3233,18 +3180,6 @@
 				"required": [
 					"position"
 				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"SetOptionsRequest": {
-				"properties": {
-					"loop": {
-						"type": "boolean"
-					},
-					"audio": {
-						"type": "boolean"
-					}
-				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -10139,22 +10074,22 @@
 				"parameters": []
 			}
 		},
-		"/handler/screen/youtube": {
+		"/handler/screen/videostream": {
 			"get": {
-				"operationId": "GetYoutubeScreenHandlerState",
+				"operationId": "GetVideostreamHandlerState",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/YoutubeScreenHandlerState"
+									"$ref": "#/components/schemas/VideostreamHandlerState"
 								}
 							}
 						}
 					}
 				},
-				"description": "Return the current state of the YouTube screen handler.",
+				"description": "Return the current state of the videostream handler",
 				"tags": [
 					"Handlers"
 				],
@@ -10165,57 +10100,36 @@
 							"board",
 							"avico",
 							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"delete": {
-				"operationId": "ClearYoutubePlayback",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Clears the YouTube screen handler state.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
+							"key-holder"
 						]
 					}
 				],
 				"parameters": []
 			}
 		},
-		"/handler/screen/youtube/load": {
+		"/handler/screen/videostream/resolve": {
 			"post": {
-				"operationId": "StartYoutubeLoad",
+				"operationId": "ResolveVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Load YouTube URL and start downloading/transcoding.",
+				"description": "Probe the given media URL and make it available for playback, without\nstarting it yet.",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
@@ -10225,127 +10139,123 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LoadRequest"
+								"$ref": "#/components/schemas/ResolveStreamRequest"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/handler/screen/youtube/load/cancel": {
+		"/handler/screen/videostream/play": {
 			"post": {
-				"operationId": "CancelYoutubeLoad",
+				"operationId": "PlayVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Cancel an ongoing load procedure.",
+				"description": "Start playing the resolved stream from the beginning",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
 				"parameters": []
 			}
 		},
-		"/handler/screen/youtube/play": {
+		"/handler/screen/videostream/pause": {
 			"post": {
-				"operationId": "StartYoutubePlayback",
+				"operationId": "PauseVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Start loaded YouTube video.",
+				"description": "Pause the stream, remembering the current position",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
 				"parameters": []
 			}
 		},
-		"/handler/screen/youtube/pause": {
+		"/handler/screen/videostream/resume": {
 			"post": {
-				"operationId": "PauseYoutubePlayback",
+				"operationId": "ResumeVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Pause the currently playing YouTube video.",
+				"description": "Resume a paused stream from where it left off",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
 				"parameters": []
 			}
 		},
-		"/handler/screen/youtube/resume": {
+		"/handler/screen/videostream/seek": {
 			"post": {
-				"operationId": "ResumeYoutubePlayback",
+				"operationId": "SeekVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Resumes paused YouTube video.",
+				"description": "Jump to the given position, restarting the stream there",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/handler/screen/youtube/seek": {
-			"post": {
-				"operationId": "SeekYoutubePlayback",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Seek to the given position in the YouTube video.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
@@ -10355,45 +10265,40 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/SeekRequest"
+								"$ref": "#/components/schemas/SeekStreamRequest"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/handler/screen/youtube/options": {
+		"/handler/screen/videostream/stop": {
 			"post": {
-				"operationId": "SetYoutubePlaybackOptions",
+				"operationId": "StopVideostream",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VideostreamHandlerState"
+								}
+							}
+						}
 					}
 				},
-				"description": "Toggle the audio and/or looping options of the YouTube playback.",
+				"description": "Stop playback, keeping the resolved stream available to play again",
 				"tags": [
 					"Handlers"
 				],
 				"security": [
 					{
 						"local": [
-							"admin",
-							"board",
-							"avico"
+							"admin"
 						]
 					}
 				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/SetOptionsRequest"
-							}
-						}
-					}
-				}
+				"parameters": []
 			}
 		},
 		"/handler/screen/poster/carousel": {

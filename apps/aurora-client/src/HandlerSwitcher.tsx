@@ -20,6 +20,7 @@ export enum Handlers {
   STAGE_EFFECTS = 'StageEffectsHandler',
   TIME_TRAIL_RACE = 'TimeTrailRaceScreenHandler',
   ROOM_RESPONSIBLE_LEGACY = 'RoomResponsibleLegacyHandler',
+  VIDEO_STREAM = 'VideostreamHandler',
 }
 
 interface Props {

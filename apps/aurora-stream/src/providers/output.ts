@@ -33,6 +33,7 @@ const WEBRTC_OUTPUT_ARGS: readonly string[] = [
 // prettier-ignore
 const RTSP_ARGS: readonly string[] = [
   '-rtsp_transport', 'tcp',
+  '-pkt_size', '1200',
   '-f', 'rtsp',
 ];
 

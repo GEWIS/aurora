@@ -1,8 +1,16 @@
 # ---- binaries: ffmpeg + yt-dlp + mediamtx, shared by dev target and prod build ----
-FROM node:22-alpine AS binaries
+# Debian, not alpine: dev containers share one pnpm install over the bind-mounted repo,
+# and pnpm resolves platform-gated optional deps (rollup, swc) per libc, so a musl
+# container installs variants the other services and the host cannot load. Keeping prod
+# on the same base also means ffmpeg runs against the libc it is tested with.
+# trixie, not bookworm: bookworm ships ffmpeg 5.1, which predates -readrate_initial_burst.
+FROM node:22-trixie-slim AS binaries
 ARG MEDIAMTX_VERSION=1.19.2
-RUN apk add --no-cache ffmpeg python3 py3-pip curl \
-  && pip install --break-system-packages --no-cache-dir yt-dlp \
+ARG YTDLP_VERSION=
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ffmpeg python3 python3-pip curl ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && pip install --break-system-packages --no-cache-dir "yt-dlp${YTDLP_VERSION:+==$YTDLP_VERSION}" \
   && curl -L "https://github.com/bluenviron/mediamtx/releases/download/v${MEDIAMTX_VERSION}/mediamtx_v${MEDIAMTX_VERSION}_linux_amd64.tar.gz" \
      | tar -xz -C /usr/local/bin mediamtx
 

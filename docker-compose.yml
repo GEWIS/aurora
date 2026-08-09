@@ -43,6 +43,8 @@ services:
       - ROLE_KEY_HOLDER=dev-key-holder
       - ROLE_BAC=dev-bac
       - ROLE_AVICO=dev-avico
+      - STREAM_URL=http://stream:9000
+      - STREAM_TOKEN=dev-secret
     command: ['pnpm', '--filter', '@gewis/aurora-core', 'run', 'dev']
 
   client:
@@ -90,8 +92,9 @@ services:
       - WEBRTC_PUBLIC=http://localhost:8889
       # The one address MediaMTX advertises as an ICE candidate. Must be reachable from the
       # browser, so it is the *host's* address for the published 8189/udp port, never the
-      # container's own IP. Set to your LAN IP if your browser gathers no loopback candidate.
-      - MTX_WEBRTCADDITIONALHOSTS=127.0.0.1
+      # container's own IP. Firefox gathers no loopback candidate, so if sessions are dropped
+      # after ~5s, put MTX_WEBRTCADDITIONALHOSTS=<your LAN IP> in a root .env file.
+      - MTX_WEBRTCADDITIONALHOSTS=${MTX_WEBRTCADDITIONALHOSTS:-127.0.0.1}
       - RTSP_PUBLIC=rtsp://localhost:8554
       - RTSP_INTERNAL=rtsp://localhost:8554
     command: ['pnpm', '--filter', '@gewis/aurora-stream', 'run', 'dev']

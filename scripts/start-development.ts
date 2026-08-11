@@ -108,7 +108,9 @@ async function main() {
   console.info('');
 
   await delay(1000);
-  [endpoints.Docs, endpoints.Client, endpoints.Backoffice].forEach((url) => open(url));
+  await Promise.all(
+    [endpoints.Docs, endpoints.Client, endpoints.Backoffice].map((url) => open(url)),
+  );
 
   try {
     execSync('docker compose up', { stdio: 'inherit' });

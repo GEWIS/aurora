@@ -5563,6 +5563,9 @@
 					"screen": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
+					"videostream": {
+						"$ref": "#/components/schemas/ISecuritySections"
+					},
 					"lightOperation": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
@@ -5602,6 +5605,7 @@
 					"audio",
 					"light",
 					"screen",
+					"videostream",
 					"lightOperation",
 					"spotify",
 					"sudosos",
@@ -10100,7 +10104,11 @@
 							"board",
 							"avico",
 							"bac",
-							"key-holder"
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
 						]
 					}
 				],

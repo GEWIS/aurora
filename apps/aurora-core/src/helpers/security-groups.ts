@@ -23,6 +23,7 @@ export interface ISecurityGroups {
   audio: ISecuritySections;
   light: ISecuritySections;
   screen: ISecuritySections;
+  videostream: ISecuritySections;
   lightOperation: ISecuritySections;
   spotify: ISecuritySections;
   sudosos: ISecuritySections;
@@ -136,6 +137,10 @@ export const securityGroups = {
     base: allSecurityGroups,
     privileged: [SecurityGroup.ADMIN],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
+  },
+  videostream: {
+    base: allSecuritySubscriberGroups,
+    privileged: [SecurityGroup.ADMIN],
   },
   lightOperation: {
     base: baseSecurityGroups,

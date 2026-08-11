@@ -11,6 +11,7 @@ import TimeTrailRaceView from './handlers/time-trail-race';
 import RoomResponsibleLegacyView from './handlers/room-responsible-legacy';
 import StaticPosterView from './handlers/poster/StaticPosterView';
 import CarouselPosterView from './handlers/poster/CarouselPosterView';
+import VideoStreamingView from './handlers/streaming/VideoStreamingView';
 
 export enum Handlers {
   SPOTIFY = 'CurrentlyPlayingTrackHandler',
@@ -49,6 +50,8 @@ export default function HandlerSwitcher({ socket }: Props) {
       return <TimeTrailRaceView socket={socket} />;
     case Handlers.ROOM_RESPONSIBLE_LEGACY:
       return <RoomResponsibleLegacyView />;
+    case Handlers.VIDEO_STREAM:
+      return <VideoStreamingView socket={socket} />;
     default:
       return <DefaultView />;
   }

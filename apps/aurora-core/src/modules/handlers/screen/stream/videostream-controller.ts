@@ -32,7 +32,7 @@ export class VideostreamController extends Controller {
   /**
    * Return the current state of the videostream handler
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.base)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.base)
   @Get('')
   public async getVideostreamHandlerState(): Promise<VideostreamHandlerState> {
     return this.screenHandler.getState();
@@ -44,7 +44,7 @@ export class VideostreamController extends Controller {
    * @param req
    * @param body
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('resolve')
   public async resolveVideostream(
     @Request() req: ExpressRequest,
@@ -58,11 +58,9 @@ export class VideostreamController extends Controller {
    * Start playing the resolved stream from the beginning
    * @param req
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('play')
-  public async playVideostream(
-    @Request() req: ExpressRequest,
-  ): Promise<VideostreamHandlerState> {
+  public async playVideostream(@Request() req: ExpressRequest): Promise<VideostreamHandlerState> {
     logger.audit(req.user, `Play videostream.`);
     return this.screenHandler.play();
   }
@@ -71,11 +69,9 @@ export class VideostreamController extends Controller {
    * Pause the stream, remembering the current position
    * @param req
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('pause')
-  public async pauseVideostream(
-    @Request() req: ExpressRequest,
-  ): Promise<VideostreamHandlerState> {
+  public async pauseVideostream(@Request() req: ExpressRequest): Promise<VideostreamHandlerState> {
     logger.audit(req.user, `Pause videostream.`);
     return this.screenHandler.pause();
   }
@@ -84,11 +80,9 @@ export class VideostreamController extends Controller {
    * Resume a paused stream from where it left off
    * @param req
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('resume')
-  public async resumeVideostream(
-    @Request() req: ExpressRequest,
-  ): Promise<VideostreamHandlerState> {
+  public async resumeVideostream(@Request() req: ExpressRequest): Promise<VideostreamHandlerState> {
     logger.audit(req.user, `Resume videostream.`);
     return this.screenHandler.resume();
   }
@@ -98,7 +92,7 @@ export class VideostreamController extends Controller {
    * @param req
    * @param body
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('seek')
   public async seekVideostream(
     @Request() req: ExpressRequest,
@@ -112,11 +106,9 @@ export class VideostreamController extends Controller {
    * Stop playback, keeping the resolved stream available to play again
    * @param req
    */
-  @Security(SecurityNames.LOCAL, securityGroups.screen.privileged)
+  @Security(SecurityNames.LOCAL, securityGroups.videostream.privileged)
   @Post('stop')
-  public async stopVideostream(
-    @Request() req: ExpressRequest,
-  ): Promise<VideostreamHandlerState> {
+  public async stopVideostream(@Request() req: ExpressRequest): Promise<VideostreamHandlerState> {
     logger.audit(req.user, `Stop videostream.`);
     return this.screenHandler.stop();
   }

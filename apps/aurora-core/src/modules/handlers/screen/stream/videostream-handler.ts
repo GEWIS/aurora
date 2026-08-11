@@ -33,7 +33,7 @@ const IDLE_VIDEOSTREAM_STATE: VideostreamHandlerState = {
   startEpoch: null,
   pausedAt: null,
   error: null,
-}
+};
 
 const UPDATE_STREAM_EVENT_NAME = 'update_video_stream';
 

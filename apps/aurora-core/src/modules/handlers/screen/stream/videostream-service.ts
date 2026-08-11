@@ -33,10 +33,7 @@ export default class VideostreamService {
   private get config() {
     const baseURL = process.env.STREAM_URL;
     if (!baseURL) {
-      throw new HttpApiException(
-        HttpStatusCode.ServiceUnavailable,
-        'Streaming is not configured.',
-      );
+      throw new HttpApiException(HttpStatusCode.ServiceUnavailable, 'Streaming is not configured.');
     }
 
     return {

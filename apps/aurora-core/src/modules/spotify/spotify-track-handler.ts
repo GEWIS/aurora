@@ -148,7 +148,9 @@ export default class SpotifyTrackHandler {
 
       this.playState = state;
     } catch (e) {
-      logger.fatal(e);
+      // Transient failures (e.g. a network blip reaching the Spotify API) are
+      // expected; the loop retries on the next tick, so this is not fatal.
+      logger.warn(`Spotify sync failed, will retry: ${String(e)}`);
     }
   }
 }

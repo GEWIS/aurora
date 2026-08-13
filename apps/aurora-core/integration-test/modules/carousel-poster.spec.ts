@@ -230,13 +230,22 @@ describe('GET /api/handler/screen/poster/carousel/train-departures', () => {
   });
 
   it('returns 500 when NS API is not configured', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.get(
-      '/api/handler/screen/poster/carousel/train-departures',
-    );
+    // ARRANGE — force the "not configured" path regardless of the ambient env.
+    const previousKey = process.env.NS_KEY;
+    delete process.env.NS_KEY;
 
-    // ASSERT
-    expect(res.status).toBe(500);
+    try {
+      // ACT
+      const res = await testApp.authorizedAgent.get(
+        '/api/handler/screen/poster/carousel/train-departures',
+      );
+
+      // ASSERT
+      expect(res.status).toBe(500);
+    } finally {
+      if (previousKey === undefined) delete process.env.NS_KEY;
+      else process.env.NS_KEY = previousKey;
+    }
   });
 });
 

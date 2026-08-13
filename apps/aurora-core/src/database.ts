@@ -11,6 +11,7 @@ import { Entities as SpotifyEntities } from './modules/spotify/entities';
 import { Entities as LightsEntities } from './modules/lights/entities';
 import { Entities as TimedEventsEntities } from './modules/timed-events/entities';
 import { Entities as PosterEntities } from './modules/handlers/screen/poster/entities';
+import { Entities as InfoScreenEntities } from './modules/handlers/screen/info/entities';
 import { Migrations } from './migrations';
 
 const dataSource = new DataSource({
@@ -46,6 +47,7 @@ const dataSource = new DataSource({
     ...SpotifyEntities,
     ...LightsEntities,
     ...PosterEntities,
+    ...InfoScreenEntities,
   ],
 });
 

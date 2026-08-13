@@ -75,6 +75,28 @@ const router = createRouter({
           },
         },
         {
+          path: '/info-screen',
+          component: () => import('@/views/Info/InfoScreenView.vue'),
+          name: 'infoScreen',
+          meta: {
+            security: {
+              securityGroup: 'infoscreen',
+              securitySection: 'base',
+            },
+          },
+        },
+        {
+          path: '/info-screen/layout',
+          component: () => import('@/views/Info/LayoutEditorView.vue'),
+          name: 'infoScreenLayout',
+          meta: {
+            security: {
+              securityGroup: 'infoscreen',
+              securitySection: 'privileged',
+            },
+          },
+        },
+        {
           path: '/modes',
           children: [
             {

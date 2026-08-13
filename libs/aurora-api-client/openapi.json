@@ -834,6 +834,10 @@
 						"type": "boolean",
 						"description": "Whether the Trello poster sync is enabled."
 					},
+					"InfoScreen": {
+						"type": "boolean",
+						"description": "Whether the info screen handler should be enabled."
+					},
 					"Orders": {
 						"type": "boolean"
 					},
@@ -868,6 +872,7 @@
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
 					"Poster.Trello",
+					"InfoScreen",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
@@ -897,6 +902,7 @@
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
 							"Poster.Trello",
+							"InfoScreen",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
@@ -3845,6 +3851,1286 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"WeatherResponse": {
+				"properties": {
+					"station": {
+						"type": "string"
+					},
+					"temperature": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"windBft": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"humidity": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"pressure": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"iconUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"station",
+					"temperature",
+					"windBft",
+					"humidity",
+					"pressure",
+					"description",
+					"iconUrl"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RainRadarResponse": {
+				"properties": {
+					"start": {
+						"type": "number",
+						"format": "double",
+						"description": "Unix timestamp (seconds) of the first sample."
+					},
+					"interval": {
+						"type": "number",
+						"format": "double",
+						"description": "Seconds between samples."
+					},
+					"precip": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"description": "Precipitation values in mm/h, one per interval."
+					},
+					"noRainExpected": {
+						"type": "boolean",
+						"description": "True when no rain is expected in the forecast window."
+					}
+				},
+				"required": [
+					"start",
+					"interval",
+					"precip",
+					"noRainExpected"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NewsHeadline": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"source": {
+						"type": "string"
+					},
+					"sourceId": {
+						"type": "number",
+						"format": "double",
+						"description": "Source registry id (for per-widget source selection); absent for satire."
+					}
+				},
+				"required": [
+					"title",
+					"source"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AgendaEvent": {
+				"properties": {
+					"summary": {
+						"type": "string"
+					},
+					"start": {
+						"type": "string"
+					},
+					"end": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"summary",
+					"start",
+					"end"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PcStatusType": {
+				"description": "Possible states of a physical or virtual PC in the GEWIS room.",
+				"enum": [
+					"free",
+					"in-use",
+					"locked",
+					"remote",
+					"offline",
+					"maintenance"
+				],
+				"type": "string"
+			},
+			"PcOverride": {
+				"description": "Backoffice-controlled override that takes precedence over reported statuses.\nMAINTENANCE forces the PC to show as under maintenance; DISABLED hides it from\nthe screen entirely. Both persist across status posts until cleared.",
+				"enum": [
+					"none",
+					"maintenance",
+					"disabled"
+				],
+				"type": "string"
+			},
+			"PcStatusResponse": {
+				"properties": {
+					"pcId": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string",
+						"nullable": true
+					},
+					"remote": {
+						"type": "boolean"
+					},
+					"lockedAt": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/PcStatusType"
+					},
+					"symbol": {
+						"type": "string",
+						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nuser is unknown/not a keyholder."
+					},
+					"override": {
+						"$ref": "#/components/schemas/PcOverride",
+						"description": "Backoffice override (none / maintenance / disabled)."
+					}
+				},
+				"required": [
+					"pcId",
+					"username",
+					"remote",
+					"lockedAt",
+					"status",
+					"symbol",
+					"override"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PcStatusParams": {
+				"properties": {
+					"pcId": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string",
+						"nullable": true
+					},
+					"remote": {
+						"type": "boolean"
+					},
+					"lockedAt": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/PcStatusType"
+					}
+				},
+				"required": [
+					"pcId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SetPcUsageParams": {
+				"properties": {
+					"pcs": {
+						"items": {
+							"$ref": "#/components/schemas/PcStatusParams"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"pcs"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SetPcOverrideParams": {
+				"properties": {
+					"override": {
+						"$ref": "#/components/schemas/PcOverride"
+					}
+				},
+				"required": [
+					"override"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ResponsibleResponse": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"isBoard": {
+						"type": "boolean"
+					},
+					"isCandidateBoard": {
+						"type": "boolean"
+					},
+					"isKeyholder": {
+						"type": "boolean"
+					},
+					"photoUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"isBoard",
+					"isCandidateBoard",
+					"isKeyholder",
+					"photoUrl"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RoomStatusResponse": {
+				"properties": {
+					"open": {
+						"type": "boolean"
+					},
+					"responsible": {
+						"items": {
+							"$ref": "#/components/schemas/ResponsibleResponse"
+						},
+						"type": "array"
+					},
+					"beerTime": {
+						"type": "string",
+						"nullable": true
+					},
+					"lastCall": {
+						"type": "string",
+						"nullable": true
+					},
+					"closedMessage": {
+						"type": "string",
+						"nullable": true
+					},
+					"coffeeStatus": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"open",
+					"responsible",
+					"beerTime",
+					"lastCall",
+					"closedMessage",
+					"coffeeStatus"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RoomStatusParams": {
+				"properties": {
+					"open": {
+						"type": "boolean"
+					},
+					"responsible1": {
+						"type": "string",
+						"nullable": true
+					},
+					"responsible2": {
+						"type": "string",
+						"nullable": true
+					},
+					"beerTime": {
+						"type": "string",
+						"nullable": true
+					},
+					"lastCall": {
+						"type": "string",
+						"nullable": true
+					},
+					"closedMessage": {
+						"type": "string",
+						"nullable": true
+					},
+					"coffeeStatus": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"open"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"KeyholderResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"isBoard": {
+						"type": "boolean"
+					},
+					"isCandidateBoard": {
+						"type": "boolean"
+					},
+					"isKeyholder": {
+						"type": "boolean"
+					},
+					"photoUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"usernames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"ldapManaged": {
+						"type": "boolean",
+						"description": "True when this row comes from the LDAP sync. Such a row cannot be deleted\n(the sync would recreate it) and only its name and photo may be edited."
+					},
+					"ldapName": {
+						"type": "string",
+						"nullable": true,
+						"description": "The name the directory last reported, for the \"revert\" action."
+					},
+					"nameOverridden": {
+						"type": "boolean",
+						"description": "True when the name shown differs from the directory's."
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"isBoard",
+					"isCandidateBoard",
+					"isKeyholder",
+					"photoUrl",
+					"usernames",
+					"ldapManaged",
+					"ldapName",
+					"nameOverridden"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"KeyholderParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"isBoard": {
+						"type": "boolean"
+					},
+					"isCandidateBoard": {
+						"type": "boolean"
+					},
+					"isKeyholder": {
+						"type": "boolean"
+					},
+					"photoUrl": {
+						"type": "string",
+						"nullable": true
+					},
+					"usernames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"KeyholderSyncStatus": {
+				"description": "Whether this deployment can sync at all, for the backoffice's sync button.",
+				"properties": {
+					"enabled": {
+						"type": "boolean",
+						"description": "True when the LDAP connection variables and a group DN are configured."
+					},
+					"intervalMinutes": {
+						"type": "number",
+						"format": "double",
+						"description": "Minutes between automatic runs; 0 when it only runs at startup."
+					}
+				},
+				"required": [
+					"enabled",
+					"intervalMinutes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"KeyholderSyncResult": {
+				"description": "What a run would do, or did.",
+				"properties": {
+					"created": {
+						"type": "number",
+						"format": "double"
+					},
+					"updated": {
+						"type": "number",
+						"format": "double"
+					},
+					"removed": {
+						"type": "number",
+						"format": "double"
+					},
+					"skipped": {
+						"type": "number",
+						"format": "double",
+						"description": "Entries dropped because they carry no GUID or no display name."
+					}
+				},
+				"required": [
+					"created",
+					"updated",
+					"removed",
+					"skipped"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WidgetSettingValue": {
+				"anyOf": [
+					{
+						"type": "string"
+					},
+					{
+						"type": "number",
+						"format": "double"
+					},
+					{
+						"type": "boolean"
+					},
+					{
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				],
+				"description": "The catalog of widgets the info screen supports. This is the single source of\ntruth shared (via the `widget-catalog` endpoint) with the backoffice layout\neditor (palette + resize bounds + per-widget settings) and the client\n(id → component mapping + setting consumption).\n\nGrid model: a fixed 9-column grid (16px gutters/margins) with 8 rows. A\nplaceable widget occupies a rectangle `{ x, y, w, h }` in grid cells. The same\nwidget type may be placed multiple times; each placement has its own unique\n`instanceId` and its own `settings`. Modal widgets are not placed on the grid;\nthey are toggled on or off and render as an overlay when triggered (beer\ncountdown, incoming call)."
+			},
+			"WidgetSettingOption": {
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"label",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidateKind": {
+				"type": "string",
+				"enum": [
+					"ical",
+					"rss",
+					"station",
+					"image",
+					"url",
+					"status-api"
+				],
+				"description": "External-value check kinds a setting's \"test\" button can run."
+			},
+			"WidgetSetting": {
+				"description": "A single configurable setting exposed by a widget.",
+				"properties": {
+					"key": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"boolean",
+							"select",
+							"number",
+							"text",
+							"background",
+							"entity"
+						],
+						"description": "`background` is a composite panel background: a `\"#rrggbb|opacity|border|blur\"`\nstring edited with a colour/opacity/border picker + preset swatches.\n`entity` renders a manager for a global list (callers/rooms/news sources); when\n`selectable` it is a per-widget multiselect filter storing the chosen ids."
+					},
+					"default": {
+						"$ref": "#/components/schemas/WidgetSettingValue"
+					},
+					"options": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetSettingOption"
+						},
+						"type": "array",
+						"description": "For `select`: the allowed options."
+					},
+					"min": {
+						"type": "number",
+						"format": "double",
+						"description": "For `number`: inclusive bounds."
+					},
+					"max": {
+						"type": "number",
+						"format": "double"
+					},
+					"step": {
+						"type": "number",
+						"format": "double",
+						"description": "For `number`: number of decimal places allowed (default 0)."
+					},
+					"entity": {
+						"type": "string",
+						"enum": [
+							"callers",
+							"conference-rooms",
+							"news-sources"
+						],
+						"description": "For `entity`: which global list this setting manages/selects."
+					},
+					"selectable": {
+						"type": "boolean",
+						"description": "For `entity`: when true the setting is a per-widget id filter (empty = all)."
+					},
+					"validate": {
+						"$ref": "#/components/schemas/ValidateKind",
+						"description": "For `text`: enables a \"test\" button that validates the value via this check."
+					},
+					"visibleWhen": {
+						"properties": {
+							"value": {
+								"type": "string"
+							},
+							"key": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"value",
+							"key"
+						],
+						"type": "object",
+						"description": "Only show this setting in the editor when another setting has a given value,\ne.g. `{ key: 'mode', value: 'digital' }`."
+					}
+				},
+				"required": [
+					"key",
+					"label",
+					"type",
+					"default"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WidgetCatalogItem": {
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "Stable identifier, also used to map to the client component."
+					},
+					"name": {
+						"type": "string",
+						"description": "Human-readable name shown in the backoffice palette."
+					},
+					"icon": {
+						"type": "string",
+						"description": "PrimeIcons class for the backoffice palette."
+					},
+					"defaultW": {
+						"type": "number",
+						"format": "double"
+					},
+					"defaultH": {
+						"type": "number",
+						"format": "double"
+					},
+					"minW": {
+						"type": "number",
+						"format": "double"
+					},
+					"minH": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxW": {
+						"type": "number",
+						"format": "double"
+					},
+					"maxH": {
+						"type": "number",
+						"format": "double"
+					},
+					"modal": {
+						"type": "boolean",
+						"description": "Modal widgets overlay the screen when active and are not grid-placed."
+					},
+					"settings": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetSetting"
+						},
+						"type": "array",
+						"description": "The configurable settings this widget exposes."
+					},
+					"container": {
+						"type": "boolean",
+						"description": "Container widgets hold and manage child widget instances (no nesting)."
+					},
+					"childSettings": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetSetting"
+						},
+						"type": "array",
+						"description": "For containers: the per-child config schema (e.g. status trigger/emit)."
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"icon",
+					"defaultW",
+					"defaultH",
+					"minW",
+					"minH",
+					"maxW",
+					"maxH",
+					"modal",
+					"settings"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.WidgetSettingValue_": {
+				"properties": {},
+				"additionalProperties": {
+					"$ref": "#/components/schemas/WidgetSettingValue"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"ChildWidget": {
+				"description": "A child widget instance held by a container widget.",
+				"properties": {
+					"instanceId": {
+						"type": "string",
+						"description": "Unique per child within its container."
+					},
+					"id": {
+						"type": "string",
+						"description": "The child widget type (a non-container, non-modal catalog id)."
+					},
+					"settings": {
+						"$ref": "#/components/schemas/Record_string.WidgetSettingValue_",
+						"description": "The child widget's own settings."
+					},
+					"containerSettings": {
+						"$ref": "#/components/schemas/Record_string.WidgetSettingValue_",
+						"description": "Per-child config assigned by the container (per its `childSettings`)."
+					}
+				},
+				"required": [
+					"instanceId",
+					"id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WidgetPlacement": {
+				"description": "Placement of a single grid widget, in grid cells.",
+				"properties": {
+					"instanceId": {
+						"type": "string",
+						"description": "Unique per placement, so the same widget type can appear multiple times."
+					},
+					"id": {
+						"type": "string",
+						"description": "The widget type (a catalog id)."
+					},
+					"x": {
+						"type": "number",
+						"format": "double"
+					},
+					"y": {
+						"type": "number",
+						"format": "double"
+					},
+					"w": {
+						"type": "number",
+						"format": "double"
+					},
+					"h": {
+						"type": "number",
+						"format": "double"
+					},
+					"locked": {
+						"type": "boolean",
+						"description": "When true the widget cannot be moved or resized in the editor."
+					},
+					"settings": {
+						"$ref": "#/components/schemas/Record_string.WidgetSettingValue_",
+						"description": "Per-instance setting overrides (missing keys fall back to catalog defaults)."
+					},
+					"children": {
+						"items": {
+							"$ref": "#/components/schemas/ChildWidget"
+						},
+						"type": "array",
+						"description": "For container widgets: the child widget instances it manages."
+					}
+				},
+				"required": [
+					"instanceId",
+					"id",
+					"x",
+					"y",
+					"w",
+					"h"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"InfoScreenLayoutResponse": {
+				"properties": {
+					"screenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"placements": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetPlacement"
+						},
+						"type": "array"
+					},
+					"modals": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"background": {
+						"type": "string",
+						"description": "Screen-wide background style (see BACKGROUND_OPTIONS)."
+					},
+					"backgroundImage": {
+						"type": "string",
+						"description": "Image URL used when `background` is 'image'."
+					},
+					"backgroundColor": {
+						"type": "string",
+						"description": "Solid colour (hex) used when `background` is 'color'."
+					},
+					"defaultPanelBackground": {
+						"type": "string",
+						"description": "Default panel background (composite) for new widgets / \"apply to all\"."
+					}
+				},
+				"required": [
+					"screenId",
+					"placements",
+					"modals",
+					"background",
+					"backgroundImage",
+					"backgroundColor",
+					"defaultPanelBackground"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SetInfoLayoutParams": {
+				"properties": {
+					"placements": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetPlacement"
+						},
+						"type": "array"
+					},
+					"modals": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"background": {
+						"type": "string"
+					},
+					"backgroundImage": {
+						"type": "string"
+					},
+					"backgroundColor": {
+						"type": "string"
+					},
+					"defaultPanelBackground": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"placements",
+					"modals"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LayoutPresetResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"placements": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetPlacement"
+						},
+						"type": "array"
+					},
+					"modals": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"background": {
+						"type": "string"
+					},
+					"backgroundImage": {
+						"type": "string"
+					},
+					"backgroundColor": {
+						"type": "string"
+					},
+					"defaultPanelBackground": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"placements",
+					"modals",
+					"background",
+					"backgroundImage",
+					"backgroundColor",
+					"defaultPanelBackground"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LayoutPresetParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"placements": {
+						"items": {
+							"$ref": "#/components/schemas/WidgetPlacement"
+						},
+						"type": "array"
+					},
+					"modals": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"background": {
+						"type": "string"
+					},
+					"backgroundImage": {
+						"type": "string"
+					},
+					"backgroundColor": {
+						"type": "string"
+					},
+					"defaultPanelBackground": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"placements",
+					"modals"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CallerResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"numbers": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"photoUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"numbers",
+					"photoUrl"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CallerParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"numbers": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"photoUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"numbers"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CallerRingParams": {
+				"properties": {
+					"number": {
+						"type": "string",
+						"description": "The reported phone number or SIP address of the incoming call."
+					}
+				},
+				"required": [
+					"number"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ServiceState": {
+				"type": "string",
+				"enum": [
+					"up",
+					"down",
+					"pending",
+					"maintenance",
+					"unknown"
+				],
+				"description": "A monitor's state, mirroring Uptime Kuma's own statuses (plus `unknown` for a\nmonitor that has not reported yet). The client colours each state the way Kuma\ndoes. Gatus only distinguishes success/failure, so it never reports `pending`\nor `maintenance`."
+			},
+			"ServiceStatus": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"host": {
+						"type": "string",
+						"description": "Fully-qualified host, e.g. \"wiki.gewis.nl\"."
+					},
+					"state": {
+						"$ref": "#/components/schemas/ServiceState"
+					}
+				},
+				"required": [
+					"name",
+					"host",
+					"state"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ServiceGroup": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"state": {
+						"$ref": "#/components/schemas/ServiceState",
+						"description": "The worst state among the group's monitors (see STATE_PRECEDENCE)."
+					},
+					"services": {
+						"items": {
+							"$ref": "#/components/schemas/ServiceStatus"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"name",
+					"state",
+					"services"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ServicesHealthResponse": {
+				"properties": {
+					"summary": {
+						"type": "string",
+						"description": "One-line human summary, e.g. \"Most services are operational\"."
+					},
+					"groups": {
+						"items": {
+							"$ref": "#/components/schemas/ServiceGroup"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"summary",
+					"groups"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RoomBusyInterval": {
+				"properties": {
+					"start": {
+						"type": "string"
+					},
+					"end": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"start",
+					"end"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ConferenceRoom": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double",
+						"description": "Config row id (used by the per-widget room selection)."
+					},
+					"number": {
+						"type": "string",
+						"description": "Room identifier / number, e.g. \"MF 3.141\"."
+					},
+					"available": {
+						"type": "boolean"
+					},
+					"busy": {
+						"items": {
+							"$ref": "#/components/schemas/RoomBusyInterval"
+						},
+						"type": "array",
+						"description": "Today's busy intervals (for the timeline view)."
+					}
+				},
+				"required": [
+					"id",
+					"number",
+					"available",
+					"busy"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ConferenceRoomsResponse": {
+				"properties": {
+					"summary": {
+						"type": "string",
+						"description": "One-line human summary, e.g. \"Two rooms available\"."
+					},
+					"rooms": {
+						"items": {
+							"$ref": "#/components/schemas/ConferenceRoom"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"summary",
+					"rooms"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ConferenceRoomConfigResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"number": {
+						"type": "string"
+					},
+					"icalUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"number",
+					"icalUrl"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ConferenceRoomParams": {
+				"properties": {
+					"number": {
+						"type": "string"
+					},
+					"icalUrl": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"number"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NewsSourceResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"url",
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NewsSourceParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"name",
+					"url",
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidationResult": {
+				"properties": {
+					"valid": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"valid",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidationParams": {
+				"properties": {
+					"kind": {
+						"type": "string",
+						"enum": [
+							"ical",
+							"rss",
+							"station",
+							"image",
+							"url",
+							"status-api"
+						],
+						"description": "Which check to run."
+					},
+					"value": {
+						"type": "string",
+						"description": "The value to validate (URL, station code, …)."
+					}
+				},
+				"required": [
+					"kind",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"BaseLightsEffectCreateParams": {
 				"properties": {},
 				"type": "object"
@@ -5449,6 +6735,9 @@
 					"poster": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
+					"infoscreen": {
+						"$ref": "#/components/schemas/ISecuritySections"
+					},
 					"roomresponsible": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
@@ -5504,6 +6793,7 @@
 					"scenes",
 					"effects",
 					"poster",
+					"infoscreen",
 					"roomresponsible",
 					"centurion",
 					"timetrail",
@@ -6391,6 +7681,7 @@
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
 											"Poster.Trello",
+											"InfoScreen",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",
@@ -10941,6 +12232,1733 @@
 								"required": [
 									"file"
 								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/weather": {
+			"get": {
+				"operationId": "GetInfoWeather",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/WeatherResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "lat",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "lon",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/rain-radar": {
+			"get": {
+				"operationId": "GetInfoRainRadar",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RainRadarResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "lat",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "lon",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/trains": {
+			"get": {
+				"operationId": "GetInfoTrains",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/TrainResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "station",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/news": {
+			"get": {
+				"operationId": "GetInfoNews",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/NewsHeadline"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/info/agenda": {
+			"get": {
+				"operationId": "GetInfoAgenda",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/AgendaEvent"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "url",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/pc-usage": {
+			"get": {
+				"operationId": "GetInfoPcUsage",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/PcStatusResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "includeDisabled",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "SetInfoPcUsage",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Bulk-set the status of all PCs. Intended for a single poster instance that\ngathers every PC's state and pushes it here with a shared integration key.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"setInfoPcUsage"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetPcUsageParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/pc-usage/{pcId}/override": {
+			"put": {
+				"operationId": "SetInfoPcOverride",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Set the backoffice override (maintenance / disabled / none) for a PC. The\noverride takes precedence over reported statuses until cleared.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "pcId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetPcOverrideParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/pc-usage/{pcId}": {
+			"delete": {
+				"operationId": "DeleteInfoPc",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Delete a PC from the list. It reappears on the next status post.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "pcId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/room-status": {
+			"get": {
+				"operationId": "GetInfoRoomStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RoomStatusResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "SetInfoRoomStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RoomStatusResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RoomStatusParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/keyholders": {
+			"get": {
+				"operationId": "GetInfoKeyholders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/KeyholderResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateInfoKeyholder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/KeyholderResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/KeyholderParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/keyholders/{id}": {
+			"put": {
+				"operationId": "UpdateInfoKeyholder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/KeyholderResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/KeyholderParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteInfoKeyholder",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/keyholders/{id}/revert": {
+			"post": {
+				"operationId": "RevertInfoKeyholder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/KeyholderResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Restore an LDAP-managed keyholder's name to the directory's own value.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/keyholders/sync": {
+			"get": {
+				"operationId": "GetInfoKeyholderSyncStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/KeyholderSyncStatus"
+								}
+							}
+						}
+					}
+				},
+				"description": "Whether an LDAP keyholder sync can be run on this deployment, so the\nbackoffice can explain a disabled sync button.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "SyncInfoKeyholders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/KeyholderSyncResult"
+								}
+							}
+						}
+					}
+				},
+				"description": "Run the LDAP keyholder sync now, in addition to its periodic run.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Report what would change without writing anything.",
+						"in": "query",
+						"name": "dryRun",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/widget-catalog": {
+			"get": {
+				"operationId": "GetInfoWidgetCatalog",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/WidgetCatalogItem"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/info/layout": {
+			"get": {
+				"operationId": "GetInfoOwnLayout",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InfoScreenLayoutResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "The layout of the authenticated screen itself (used by the client on mount).",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"screen-subscriber"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/info/layout/{screenId}": {
+			"get": {
+				"operationId": "GetInfoLayout",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InfoScreenLayoutResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "screenId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "SetInfoLayout",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InfoScreenLayoutResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "screenId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetInfoLayoutParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/layout/{screenId}/copy-to-all": {
+			"post": {
+				"operationId": "CopyInfoLayoutToAll",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Copy the given screen's layout to every other screen.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "screenId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/layout-presets": {
+			"get": {
+				"operationId": "GetInfoLayoutPresets",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LayoutPresetResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateInfoLayoutPreset",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LayoutPresetResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LayoutPresetParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/layout-presets/{id}": {
+			"put": {
+				"operationId": "UpdateInfoLayoutPreset",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LayoutPresetResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LayoutPresetParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteInfoLayoutPreset",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/callers": {
+			"get": {
+				"operationId": "GetInfoCallers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/CallerResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateInfoCaller",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CallerResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CallerParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/callers/{id}": {
+			"put": {
+				"operationId": "UpdateInfoCaller",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CallerResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CallerParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteInfoCaller",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/caller-ring": {
+			"post": {
+				"operationId": "SetInfoCallerRing",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Report an incoming call. Intended for the phone system to hit with a shared\nintegration key; resolves the number against the directory and shows the\nincoming-call overlay on the screens.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"setInfoCallerRing"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CallerRingParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/caller-ring/test": {
+			"post": {
+				"operationId": "TestInfoCallerRing",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Trigger a test incoming-call overlay from the backoffice (same behaviour as\nthe integration endpoint, but human-authenticated).",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CallerRingParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/services": {
+			"get": {
+				"operationId": "GetInfoServices",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServicesHealthResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Uptime Kuma or Gatus URL; defaults to STATUS_PAGE_URL.",
+						"in": "query",
+						"name": "url",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/conference-rooms": {
+			"get": {
+				"operationId": "GetInfoConferenceRooms",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ConferenceRoomsResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/info/conference-room-configs": {
+			"get": {
+				"operationId": "GetInfoConferenceRoomConfigs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ConferenceRoomConfigResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateInfoConferenceRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ConferenceRoomConfigResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ConferenceRoomParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/conference-room-configs/{id}": {
+			"put": {
+				"operationId": "UpdateInfoConferenceRoom",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ConferenceRoomConfigResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ConferenceRoomParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteInfoConferenceRoom",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/news-sources": {
+			"get": {
+				"operationId": "GetInfoNewsSources",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/NewsSourceResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateInfoNewsSource",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NewsSourceResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewsSourceParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/info/news-sources/{id}": {
+			"put": {
+				"operationId": "UpdateInfoNewsSource",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NewsSourceResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewsSourceParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteInfoNewsSource",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/info/validate": {
+			"post": {
+				"operationId": "ValidateInfoValue",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationResult"
+								}
+							}
+						}
+					}
+				},
+				"description": "Check whether a widget/entity field value actually works (iCal/RSS feed\nreachable + parseable, NS station code valid, image URL reachable, …) before\nit is saved to a live screen.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ValidationParams"
 							}
 						}
 					}

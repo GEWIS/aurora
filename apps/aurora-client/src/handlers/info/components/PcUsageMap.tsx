@@ -44,7 +44,7 @@ const PC_NODES: Record<string, { x: number; y: number; labelAbove: boolean }> = 
 const R = 21;
 
 /** Names the vdesktop list has room for before it starts counting the rest. */
-const VDESKTOP_ROWS = 5;
+const VDESKTOP_ROWS = 3;
 
 function lockedDuration(lockedAt: string | null): string {
   if (!lockedAt) return '';

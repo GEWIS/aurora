@@ -25,6 +25,13 @@ export enum PcOverride {
 }
 
 /**
+ * Id of the shared virtual desktop. Unlike the physical machines it is not a
+ * seat in the room but one logical PC that any number of people are logged into
+ * at once, so every reported remote session folds into this single row.
+ */
+export const VDESKTOP_PC_ID = 'vdesktop';
+
+/**
  * The reported status of a single PC. A single poster instance keeps this
  * table up to date by pushing the status of every PC at once (see the info
  * screen controller's bulk setter). Board/keyholder annotations are NOT stored
@@ -33,17 +40,20 @@ export enum PcOverride {
 @Entity()
 export default class PcStatus extends BaseEntity {
   /**
-   * Stable identifier of the PC, e.g. "1".."10" for the physical machines or a
-   * hostname for virtual desktops. Used to upsert reported statuses.
+   * Stable identifier of the PC: "1".."10" for the physical machines, or
+   * {@link VDESKTOP_PC_ID} for the shared virtual desktop. Used to upsert
+   * reported statuses.
    */
   @Column({ unique: true })
   public pcId: string;
 
   /**
-   * The logged-in user, or null when the PC is free/offline.
+   * The users currently logged in. A physical PC has at most one; the virtual
+   * desktop is a single PC that many people use at the same time, so it holds
+   * one entry per active session. Empty when the PC is free or offline.
    */
-  @Column({ type: 'varchar', nullable: true })
-  public username: string | null;
+  @Column({ type: 'simple-array', nullable: true })
+  public usernames: string[];
 
   /**
    * Whether the session is a remote/virtual desktop session.

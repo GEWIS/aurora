@@ -43,6 +43,9 @@ const PC_NODES: Record<string, { x: number; y: number; labelAbove: boolean }> = 
 
 const R = 21;
 
+/** Names the vdesktop list has room for before it starts counting the rest. */
+const VDESKTOP_ROWS = 5;
+
 function lockedDuration(lockedAt: string | null): string {
   if (!lockedAt) return '';
   const minutes = Math.floor((Date.now() - new Date(lockedAt).getTime()) / 60000);
@@ -100,9 +103,13 @@ export default function PcUsageMap({ pcs, settings }: Props) {
   const showVdesktops = sBool(settings, 'showVdesktops', true);
 
   const byId = new Map(pcs.map((pc) => [pc.pcId, pc]));
-  const vdesktop = pcs.filter(
-    (pc) => !PC_NODES[pc.pcId] && pc.status !== PcStatusType.OFFLINE && pc.username,
-  );
+  // The virtual desktop is a single PC that many people share, so its users are
+  // listed rather than drawn as seats in the room.
+  const vdesktopUsers = pcs
+    .filter((pc) => !PC_NODES[pc.pcId] && pc.status !== PcStatusType.OFFLINE)
+    .flatMap((pc) => pc.users);
+  const shownUsers = vdesktopUsers.slice(0, VDESKTOP_ROWS);
+  const hiddenUsers = vdesktopUsers.length - shownUsers.length;
 
   return (
     <svg
@@ -131,13 +138,15 @@ export default function PcUsageMap({ pcs, settings }: Props) {
         // the PC number as a fallback so every machine stays labelled).
         let icon: IconDefinition | null = null;
         let text = '';
+        // A physical PC seats at most one person.
+        const user = pc?.users[0];
         if (status === PcStatusType.MAINTENANCE) icon = faWrench;
         else if (status === PcStatusType.LOCKED) text = lockedDuration(pc?.lockedAt ?? null);
-        else if (pc?.symbol) icon = symbolIcon(pc.symbol);
+        else if (user?.symbol) icon = symbolIcon(user.symbol);
         if (!icon && !text) text = id;
 
         const showNumber = text === id;
-        const name = pc?.username ?? '';
+        const name = user?.username ?? '';
         const labelY = node.labelAbove ? node.y - R - 6 : node.y + R + 20;
 
         return (
@@ -224,23 +233,36 @@ export default function PcUsageMap({ pcs, settings }: Props) {
           <text x={671} y={30} textAnchor="middle" fontSize="18" fill="rgba(255,255,255,0.55)">
             vdesktop
           </text>
-          {vdesktop.length === 0 ? (
+          {vdesktopUsers.length === 0 ? (
             <text x={671} y={58} textAnchor="middle" fontSize="18" fill="rgba(255,255,255,0.35)">
               nobody
             </text>
           ) : (
-            vdesktop.slice(0, 5).map((pc, i) => (
-              <text
-                key={pc.pcId}
-                x={671}
-                y={56 + i * 22}
-                textAnchor="middle"
-                fontSize="18"
-                fill="white"
-              >
-                {pc.username}
-              </text>
-            ))
+            <>
+              {shownUsers.map((user, i) => {
+                const icon = symbolIcon(user.symbol);
+                const y = 56 + i * 22;
+                return (
+                  <g key={user.username}>
+                    {icon && <SvgIcon icon={icon} cx={628} cy={y - 5} size={15} fill="white" />}
+                    <text x={643} y={y} fontSize="18" fill="white">
+                      {user.username}
+                    </text>
+                  </g>
+                );
+              })}
+              {hiddenUsers > 0 && (
+                <text
+                  x={671}
+                  y={56 + shownUsers.length * 22}
+                  textAnchor="middle"
+                  fontSize="16"
+                  fill="rgba(255,255,255,0.55)"
+                >
+                  +{hiddenUsers} more
+                </text>
+              )}
+            </>
           )}
         </>
       )}

@@ -84,10 +84,16 @@
       >
         <Column field="pcId" header="PC" />
         <Column field="status" header="Status" />
-        <Column field="username" header="User" />
-        <Column header="">
+        <!-- A physical PC has at most one user; the vdesktop has many. -->
+        <Column header="Users">
           <template #body="{ data }">
-            <i v-if="symbolIcon(data.symbol)" class="pi" :class="symbolIcon(data.symbol)" />
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span v-for="user in data.users" :key="user.username" class="flex items-center gap-1">
+                <i v-if="symbolIcon(user.symbol)" class="pi" :class="symbolIcon(user.symbol)" />
+                {{ user.username }}
+              </span>
+              <span v-if="data.users.length === 0" class="opacity-50">—</span>
+            </div>
           </template>
         </Column>
         <Column header="Override">

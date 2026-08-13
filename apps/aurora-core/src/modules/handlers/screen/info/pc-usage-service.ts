@@ -1,4 +1,4 @@
-import PcStatus, { PcStatusType, PcOverride } from './entities/pc-status';
+import PcStatus, { PcStatusType, PcOverride, VDESKTOP_PC_ID } from './entities/pc-status';
 import Keyholder from './entities/keyholder';
 
 export interface PcStatusParams {
@@ -17,17 +17,26 @@ export interface SetPcOverrideParams {
   override: PcOverride;
 }
 
-export interface PcStatusResponse {
-  pcId: string;
-  username: string | null;
-  remote: boolean;
-  lockedAt: string | null;
-  status: PcStatusType;
+/** One logged-in user, annotated from the keyholder registry. */
+export interface PcUser {
+  username: string;
   /**
    * Board/keyholder symbol derived from the keyholder registry, or '' when the
    * user is unknown/not a keyholder.
    */
   symbol: string;
+}
+
+export interface PcStatusResponse {
+  pcId: string;
+  /**
+   * Who is logged in. A physical PC has at most one entry; the virtual desktop
+   * ({@link VDESKTOP_PC_ID}) can have many at once. Empty when free or offline.
+   */
+  users: PcUser[];
+  remote: boolean;
+  lockedAt: string | null;
+  status: PcStatusType;
   /**
    * Backoffice override (none / maintenance / disabled).
    */
@@ -77,25 +86,85 @@ export default class PcUsageService {
    * Bulk upsert the full set of PCs reported by the poster instance. PCs absent
    * from the payload are left untouched and will fall back to OFFLINE once they
    * go stale.
+   *
+   * The poster reports one entry per session, so every remote/virtual session
+   * arrives under its own id. Those are folded into the single
+   * {@link VDESKTOP_PC_ID} row (see {@link foldVirtual}), which is what makes
+   * the virtual desktop one PC with many users rather than one PC per session.
    */
   public async replaceAll(params: SetPcUsageParams): Promise<void> {
-    await Promise.all(
-      params.pcs.map(async (input) => {
-        const pc =
-          (await PcStatus.findOne({ where: { pcId: input.pcId } })) ??
-          PcStatus.create({ pcId: input.pcId });
-        pc.username = input.username ?? null;
-        pc.remote = input.remote ?? false;
-        pc.lockedAt = input.lockedAt ? new Date(input.lockedAt) : null;
-        pc.status = input.status ?? PcUsageService.inferStatus(input);
-        // Always refresh updatedAt so a PC re-reported with unchanged values is
-        // still considered fresh; otherwise TypeORM skips the UPDATE (no column
-        // diff), updatedAt goes stale, and the staleness rule wrongly marks it
-        // OFFLINE.
-        pc.updatedAt = new Date();
-        await pc.save();
+    const physical = params.pcs.filter((input) => PcUsageService.isPhysical(input.pcId));
+    const virtual = params.pcs.filter((input) => !PcUsageService.isPhysical(input.pcId));
+
+    const writes = physical.map((input) =>
+      PcUsageService.upsert(input.pcId, {
+        usernames: input.username ? [input.username] : [],
+        remote: input.remote ?? false,
+        lockedAt: input.lockedAt ? new Date(input.lockedAt) : null,
+        status: input.status ?? PcUsageService.inferStatus(input),
       }),
     );
+
+    // Only touch the vdesktop row when the report actually covers it, so a
+    // partial post about a single physical PC does not empty it.
+    if (virtual.length > 0) {
+      writes.push(PcUsageService.upsert(VDESKTOP_PC_ID, PcUsageService.foldVirtual(virtual)));
+    }
+
+    await Promise.all(writes);
+  }
+
+  /**
+   * Collapse the reported virtual sessions into the state of the one shared
+   * virtual desktop: the de-duplicated set of logged-in users, remote by
+   * definition, in use whenever anyone is on it. Pure, so the folding is unit
+   * tested without a database.
+   *
+   * `lockedAt` is dropped — it describes a single session, and there is no
+   * meaningful "the vdesktop is locked" once several people share it.
+   */
+  public static foldVirtual(inputs: PcStatusParams[]): {
+    usernames: string[];
+    remote: boolean;
+    lockedAt: null;
+    status: PcStatusType;
+  } {
+    const usernames = [
+      ...new Set(
+        inputs
+          .map((input) => (input.username ?? '').trim())
+          .filter((username) => username !== '' && username !== '-'),
+      ),
+    ];
+    return {
+      usernames,
+      remote: true,
+      lockedAt: null,
+      status: usernames.length > 0 ? PcStatusType.REMOTE : PcStatusType.FREE,
+    };
+  }
+
+  /** Create or update one PC row, keeping it fresh for the staleness rule. */
+  private static async upsert(
+    pcId: string,
+    values: {
+      usernames: string[];
+      remote: boolean;
+      lockedAt: Date | null;
+      status: PcStatusType;
+    },
+  ): Promise<void> {
+    const pc = (await PcStatus.findOne({ where: { pcId } })) ?? PcStatus.create({ pcId });
+    pc.usernames = values.usernames;
+    pc.remote = values.remote;
+    pc.lockedAt = values.lockedAt;
+    pc.status = values.status;
+    // Always refresh updatedAt so a PC re-reported with unchanged values is
+    // still considered fresh; otherwise TypeORM skips the UPDATE (no column
+    // diff), updatedAt goes stale, and the staleness rule wrongly marks it
+    // OFFLINE.
+    pc.updatedAt = new Date();
+    await pc.save();
   }
 
   /**
@@ -108,10 +177,19 @@ export default class PcUsageService {
     return PcStatusType.IN_USE;
   }
 
-  /** Physical PCs have ids "1".."10"; anything else is a virtual desktop. */
-  private static isPhysical(pcId: string): boolean {
+  /** Physical PCs have ids "1".."10"; anything else is a virtual session. */
+  public static isPhysical(pcId: string): boolean {
     const n = Number(pcId);
     return /^\d+$/.test(pcId.trim()) && n >= 1 && n <= PHYSICAL_PC_COUNT;
+  }
+
+  /**
+   * PCs that exist whether or not anyone is on them: the physical machines and
+   * the shared virtual desktop. Everything else is a per-session row (either a
+   * legacy one, or one the poster invented) and is cleaned up once stale.
+   */
+  private static isPersistent(pcId: string): boolean {
+    return PcUsageService.isPhysical(pcId) || pcId === VDESKTOP_PC_ID;
   }
 
   /**
@@ -121,14 +199,15 @@ export default class PcUsageService {
   public async getAll(includeDisabled = false): Promise<PcStatusResponse[]> {
     const [pcs, keyholders] = await Promise.all([PcStatus.find(), Keyholder.find()]);
 
-    // Inactive virtual desktops are deleted rather than lingering as offline
-    // rows; physical PCs persist (shown as offline on the map). PCs with a
-    // backoffice override are kept so the admin's intent is not lost.
+    // Stale per-session rows are deleted rather than lingering as offline rows;
+    // the physical PCs and the shared virtual desktop persist (shown as offline
+    // on the map). PCs with a backoffice override are kept so the admin's
+    // intent is not lost.
     const removable = pcs.filter(
       (pc) =>
         this.isStale(pc) &&
         pc.overrideState === PcOverride.NONE &&
-        !PcUsageService.isPhysical(pc.pcId),
+        !PcUsageService.isPersistent(pc.pcId),
     );
     if (removable.length > 0) {
       await PcStatus.remove(removable);
@@ -143,18 +222,20 @@ export default class PcUsageService {
         // Backoffice overrides take precedence over the reported status.
         let status = stale ? PcStatusType.OFFLINE : pc.status;
         if (pc.overrideState === PcOverride.MAINTENANCE) status = PcStatusType.MAINTENANCE;
-        // A PC with no active session shows neither a user nor a keyholder symbol.
-        const username =
+        // A PC with no active session shows nobody.
+        const active =
           status === PcStatusType.OFFLINE || status === PcStatusType.MAINTENANCE
-            ? null
-            : pc.username;
+            ? []
+            : (pc.usernames ?? []);
         return {
           pcId: pc.pcId,
-          username,
+          users: active.map((username) => ({
+            username,
+            symbol: PcUsageService.deriveSymbol(username, keyholders),
+          })),
           remote: pc.remote,
           lockedAt: pc.lockedAt ? pc.lockedAt.toISOString() : null,
           status,
-          symbol: PcUsageService.deriveSymbol(username, keyholders),
           override: pc.overrideState,
         };
       })

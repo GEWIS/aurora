@@ -3973,6 +3973,24 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PcUser": {
+				"description": "One logged-in user, annotated from the keyholder registry.",
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"symbol": {
+						"type": "string",
+						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nuser is unknown/not a keyholder."
+					}
+				},
+				"required": [
+					"username",
+					"symbol"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PcStatusType": {
 				"description": "Possible states of a physical or virtual PC in the GEWIS room.",
 				"enum": [
@@ -3999,9 +4017,12 @@
 					"pcId": {
 						"type": "string"
 					},
-					"username": {
-						"type": "string",
-						"nullable": true
+					"users": {
+						"items": {
+							"$ref": "#/components/schemas/PcUser"
+						},
+						"type": "array",
+						"description": "Who is logged in. A physical PC has at most one entry; the virtual desktop\n({@link VDESKTOP_PC_ID}) can have many at once. Empty when free or offline."
 					},
 					"remote": {
 						"type": "boolean"
@@ -4013,10 +4034,6 @@
 					"status": {
 						"$ref": "#/components/schemas/PcStatusType"
 					},
-					"symbol": {
-						"type": "string",
-						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nuser is unknown/not a keyholder."
-					},
 					"override": {
 						"$ref": "#/components/schemas/PcOverride",
 						"description": "Backoffice override (none / maintenance / disabled)."
@@ -4024,11 +4041,10 @@
 				},
 				"required": [
 					"pcId",
-					"username",
+					"users",
 					"remote",
 					"lockedAt",
 					"status",
-					"symbol",
 					"override"
 				],
 				"type": "object",

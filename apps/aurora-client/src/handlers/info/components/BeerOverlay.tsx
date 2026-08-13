@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { formatMmSs } from '../countdown';
+import useSecondTick from '../useSecondTick';
 import { nextBeerTime } from './RoomStatusWidget';
 import DigitalTime from './DigitalTime';
-
-function pad(n: number): string {
-  return Math.max(0, Math.floor(n)).toString().padStart(2, '0');
-}
 
 interface Props {
   beerTime: string | null;
@@ -19,12 +16,7 @@ const SHOW_AFTER_MS = 60 * 1000;
  * beer time, celebrates at the exact moment, and hides ~1 minute after.
  */
 export default function BeerOverlay({ beerTime }: Props) {
-  const [now, setNow] = useState(new Date());
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const now = useSecondTick();
 
   if (!beerTime) return null;
   const target = nextBeerTime(beerTime, now);
@@ -53,10 +45,7 @@ export default function BeerOverlay({ beerTime }: Props) {
           {isNow ? (
             <div className="text-8xl font-bold">BEER TIME</div>
           ) : (
-            <DigitalTime
-              className="text-7xl"
-              value={`${pad(diff / 60000)}:${pad((diff % 60000) / 1000)}`}
-            />
+            <DigitalTime className="text-7xl" value={formatMmSs(diff)} />
           )}
         </motion.div>
       )}

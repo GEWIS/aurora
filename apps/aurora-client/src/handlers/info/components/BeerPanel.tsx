@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { remainingHoursMinutes } from '../countdown';
 import { sBool, WidgetSettings } from '../settings';
+import useSecondTick from '../useSecondTick';
 import { nextBeerTime } from './RoomStatusWidget';
 
 interface Props {
@@ -19,16 +20,11 @@ const BEER_GLASS_BG = 'linear-gradient(to top, #eb9c07 0% 74%, #fff9ed 82% 100%)
  * full-screen countdown overlay is a separate modal widget.
  */
 export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
-  const [now, setNow] = useState(new Date());
+  const now = useSecondTick();
 
   const altColor = sBool(settings, 'altColor', true);
   const showIcon = sBool(settings, 'showIcon', true);
   const showLastCall = sBool(settings, 'showLastCall', true);
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const target = beerTime ? nextBeerTime(beerTime, now) : null;
 
@@ -43,10 +39,9 @@ export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
       sub = showLastCall && lastCall ? `Last call at ${lastCall}` : null;
       isBeerTime = true;
     } else {
-      const hrs = Math.floor(diffMs / 3_600_000);
-      const mins = Math.floor((diffMs % 3_600_000) / 60_000);
+      const { hours, minutes } = remainingHoursMinutes(diffMs);
       headline = `Beer starts at ${beerTime}`;
-      sub = `Still ${hrs} hrs and ${mins} mnts to go`;
+      sub = `Still ${hours} hrs and ${minutes} mnts to go`;
     }
   }
 

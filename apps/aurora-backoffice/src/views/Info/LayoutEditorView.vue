@@ -314,9 +314,11 @@
           v-model="addChoice"
           filter
           fluid
+          option-group-children="items"
+          option-group-label="label"
           option-label="name"
           option-value="id"
-          :options="store.placeableCatalog"
+          :options="addOptions"
           placeholder="Search a widget"
         >
           <template #option="{ option }">
@@ -439,6 +441,7 @@ import { GridItem, GridLayout } from 'grid-layout-plus';
 import {
   type LayoutPresetResponse,
   type WidgetCatalogItem,
+  WidgetCategory,
   type WidgetPlacement,
   type WidgetSetting,
   type WidgetSettingOption,
@@ -558,9 +561,39 @@ function isContainer(id: string): boolean {
   return !!catalogItem(id)?.container;
 }
 
+const byName = (a: WidgetCatalogItem, b: WidgetCatalogItem) => a.name.localeCompare(b.name);
+
+/** Category order and labels for the palette. */
+const CATEGORY_LABELS: { value: WidgetCategory; label: string }[] = [
+  { value: WidgetCategory.INFORMATION, label: 'Information' },
+  { value: WidgetCategory.ROOM, label: 'The room' },
+  { value: WidgetCategory.CONTENT, label: 'Content' },
+  { value: WidgetCategory.CONTAINER, label: 'Containers' },
+];
+
+/**
+ * Options for the "add widget" picker, grouped by what a widget is for and
+ * sorted by name within each group — the catalog's own order is definition
+ * order, which is arbitrary to someone hunting for a widget. A category the
+ * core added but this list does not know about still shows, at the end.
+ */
+const addOptions = computed(() => {
+  const known = CATEGORY_LABELS.map((c) => c.value);
+  const extra = [...new Set(store.placeableCatalog.map((w) => w.category))]
+    .filter((c) => !known.includes(c))
+    .map((c) => ({ value: c, label: c }));
+
+  return [...CATEGORY_LABELS, ...extra]
+    .map(({ value, label }) => ({
+      label,
+      items: store.placeableCatalog.filter((w) => w.category === value).sort(byName),
+    }))
+    .filter((group) => group.items.length > 0);
+});
+
 /** Widgets that may be placed inside a container (no nesting). */
 const childCatalog = computed<WidgetCatalogItem[]>(() =>
-  store.catalog.filter((w) => !w.modal && !w.container),
+  store.catalog.filter((w) => !w.modal && !w.container).sort(byName),
 );
 
 function defaultsFrom(schema: WidgetSetting[] | undefined): Record<string, WidgetSettingValue> {

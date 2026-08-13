@@ -5,6 +5,7 @@ import {
   DISABLED_WIDGETS,
   GRID_COLUMNS,
   WIDGET_CATALOG,
+  WIDGET_CATEGORIES,
   enabledCatalog,
   getCatalogItem,
   isWidgetEnabled,
@@ -26,6 +27,26 @@ describe('WIDGET_CATALOG', () => {
       expect(w.defaultH).toBeLessThanOrEqual(w.maxH);
       expect(w.maxW).toBeLessThanOrEqual(GRID_COLUMNS);
     }
+  });
+});
+
+describe('widget categories', () => {
+  it('gives every widget a category the palette knows how to group', () => {
+    const known = new Set(WIDGET_CATEGORIES.map((c) => c.value));
+    for (const w of WIDGET_CATALOG) {
+      expect(known.has(w.category), `${w.id} has category "${w.category}"`).toBe(true);
+    }
+  });
+
+  it('puts exactly the container widgets in the container category', () => {
+    for (const w of WIDGET_CATALOG) {
+      expect(w.category === 'container', w.id).toBe(!!w.container);
+    }
+  });
+
+  it('lists each category once', () => {
+    const values = WIDGET_CATEGORIES.map((c) => c.value);
+    expect(new Set(values).size).toBe(values.length);
   });
 });
 

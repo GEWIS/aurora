@@ -4345,6 +4345,16 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"WidgetCategory": {
+				"type": "string",
+				"enum": [
+					"information",
+					"room",
+					"content",
+					"container"
+				],
+				"description": "What a widget is *for*, used to group the backoffice palette. Presentation\nonly — nothing in the core or the client behaves differently per category.\n\n`container` overlaps with the `container` flag, which carries the actual\nbehaviour (holds children, no nesting); the category exists so the palette\ndoes not have to special-case it."
+			},
 			"WidgetSettingValue": {
 				"anyOf": [
 					{
@@ -4496,6 +4506,10 @@
 						"type": "string",
 						"description": "PrimeIcons class for the backoffice palette."
 					},
+					"category": {
+						"$ref": "#/components/schemas/WidgetCategory",
+						"description": "What the widget is for; groups the backoffice palette."
+					},
 					"defaultW": {
 						"type": "number",
 						"format": "double"
@@ -4547,6 +4561,7 @@
 					"id",
 					"name",
 					"icon",
+					"category",
 					"defaultW",
 					"defaultH",
 					"minW",

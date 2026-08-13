@@ -22,6 +22,24 @@ export interface WidgetSettingOption {
 /** A backoffice-managed global entity that an `entity` setting references. */
 export type EntityKind = 'callers' | 'conference-rooms' | 'news-sources';
 
+/**
+ * What a widget is *for*, used to group the backoffice palette. Presentation
+ * only — nothing in the core or the client behaves differently per category.
+ *
+ * `container` overlaps with the `container` flag, which carries the actual
+ * behaviour (holds children, no nesting); the category exists so the palette
+ * does not have to special-case it.
+ */
+export type WidgetCategory = 'information' | 'room' | 'content' | 'container';
+
+/** The categories in the order the palette should list them, with their labels. */
+export const WIDGET_CATEGORIES: { value: WidgetCategory; label: string }[] = [
+  { value: 'information', label: 'Information' },
+  { value: 'room', label: 'The room' },
+  { value: 'content', label: 'Content' },
+  { value: 'container', label: 'Containers' },
+];
+
 /** External-value check kinds a setting's "test" button can run. */
 export type ValidateKind = 'ical' | 'rss' | 'station' | 'image' | 'url' | 'status-api';
 
@@ -64,6 +82,8 @@ export interface WidgetCatalogItem {
   name: string;
   /** PrimeIcons class for the backoffice palette. */
   icon: string;
+  /** What the widget is for; groups the backoffice palette. */
+  category: WidgetCategory;
   defaultW: number;
   defaultH: number;
   minW: number;
@@ -402,28 +422,28 @@ const CHILD_SETTINGS: Record<string, WidgetSetting[]> = {
 
 const RAW_CATALOG: Omit<WidgetCatalogItem, 'settings'>[] = [
   // Placeable panels
-  { id: 'clock', name: 'Time & date', icon: 'pi-clock', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 3, maxH: 2, modal: false }, // prettier-ignore
-  { id: 'weather', name: 'Weather forecast', icon: 'pi-cloud', defaultW: 3, defaultH: 2, minW: 2, minH: 1, maxW: 4, maxH: 5, modal: false }, // prettier-ignore
-  { id: 'room-responsible', name: 'Room responsibles', icon: 'pi-users', defaultW: 2, defaultH: 3, minW: 2, minH: 2, maxW: 3, maxH: 4, modal: false }, // prettier-ignore
-  { id: 'beer', name: 'Beer time', icon: 'pi-star', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 2, maxH: 2, modal: false }, // prettier-ignore
-  { id: 'spotify', name: 'Now playing', icon: 'pi-play-circle', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 4, maxH: 2, modal: false }, // prettier-ignore
-  { id: 'events', name: 'Events today', icon: 'pi-calendar', defaultW: 3, defaultH: 3, minW: 2, minH: 1, maxW: 4, maxH: 5, modal: false }, // prettier-ignore
-  { id: 'trains', name: 'Train departures', icon: 'pi-directions', defaultW: 2, defaultH: 3, minW: 2, minH: 1, maxW: 3, maxH: 5, modal: false }, // prettier-ignore
-  { id: 'news', name: 'News ticker', icon: 'pi-megaphone', defaultW: 9, defaultH: 1, minW: 4, minH: 1, maxW: 9, maxH: 1, modal: false }, // prettier-ignore
-  { id: 'workstations', name: 'Workstation info', icon: 'pi-desktop', defaultW: 5, defaultH: 4, minW: 3, minH: 2, maxW: 7, maxH: 6, modal: false }, // prettier-ignore
-  { id: 'services', name: 'GEWIS services', icon: 'pi-server', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 3, modal: false }, // prettier-ignore
-  { id: 'conference-rooms', name: 'Conference rooms', icon: 'pi-building', defaultW: 3, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 4, modal: false }, // prettier-ignore
-  { id: 'logo', name: 'GEWIS logo', icon: 'pi-image', defaultW: 2, defaultH: 2, minW: 1, minH: 2, maxW: 2, maxH: 3, modal: false }, // prettier-ignore
-  { id: 'coffee', name: 'Coffee status', icon: 'pi-inbox', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 3, maxH: 2, modal: false }, // prettier-ignore
-  { id: 'caller-inline', name: 'Caller', icon: 'pi-phone', defaultW: 2, defaultH: 2, minW: 2, minH: 1, maxW: 4, maxH: 3, modal: false }, // prettier-ignore
-  { id: 'text', name: 'Text', icon: 'pi-align-center', defaultW: 2, defaultH: 1, minW: 1, minH: 1, maxW: 9, maxH: 4, modal: false }, // prettier-ignore
-  { id: 'image', name: 'Image', icon: 'pi-image', defaultW: 2, defaultH: 2, minW: 1, minH: 1, maxW: 6, maxH: 6, modal: false }, // prettier-ignore
+  { id: 'clock', name: 'Time & date', category: 'information', icon: 'pi-clock', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 3, maxH: 2, modal: false }, // prettier-ignore
+  { id: 'weather', name: 'Weather forecast', category: 'information', icon: 'pi-cloud', defaultW: 3, defaultH: 2, minW: 2, minH: 1, maxW: 4, maxH: 5, modal: false }, // prettier-ignore
+  { id: 'room-responsible', name: 'Room responsibles', category: 'room', icon: 'pi-users', defaultW: 2, defaultH: 3, minW: 2, minH: 2, maxW: 3, maxH: 4, modal: false }, // prettier-ignore
+  { id: 'beer', name: 'Beer time', category: 'room', icon: 'pi-star', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 2, maxH: 2, modal: false }, // prettier-ignore
+  { id: 'spotify', name: 'Now playing', category: 'room', icon: 'pi-play-circle', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 4, maxH: 2, modal: false }, // prettier-ignore
+  { id: 'events', name: 'Events today', category: 'information', icon: 'pi-calendar', defaultW: 3, defaultH: 3, minW: 2, minH: 1, maxW: 4, maxH: 5, modal: false }, // prettier-ignore
+  { id: 'trains', name: 'Train departures', category: 'information', icon: 'pi-directions', defaultW: 2, defaultH: 3, minW: 2, minH: 1, maxW: 3, maxH: 5, modal: false }, // prettier-ignore
+  { id: 'news', name: 'News ticker', category: 'information', icon: 'pi-megaphone', defaultW: 9, defaultH: 1, minW: 4, minH: 1, maxW: 9, maxH: 1, modal: false }, // prettier-ignore
+  { id: 'workstations', name: 'Workstation info', category: 'room', icon: 'pi-desktop', defaultW: 5, defaultH: 4, minW: 3, minH: 2, maxW: 7, maxH: 6, modal: false }, // prettier-ignore
+  { id: 'services', name: 'GEWIS services', category: 'information', icon: 'pi-server', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 3, modal: false }, // prettier-ignore
+  { id: 'conference-rooms', name: 'Conference rooms', category: 'room', icon: 'pi-building', defaultW: 3, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 4, modal: false }, // prettier-ignore
+  { id: 'logo', name: 'GEWIS logo', category: 'content', icon: 'pi-image', defaultW: 2, defaultH: 2, minW: 1, minH: 2, maxW: 2, maxH: 3, modal: false }, // prettier-ignore
+  { id: 'coffee', name: 'Coffee status', category: 'room', icon: 'pi-inbox', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 3, maxH: 2, modal: false }, // prettier-ignore
+  { id: 'caller-inline', name: 'Caller', category: 'room', icon: 'pi-phone', defaultW: 2, defaultH: 2, minW: 2, minH: 1, maxW: 4, maxH: 3, modal: false }, // prettier-ignore
+  { id: 'text', name: 'Text', category: 'content', icon: 'pi-align-center', defaultW: 2, defaultH: 1, minW: 1, minH: 1, maxW: 9, maxH: 4, modal: false }, // prettier-ignore
+  { id: 'image', name: 'Image', category: 'content', icon: 'pi-image', defaultW: 2, defaultH: 2, minW: 1, minH: 1, maxW: 6, maxH: 6, modal: false }, // prettier-ignore
   // Container widgets (hold child widgets)
-  { id: 'carousel', name: 'Carousel', icon: 'pi-images', defaultW: 3, defaultH: 3, minW: 2, minH: 2, maxW: 6, maxH: 6, modal: false, container: true }, // prettier-ignore
-  { id: 'status-stack', name: 'Status stack', icon: 'pi-clone', defaultW: 3, defaultH: 3, minW: 2, minH: 2, maxW: 6, maxH: 6, modal: false, container: true }, // prettier-ignore
+  { id: 'carousel', name: 'Carousel', category: 'container', icon: 'pi-images', defaultW: 3, defaultH: 3, minW: 2, minH: 2, maxW: 6, maxH: 6, modal: false, container: true }, // prettier-ignore
+  { id: 'status-stack', name: 'Status stack', category: 'container', icon: 'pi-clone', defaultW: 3, defaultH: 3, minW: 2, minH: 2, maxW: 6, maxH: 6, modal: false, container: true }, // prettier-ignore
   // Modal / overlay widgets (toggled on/off, not grid-placed)
-  { id: 'beer-modal', name: 'Beer countdown (overlay)', icon: 'pi-star', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
-  { id: 'caller', name: 'Incoming call (overlay)', icon: 'pi-phone', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
+  { id: 'beer-modal', name: 'Beer countdown (overlay)', category: 'room', icon: 'pi-star', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
+  { id: 'caller', name: 'Incoming call (overlay)', category: 'room', icon: 'pi-phone', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
 ];
 
 /**

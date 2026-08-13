@@ -147,7 +147,12 @@ export const DEFAULT_BACKGROUND_COLOR = '#0b1020';
 type VisibleWhen = WidgetSetting['visibleWhen'];
 
 // Small builders to keep the settings definitions compact.
-const bool = (key: string, label: string, def = true, visibleWhen?: VisibleWhen): WidgetSetting => ({
+const bool = (
+  key: string,
+  label: string,
+  def = true,
+  visibleWhen?: VisibleWhen,
+): WidgetSetting => ({
   key,
   label,
   type: 'boolean',
@@ -211,20 +216,30 @@ export const TIMEZONE_OPTIONS: WidgetSettingOption[] = (() => {
 const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
   clock: [
     text('title', 'Widget title', 'Eindhoven Time'),
-    select('mode', 'Style', [
-      { label: 'Digital', value: 'digital' },
-      { label: 'Analog', value: 'analog' },
-    ], 'digital'),
+    select(
+      'mode',
+      'Style',
+      [
+        { label: 'Digital', value: 'digital' },
+        { label: 'Analog', value: 'analog' },
+      ],
+      'digital',
+    ),
     select('timezone', 'Timezone', TIMEZONE_OPTIONS, 'Europe/Amsterdam'),
     bool('showSeconds', 'Show seconds', true),
     bool('showDate', 'Show date', true),
     bool('use24h', '24-hour clock', true, { key: 'mode', value: 'digital' }),
   ],
   weather: [
-    select('mode', 'Mode', [
-      { label: 'Rain timeline', value: 'timeline' },
-      { label: 'Status (icon + temperature)', value: 'summary' },
-    ], 'timeline'),
+    select(
+      'mode',
+      'Mode',
+      [
+        { label: 'Rain timeline', value: 'timeline' },
+        { label: 'Status (icon + temperature)', value: 'summary' },
+      ],
+      'timeline',
+    ),
     num('latitude', 'Latitude', 51.447, -90, 90, 4),
     num('longitude', 'Longitude', 5.487, -180, 180, 4),
     bool('showEmoji', 'Show weather icon', true, { key: 'mode', value: 'summary' }),
@@ -251,44 +266,52 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
   ],
   news: [
     entity('sources', 'Sources shown', 'news-sources', true),
-    select('speed', 'Scroll speed', [
-      { label: 'Slow', value: 'slow' },
-      { label: 'Normal', value: 'normal' },
-      { label: 'Fast', value: 'fast' },
-    ], 'normal'),
+    select(
+      'speed',
+      'Scroll speed',
+      [
+        { label: 'Slow', value: 'slow' },
+        { label: 'Normal', value: 'normal' },
+        { label: 'Fast', value: 'fast' },
+      ],
+      'normal',
+    ),
     bool('sourceSatire', 'Show GEWIS satirical headlines', true),
     num('maxItems', 'Max headlines shown', 20, 1, 100),
     bool('interleave', 'Interleave sources', true),
   ],
   workstations: [
-    select('pcStyle', 'PC style', [
-      { label: 'Circles', value: 'circle' },
-      { label: 'Icons', value: 'icon' },
-    ], 'circle'),
+    select(
+      'pcStyle',
+      'PC style',
+      [
+        { label: 'Circles', value: 'circle' },
+        { label: 'Icons', value: 'icon' },
+      ],
+      'circle',
+    ),
     bool('showUsernames', 'Show usernames', true),
     bool('showVdesktops', 'Show virtual desktops', true),
   ],
   services: [
-    text(
-      'statusPageUrl',
-      'Uptime Kuma or Gatus URL (blank = uptime.gewis.nl)',
-      '',
-      'status-api',
-    ),
+    text('statusPageUrl', 'Uptime Kuma or Gatus URL (blank = uptime.gewis.nl)', '', 'status-api'),
     bool('onlyOffline', 'Only unfold offline groups', false),
     bool('showSummary', 'Show summary line', true),
   ],
   'conference-rooms': [
     entity('rooms', 'Rooms shown', 'conference-rooms', true),
-    select('mode', 'Mode', [
-      { label: 'Summary list', value: 'summary' },
-      { label: 'Timeline', value: 'timeline' },
-    ], 'summary'),
+    select(
+      'mode',
+      'Mode',
+      [
+        { label: 'Summary list', value: 'summary' },
+        { label: 'Timeline', value: 'timeline' },
+      ],
+      'summary',
+    ),
     bool('onlyAvailable', 'Only show available rooms', false, { key: 'mode', value: 'summary' }),
   ],
-  logo: [
-    bool('flip', 'Flip every 3 minutes', true),
-  ],
+  logo: [bool('flip', 'Flip every 3 minutes', true)],
   // The coffee widget has no display settings of its own (it always shows a
   // coffee icon plus a status icon and label). It keeps only the universal
   // panel-background setting injected below.
@@ -299,45 +322,70 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
   ],
   text: [
     text('content', 'Text', 'Hello'),
-    select('align', 'Alignment', [
-      { label: 'Left', value: 'left' },
-      { label: 'Center', value: 'center' },
-      { label: 'Right', value: 'right' },
-    ], 'center'),
-    select('size', 'Size', [
-      { label: 'Small', value: 'sm' },
-      { label: 'Medium', value: 'md' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Extra large', value: 'xl' },
-    ], 'lg'),
+    select(
+      'align',
+      'Alignment',
+      [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+      'center',
+    ),
+    select(
+      'size',
+      'Size',
+      [
+        { label: 'Small', value: 'sm' },
+        { label: 'Medium', value: 'md' },
+        { label: 'Large', value: 'lg' },
+        { label: 'Extra large', value: 'xl' },
+      ],
+      'lg',
+    ),
   ],
   image: [
     text('url', 'Image URL', '', 'image'),
-    select('fit', 'Fit', [
-      { label: 'Cover', value: 'cover' },
-      { label: 'Contain', value: 'contain' },
-    ], 'cover'),
+    select(
+      'fit',
+      'Fit',
+      [
+        { label: 'Cover', value: 'cover' },
+        { label: 'Contain', value: 'contain' },
+      ],
+      'cover',
+    ),
   ],
   carousel: [
     num('interval', 'Seconds per widget', 8, 2, 120),
-    select('animation', 'Transition', [
-      { label: 'Fade', value: 'fade' },
-      { label: 'Slide horizontal', value: 'slide-h' },
-      { label: 'Slide vertical', value: 'slide-v' },
-    ], 'fade'),
+    select(
+      'animation',
+      'Transition',
+      [
+        { label: 'Fade', value: 'fade' },
+        { label: 'Slide horizontal', value: 'slide-h' },
+        { label: 'Slide vertical', value: 'slide-v' },
+      ],
+      'fade',
+    ),
   ],
   // The status-stack is configured globally (not per child): a background child
   // is shown for `duration` with the `emit` effect. Which child triggers on
   // which event is derived from the child widget's type (client-side).
   'status-stack': [
     num('duration', 'Background show for (seconds)', 10, 2, 120),
-    select('emit', 'Attention effect', [
-      { label: 'None', value: 'none' },
-      { label: 'Flash / pulse', value: 'flash' },
-      { label: 'Shake', value: 'shake' },
-      { label: 'Glow border', value: 'glow' },
-      { label: 'Radiating border', value: 'radiate' },
-    ], 'flash'),
+    select(
+      'emit',
+      'Attention effect',
+      [
+        { label: 'None', value: 'none' },
+        { label: 'Flash / pulse', value: 'flash' },
+        { label: 'Shake', value: 'shake' },
+        { label: 'Glow border', value: 'glow' },
+        { label: 'Radiating border', value: 'radiate' },
+      ],
+      'flash',
+    ),
   ],
   'beer-modal': [],
   caller: [

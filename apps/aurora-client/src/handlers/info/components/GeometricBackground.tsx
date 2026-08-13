@@ -18,10 +18,42 @@ interface Props {
 }
 
 const POLYGONS = [
-  { left: '-6%', top: '-10%', size: '46vw', color: '#c8102e', opacity: 0.32, drift: 60, duration: 90 },
-  { left: '58%', top: '-14%', size: '38vw', color: '#4f46e5', opacity: 0.28, drift: 80, duration: 120 },
-  { left: '68%', top: '46%', size: '44vw', color: '#0ea5b5', opacity: 0.26, drift: 70, duration: 105 },
-  { left: '-8%', top: '52%', size: '40vw', color: '#7c3aed', opacity: 0.24, drift: 90, duration: 135 },
+  {
+    left: '-6%',
+    top: '-10%',
+    size: '46vw',
+    color: '#c8102e',
+    opacity: 0.32,
+    drift: 60,
+    duration: 90,
+  },
+  {
+    left: '58%',
+    top: '-14%',
+    size: '38vw',
+    color: '#4f46e5',
+    opacity: 0.28,
+    drift: 80,
+    duration: 120,
+  },
+  {
+    left: '68%',
+    top: '46%',
+    size: '44vw',
+    color: '#0ea5b5',
+    opacity: 0.26,
+    drift: 70,
+    duration: 105,
+  },
+  {
+    left: '-8%',
+    top: '52%',
+    size: '40vw',
+    color: '#7c3aed',
+    opacity: 0.24,
+    drift: 90,
+    duration: 135,
+  },
 ];
 
 const HEXAGON = 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)';
@@ -82,7 +114,6 @@ export default function GeometricBackground({ variant = 'hexagons', image, color
       {/* base depth glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(70,84,150,0.35),transparent_65%)]" />
 
-
       {/* drifting blurred polygons for colour depth */}
       {showPolygons &&
         POLYGONS.map((p, i) => (
@@ -102,7 +133,10 @@ export default function GeometricBackground({ variant = 'hexagons', image, color
 
       {/* infinite hexagon tiling (Hero Patterns "hexagons") */}
       {showHexTiling && (
-        <svg className="absolute inset-0 h-full w-full opacity-[0.11]" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="absolute inset-0 h-full w-full opacity-[0.11]"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
             <pattern
               id="info-hexagons"
@@ -125,7 +159,10 @@ export default function GeometricBackground({ variant = 'hexagons', image, color
 
       {/* line grid */}
       {showGrid && (
-        <svg className="absolute inset-0 h-full w-full opacity-[0.1]" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="absolute inset-0 h-full w-full opacity-[0.1]"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
             <pattern id="info-grid" width="48" height="48" patternUnits="userSpaceOnUse">
               <path fill="none" stroke="white" strokeWidth="1" d="M48 0H0V48" />
@@ -150,7 +187,12 @@ export default function GeometricBackground({ variant = 'hexagons', image, color
               clipPath: HEXAGON,
             }}
             animate={{ opacity: [0, 0.16, 0] }}
-            transition={{ duration: c.duration, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{
+              duration: c.duration,
+              delay: c.delay,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
           />
         ))}
 

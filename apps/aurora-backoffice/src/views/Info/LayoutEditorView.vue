@@ -242,7 +242,10 @@
                       >
                         <div class="flex shrink-0 items-center justify-between gap-1">
                           <span class="flex min-w-0 items-center gap-1.5">
-                            <i class="pi text-xs" :class="catalogItem(currentChild(item)?.type)?.icon" />
+                            <i
+                              class="pi text-xs"
+                              :class="catalogItem(currentChild(item)?.type)?.icon"
+                            />
                             <span class="truncate text-xs font-semibold">
                               {{ label(currentChild(item)?.type ?? '') }}
                             </span>
@@ -262,8 +265,13 @@
                             />
                           </div>
                         </div>
-                        <div class="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-                          <i class="pi text-3xl opacity-40" :class="catalogItem(currentChild(item)?.type)?.icon" />
+                        <div
+                          class="flex min-h-0 flex-1 items-center justify-center overflow-hidden"
+                        >
+                          <i
+                            class="pi text-3xl opacity-40"
+                            :class="catalogItem(currentChild(item)?.type)?.icon"
+                          />
                         </div>
                       </div>
 
@@ -284,7 +292,11 @@
                     </template>
                   </div>
                   <span class="mt-2 text-center text-[10px] opacity-60">
-                    {{ item.children.length ? `${item.childIndex + 1} / ${item.children.length}` : 'empty' }}
+                    {{
+                      item.children.length
+                        ? `${item.childIndex + 1} / ${item.children.length}`
+                        : 'empty'
+                    }}
                   </span>
                 </template>
                 <span v-else class="mt-auto text-xs opacity-70">{{ item.w }}×{{ item.h }}</span>
@@ -355,7 +367,11 @@
       modal
     >
       <div v-if="settingsItem" class="flex flex-col gap-4 w-96">
-        <SettingsControls :schema="settingsSchemaRaw" :values="settingsItem.settings" @update="setSetting" />
+        <SettingsControls
+          :schema="settingsSchemaRaw"
+          :values="settingsItem.settings"
+          @update="setSetting"
+        />
       </div>
       <template #footer>
         <Button label="Done" @click="settingsVisible = false" />
@@ -376,7 +392,9 @@
           @update="setChildSetting"
         />
         <template v-if="childContainerSchema.length">
-          <div class="mt-2 border-t border-gray-600 pt-3 text-xs uppercase tracking-wide opacity-50">
+          <div
+            class="mt-2 border-t border-gray-600 pt-3 text-xs uppercase tracking-wide opacity-50"
+          >
             Behaviour
           </div>
           <SettingsControls
@@ -395,7 +413,12 @@
     <Dialog v-model:visible="saveAsVisible" header="Save configuration" modal>
       <div class="flex w-96 flex-col gap-1">
         <label class="text-sm opacity-70">Configuration name</label>
-        <InputText v-model="saveAsName" autofocus placeholder="e.g. Borrel night" @keyup.enter="confirmSaveAs" />
+        <InputText
+          v-model="saveAsName"
+          autofocus
+          placeholder="e.g. Borrel night"
+          @keyup.enter="confirmSaveAs"
+        />
         <small class="opacity-60">Saving under an existing name creates a new configuration.</small>
       </div>
       <template #footer>

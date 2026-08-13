@@ -17,7 +17,12 @@ function keyholder(overrides: Partial<Keyholder>): Keyholder {
 describe('PcUsageService.deriveSymbol', () => {
   const keyholders = [
     keyholder({ name: 'Board', isBoard: true, usernames: ['BEST'] }),
-    keyholder({ name: 'Candidate+Key', isCandidateBoard: true, isKeyholder: true, usernames: ['CK'] }),
+    keyholder({
+      name: 'Candidate+Key',
+      isCandidateBoard: true,
+      isKeyholder: true,
+      usernames: ['CK'],
+    }),
     keyholder({ name: 'Candidate', isCandidateBoard: true, usernames: ['CAND'] }),
     keyholder({ name: 'Key', isKeyholder: true, usernames: ['KEY'] }),
   ];

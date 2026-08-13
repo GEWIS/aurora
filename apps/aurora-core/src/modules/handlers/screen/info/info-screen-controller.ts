@@ -11,11 +11,7 @@ import InfoScreenHandler from './info-screen-handler';
 import { FeatureEnabled } from '../../../server-settings';
 import WeatherService, { WeatherResponse } from './weather-service';
 import RainRadarService, { RainRadarResponse } from './rain-radar-service';
-import NewsService, {
-  NewsHeadline,
-  NewsSourceParams,
-  NewsSourceResponse,
-} from './news-service';
+import NewsService, { NewsHeadline, NewsSourceParams, NewsSourceResponse } from './news-service';
 import CalendarService, { AgendaEvent } from './calendar-service';
 import NsTrainsService, { TrainResponse } from '../poster/ns-trains-service';
 import { applyTreinLimbo } from './trains-transform';
@@ -30,19 +26,12 @@ import InfoStatusService, {
   RoomStatusParams,
   RoomStatusResponse,
 } from './info-status-service';
-import LayoutService, {
-  InfoScreenLayoutResponse,
-  SetInfoLayoutParams,
-} from './layout-service';
+import LayoutService, { InfoScreenLayoutResponse, SetInfoLayoutParams } from './layout-service';
 import LayoutPresetService, {
   LayoutPresetParams,
   LayoutPresetResponse,
 } from './layout-preset-service';
-import CallerService, {
-  CallerParams,
-  CallerResponse,
-  CallerRingParams,
-} from './caller-service';
+import CallerService, { CallerParams, CallerResponse, CallerRingParams } from './caller-service';
 import ServicesHealthService, { ServicesHealthResponse } from './services-health-service';
 import ValidationService, { ValidationParams, ValidationResult } from './validation-service';
 import ConferenceRoomsService, {
@@ -137,9 +126,7 @@ export class InfoScreenController extends Controller {
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('pc-usage')
-  public async getInfoPcUsage(
-    @Query() includeDisabled?: boolean,
-  ): Promise<PcStatusResponse[]> {
+  public async getInfoPcUsage(@Query() includeDisabled?: boolean): Promise<PcStatusResponse[]> {
     return this.pcUsageService.getAll(includeDisabled ?? false);
   }
 
@@ -347,9 +334,7 @@ export class InfoScreenController extends Controller {
    */
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.subscriber)
   @Get('layout')
-  public async getInfoOwnLayout(
-    @Request() req: ExpressRequest,
-  ): Promise<InfoScreenLayoutResponse> {
+  public async getInfoOwnLayout(@Request() req: ExpressRequest): Promise<InfoScreenLayoutResponse> {
     const screenId = req.user?.screenId;
     if (!screenId) {
       throw new HttpApiException(400, 'Authenticated user is not a screen subscriber.');
@@ -481,10 +466,7 @@ export class InfoScreenController extends Controller {
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
   @Delete('callers/{id}')
-  public async deleteInfoCaller(
-    @Path() id: number,
-    @Request() req: ExpressRequest,
-  ): Promise<void> {
+  public async deleteInfoCaller(@Path() id: number, @Request() req: ExpressRequest): Promise<void> {
     logger.audit(req.user, `Delete info screen caller ${id}.`);
     const deleted = await this.callerService.delete(id);
     if (!deleted) this.setStatus(404);

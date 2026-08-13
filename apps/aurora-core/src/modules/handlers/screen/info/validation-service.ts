@@ -90,7 +90,10 @@ export default class ValidationService {
       });
       const type = String(res.headers['content-type'] ?? '');
       if (!type.startsWith('image/')) {
-        return { valid: false, message: `Reachable, but not an image (${type || 'unknown type'}).` };
+        return {
+          valid: false,
+          message: `Reachable, but not an image (${type || 'unknown type'}).`,
+        };
       }
       return { valid: true, message: `Image OK (${type}).` };
     } catch (e) {
@@ -131,6 +134,7 @@ export default class ValidationService {
 }
 
 function errMessage(e: unknown): string {
-  if (axios.isAxiosError(e)) return e.response ? `HTTP ${e.response.status}` : e.code ?? e.message;
+  if (axios.isAxiosError(e))
+    return e.response ? `HTTP ${e.response.status}` : (e.code ?? e.message);
   return e instanceof Error ? e.message : String(e);
 }

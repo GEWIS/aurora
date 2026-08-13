@@ -17,7 +17,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { validateInfoValue, type ValidationParams, type ValidationResult } from '@gewis/aurora-api-client';
+import {
+  validateInfoValue,
+  type ValidationParams,
+  type ValidationResult,
+} from '@gewis/aurora-api-client';
 
 const props = defineProps<{ kind: ValidationParams['kind']; value: string }>();
 
@@ -37,7 +41,9 @@ async function run() {
   result.value = null;
   const res = await validateInfoValue({ body: { kind: props.kind, value: props.value } });
   result.value =
-    res.response.ok && res.data ? res.data : { valid: false, message: 'Validation request failed.' };
+    res.response.ok && res.data
+      ? res.data
+      : { valid: false, message: 'Validation request failed.' };
   loading.value = false;
 }
 </script>

@@ -31,11 +31,7 @@
         :model-value="String(values[s.key] ?? '')"
         @update:model-value="(v: string | undefined) => emit('update', s.key, v ?? '')"
       />
-      <ValidateButton
-        v-if="s.validate"
-        :kind="s.validate"
-        :value="String(values[s.key] ?? '')"
-      />
+      <ValidateButton v-if="s.validate" :kind="s.validate" :value="String(values[s.key] ?? '')" />
     </template>
     <BackgroundPicker
       v-else-if="s.type === 'background'"

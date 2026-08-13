@@ -66,16 +66,36 @@ export default function InfoScreenView({ socket }: Props) {
 
   // Initial data load over HTTP.
   useEffect(() => {
-    getInfoOwnLayout().then((r) => setLayout(r.data ?? null)).catch(console.error);
-    getInfoWeather().then((r) => setWeather(r.data ?? null)).catch(console.error);
-    getInfoRainRadar().then((r) => setRadar(r.data ?? null)).catch(console.error);
-    getInfoTrains().then((r) => setTrains(r.data ?? [])).catch(console.error);
-    getInfoNews().then((r) => setNews(r.data ?? [])).catch(console.error);
-    getInfoAgenda().then((r) => setAgenda(r.data ?? [])).catch(console.error);
-    getInfoPcUsage().then((r) => setPcs(r.data ?? [])).catch(console.error);
-    getInfoRoomStatus().then((r) => setRoomStatus(r.data ?? null)).catch(console.error);
-    getInfoServices().then((r) => setServices(r.data ?? null)).catch(console.error);
-    getInfoConferenceRooms().then((r) => setRooms(r.data ?? null)).catch(console.error);
+    getInfoOwnLayout()
+      .then((r) => setLayout(r.data ?? null))
+      .catch(console.error);
+    getInfoWeather()
+      .then((r) => setWeather(r.data ?? null))
+      .catch(console.error);
+    getInfoRainRadar()
+      .then((r) => setRadar(r.data ?? null))
+      .catch(console.error);
+    getInfoTrains()
+      .then((r) => setTrains(r.data ?? []))
+      .catch(console.error);
+    getInfoNews()
+      .then((r) => setNews(r.data ?? []))
+      .catch(console.error);
+    getInfoAgenda()
+      .then((r) => setAgenda(r.data ?? []))
+      .catch(console.error);
+    getInfoPcUsage()
+      .then((r) => setPcs(r.data ?? []))
+      .catch(console.error);
+    getInfoRoomStatus()
+      .then((r) => setRoomStatus(r.data ?? null))
+      .catch(console.error);
+    getInfoServices()
+      .then((r) => setServices(r.data ?? null))
+      .catch(console.error);
+    getInfoConferenceRooms()
+      .then((r) => setRooms(r.data ?? null))
+      .catch(console.error);
     getSpotifyCurrentlyPlaying()
       .then((r) => setTrack(r.data?.[0] ?? null))
       .catch(console.error);
@@ -171,8 +191,7 @@ export default function InfoScreenView({ socket }: Props) {
             // A per-widget `title` setting (e.g. on the clock) overrides the
             // default title; an explicit empty string hides it.
             const titleOverride = p.settings?.title;
-            const title =
-              typeof titleOverride === 'string' ? titleOverride : widgetTitle(p.id);
+            const title = typeof titleOverride === 'string' ? titleOverride : widgetTitle(p.id);
             return (
               <WidgetCard
                 key={p.instanceId}

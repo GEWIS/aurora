@@ -112,7 +112,10 @@ export default class NewsService {
       sources.map(async (source) => {
         try {
           const { data } = await axios.get<string>(source.url, { responseType: 'text' });
-          return NewsService.parseRss(data, source.name).map((h) => ({ ...h, sourceId: source.id }));
+          return NewsService.parseRss(data, source.name).map((h) => ({
+            ...h,
+            sourceId: source.id,
+          }));
         } catch {
           return [] as NewsHeadline[];
         }

@@ -18,7 +18,11 @@ const SATIRE_SOURCES = new Set(['GEWIS', 'SudoSOS']);
  * real headlines follow the per-widget source selection (`selected`, by source
  * id; empty = all).
  */
-function headlineEnabled(h: NewsHeadline, settings: WidgetSettings | undefined, selected: string[]): boolean {
+function headlineEnabled(
+  h: NewsHeadline,
+  settings: WidgetSettings | undefined,
+  selected: string[],
+): boolean {
   if (SATIRE_SOURCES.has(h.source)) return sBool(settings, 'sourceSatire', true);
   if (selected.length === 0) return true;
   return h.sourceId != null && selected.includes(String(h.sourceId));

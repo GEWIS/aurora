@@ -35,7 +35,10 @@ const RAIN_THRESHOLD = 0.1;
  * scale. The legacy Buienalarm CDN (`cdn-secure.buienalarm.nl`) no longer exists.
  */
 export default class RainRadarService {
-  public async getForecast(lat: string = DEFAULT_LAT, lon: string = DEFAULT_LON): Promise<RainRadarResponse> {
+  public async getForecast(
+    lat: string = DEFAULT_LAT,
+    lon: string = DEFAULT_LON,
+  ): Promise<RainRadarResponse> {
     const { data } = await axios.get<string>(
       `https://gpsgadget.buienradar.nl/data/raintext?lat=${lat}&lon=${lon}`,
       { responseType: 'text' },

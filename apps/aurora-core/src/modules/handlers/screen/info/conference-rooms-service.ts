@@ -58,7 +58,10 @@ export default class ConferenceRoomsService {
     }).save();
   }
 
-  public async update(id: number, params: ConferenceRoomParams): Promise<ConferenceRoomEntity | null> {
+  public async update(
+    id: number,
+    params: ConferenceRoomParams,
+  ): Promise<ConferenceRoomEntity | null> {
     const room = await ConferenceRoomEntity.findOne({ where: { id } });
     if (!room) return null;
     room.number = params.number;
@@ -79,9 +82,7 @@ export default class ConferenceRoomsService {
     const configs = await ConferenceRoomEntity.find({ order: { number: 'ASC' } });
     if (configs.length === 0) return ConferenceRoomsService.stub(now);
 
-    const rooms = await Promise.all(
-      configs.map((c) => ConferenceRoomsService.roomStatus(c, now)),
-    );
+    const rooms = await Promise.all(configs.map((c) => ConferenceRoomsService.roomStatus(c, now)));
     return { summary: ConferenceRoomsService.summarize(rooms), rooms };
   }
 

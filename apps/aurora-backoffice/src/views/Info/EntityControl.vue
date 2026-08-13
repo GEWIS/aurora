@@ -35,7 +35,10 @@
     />
 
     <!-- Callers: global test-call trigger -->
-    <div v-if="entity === 'callers'" class="mt-2 flex items-end gap-2 border-t border-gray-600 pt-2">
+    <div
+      v-if="entity === 'callers'"
+      class="mt-2 flex items-end gap-2 border-t border-gray-600 pt-2"
+    >
       <InputText v-model="testNumber" class="flex-1" placeholder="+31612345678" />
       <Button
         :disabled="!testNumber"
@@ -47,11 +50,7 @@
       />
     </div>
 
-    <CallerEditDialog
-      v-if="entity === 'callers'"
-      v-model:visible="editVisible"
-      :edit-id="editId"
-    />
+    <CallerEditDialog v-if="entity === 'callers'" v-model:visible="editVisible" :edit-id="editId" />
     <RoomEditDialog
       v-else-if="entity === 'conference-rooms'"
       v-model:visible="editVisible"
@@ -105,7 +104,10 @@ const items = computed<Item[]>(() => {
   if (props.entity === 'conference-rooms') {
     return roomStore.rooms.map((r) => ({ id: r.id, label: r.number }));
   }
-  return newsStore.sources.map((s) => ({ id: s.id, label: s.enabled ? s.name : `${s.name} (disabled)` }));
+  return newsStore.sources.map((s) => ({
+    id: s.id,
+    label: s.enabled ? s.name : `${s.name} (disabled)`,
+  }));
 });
 
 function isSelected(id: number): boolean {
@@ -130,7 +132,10 @@ async function remove(item: Item) {
   if (props.entity === 'callers') await callerStore.deleteCaller(item.id);
   else if (props.entity === 'conference-rooms') await roomStore.deleteRoom(item.id);
   else await newsStore.deleteSource(item.id);
-  emit('update:modelValue', (props.modelValue ?? []).filter((k) => k !== String(item.id)));
+  emit(
+    'update:modelValue',
+    (props.modelValue ?? []).filter((k) => k !== String(item.id)),
+  );
 }
 
 function confirmDelete(item: Item) {

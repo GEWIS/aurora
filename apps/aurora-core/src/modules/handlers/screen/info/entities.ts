@@ -16,4 +16,13 @@ export { default as Caller } from './entities/caller';
 export { default as ConferenceRoom } from './entities/conference-room';
 export { default as NewsSource } from './entities/news-source';
 
-export const Entities = [PcStatus, Keyholder, RoomStatus, InfoScreenLayout, InfoLayoutPreset, Caller, ConferenceRoom, NewsSource];
+export const Entities = [
+  PcStatus,
+  Keyholder,
+  RoomStatus,
+  InfoScreenLayout,
+  InfoLayoutPreset,
+  Caller,
+  ConferenceRoom,
+  NewsSource,
+];

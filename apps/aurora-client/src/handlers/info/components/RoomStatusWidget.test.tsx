@@ -6,7 +6,13 @@ import RoomStatusWidget, { nextBeerTime } from './RoomStatusWidget';
 const base: RoomStatusResponse = {
   open: true,
   responsible: [
-    { name: 'Robin van Dijke', isBoard: false, isCandidateBoard: false, isKeyholder: true, photoUrl: null },
+    {
+      name: 'Robin van Dijke',
+      isBoard: false,
+      isCandidateBoard: false,
+      isKeyholder: true,
+      photoUrl: null,
+    },
     { name: 'Kim', isBoard: true, isCandidateBoard: false, isKeyholder: false, photoUrl: null },
   ],
   beerTime: null,
@@ -28,7 +34,9 @@ describe('RoomStatusWidget', () => {
   });
 
   it('shows the closed message when the room is closed', () => {
-    render(<RoomStatusWidget status={{ ...base, open: false, closedMessage: 'GEWIS is closed' }} />);
+    render(
+      <RoomStatusWidget status={{ ...base, open: false, closedMessage: 'GEWIS is closed' }} />,
+    );
     expect(screen.getByText('GEWIS is closed')).toBeInTheDocument();
   });
 });

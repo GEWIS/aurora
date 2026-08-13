@@ -81,9 +81,12 @@ export default class LayoutService {
     const placements = LayoutService.sanitizePlacements(params.placements);
     const modals = LayoutService.sanitizeModals(params.modals);
     const background = LayoutService.sanitizeBackground(params.background);
-    const backgroundImage = typeof params.backgroundImage === 'string' ? params.backgroundImage : '';
+    const backgroundImage =
+      typeof params.backgroundImage === 'string' ? params.backgroundImage : '';
     const backgroundColor = LayoutService.sanitizeColor(params.backgroundColor);
-    const defaultPanelBackground = LayoutService.sanitizePanelBackground(params.defaultPanelBackground);
+    const defaultPanelBackground = LayoutService.sanitizePanelBackground(
+      params.defaultPanelBackground,
+    );
 
     const row =
       (await InfoScreenLayout.findOne({ where: { screenId } })) ??
@@ -178,14 +181,18 @@ export default class LayoutService {
       const childItem = getCatalogItem(c?.id);
       if (!childItem || childItem.modal || childItem.container) continue;
       if (!isWidgetEnabled(childItem.id)) continue;
-      let instanceId = typeof c.instanceId === 'string' && c.instanceId ? c.instanceId : childItem.id;
+      let instanceId =
+        typeof c.instanceId === 'string' && c.instanceId ? c.instanceId : childItem.id;
       while (seen.has(instanceId)) instanceId = randomUUID();
       seen.add(instanceId);
       out.push({
         instanceId,
         id: childItem.id,
         settings: LayoutService.sanitizeSettings(childItem.settings, c.settings),
-        containerSettings: LayoutService.sanitizeSettings(container.childSettings ?? [], c.containerSettings),
+        containerSettings: LayoutService.sanitizeSettings(
+          container.childSettings ?? [],
+          c.containerSettings,
+        ),
       });
     }
     return out;

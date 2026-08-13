@@ -109,7 +109,9 @@ export function renderWidget(
     case 'clock':
       return <InfoClock settings={settings} />;
     case 'weather':
-      return <WeatherForecastWidget weather={data.weather} radar={data.radar} settings={settings} />;
+      return (
+        <WeatherForecastWidget weather={data.weather} radar={data.radar} settings={settings} />
+      );
     case 'room-responsible':
       return <RoomStatusWidget status={data.roomStatus} settings={settings} />;
     case 'beer':

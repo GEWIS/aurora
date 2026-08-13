@@ -108,7 +108,10 @@ export default class CallerService {
    * "+3161234". SIP addresses are left otherwise intact.
    */
   public static normalize(value: string): string {
-    return value.trim().toLowerCase().replace(/[\s()-]/g, '');
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[\s()-]/g, '');
   }
 
   private static normalizeAll(values: string[]): string[] {

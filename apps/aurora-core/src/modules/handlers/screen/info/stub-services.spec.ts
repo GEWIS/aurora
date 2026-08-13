@@ -19,7 +19,7 @@ describe('ConferenceRoomsService', () => {
     expect(ConferenceRoomsService.isAvailable([], now)).toBe(true);
   });
 
-  it('extracts today\'s busy intervals from an iCal feed', () => {
+  it("extracts today's busy intervals from an iCal feed", () => {
     const now = new Date('2026-07-08T09:00:00');
     const ical = [
       'BEGIN:VEVENT',

@@ -3,7 +3,14 @@ import WeatherService from './weather-service';
 
 const stations = [
   { stationname: 'Amsterdam', lat: 52.3, lon: 4.9, temperature: 18 },
-  { stationname: 'Eindhoven', lat: 51.45, lon: 5.42, temperature: 21, windspeedBft: 3, humidity: 60 },
+  {
+    stationname: 'Eindhoven',
+    lat: 51.45,
+    lon: 5.42,
+    temperature: 21,
+    windspeedBft: 3,
+    humidity: 60,
+  },
 ];
 
 describe('WeatherService.parseNearest', () => {

@@ -1,4 +1,5 @@
-import { describe, beforeAll, it, expect } from 'vitest';
+import { describe, beforeAll, it, expect, vi } from 'vitest';
+import axios, { AxiosError, type AxiosResponse } from 'axios';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 
@@ -247,6 +248,11 @@ describe('POST /api/handler/screen/poster/carousel/photo', () => {
   });
 
   it('returns 403 when GEWIS API rejects unauthenticated request', async () => {
+    // ARRANGE
+    const rejection = new AxiosError('Forbidden');
+    rejection.response = { status: 403, statusText: 'Forbidden' } as AxiosResponse;
+    const axiosSpy = vi.spyOn(axios, 'get').mockRejectedValue(rejection);
+
     // ACT
     const res = await testApp.authorizedAgent
       .post('/api/handler/screen/poster/carousel/photo')
@@ -254,6 +260,7 @@ describe('POST /api/handler/screen/poster/carousel/photo', () => {
 
     // ASSERT
     expect(res.status).toBe(403);
+    axiosSpy.mockRestore();
   });
 });
 

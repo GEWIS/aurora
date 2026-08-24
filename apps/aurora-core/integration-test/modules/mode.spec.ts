@@ -49,7 +49,7 @@ describe('POST /api/modes/centurion', () => {
     expectValidationError(res, 400);
   });
 
-  it('returns 500 with admin auth (ModeManager not initialized)', async () => {
+  it('returns 404 when the tape does not exist', async () => {
     // ACT
     const res = await testApp.authorizedAgent.post('/api/modes/centurion').send({
       lightsGroupIds: [],
@@ -57,6 +57,20 @@ describe('POST /api/modes/centurion', () => {
       audioIds: [],
       centurionName: 'test',
       centurionArtist: 'test',
+    });
+
+    // ASSERT
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 500 with admin auth (ModeManager not initialized)', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent.post('/api/modes/centurion').send({
+      lightsGroupIds: [],
+      screenIds: [],
+      audioIds: [],
+      centurionName: 'Totale EscalaTIEN',
+      centurionArtist: 'Gebroeders Scooter',
     });
 
     // ASSERT

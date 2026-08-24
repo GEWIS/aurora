@@ -1,5 +1,6 @@
 import { LightsGroup } from '../lights/entities';
 import { Audio, Screen } from '../root/entities';
+import SubscribeEntity from '../root/entities/subscribe-entity';
 import HandlerManager from '../root/handler-manager';
 import BaseLightsHandler from '../handlers/base-lights-handler';
 import BaseAudioHandler from '../handlers/base-audio-handler';
@@ -18,6 +19,8 @@ export default abstract class BaseMode<
 
   protected audioHandler: V;
 
+  private previousHandlers = new Map<SubscribeEntity, string>();
+
   /**
    * Assign the given entities to the given handlers
    */
@@ -30,12 +33,15 @@ export default abstract class BaseMode<
     protected readonly audioHandlerName: string,
   ) {
     _lights.forEach((lightsGroup) => {
+      this.cachePreviousHandler(lightsGroup);
       this.handlerManager.registerHandler(lightsGroup, lightsHandlerName);
     });
     _screens.forEach((screen) => {
+      this.cachePreviousHandler(screen);
       this.handlerManager.registerHandler(screen, screenHandlerName);
     });
     _audios.forEach((audio) => {
+      this.cachePreviousHandler(audio);
       this.handlerManager.registerHandler(audio, audioHandlerName);
     });
 
@@ -59,21 +65,34 @@ export default abstract class BaseMode<
   }
 
   /**
+   * Remember which handler an entity was on, so it can be given back on destroy.
+   * Entities on no handler are not recorded, and stay unassigned on destroy.
+   */
+  private cachePreviousHandler<T extends SubscribeEntity>(entity: T): void {
+    const currentHandler = this.handlerManager.getHandler(entity);
+    if (currentHandler) {
+      this.previousHandlers.set(entity, currentHandler);
+    }
+  }
+
+  /**
+   * Return the entities to the handler they were on before this mode claimed
+   * them, or to no handler if they were not on one.
+   */
+  private releaseEntities<T extends SubscribeEntity>(entities: T[], handlerName: string): void {
+    entities.forEach((entity) => {
+      if (this.handlerManager.getHandler(entity) !== handlerName) return;
+      this.handlerManager.registerHandler(entity, this.previousHandlers.get(entity) ?? '');
+    });
+  }
+
+  /**
    * Unregister all listeners from the handler corresponding to this mode.
    */
   destroy(): void {
-    this._lights.forEach((lightsGroup) => {
-      if (this.handlerManager.getHandler(lightsGroup) !== this.lightsHandlerName) return;
-      this.handlerManager.registerHandler(lightsGroup, '');
-    });
-    this._screens.forEach((screen) => {
-      if (this.handlerManager.getHandler(screen) !== this.screenHandlerName) return;
-      this.handlerManager.registerHandler(screen, '');
-    });
-    this._audios.forEach((audio) => {
-      if (this.handlerManager.getHandler(audio) !== this.audioHandlerName) return;
-      this.handlerManager.registerHandler(audio, '');
-    });
+    this.releaseEntities(this._lights, this.lightsHandlerName);
+    this.releaseEntities(this._screens, this.screenHandlerName);
+    this.releaseEntities(this._audios, this.audioHandlerName);
   }
 
   // Getter function, as we might add more entities to the lightsHandler later

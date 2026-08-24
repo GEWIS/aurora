@@ -81,10 +81,6 @@ export class ModeController extends Controller {
   ): Promise<string> {
     logger.audit(req.user, `Enable Centurion mode with tape "${params.centurionName}".`);
 
-    const { lights, screens, audios } = await this.mapBodyToEntities(params);
-
-    const centurionMode = new CenturionMode(lights, screens, audios);
-    await centurionMode.initialize(this.modeManager.musicEmitter);
     const tape = tapes.find((t) => {
       return t.name === params.centurionName && t.artist === params.centurionArtist;
     });
@@ -92,8 +88,15 @@ export class ModeController extends Controller {
       this.setStatus(404);
       return 'Centurion tape not found.';
     }
-    centurionMode.loadTape(tape);
-    this.modeManager.enableMode(CenturionMode, centurionMode, 'centurion');
+
+    const { lights, screens, audios } = await this.mapBodyToEntities(params);
+
+    await this.modeManager.enableMode(CenturionMode, 'centurion', async () => {
+      const centurionMode = new CenturionMode(lights, screens, audios);
+      await centurionMode.initialize(this.modeManager.musicEmitter);
+      centurionMode.loadTape(tape);
+      return centurionMode;
+    });
 
     this.setStatus(204);
     return '';
@@ -125,9 +128,11 @@ export class ModeController extends Controller {
 
     const { lights, screens, audios } = await this.mapBodyToEntities(params);
 
-    const timeTrailRaceMode = new TimeTrailRaceMode(lights, screens, audios);
-    timeTrailRaceMode.initialize(this.modeManager.backofficeSyncEmitter, params.sessionName);
-    this.modeManager.enableMode(TimeTrailRaceMode, timeTrailRaceMode, 'time-trail-racing');
+    await this.modeManager.enableMode(TimeTrailRaceMode, 'time-trail-racing', () => {
+      const timeTrailRaceMode = new TimeTrailRaceMode(lights, screens, audios);
+      timeTrailRaceMode.initialize(this.modeManager.backofficeSyncEmitter, params.sessionName);
+      return timeTrailRaceMode;
+    });
 
     this.setStatus(204);
     return '';

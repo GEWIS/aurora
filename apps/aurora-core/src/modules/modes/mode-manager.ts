@@ -25,16 +25,19 @@ export default class ModeManager {
     this.initialized = true;
   }
 
-  public enableMode(
+  public async enableMode<T extends BaseMode<any, any, any>>(
     modeClass: typeof BaseMode<any, any, any>,
-    mode: BaseMode<any, any, any>,
     name: string,
-  ) {
+    createMode: () => T | Promise<T>,
+  ): Promise<T> {
     // If an instance of this mode already exist, destroy it before creating a new one
     if (this.modes.has(modeClass)) this.disableMode(modeClass);
 
+    const mode = await createMode();
+
     this.modes.set(modeClass, mode);
     this._emitterStore.backofficeSyncEmitter.emit(`mode_${name}_update`);
+    return mode;
   }
 
   public getMode(modeClass: typeof BaseMode<any, any, any>) {

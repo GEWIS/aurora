@@ -10331,6 +10331,45 @@
 				}
 			}
 		},
+		"/handler/screen/poster/carousel/photo/{photoId}": {
+			"get": {
+				"operationId": "GetPhotoImage",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "photoId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/handler/screen/poster/carousel/olympics/medal-table": {
 			"get": {
 				"operationId": "GetOlympicsMedalTable",

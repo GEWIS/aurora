@@ -145,6 +145,19 @@ export class CarouselPosterController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.poster.base)
+  @Get('photo/{photoId}')
+  public async getPhotoImage(photoId: number, @Request() request: ExpressRequest): Promise<void> {
+    const { buffer, contentType } = await new GEWISPosterService().getPhotoImage(photoId);
+
+    const res = request.res;
+    if (!res) return;
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(buffer);
+  }
+
+  @Security(SecurityNames.LOCAL, securityGroups.poster.base)
   @Get('olympics/medal-table')
   public async getOlympicsMedalTable(): Promise<MedalTableRecord[]> {
     return new OlympicsService().getMedalTable();

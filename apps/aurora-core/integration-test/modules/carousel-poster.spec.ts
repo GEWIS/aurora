@@ -1,4 +1,4 @@
-import { describe, beforeAll, it, expect, vi } from 'vitest';
+import { describe, beforeAll, afterEach, it, expect, vi } from 'vitest';
 import axios, { AxiosError, type AxiosResponse } from 'axios';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
@@ -7,6 +7,10 @@ let testApp: TestApp;
 
 beforeAll(async () => {
   testApp = await TestEnvironment.getInstance().getTestApp();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 /**
@@ -260,6 +264,101 @@ describe('POST /api/handler/screen/poster/carousel/photo', () => {
 
     // ASSERT
     expect(res.status).toBe(403);
+    axiosSpy.mockRestore();
+  });
+
+  it('returns a poster URL served by aurora, not by GEWIS', async () => {
+    // ARRANGE
+    const axiosSpy = vi.spyOn(axios, 'get').mockImplementation(async (url: string) => {
+      if (url.includes('/photos?page=')) return { data: { data: [{ id: 42 }] } } as AxiosResponse;
+      return { data: { data: { name: 'Bata 2025' } } } as AxiosResponse;
+    });
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .post('/api/handler/screen/poster/carousel/photo')
+      .send({ albumIds: [7] });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.label).toBe('Bata 2025');
+    expect(res.body.url).toBe('/api/handler/screen/poster/carousel/photo/42');
+    axiosSpy.mockRestore();
+  });
+});
+
+describe('GET /api/handler/screen/poster/carousel/photo/{photoId}', () => {
+  const rendition = Buffer.from('webp-bytes');
+
+  function renditionResponse(): AxiosResponse {
+    return { data: rendition, headers: { 'content-type': 'image/webp' } } as AxiosResponse;
+  }
+
+  function renditionPending(): AxiosError {
+    const rejection = new AxiosError('Service Unavailable');
+    rejection.response = {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'retry-after': '1' },
+    } as unknown as AxiosResponse;
+    return rejection;
+  }
+
+  it('returns 401 without auth', async () => {
+    // ACT
+    const res = await testApp.unauthorizedAgent.get('/api/handler/screen/poster/carousel/photo/42');
+
+    // ASSERT
+    expectApiError(res, 401);
+  });
+
+  it('serves the rendition of the requested photo', async () => {
+    // ARRANGE
+    const axiosSpy = vi.spyOn(axios, 'get').mockResolvedValue(renditionResponse());
+
+    // ACT
+    const res = await testApp.authorizedAgent.get('/api/handler/screen/poster/carousel/photo/42');
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toBe('image/webp');
+    expect(Buffer.from(res.body)).toEqual(rendition);
+    expect(axiosSpy.mock.calls.map((call) => call[0])).toEqual([
+      'https://gewis.nl/api/photos/42/image/w1920',
+    ]);
+    axiosSpy.mockRestore();
+  });
+
+  it('retries the same photo until the rendition is generated', async () => {
+    // ARRANGE
+    const axiosSpy = vi
+      .spyOn(axios, 'get')
+      .mockRejectedValueOnce(renditionPending())
+      .mockResolvedValueOnce(renditionResponse());
+
+    // ACT
+    const res = await testApp.authorizedAgent.get('/api/handler/screen/poster/carousel/photo/42');
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(Buffer.from(res.body)).toEqual(rendition);
+    expect(axiosSpy.mock.calls.map((call) => call[0])).toEqual([
+      'https://gewis.nl/api/photos/42/image/w1920',
+      'https://gewis.nl/api/photos/42/image/w1920',
+    ]);
+    axiosSpy.mockRestore();
+  });
+
+  it('returns 503 when the rendition is never generated', async () => {
+    // ARRANGE
+    const axiosSpy = vi.spyOn(axios, 'get').mockRejectedValue(renditionPending());
+
+    // ACT
+    const res = await testApp.authorizedAgent.get('/api/handler/screen/poster/carousel/photo/42');
+
+    // ASSERT
+    expect(res.status).toBe(503);
+    expect(axiosSpy).toHaveBeenCalledTimes(3);
     axiosSpy.mockRestore();
   });
 });

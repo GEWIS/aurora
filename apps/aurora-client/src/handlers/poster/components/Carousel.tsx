@@ -49,7 +49,12 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
         );
       case 'photo':
         return (
-          <PhotoPoster key={poster.name} poster={poster} visible={visible} setTitle={setTitle} />
+          <PhotoPoster
+            key={poster.name}
+            poster={poster}
+            visible={index === currentPoster}
+            setTitle={setTitle}
+          />
         );
       case 'borrel-logo':
         return <BorrelLogoPoster key={poster.name} />;

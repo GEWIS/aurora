@@ -26,7 +26,7 @@ interface InfoStore {
   keyholders: KeyholderResponse[];
   roomStatus: RoomStatusResponse | null;
   pcs: PcStatusResponse[];
-  /** Whether this server can sync keyholders from LDAP at all. */
+  /** Whether this server can sync keyholders from the GEWIS API at all. */
   keyholderSync: KeyholderSyncStatus | null;
   loading: boolean;
   initialized: boolean;
@@ -63,7 +63,7 @@ export const useInfoStore = defineStore('info', {
       if (res.response.ok && res.data) this.keyholderSync = res.data;
     },
     /**
-     * Run the LDAP sync now and reload the registry. Returns what changed, or
+     * Run the GEWIS sync now and reload the registry. Returns what changed, or
      * null when the sync could not run.
      */
     async syncKeyholders(): Promise<KeyholderSyncResult | null> {
@@ -100,7 +100,7 @@ export const useInfoStore = defineStore('info', {
         if (index >= 0) this.keyholders.splice(index, 1, res.data);
       }
     },
-    /** Restore an LDAP-managed keyholder's name to the directory's value. */
+    /** Restore a synced keyholder's name to the GEWIS API's value. */
     async revertKeyholder(id: number) {
       const res = await revertInfoKeyholder({ path: { id } });
       if (res.response.ok && res.data) {

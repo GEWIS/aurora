@@ -1,6 +1,6 @@
 import Keyholder from './entities/keyholder';
 import RoomStatus from './entities/room-status';
-import LdapKeyholderSyncService from './ldap-keyholder-sync-service';
+import GewisKeyholderSyncService from './gewis-keyholder-sync-service';
 
 /**
  * Hour of day (local) at which the room state resets for the new day (06:00):
@@ -39,13 +39,14 @@ export interface KeyholderResponse {
   photoUrl: string | null;
   usernames: string[];
   /**
-   * True when this row comes from the LDAP sync. Such a row cannot be deleted
-   * (the sync would recreate it) and only its name and photo may be edited.
+   * True when this row comes from the GEWIS keyholder sync. Such a row cannot be
+   * deleted (the sync would recreate it), and the flags the API owns cannot be
+   * edited.
    */
-  ldapManaged: boolean;
-  /** The name the directory last reported, for the "revert" action. */
-  ldapName: string | null;
-  /** True when the name shown differs from the directory's. */
+  synced: boolean;
+  /** The name the API last reported, for the "revert" action. */
+  syncedName: string | null;
+  /** True when the name shown differs from the API's. */
   nameOverridden: boolean;
 }
 
@@ -90,9 +91,9 @@ export default class InfoStatusService {
       isKeyholder: keyholder.isKeyholder,
       photoUrl: keyholder.photoUrl,
       usernames: keyholder.usernames ?? [],
-      ldapManaged: keyholder.ldapGuid !== null,
-      ldapName: keyholder.ldapName,
-      nameOverridden: LdapKeyholderSyncService.nameIsOverridden(keyholder),
+      synced: keyholder.memberId !== null,
+      syncedName: keyholder.syncedName,
+      nameOverridden: GewisKeyholderSyncService.nameIsOverridden(keyholder),
     };
   }
 
@@ -113,10 +114,12 @@ export default class InfoStatusService {
   }
 
   /**
-   * Update a keyholder. On an LDAP-managed row only the name and the photo are
-   * applied — the login names and the flags follow group membership, and
-   * accepting them here would produce an edit that silently disappears at the
-   * next sync. Enforced server-side so it holds regardless of the client.
+   * Update a keyholder. On a synced row `isBoard` and `isKeyholder` are ignored:
+   * they follow the decisions the GEWIS API records, so accepting them here
+   * would produce an edit that silently disappears at the next sync. The name,
+   * the photo, the login names and the candidate-board flag are always applied —
+   * the sync does not own those. Enforced server-side so it holds regardless of
+   * the client.
    */
   public async updateKeyholder(id: number, params: KeyholderParams): Promise<Keyholder | null> {
     const keyholder = await Keyholder.findOne({ where: { id } });
@@ -124,40 +127,40 @@ export default class InfoStatusService {
 
     keyholder.name = params.name;
     keyholder.photoUrl = params.photoUrl ?? null;
-    if (keyholder.ldapGuid === null) {
+    keyholder.isCandidateBoard = params.isCandidateBoard ?? false;
+    keyholder.usernames = params.usernames ?? [];
+    if (keyholder.memberId === null) {
       keyholder.isBoard = params.isBoard ?? false;
-      keyholder.isCandidateBoard = params.isCandidateBoard ?? false;
       keyholder.isKeyholder = params.isKeyholder ?? false;
-      keyholder.usernames = params.usernames ?? [];
     }
     return keyholder.save();
   }
 
   /**
-   * Restore an LDAP-managed keyholder's name to what the directory reports.
-   * The photo is left alone: it is not part of the directory's state, so there
-   * is nothing to restore it to and clearing it would just lose it.
+   * Restore a synced keyholder's name to what the GEWIS API reports. The photo
+   * and the login names are left alone: they are not part of the API's state, so
+   * there is nothing to restore them to and clearing them would just lose them.
    *
    * Returns null when there is no such row, and undefined when the row is not
-   * LDAP-managed (nothing to revert to).
+   * synced (nothing to revert to).
    */
   public async revertKeyholder(id: number): Promise<Keyholder | null | undefined> {
     const keyholder = await Keyholder.findOne({ where: { id } });
     if (!keyholder) return null;
-    if (keyholder.ldapGuid === null || keyholder.ldapName === null) return undefined;
+    if (keyholder.memberId === null || keyholder.syncedName === null) return undefined;
 
-    keyholder.name = keyholder.ldapName;
+    keyholder.name = keyholder.syncedName;
     return keyholder.save();
   }
 
   /**
-   * Delete a keyholder. LDAP-managed rows are refused: the next sync would
-   * recreate them, so the delete would only appear to work.
+   * Delete a keyholder. Synced rows are refused: the next sync would recreate
+   * them, so the delete would only appear to work.
    */
-  public async deleteKeyholder(id: number): Promise<'deleted' | 'not-found' | 'ldap-managed'> {
+  public async deleteKeyholder(id: number): Promise<'deleted' | 'not-found' | 'synced'> {
     const keyholder = await Keyholder.findOne({ where: { id } });
     if (!keyholder) return 'not-found';
-    if (keyholder.ldapGuid !== null) return 'ldap-managed';
+    if (keyholder.memberId !== null) return 'synced';
     await keyholder.remove();
     return 'deleted';
   }

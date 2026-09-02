@@ -40,10 +40,10 @@ import ConferenceRoomsService, {
   ConferenceRoomsResponse,
 } from './conference-rooms-service';
 import { WidgetCatalogItem, enabledCatalog } from './widget-catalog';
-import LdapKeyholderSyncService, {
+import GewisKeyholderSyncService, {
   KeyholderSyncResult,
   KeyholderSyncStatus,
-} from './ldap-keyholder-sync-service';
+} from './gewis-keyholder-sync-service';
 import RootScreenService from '../../../root/root-screen-service';
 import { HttpApiException } from '../../../../helpers/custom-error';
 
@@ -237,7 +237,7 @@ export class InfoScreenController extends Controller {
   }
 
   /**
-   * Restore an LDAP-managed keyholder's name to the directory's own value.
+   * Restore a synced keyholder's name to the GEWIS API's own value.
    */
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
   @Post('keyholders/{id}/revert')
@@ -245,14 +245,14 @@ export class InfoScreenController extends Controller {
     id: number,
     @Request() req: ExpressRequest,
   ): Promise<KeyholderResponse> {
-    logger.audit(req.user, `Revert info screen keyholder ${id} to its LDAP state.`);
+    logger.audit(req.user, `Revert info screen keyholder ${id} to its synced state.`);
     const keyholder = await this.infoStatusService.revertKeyholder(id);
     if (keyholder === null) {
       this.setStatus(404);
       return undefined as unknown as KeyholderResponse;
     }
     if (keyholder === undefined) {
-      throw new HttpApiException(400, 'This keyholder does not come from LDAP.');
+      throw new HttpApiException(400, 'This keyholder does not come from the GEWIS API.');
     }
     await this.getHandler()?.emitRoomStatus();
     return InfoStatusService.toKeyholderResponse(keyholder);
@@ -264,26 +264,27 @@ export class InfoScreenController extends Controller {
     logger.audit(req.user, `Delete info screen keyholder ${id}.`);
     const result = await this.infoStatusService.deleteKeyholder(id);
     if (result === 'not-found') this.setStatus(404);
-    if (result === 'ldap-managed') {
+    if (result === 'synced') {
       throw new HttpApiException(
         409,
-        'This keyholder comes from LDAP and cannot be deleted; remove them from the group instead.',
+        'This keyholder comes from the GEWIS API and cannot be deleted; ' +
+          'withdraw the key there instead.',
       );
     }
   }
 
   /**
-   * Whether an LDAP keyholder sync can be run on this deployment, so the
-   * backoffice can explain a disabled sync button.
+   * Whether a keyholder sync can be run on this deployment, so the backoffice
+   * can explain a disabled sync button.
    */
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
   @Get('keyholders/sync')
   public async getInfoKeyholderSyncStatus(): Promise<KeyholderSyncStatus> {
-    return LdapKeyholderSyncService.status();
+    return GewisKeyholderSyncService.status();
   }
 
   /**
-   * Run the LDAP keyholder sync now, in addition to its periodic run.
+   * Run the GEWIS keyholder sync now, in addition to its periodic run.
    *
    * @param dryRun Report what would change without writing anything.
    */
@@ -293,20 +294,23 @@ export class InfoScreenController extends Controller {
     @Request() req: ExpressRequest,
     @Query() dryRun?: boolean,
   ): Promise<KeyholderSyncResult> {
-    const service = LdapKeyholderSyncService.fromEnv();
+    const service = GewisKeyholderSyncService.fromEnv();
     if (!service) {
       throw new HttpApiException(
         400,
-        'LDAP is not configured on this server (see LDAP_URL and LDAP_GROUP_*).',
+        'The GEWIS API is not configured on this server (see GEWIS_KEY).',
       );
     }
-    logger.audit(req.user, `Sync info screen keyholders from LDAP${dryRun ? ' (dry run)' : ''}.`);
+    logger.audit(
+      req.user,
+      `Sync info screen keyholders from the GEWIS API${dryRun ? ' (dry run)' : ''}.`,
+    );
 
     const result = await service.run(dryRun ?? false);
     if (!result) {
       throw new HttpApiException(
         502,
-        'The LDAP sync did not complete and nothing was changed; check the server logs.',
+        'The keyholder sync did not complete and nothing was changed; check the server logs.',
       );
     }
 

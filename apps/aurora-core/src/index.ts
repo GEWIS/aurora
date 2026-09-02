@@ -26,7 +26,7 @@ import { OrderManager } from './modules/orders';
 import TimedEventsService from './modules/timed-events/timed-events-service';
 import LightsSwitchManager from './modules/root/lights-switch-manager';
 import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
-import LdapKeyholderSyncService from './modules/handlers/screen/info/ldap-keyholder-sync-service';
+import GewisKeyholderSyncService from './modules/handlers/screen/info/gewis-keyholder-sync-service';
 
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
@@ -106,10 +106,10 @@ async function createApp(): Promise<void> {
   }
 
   const keyholderSync = featureFlagManager.flagIsEnabled('InfoScreen')
-    ? LdapKeyholderSyncService.fromEnv()
+    ? GewisKeyholderSyncService.fromEnv()
     : null;
   if (keyholderSync) {
-    logger.info('Initialize LDAP keyholder sync...');
+    logger.info('Initialize GEWIS keyholder sync...');
     keyholderSync.schedule();
   }
 

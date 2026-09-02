@@ -4235,18 +4235,18 @@
 						},
 						"type": "array"
 					},
-					"ldapManaged": {
+					"synced": {
 						"type": "boolean",
-						"description": "True when this row comes from the LDAP sync. Such a row cannot be deleted\n(the sync would recreate it) and only its name and photo may be edited."
+						"description": "True when this row comes from the GEWIS keyholder sync. Such a row cannot be\ndeleted (the sync would recreate it), and the flags the API owns cannot be\nedited."
 					},
-					"ldapName": {
+					"syncedName": {
 						"type": "string",
 						"nullable": true,
-						"description": "The name the directory last reported, for the \"revert\" action."
+						"description": "The name the API last reported, for the \"revert\" action."
 					},
 					"nameOverridden": {
 						"type": "boolean",
-						"description": "True when the name shown differs from the directory's."
+						"description": "True when the name shown differs from the API's."
 					}
 				},
 				"required": [
@@ -4257,8 +4257,8 @@
 					"isKeyholder",
 					"photoUrl",
 					"usernames",
-					"ldapManaged",
-					"ldapName",
+					"synced",
+					"syncedName",
 					"nameOverridden"
 				],
 				"type": "object",
@@ -4300,7 +4300,7 @@
 				"properties": {
 					"enabled": {
 						"type": "boolean",
-						"description": "True when the LDAP connection variables and a group DN are configured."
+						"description": "True when the API key is configured."
 					},
 					"intervalMinutes": {
 						"type": "number",
@@ -4333,7 +4333,7 @@
 					"skipped": {
 						"type": "number",
 						"format": "double",
-						"description": "Entries dropped because they carry no GUID or no display name."
+						"description": "Entries dropped because they carry no membership number or no name."
 					}
 				},
 				"required": [
@@ -12913,7 +12913,7 @@
 						}
 					}
 				},
-				"description": "Restore an LDAP-managed keyholder's name to the directory's own value.",
+				"description": "Restore a synced keyholder's name to the GEWIS API's own value.",
 				"tags": [
 					"Handlers"
 				],
@@ -12954,7 +12954,7 @@
 						}
 					}
 				},
-				"description": "Whether an LDAP keyholder sync can be run on this deployment, so the\nbackoffice can explain a disabled sync button.",
+				"description": "Whether a keyholder sync can be run on this deployment, so the backoffice\ncan explain a disabled sync button.",
 				"tags": [
 					"Handlers"
 				],
@@ -12983,7 +12983,7 @@
 						}
 					}
 				},
-				"description": "Run the LDAP keyholder sync now, in addition to its periodic run.",
+				"description": "Run the GEWIS keyholder sync now, in addition to its periodic run.",
 				"tags": [
 					"Handlers"
 				],

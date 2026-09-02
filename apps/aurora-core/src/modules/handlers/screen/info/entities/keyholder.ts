@@ -42,26 +42,30 @@ export default class Keyholder extends BaseEntity {
   /**
    * Login names belonging to this person, used to match PC-usage reports so the
    * correct symbol can be shown. Stored as a comma-separated list.
+   *
+   * Backoffice-owned: the GEWIS API identifies members by membership number and
+   * name, not by login, so a synced row is seeded with the member's full name
+   * and left alone afterwards.
    */
   @Column({ type: 'simple-array', nullable: true })
   public usernames: string[];
 
   /**
-   * The `objectGUID` (hex) of the directory entry this row was synced from, or
-   * null for a row added by hand in the backoffice. The GUID rather than the
-   * name or login is the identity, so a rename in the directory updates the row
-   * instead of orphaning it.
+   * The GEWIS membership number (`lidnr`) this row was synced from, or null for
+   * a row added by hand in the backoffice. The membership number rather than the
+   * name is the identity, so a rename upstream updates the row instead of
+   * orphaning it.
    */
-  @Column({ type: 'varchar', length: 32, nullable: true, unique: true })
-  public ldapGuid: string | null;
+  @Column({ type: 'int', nullable: true, unique: true })
+  public memberId: number | null;
 
   /**
-   * The name as the directory last reported it. `name` may differ when it has
-   * been overridden in the backoffice (say a long formal name shortened for the
+   * The name as the API last reported it. `name` may differ when it has been
+   * overridden in the backoffice (say a long formal name shortened for the
    * screen); the sync then leaves `name` alone and only refreshes this. Keeping
-   * the directory's own value here is also what makes "revert" work between
-   * syncs, without another LDAP round-trip.
+   * the API's own value here is also what makes "revert" work between syncs,
+   * without another round-trip.
    */
   @Column({ type: 'varchar', nullable: true })
-  public ldapName: string | null;
+  public syncedName: string | null;
 }

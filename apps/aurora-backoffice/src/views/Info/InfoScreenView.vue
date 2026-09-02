@@ -179,11 +179,11 @@
             <div class="flex items-center gap-2">
               <span>{{ data.name }}</span>
               <Tag
-                v-if="data.ldapManaged"
-                v-tooltip.top="ldapTooltip(data)"
+                v-if="data.synced"
+                v-tooltip.top="syncedTooltip(data)"
                 icon="pi pi-sitemap"
                 severity="info"
-                value="LDAP"
+                value="GEWIS"
               />
             </div>
           </template>
@@ -211,7 +211,7 @@
             <div class="flex gap-2 justify-end">
               <Button
                 v-if="data.nameOverridden"
-                v-tooltip.top="`Restore the name from LDAP (${data.ldapName})`"
+                v-tooltip.top="`Restore the name from GEWIS (${data.syncedName})`"
                 icon="pi pi-undo"
                 severity="secondary"
                 text
@@ -220,11 +220,9 @@
               <Button icon="pi pi-pencil" severity="secondary" text @click="openEdit(data)" />
               <Button
                 v-tooltip.top="
-                  data.ldapManaged
-                    ? 'Managed by LDAP — remove them from the group instead'
-                    : undefined
+                  data.synced ? 'Synced from GEWIS — withdraw the key there instead' : undefined
                 "
-                :disabled="data.ldapManaged"
+                :disabled="data.synced"
                 icon="pi pi-trash"
                 severity="danger"
                 text
@@ -246,37 +244,27 @@
       modal
     >
       <div class="flex flex-col gap-4 w-96">
-        <Message v-if="editLdapManaged" :closable="false" severity="info">
-          Synced from LDAP. Only the name and photo can be changed here; the flags and usernames
-          follow group membership.
+        <Message v-if="editSynced" :closable="false" severity="info">
+          Synced from GEWIS. The board and keyholder flags follow the association's own records; the
+          name, photo, candidate-board flag and usernames are managed here.
         </Message>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Name</label>
           <InputText v-model="form.name" />
-          <small v-if="editLdapName && form.name !== editLdapName" class="opacity-70">
-            LDAP: {{ editLdapName }}
+          <small v-if="editSyncedName && form.name !== editSyncedName" class="opacity-70">
+            GEWIS: {{ editSyncedName }}
           </small>
         </div>
         <div class="flex items-center gap-2">
-          <Checkbox v-model="form.isBoard" binary :disabled="editLdapManaged" input-id="kh-board" />
+          <Checkbox v-model="form.isBoard" binary :disabled="editSynced" input-id="kh-board" />
           <label for="kh-board">Board member</label>
         </div>
         <div class="flex items-center gap-2">
-          <Checkbox
-            v-model="form.isCandidateBoard"
-            binary
-            :disabled="editLdapManaged"
-            input-id="kh-candidate"
-          />
+          <Checkbox v-model="form.isCandidateBoard" binary input-id="kh-candidate" />
           <label for="kh-candidate">Candidate board</label>
         </div>
         <div class="flex items-center gap-2">
-          <Checkbox
-            v-model="form.isKeyholder"
-            binary
-            :disabled="editLdapManaged"
-            input-id="kh-key"
-          />
+          <Checkbox v-model="form.isKeyholder" binary :disabled="editSynced" input-id="kh-key" />
           <label for="kh-key">Keyholder</label>
         </div>
         <div class="flex flex-col gap-1">
@@ -285,7 +273,7 @@
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Usernames (comma separated)</label>
-          <InputText v-model="usernamesText" :disabled="editLdapManaged" placeholder="JDOE, JANE" />
+          <InputText v-model="usernamesText" placeholder="JDOE, JANE" />
         </div>
       </div>
       <template #footer>
@@ -304,7 +292,7 @@ import { useInfoStore } from '@/stores/info.store';
 
 const infoStore = useInfoStore();
 
-// --- LDAP keyholder sync ----------------------------------------------------
+// --- GEWIS keyholder sync ---------------------------------------------------
 
 const syncing = ref(false);
 const syncResult = ref<string | null>(null);
@@ -312,17 +300,17 @@ const syncOk = ref(false);
 
 const syncTooltip = computed(() => {
   const sync = infoStore.keyholderSync;
-  if (!sync?.enabled) return 'LDAP is not configured on this server';
+  if (!sync?.enabled) return 'The GEWIS API is not configured on this server';
   return sync.intervalMinutes > 0
     ? `Also runs automatically every ${sync.intervalMinutes} minutes`
     : 'Only runs automatically at server startup';
 });
 
-/** Explains the LDAP badge, naming the directory's own value when overridden. */
-function ldapTooltip(keyholder: KeyholderResponse): string {
+/** Explains the GEWIS badge, naming the API's own value when overridden. */
+function syncedTooltip(keyholder: KeyholderResponse): string {
   return keyholder.nameOverridden
-    ? `Synced from LDAP, renamed here (LDAP: ${keyholder.ldapName})`
-    : 'Synced from LDAP';
+    ? `Synced from GEWIS, renamed here (GEWIS: ${keyholder.syncedName})`
+    : 'Synced from GEWIS';
 }
 
 async function revert(keyholder: KeyholderResponse) {
@@ -408,9 +396,9 @@ const form = reactive({
 });
 const usernamesText = ref('');
 
-/** The LDAP state of the row being edited, so the dialog can lock its fields. */
-const editLdapManaged = ref(false);
-const editLdapName = ref<string | null>(null);
+/** The sync state of the row being edited, so the dialog can lock its fields. */
+const editSynced = ref(false);
+const editSyncedName = ref<string | null>(null);
 
 onMounted(async () => {
   await infoStore.init();
@@ -451,8 +439,8 @@ function openCreate() {
   form.isKeyholder = false;
   form.photoUrl = '';
   usernamesText.value = '';
-  editLdapManaged.value = false;
-  editLdapName.value = null;
+  editSynced.value = false;
+  editSyncedName.value = null;
   dialogVisible.value = true;
 }
 
@@ -464,8 +452,8 @@ function openEdit(keyholder: KeyholderResponse) {
   form.isKeyholder = keyholder.isKeyholder;
   form.photoUrl = keyholder.photoUrl ?? '';
   usernamesText.value = keyholder.usernames.join(', ');
-  editLdapManaged.value = keyholder.ldapManaged;
-  editLdapName.value = keyholder.ldapName;
+  editSynced.value = keyholder.synced;
+  editSyncedName.value = keyholder.syncedName;
   dialogVisible.value = true;
 }
 

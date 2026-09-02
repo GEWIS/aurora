@@ -47,8 +47,6 @@ export default class InfoScreenHandler extends BaseScreenHandler {
 
   private readonly layoutService = new LayoutService();
 
-  private intervals: NodeJS.Timeout[] = [];
-
   /** Last logged failure message per event, to avoid spamming identical errors. */
   private readonly lastPollError = new Map<string, string | null>();
 
@@ -105,7 +103,7 @@ export default class InfoScreenHandler extends BaseScreenHandler {
       }
     };
     run().catch((e) => logger.error(e));
-    this.intervals.push(setInterval(() => run().catch((e) => logger.error(e)), intervalMs));
+    setInterval(() => run().catch((e) => logger.error(e)), intervalMs);
   }
 
   /**
@@ -166,9 +164,15 @@ export default class InfoScreenHandler extends BaseScreenHandler {
     this.sendEvent('change_track', event);
   }
 
+  /**
+   * The handler is a process-lifetime singleton and holds no state that needs
+   * restoring, so a reset only clears the error-suppression map: the next
+   * failure of each poller is logged again rather than swallowed as a repeat.
+   * The pollers themselves keep running; they are a no-op while no screen is
+   * registered.
+   */
   public reset(): void {
     super.reset();
-    this.intervals.forEach((interval) => clearInterval(interval));
-    this.intervals = [];
+    this.lastPollError.clear();
   }
 }

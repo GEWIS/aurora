@@ -187,37 +187,38 @@ export default class InfoStatusService {
     status.lastCall = params.lastCall ?? null;
     status.closedMessage = params.closedMessage ?? null;
     if (params.coffeeStatus !== undefined) status.coffeeStatus = params.coffeeStatus;
+    // Always refresh updatedAt: it is what marks the state as belonging to the
+    // current day (see isStale). Without this, re-submitting the form unchanged
+    // produces no column diff, TypeORM skips the UPDATE, and the room would go
+    // on reading as closed after the reset boundary.
+    status.updatedAt = new Date();
     return status.save();
   }
 
   /**
-   * Daily reset (mirrors the legacy cron): once per reset boundary, close the
-   * room and clear the responsibles and the beer time. Mutates `status` and
-   * returns true when a reset was applied. `closedMessage` is left intact.
+   * Whether the stored state predates the current reset boundary, i.e. it was
+   * last set on an earlier logical day. Rather than persisting a daily reset
+   * (which only happens if something remembers to run it), the reset is derived
+   * on read: stale state is reported as a closed room with no responsibles and
+   * no beer time. `lastCall`, `closedMessage` and `coffeeStatus` are not part of
+   * the daily state and are always reported as stored.
    */
-  private static applyDailyReset(status: RoomStatus, now: Date): boolean {
-    const boundary = lastResetBoundary(now);
-    if (status.lastResetAt && new Date(status.lastResetAt).getTime() >= boundary.getTime()) {
-      return false;
-    }
-    status.open = false;
-    status.responsible1 = null;
-    status.responsible2 = null;
-    status.beerTime = null;
-    status.lastResetAt = now;
-    return true;
+  public static isStale(updatedAt: Date, now: Date): boolean {
+    const setAt = new Date(updatedAt).getTime();
+    // A row that has never been persisted has no updatedAt yet; its state is the
+    // (closed) default, so there is nothing to reset.
+    if (Number.isNaN(setAt)) return false;
+    return setAt < lastResetBoundary(now).getTime();
   }
 
   /**
    * Build the room-status response, annotating each responsible person with
    * board/keyholder flags by matching their name against the keyholder registry.
-   * Applies the daily reset first so the returned state is always current.
+   * State last set on an earlier logical day is reported as reset (see isStale).
    */
   public async getRoomStatus(): Promise<RoomStatusResponse> {
     const status = await this.getRoomStatusEntity();
-    if (InfoStatusService.applyDailyReset(status, new Date())) {
-      await status.save();
-    }
+    const stale = InfoStatusService.isStale(status.updatedAt, new Date());
     const keyholders = await this.getKeyholders();
 
     const annotate = (name: string | null): ResponsibleResponse | null => {
@@ -232,14 +233,16 @@ export default class InfoStatusService {
       };
     };
 
-    const responsible = [annotate(status.responsible1), annotate(status.responsible2)].filter(
-      (r): r is ResponsibleResponse => r !== null,
-    );
+    const responsible = stale
+      ? []
+      : [annotate(status.responsible1), annotate(status.responsible2)].filter(
+          (r): r is ResponsibleResponse => r !== null,
+        );
 
     return {
-      open: status.open,
+      open: stale ? false : status.open,
       responsible,
-      beerTime: status.beerTime,
+      beerTime: stale ? null : status.beerTime,
       lastCall: status.lastCall ?? null,
       closedMessage: status.closedMessage,
       coffeeStatus: status.coffeeStatus ?? 0,

@@ -5,6 +5,13 @@ import BaseEntity from '../../../../root/entities/base-entity';
  * The current "who is responsible for the room" state, plus the daily beer-time
  * countdown. This is effectively a singleton row managed through the backoffice
  * (see InfoStatusService, which always reads/writes the first row).
+ *
+ * `updatedAt` is load-bearing: the daily reset is derived from it rather than
+ * persisted, so state last written before the current reset boundary reads as a
+ * closed room. Every write must therefore bump it (InfoStatusService does so
+ * explicitly), and any future endpoint that touches only the non-daily columns
+ * (lastCall, closedMessage, coffeeStatus) would wrongly mark the daily state as
+ * current again.
  */
 @Entity()
 export default class RoomStatus extends BaseEntity {
@@ -39,14 +46,6 @@ export default class RoomStatus extends BaseEntity {
    */
   @Column({ type: 'varchar', nullable: true })
   public lastCall: string | null;
-
-  /**
-   * When the room state was last reset for a new day. Used to apply the daily
-   * reset (close the room, clear the responsibles and the beer time) once per
-   * reset boundary.
-   */
-  @Column({ type: 'datetime', nullable: true })
-  public lastResetAt: Date | null;
 
   /**
    * Message shown when the room is closed, e.g. "GEWIS is closed".

@@ -3,6 +3,7 @@ import {
   formatHhMmSs,
   formatMmSs,
   remainingHoursMinutes,
+  remainingInWords,
   remainingMinutes,
   remainingSeconds,
 } from './countdown';
@@ -72,5 +73,33 @@ describe('remainingMinutes / remainingHoursMinutes', () => {
       minutes: 5,
     });
     expect(remainingHoursMinutes(0)).toEqual({ hours: 0, minutes: 0 });
+  });
+});
+
+describe('remainingInWords', () => {
+  const minutes = (n: number) => n * 60_000;
+
+  it('reads both parts when both are non-zero', () => {
+    expect(remainingInWords(minutes(152))).toBe('2 hours and 32 minutes');
+  });
+
+  it('drops a zero part rather than saying "0 minutes"', () => {
+    expect(remainingInWords(minutes(120))).toBe('2 hours');
+    expect(remainingInWords(minutes(45))).toBe('45 minutes');
+  });
+
+  it('uses the singular for exactly one', () => {
+    expect(remainingInWords(minutes(60))).toBe('1 hour');
+    expect(remainingInWords(minutes(1))).toBe('1 minute');
+    expect(remainingInWords(minutes(61))).toBe('1 hour and 1 minute');
+  });
+
+  it('says "less than a minute" once the parts would both be gone', () => {
+    expect(remainingInWords(0)).toBe('less than a minute');
+  });
+
+  it('rounds up, so a partial minute still counts', () => {
+    // 90s remaining is inside the second minute, so it reads as two.
+    expect(remainingInWords(90_000)).toBe('2 minutes');
   });
 });

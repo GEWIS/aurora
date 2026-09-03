@@ -48,3 +48,22 @@ export function remainingHoursMinutes(ms: number): { hours: number; minutes: num
   const total = remainingMinutes(ms);
   return { hours: Math.floor(total / 60), minutes: total % 60 };
 }
+
+/** "1 hour" / "2 hours", "1 minute" / "45 minutes". */
+function plural(n: number, unit: string): string {
+  return `${n} ${unit}${n === 1 ? '' : 's'}`;
+}
+
+/**
+ * Hours and minutes remaining as a phrase to read out loud: "2 hours and 32
+ * minutes", "45 minutes", "1 hour". A zero part is dropped rather than shown,
+ * so it never reads "2 hours and 0 minutes"; under a minute it is "less than a
+ * minute", since the parts would otherwise both be gone.
+ */
+export function remainingInWords(ms: number): string {
+  const { hours, minutes } = remainingHoursMinutes(ms);
+  if (hours === 0 && minutes === 0) return 'less than a minute';
+  if (hours === 0) return plural(minutes, 'minute');
+  if (minutes === 0) return plural(hours, 'hour');
+  return `${plural(hours, 'hour')} and ${plural(minutes, 'minute')}`;
+}

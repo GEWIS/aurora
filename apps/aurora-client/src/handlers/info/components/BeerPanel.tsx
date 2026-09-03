@@ -1,4 +1,4 @@
-import { remainingHoursMinutes } from '../countdown';
+import { remainingInWords } from '../countdown';
 import { sBool, WidgetSettings } from '../settings';
 import useSecondTick from '../useSecondTick';
 import { nextBeerTime } from './RoomStatusWidget';
@@ -39,9 +39,8 @@ export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
       sub = showLastCall && lastCall ? `Last call at ${lastCall}` : null;
       isBeerTime = true;
     } else {
-      const { hours, minutes } = remainingHoursMinutes(diffMs);
       headline = `Beer starts at ${beerTime}`;
-      sub = `Still ${hours} hrs and ${minutes} mnts to go`;
+      sub = `Still ${remainingInWords(diffMs)} to go`;
     }
   }
 

@@ -86,7 +86,7 @@
           </span>
           <IconField>
             <InputIcon class="pi pi-search" />
-            <InputText v-model="keyholderSearch" class="pl-8" placeholder="Search" size="small" />
+            <InputText v-model="keyholderSearch" class="pl-8" placeholder="Search" />
           </IconField>
           <Button
             v-tooltip.bottom="syncTooltip"

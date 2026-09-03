@@ -1,4 +1,12 @@
-import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ApiKeyParameters,
@@ -30,10 +38,11 @@ export default function AuthContextProvider({ children }: PropsWithChildren) {
   const [urlSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const apiKey = useRef(urlSearchParams.get('key'));
+
   const authenticate = useCallback(async () => {
-    if (urlSearchParams.has('key')) {
-      const key = urlSearchParams.get('key');
-      const body: ApiKeyParameters = { key: key ?? '' };
+    if (apiKey.current) {
+      const body: ApiKeyParameters = { key: apiKey.current };
       const auth = await authKey({ body });
       // TODO what to do if user cannot be authenticated
       setUser(auth.data!);
@@ -41,7 +50,7 @@ export default function AuthContextProvider({ children }: PropsWithChildren) {
       const info = await getInformation();
       setUser(info.data!);
     }
-  }, [urlSearchParams]);
+  }, []);
 
   const loadData = useCallback(async () => {
     await authenticate();

@@ -10,11 +10,18 @@ export default function ClientView() {
   const [screenSocket, setScreenSocket] = useState<Socket | null>(null);
 
   const { user, loading } = useContext(AuthContext);
+  const userId = user?.id ?? null;
 
   useEffect(() => {
-    if (!user) return;
-    registerScreenHandler(setScreenSocket);
-  }, [user]);
+    if (!userId) return;
+
+    const socket = registerScreenHandler(setScreenSocket);
+
+    return () => {
+      socket.disconnect();
+      setScreenSocket(null);
+    };
+  }, [userId]);
 
   if (loading) {
     return (

@@ -13,4 +13,6 @@ export default function registerScreenHandler(
     console.warn('SocketIO: connected to /screen');
     setScreenSocket(screenSocket);
   });
+
+  return screenSocket;
 }

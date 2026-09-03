@@ -37,13 +37,13 @@ export default class SocketConnectionManager {
 
     Object.values(SocketioNamespaces).forEach((namespace) => {
       ioServer.of(namespace).on('connect', (socket) => {
-        this.updateSocketId((socket.request as any).user, namespace, socket.id).catch((e) =>
+        this.updateSocketId((socket.request as any).user, namespace, socket.id, true).catch((e) =>
           logger.error(e),
         );
         statusManager.addSocketConnection(socket);
         socket.on('disconnect', () => {
-          this.updateSocketId((socket.request as any).user, namespace).catch((e) =>
-            logger.error(e),
+          this.updateSocketId((socket.request as any).user, namespace, socket.id, false).catch(
+            (e) => logger.error(e),
           );
           statusManager.removeSocketConnection(socket);
         });
@@ -85,18 +85,25 @@ export default class SocketConnectionManager {
     id: number,
     handlers: BaseHandler<T>[],
     namespace: SocketioNamespaces,
-    socketId?: string,
+    socketId: string,
+    connected: boolean,
   ) {
     // @ts-ignore
     const entity = await repo.findOne({ where: { id } });
     if (!entity) return null;
 
-    if (socketId && entity.socketIds) {
+    if (connected && entity.socketIds) {
       entity.socketIds[namespace] = socketId;
-    } else if (socketId) {
+    } else if (connected) {
       entity.socketIds = { [namespace as SocketioNamespaces]: socketId };
-    } else if (!socketId && entity.socketIds) {
+    } else if (entity.socketIds?.[namespace] === socketId) {
       delete entity.socketIds[namespace];
+    } else {
+      logger.info(
+        `Stale disconnect (${namespace}) with Socket ID ${socketId}, ` +
+          `${entity.socketIds?.[namespace] ?? 'no socket'} is registered. Ignoring.`,
+      );
+      return entity;
     }
 
     await entity.save();
@@ -105,7 +112,7 @@ export default class SocketConnectionManager {
       h.entities.forEach((e) => {
         if (e.id === id) {
           e.socketIds = entity.socketIds;
-          if (socketId !== undefined) {
+          if (connected) {
             this.ioServer
               .of(namespace)
               .sockets.get(socketId)
@@ -119,20 +126,27 @@ export default class SocketConnectionManager {
   }
 
   /**
-   * Bind the socket ID in the given namespace to the given user. If no SocketID is
-   * provided, the existing connection will be removed.
+   * Bind the socket ID in the given namespace to the given user. On disconnect, the socket ID is
+   * only unbound if it is still the registered one: a socket that has since been replaced by a
+   * reconnect must not unregister its successor.
    * @param user
    * @param namespace
    * @param socketId
+   * @param connected - whether the socket connected or disconnected
    * @private
    */
-  private async updateSocketId(user: AuthUser, namespace: SocketioNamespaces, socketId?: string) {
+  private async updateSocketId(
+    user: AuthUser,
+    namespace: SocketioNamespaces,
+    socketId: string,
+    connected: boolean,
+  ) {
     if (!SECURE_NAMESPACES.includes(namespace)) {
       // Public, unauthenticated namespace, so we do not have to do anything.
-      if (socketId !== undefined) {
+      if (connected) {
         logger.info(`Connect (${namespace}) with Socket ID ${socketId}`);
       } else {
-        logger.info(`Disconnect (${namespace})`);
+        logger.info(`Disconnect (${namespace}) with Socket ID ${socketId}`);
       }
       return;
     }
@@ -143,58 +157,69 @@ export default class SocketConnectionManager {
     }
 
     await this.lock.acquire('socket_connect', async (done) => {
-      if (socketId !== undefined) {
-        logger.info(`Connect (${namespace}) by ${JSON.stringify(user)} with Socket ID ${socketId}`);
-      } else {
-        logger.info(`Disconnect (${namespace}) by ${JSON.stringify(user)}`);
-      }
-      if (user.audioId) {
-        await this.updateSocketIdForEntity(
-          dataSource.getRepository(Audio),
-          user.audioId,
-          this.handlerManager.getHandlers(Audio),
-          namespace,
-          socketId,
-        );
-        this.backofficeEmitter.emit('connect_audio');
-      }
-      if (user.screenId) {
-        await this.updateSocketIdForEntity(
-          dataSource.getRepository(Screen),
-          user.screenId,
-          this.handlerManager.getHandlers(Screen),
-          namespace,
-          socketId,
-        );
-        this.backofficeEmitter.emit('connect_screen');
-      }
-      if (user.lightsControllerId) {
-        const controller = await this.updateSocketIdForEntity(
-          dataSource.getRepository(LightsController),
-          user.lightsControllerId,
-          [],
-          namespace,
-          socketId,
-        );
-        if (controller) {
-          const lightsHandlers: BaseLightsHandler[] = this.handlerManager.getHandlers(
-            LightsGroup,
-          ) as BaseLightsHandler[];
-          const lightGroups = lightsHandlers.map((h) => h.entities).flat();
-          lightGroups.forEach((g) => {
-            if (g.controller.id !== user.lightsControllerId) return;
-            // eslint-disable-next-line no-param-reassign
-            g.controller.socketIds = controller.socketIds;
-          });
-          this.lightsSwitchManager.getEnabledSwitches().forEach((s) => {
-            if (s.controller.id !== user.lightsControllerId) return;
-            // eslint-disable-next-line no-param-reassign
-            s.controller.socketIds = controller.socketIds;
-          });
+      try {
+        if (connected) {
+          logger.info(
+            `Connect (${namespace}) by ${JSON.stringify(user)} with Socket ID ${socketId}`,
+          );
+        } else {
+          logger.info(
+            `Disconnect (${namespace}) by ${JSON.stringify(user)} with Socket ID ${socketId}`,
+          );
         }
-        this.backofficeEmitter.emit('connect_lightsgroup');
+        if (user.audioId) {
+          await this.updateSocketIdForEntity(
+            dataSource.getRepository(Audio),
+            user.audioId,
+            this.handlerManager.getHandlers(Audio),
+            namespace,
+            socketId,
+            connected,
+          );
+          this.backofficeEmitter.emit('connect_audio');
+        }
+        if (user.screenId) {
+          await this.updateSocketIdForEntity(
+            dataSource.getRepository(Screen),
+            user.screenId,
+            this.handlerManager.getHandlers(Screen),
+            namespace,
+            socketId,
+            connected,
+          );
+          this.backofficeEmitter.emit('connect_screen');
+        }
+        if (user.lightsControllerId) {
+          const controller = await this.updateSocketIdForEntity(
+            dataSource.getRepository(LightsController),
+            user.lightsControllerId,
+            [],
+            namespace,
+            socketId,
+            connected,
+          );
+          if (controller) {
+            const lightsHandlers: BaseLightsHandler[] = this.handlerManager.getHandlers(
+              LightsGroup,
+            ) as BaseLightsHandler[];
+            const lightGroups = lightsHandlers.map((h) => h.entities).flat();
+            lightGroups.forEach((g) => {
+              if (g.controller.id !== user.lightsControllerId) return;
+              // eslint-disable-next-line no-param-reassign
+              g.controller.socketIds = controller.socketIds;
+            });
+            this.lightsSwitchManager.getEnabledSwitches().forEach((s) => {
+              if (s.controller.id !== user.lightsControllerId) return;
+              // eslint-disable-next-line no-param-reassign
+              s.controller.socketIds = controller.socketIds;
+            });
+          }
+          this.backofficeEmitter.emit('connect_lightsgroup');
+        }
+        done();
+      } catch (e) {
+        done(e as Error);
       }
-      done();
     });
   }
 }

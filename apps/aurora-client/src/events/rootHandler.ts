@@ -28,11 +28,16 @@ export default function registerRootHandler(
     systemTimestamp: startTime,
     latencyMilliseconds: 0,
   };
-  setInterval(() => {
+  const statusInterval = setInterval(() => {
     status.systemTimestamp = Date.now();
     status.uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
     rootSocket.emit('status:update', status, () => {
       status.latencyMilliseconds = Math.floor((Date.now() - status.systemTimestamp) / 2);
     });
   }, 5 * 1000);
+
+  return () => {
+    clearInterval(statusInterval);
+    rootSocket.disconnect();
+  };
 }

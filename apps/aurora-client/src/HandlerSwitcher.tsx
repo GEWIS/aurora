@@ -29,9 +29,7 @@ interface Props {
 export default function HandlerSwitcher({ socket }: Props) {
   const [currentHandler, setCurrentHandler] = useState<Handlers | null>(null);
 
-  useEffect(() => {
-    registerRootHandler(setCurrentHandler);
-  }, []);
+  useEffect(() => registerRootHandler(setCurrentHandler), []);
 
   switch (currentHandler) {
     case Handlers.CENTURION:

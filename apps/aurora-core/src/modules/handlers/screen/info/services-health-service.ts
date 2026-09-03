@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { HttpApiException, HttpStatusCode } from '../../../../helpers/custom-error';
 
 /**
  * A monitor's state, mirroring Uptime Kuma's own statuses (plus `unknown` for a
@@ -186,7 +187,11 @@ export default class ServicesHealthService {
     if (gatus.status === 'fulfilled' && ServicesHealthService.looksLikeGatus(gatus.value.data)) {
       return { provider: 'gatus', base, slug };
     }
-    throw new Error(
+    // A plain Error would surface as a bare 500 "Internal server error", which
+    // says nothing about the URL being the problem. 502 with the reason is what
+    // makes a mistyped status page diagnosable from the screen's own logs.
+    throw new HttpApiException(
+      HttpStatusCode.BadGateway,
       `${base} does not answer as an Uptime Kuma status page or a Gatus API. ` +
         'Check the URL (an Uptime Kuma page looks like .../status/<slug>).',
     );

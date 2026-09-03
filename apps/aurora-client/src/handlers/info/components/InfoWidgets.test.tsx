@@ -73,6 +73,22 @@ describe('ServicesWidget', () => {
     render(<ServicesWidget services={null} />);
     expect(screen.getByText('Services unavailable')).toBeInTheDocument();
   });
+
+  it('does not paint the broadcast while it is fetching its own status page', () => {
+    // A widget pointed at another status page must not flash the
+    // deployment-wide health first: those are different services under a
+    // heading that claims otherwise.
+    render(
+      <ServicesWidget services={services} settings={{ statusPageUrl: 'https://s.example' }} />,
+    );
+    expect(screen.getByText('Services unavailable')).toBeInTheDocument();
+    expect(screen.queryByText('Most services are operational')).not.toBeInTheDocument();
+  });
+
+  it('still follows the broadcast when no status page is configured', () => {
+    render(<ServicesWidget services={services} settings={{ statusPageUrl: '' }} />);
+    expect(screen.getByText('Most services are operational')).toBeInTheDocument();
+  });
 });
 
 describe('ConferenceRoomsWidget', () => {

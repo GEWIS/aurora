@@ -46,11 +46,17 @@ export default function ServicesWidget({ services: broadcast, settings }: Props)
   // Self-fetch from the configured status page (per-widget setting), so several
   // widgets can watch different Uptime Kuma pages. Without one the widget
   // follows the deployment-wide health the core broadcasts.
+  //
+  // The broadcast is only a sensible starting value while this widget is
+  // actually following it. A widget pointed at its own status page must start
+  // empty instead: painting the deployment-wide health first would show one
+  // status page's services under another page's heading until the first
+  // response lands, and it is indistinguishable from the real thing.
   const services = useCachedResource<ServicesHealthResponse | null>(
     statusPageUrl ? `services:${statusPageUrl}` : null,
     async () => (await getInfoServices({ query: { url: statusPageUrl } })).data,
     60_000,
-    broadcast,
+    statusPageUrl ? null : broadcast,
   );
 
   if (!services) {

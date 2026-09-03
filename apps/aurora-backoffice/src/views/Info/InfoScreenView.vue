@@ -247,12 +247,26 @@ const beerTimeOptions: { label: string; value: string | null }[] = [
 /** Free-text filter over the keyholder list; matches the name or the number. */
 const keyholderSearch = ref('');
 
+/**
+ * Board first, then candidate board, then the remaining keyholders, and by name
+ * within each group. Someone with several flags sorts under the highest one, so
+ * a board member who also holds a key appears once, at the top.
+ */
+function rank(k: KeyholderResponse): number {
+  if (k.isBoard) return 0;
+  if (k.isCandidateBoard) return 1;
+  if (k.isKeyholder) return 2;
+  return 3;
+}
+
 const visibleKeyholders = computed(() => {
   const needle = keyholderSearch.value.trim().toLowerCase();
-  if (!needle) return infoStore.keyholders;
-  return infoStore.keyholders.filter(
-    (k) => k.name.toLowerCase().includes(needle) || String(k.memberId ?? '').includes(needle),
-  );
+  const matching = needle
+    ? infoStore.keyholders.filter(
+        (k) => k.name.toLowerCase().includes(needle) || String(k.memberId ?? '').includes(needle),
+      )
+    : infoStore.keyholders;
+  return [...matching].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
 });
 
 const dialogVisible = ref(false);

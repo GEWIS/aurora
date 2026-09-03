@@ -16,9 +16,17 @@ function departureTime(train: TrainResponse): string {
     .padStart(2, '0')}`;
 }
 
+/**
+ * The station the core polls for its screen-wide broadcast, which is also this
+ * widget's default. A widget left on it can start from the broadcast; one
+ * pointed elsewhere must not, or it would show this station's departures under
+ * another station's name until its own response lands.
+ */
+const BROADCAST_STATION = 'EHV';
+
 export default function TrainsWidget({ trains: initialTrains, settings }: Props) {
   const showDelays = sBool(settings, 'showDelays', true);
-  const station = sStr(settings, 'station', 'EHV');
+  const station = sStr(settings, 'station', BROADCAST_STATION);
 
   // Self-fetch departures for the configured station (per-widget setting). The
   // broadcast prop is only the initial value, until the first response lands.
@@ -26,7 +34,7 @@ export default function TrainsWidget({ trains: initialTrains, settings }: Props)
     `trains:${station}`,
     async () => (await getInfoTrains({ query: { station } })).data,
     30_000,
-    initialTrains,
+    station === BROADCAST_STATION ? initialTrains : [],
   );
 
   return (

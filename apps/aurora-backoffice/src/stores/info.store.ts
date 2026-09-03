@@ -1,19 +1,14 @@
 import { defineStore } from 'pinia';
 import {
-  deleteInfoPc,
   getInfoKeyholders,
   getInfoKeyholderSyncStatus,
-  getInfoPcUsage,
   getInfoRoomStatus,
   type KeyholderParams,
   type KeyholderResponse,
   type KeyholderSyncResult,
   type KeyholderSyncStatus,
-  type PcOverride,
-  type PcStatusResponse,
   type RoomStatusParams,
   type RoomStatusResponse,
-  setInfoPcOverride,
   setInfoRoomStatus,
   syncInfoKeyholders,
   updateInfoKeyholder,
@@ -22,7 +17,6 @@ import {
 interface InfoStore {
   keyholders: KeyholderResponse[];
   roomStatus: RoomStatusResponse | null;
-  pcs: PcStatusResponse[];
   /** Whether this server can sync keyholders from the GEWIS API at all. */
   keyholderSync: KeyholderSyncStatus | null;
   loading: boolean;
@@ -33,7 +27,6 @@ export const useInfoStore = defineStore('info', {
   state: (): InfoStore => ({
     keyholders: [],
     roomStatus: null,
-    pcs: [],
     keyholderSync: null,
     loading: true,
     initialized: false,
@@ -45,7 +38,6 @@ export const useInfoStore = defineStore('info', {
       await Promise.all([
         this.fetchKeyholders(),
         this.fetchRoomStatus(),
-        this.fetchPcUsage(),
         this.fetchKeyholderSyncStatus(),
       ]);
       this.loading = false;
@@ -72,19 +64,6 @@ export const useInfoStore = defineStore('info', {
     async fetchRoomStatus() {
       const res = await getInfoRoomStatus();
       if (res.response.ok && res.data) this.roomStatus = res.data;
-    },
-    async fetchPcUsage() {
-      // Include disabled PCs so they can be re-enabled from the backoffice.
-      const res = await getInfoPcUsage({ query: { includeDisabled: true } });
-      if (res.response.ok && res.data) this.pcs = res.data;
-    },
-    async setPcOverride(pcId: string, override: PcOverride) {
-      const res = await setInfoPcOverride({ path: { pcId }, body: { override } });
-      if (res.response.ok) await this.fetchPcUsage();
-    },
-    async deletePc(pcId: string) {
-      const res = await deleteInfoPc({ path: { pcId } });
-      if (res.response.ok) await this.fetchPcUsage();
     },
     async updateKeyholder(id: number, params: KeyholderParams) {
       const res = await updateInfoKeyholder({ path: { id }, body: params });

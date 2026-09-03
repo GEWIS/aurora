@@ -4010,15 +4010,6 @@
 				],
 				"type": "string"
 			},
-			"PcOverride": {
-				"description": "Backoffice-controlled override that takes precedence over reported statuses.\nMAINTENANCE forces the PC to show as under maintenance; DISABLED hides it from\nthe screen entirely. Both persist across status posts until cleared.",
-				"enum": [
-					"none",
-					"maintenance",
-					"disabled"
-				],
-				"type": "string"
-			},
 			"PcStatusResponse": {
 				"properties": {
 					"pcId": {
@@ -4040,10 +4031,6 @@
 					},
 					"status": {
 						"$ref": "#/components/schemas/PcStatusType"
-					},
-					"override": {
-						"$ref": "#/components/schemas/PcOverride",
-						"description": "Backoffice override (none / maintenance / disabled)."
 					}
 				},
 				"required": [
@@ -4051,8 +4038,7 @@
 					"users",
 					"remote",
 					"lockedAt",
-					"status",
-					"override"
+					"status"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -4101,18 +4087,6 @@
 				},
 				"required": [
 					"pcs"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"SetPcOverrideParams": {
-				"properties": {
-					"override": {
-						"$ref": "#/components/schemas/PcOverride"
-					}
-				},
-				"required": [
-					"override"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -12530,16 +12504,7 @@
 						]
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "includeDisabled",
-						"required": false,
-						"schema": {
-							"type": "boolean"
-						}
-					}
-				]
+				"parameters": []
 			},
 			"post": {
 				"operationId": "SetInfoPcUsage",
@@ -12570,82 +12535,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/handler/screen/info/pc-usage/{pcId}/override": {
-			"put": {
-				"operationId": "SetInfoPcOverride",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Set the backoffice override (maintenance / disabled / none) for a PC. The\noverride takes precedence over reported statuses until cleared.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "pcId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/SetPcOverrideParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/handler/screen/info/pc-usage/{pcId}": {
-			"delete": {
-				"operationId": "DeleteInfoPc",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Delete a PC from the list. It reappears on the next status post.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "pcId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
 			}
 		},
 		"/handler/screen/info/room-status": {

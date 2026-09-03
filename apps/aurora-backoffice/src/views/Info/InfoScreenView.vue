@@ -73,89 +73,8 @@
       </div>
     </AppContainer>
 
-    <!-- PC usage -->
-    <AppContainer class="pc-container" icon="pi-desktop" title="PC usage">
-      <DataTable
-        class="p-datatable-sm pc-table"
-        :row-class="(data) => (data.override === 'disabled' ? 'opacity-50' : '')"
-        scroll-height="flex"
-        scrollable
-        :value="infoStore.pcs"
-      >
-        <Column field="pcId" header="PC" />
-        <Column field="status" header="Status" />
-        <!-- A physical PC has at most one user; the vdesktop has many. -->
-        <Column header="Users">
-          <template #body="{ data }">
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span
-                v-for="user in data.users"
-                :key="user.memberId ?? user.name"
-                class="flex items-center gap-1"
-              >
-                <i v-if="symbolIcon(user.symbol)" class="pi" :class="symbolIcon(user.symbol)" />
-                {{ user.name }}
-              </span>
-              <span v-if="data.users.length === 0" class="opacity-50">—</span>
-            </div>
-          </template>
-        </Column>
-        <Column header="Override">
-          <template #body="{ data }">
-            <Tag v-if="data.override === 'maintenance'" severity="warn" value="Maintenance" />
-            <Tag v-else-if="data.override === 'disabled'" severity="secondary" value="Disabled" />
-          </template>
-        </Column>
-        <Column header="">
-          <template #body="{ data }">
-            <div class="flex gap-1 justify-end">
-              <Button
-                v-tooltip.top="
-                  data.override === 'maintenance' ? 'Clear maintenance' : 'Set maintenance'
-                "
-                :icon="data.override === 'maintenance' ? 'pi pi-check' : 'pi pi-wrench'"
-                :severity="data.override === 'maintenance' ? 'warn' : 'secondary'"
-                size="small"
-                text
-                @click="
-                  infoStore.setPcOverride(
-                    data.pcId,
-                    data.override === 'maintenance' ? PcOverride.NONE : PcOverride.MAINTENANCE,
-                  )
-                "
-              />
-              <Button
-                v-tooltip.top="data.override === 'disabled' ? 'Enable' : 'Disable'"
-                :icon="data.override === 'disabled' ? 'pi pi-eye' : 'pi pi-eye-slash'"
-                severity="secondary"
-                size="small"
-                text
-                @click="
-                  infoStore.setPcOverride(
-                    data.pcId,
-                    data.override === 'disabled' ? PcOverride.NONE : PcOverride.DISABLED,
-                  )
-                "
-              />
-              <Button
-                v-tooltip.top="'Delete'"
-                icon="pi pi-trash"
-                severity="danger"
-                size="small"
-                text
-                @click="infoStore.deletePc(data.pcId)"
-              />
-            </div>
-          </template>
-        </Column>
-        <template #empty>
-          <div class="text-center italic opacity-70 py-4">No PCs reported</div>
-        </template>
-      </DataTable>
-    </AppContainer>
-
     <!-- Keyholders -->
-    <AppContainer class="lg:col-span-2" icon="pi-key" title="Keyholders">
+    <AppContainer class="keyholder-container" icon="pi-key" title="Keyholders">
       <template #header>
         <div class="flex flex-wrap items-center gap-2">
           <span
@@ -167,7 +86,7 @@
           </span>
           <IconField>
             <InputIcon class="pi pi-search" />
-            <InputText v-model="keyholderSearch" placeholder="Search" size="small" />
+            <InputText v-model="keyholderSearch" class="pl-8" placeholder="Search" size="small" />
           </IconField>
           <Button
             v-tooltip.bottom="syncTooltip"
@@ -202,7 +121,7 @@
             <i v-if="data.isKeyholder" class="pi pi-key text-sky-400" />
           </template>
         </Column>
-        <Column header="Member">
+        <Column header="Member ID">
           <template #body="{ data }">{{ data.memberId ?? '—' }}</template>
         </Column>
         <Column header="">
@@ -233,10 +152,6 @@
     <!-- Keyholder edit dialog -->
     <Dialog v-model:visible="dialogVisible" :header="`Edit ${editName}`" modal>
       <div class="flex flex-col gap-4 w-96">
-        <Message :closable="false" severity="info">
-          Who is a keyholder or on the board, and what they are called, follows the association's
-          own records. Only these two are set here.
-        </Message>
         <div class="flex items-center gap-2">
           <Checkbox v-model="form.isCandidateBoard" binary input-id="kh-candidate" />
           <label for="kh-candidate">Candidate board</label>
@@ -256,7 +171,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { PcOverride, type KeyholderResponse } from '@gewis/aurora-api-client';
+import { type KeyholderResponse } from '@gewis/aurora-api-client';
 import AppContainer from '@/layout/AppContainer.vue';
 import { useInfoStore } from '@/stores/info.store';
 
@@ -285,21 +200,6 @@ async function syncKeyholders() {
     ? `${result.created} added, ${result.updated} updated, ${result.removed} removed`
     : 'Sync failed — check the server logs';
   syncing.value = false;
-}
-
-/** Map the server keyholder symbol (emoji) to a PrimeIcon for the PC table. */
-function symbolIcon(symbol: string): string | null {
-  switch (symbol) {
-    case '★':
-      return 'pi-star-fill';
-    case '🔑':
-    case '🍭':
-      return 'pi-key';
-    case '🍬':
-      return 'pi-star-half-fill';
-    default:
-      return null;
-  }
 }
 
 const room = reactive<{
@@ -413,36 +313,32 @@ async function saveKeyholder() {
 </script>
 
 <style scoped>
-/* Denser PC-usage rows so more PCs fit in the same vertical space. */
-:deep(.pc-table td),
-:deep(.pc-table th) {
+/* Denser rows so more keyholders fit in the same vertical space. */
+:deep(.keyholder-table td),
+:deep(.keyholder-table th) {
   padding-top: 0.15rem;
   padding-bottom: 0.15rem;
 }
-:deep(.pc-table .p-button) {
+:deep(.keyholder-table .p-button) {
   padding: 0.2rem;
 }
 
-/* Keep the keyholder list from growing the page; it scrolls within its card. */
-:deep(.keyholder-table) {
-  max-height: 28rem;
-}
-
-/* Let the PC-usage table fill the full height of its card (scroll-height=flex). */
-:deep(.pc-container) {
+/* Let the list fill the full height of its card and scroll inside it
+   (scroll-height=flex), instead of growing the page. */
+:deep(.keyholder-container) {
   height: 100%;
 }
-:deep(.pc-container .p-card-body) {
+:deep(.keyholder-container .p-card-body) {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-:deep(.pc-container .p-card-content) {
+:deep(.keyholder-container .p-card-content) {
   flex: 1 1 0;
   min-height: 0;
   display: flex;
 }
-:deep(.pc-container .p-datatable) {
+:deep(.keyholder-container .p-datatable) {
   flex: 1 1 0;
   min-height: 0;
 }

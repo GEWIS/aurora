@@ -15,11 +15,7 @@ import NewsService, { NewsHeadline, NewsSourceParams, NewsSourceResponse } from 
 import CalendarService, { AgendaEvent } from './calendar-service';
 import NsTrainsService, { TrainResponse } from '../poster/ns-trains-service';
 import { applyTreinLimbo } from './trains-transform';
-import PcUsageService, {
-  PcStatusResponse,
-  SetPcOverrideParams,
-  SetPcUsageParams,
-} from './pc-usage-service';
+import PcUsageService, { PcStatusResponse, SetPcUsageParams } from './pc-usage-service';
 import InfoStatusService, {
   KeyholderParams,
   KeyholderResponse,
@@ -126,8 +122,8 @@ export class InfoScreenController extends Controller {
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('pc-usage')
-  public async getInfoPcUsage(@Query() includeDisabled?: boolean): Promise<PcStatusResponse[]> {
-    return this.pcUsageService.getAll(includeDisabled ?? false);
+  public async getInfoPcUsage(): Promise<PcStatusResponse[]> {
+    return this.pcUsageService.getAll();
   }
 
   /**
@@ -138,41 +134,6 @@ export class InfoScreenController extends Controller {
   @Post('pc-usage')
   public async setInfoPcUsage(@Body() body: SetPcUsageParams): Promise<void> {
     await this.pcUsageService.replaceAll(body);
-    await this.getHandler()?.emitPcUsage();
-  }
-
-  /**
-   * Set the backoffice override (maintenance / disabled / none) for a PC. The
-   * override takes precedence over reported statuses until cleared.
-   */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
-  @Put('pc-usage/{pcId}/override')
-  public async setInfoPcOverride(
-    @Request() req: ExpressRequest,
-    @Path() pcId: string,
-    @Body() body: SetPcOverrideParams,
-  ): Promise<void> {
-    logger.audit(req.user, `Set info screen PC "${pcId}" override to "${body.override}".`);
-    const found = await this.pcUsageService.setOverride(pcId, body.override);
-    if (!found) {
-      this.setStatus(404);
-      return;
-    }
-    await this.getHandler()?.emitPcUsage();
-  }
-
-  /**
-   * Delete a PC from the list. It reappears on the next status post.
-   */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
-  @Delete('pc-usage/{pcId}')
-  public async deleteInfoPc(@Request() req: ExpressRequest, @Path() pcId: string): Promise<void> {
-    logger.audit(req.user, `Delete info screen PC "${pcId}".`);
-    const found = await this.pcUsageService.deletePc(pcId);
-    if (!found) {
-      this.setStatus(404);
-      return;
-    }
     await this.getHandler()?.emitPcUsage();
   }
 

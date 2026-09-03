@@ -1,9 +1,4 @@
-import PcStatus, {
-  PcSessionUser,
-  PcStatusType,
-  PcOverride,
-  VDESKTOP_PC_ID,
-} from './entities/pc-status';
+import PcStatus, { PcSessionUser, PcStatusType, VDESKTOP_PC_ID } from './entities/pc-status';
 import Keyholder from './entities/keyholder';
 
 export interface PcStatusParams {
@@ -24,10 +19,6 @@ export interface PcStatusParams {
 
 export interface SetPcUsageParams {
   pcs: PcStatusParams[];
-}
-
-export interface SetPcOverrideParams {
-  override: PcOverride;
 }
 
 /** One logged-in user, annotated from the keyholder registry. */
@@ -52,10 +43,6 @@ export interface PcStatusResponse {
   remote: boolean;
   lockedAt: string | null;
   status: PcStatusType;
-  /**
-   * Backoffice override (none / maintenance / disabled).
-   */
-  override: PcOverride;
 }
 
 const DEFAULT_STALE_MINUTES = 5;
@@ -224,22 +211,16 @@ export default class PcUsageService {
   }
 
   /**
-   * @param includeDisabled include DISABLED PCs (for the backoffice management
-   * view). The screen feed leaves this false so disabled PCs stay hidden.
+   * Every PC, with a status that is current: a PC nothing has reported within
+   * the staleness window reads as OFFLINE regardless of what it last said.
    */
-  public async getAll(includeDisabled = false): Promise<PcStatusResponse[]> {
+  public async getAll(): Promise<PcStatusResponse[]> {
     const [pcs, keyholders] = await Promise.all([PcStatus.find(), Keyholder.find()]);
 
     // Stale per-session rows are deleted rather than lingering as offline rows;
     // the physical PCs and the shared virtual desktop persist (shown as offline
-    // on the map). PCs with a backoffice override are kept so the admin's
-    // intent is not lost.
-    const removable = pcs.filter(
-      (pc) =>
-        this.isStale(pc) &&
-        pc.overrideState === PcOverride.NONE &&
-        !PcUsageService.isPersistent(pc.pcId),
-    );
+    // on the map).
+    const removable = pcs.filter((pc) => this.isStale(pc) && !PcUsageService.isPersistent(pc.pcId));
     if (removable.length > 0) {
       await PcStatus.remove(removable);
     }
@@ -247,12 +228,8 @@ export default class PcUsageService {
 
     return pcs
       .filter((pc) => !removedIds.has(pc.pcId))
-      .filter((pc) => includeDisabled || pc.overrideState !== PcOverride.DISABLED)
       .map((pc) => {
-        const stale = this.isStale(pc);
-        // Backoffice overrides take precedence over the reported status.
-        let status = stale ? PcStatusType.OFFLINE : pc.status;
-        if (pc.overrideState === PcOverride.MAINTENANCE) status = PcStatusType.MAINTENANCE;
+        const status = this.isStale(pc) ? PcStatusType.OFFLINE : pc.status;
         // A PC with no active session shows nobody.
         const active =
           status === PcStatusType.OFFLINE || status === PcStatusType.MAINTENANCE
@@ -268,33 +245,9 @@ export default class PcUsageService {
           remote: pc.remote,
           lockedAt: pc.lockedAt ? pc.lockedAt.toISOString() : null,
           status,
-          override: pc.overrideState,
         };
       })
       .sort((a, b) => PcUsageService.comparePcId(a.pcId, b.pcId));
-  }
-
-  /**
-   * Set the backoffice override for a PC (maintenance / disabled / none).
-   * Returns false when the PC does not exist.
-   */
-  public async setOverride(pcId: string, override: PcOverride): Promise<boolean> {
-    const pc = await PcStatus.findOne({ where: { pcId } });
-    if (!pc) return false;
-    pc.overrideState = override;
-    await pc.save();
-    return true;
-  }
-
-  /**
-   * Delete a PC. It reappears on the next status post from the poster.
-   * Returns false when the PC does not exist.
-   */
-  public async deletePc(pcId: string): Promise<boolean> {
-    const pc = await PcStatus.findOne({ where: { pcId } });
-    if (!pc) return false;
-    await pc.remove();
-    return true;
   }
 
   /**

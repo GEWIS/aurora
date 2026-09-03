@@ -27,17 +27,6 @@ export enum PcStatusType {
 }
 
 /**
- * Backoffice-controlled override that takes precedence over reported statuses.
- * MAINTENANCE forces the PC to show as under maintenance; DISABLED hides it from
- * the screen entirely. Both persist across status posts until cleared.
- */
-export enum PcOverride {
-  NONE = 'none',
-  MAINTENANCE = 'maintenance',
-  DISABLED = 'disabled',
-}
-
-/**
  * Id of the shared virtual desktop. Unlike the physical machines it is not a
  * seat in the room but one logical PC that any number of people are logged into
  * at once, so every reported remote session folds into this single row.
@@ -92,10 +81,4 @@ export default class PcStatus extends BaseEntity {
    */
   @Column({ type: 'varchar', default: PcStatusType.OFFLINE })
   public status: PcStatusType;
-
-  /**
-   * Backoffice override (maintenance / disabled). Preserved across status posts.
-   */
-  @Column({ type: 'varchar', default: PcOverride.NONE })
-  public overrideState: PcOverride;
 }

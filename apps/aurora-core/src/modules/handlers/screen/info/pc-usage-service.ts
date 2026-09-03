@@ -1,5 +1,6 @@
 import PcStatus, { PcSessionUser, PcStatusType, VDESKTOP_PC_ID } from './entities/pc-status';
 import Keyholder from './entities/keyholder';
+import { displayNames } from './display-name';
 
 export interface PcStatusParams {
   pcId: string;
@@ -216,6 +217,11 @@ export default class PcUsageService {
    */
   public async getAll(): Promise<PcStatusResponse[]> {
     const [pcs, keyholders] = await Promise.all([PcStatus.find(), Keyholder.find()]);
+    // A seat on the map is about one short name wide, so a member the registry
+    // knows is shown under the registry's short name rather than the full name
+    // the agent reported. Anyone else keeps what was reported.
+    const shown = displayNames(keyholders);
+    const byMember = new Map(keyholders.map((k) => [k.memberId, shown.get(k.id)]));
 
     // Stale per-session rows are deleted rather than lingering as offline rows;
     // the physical PCs and the shared virtual desktop persist (shown as offline
@@ -239,7 +245,7 @@ export default class PcUsageService {
           pcId: pc.pcId,
           users: active.map((user) => ({
             memberId: user.memberId,
-            name: user.name,
+            name: byMember.get(user.memberId) ?? user.name,
             symbol: PcUsageService.deriveSymbol(user.memberId, keyholders),
           })),
           remote: pc.remote,

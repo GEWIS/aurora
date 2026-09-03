@@ -4202,7 +4202,17 @@
 						"format": "double"
 					},
 					"name": {
-						"type": "string"
+						"type": "string",
+						"description": "Full name, as the association records it."
+					},
+					"displayName": {
+						"type": "string",
+						"description": "What the screen shows: the override when set, else the derived short name."
+					},
+					"displayNameOverride": {
+						"type": "string",
+						"nullable": true,
+						"description": "The override itself, empty when the display name is derived."
 					},
 					"isBoard": {
 						"type": "boolean"
@@ -4227,6 +4237,8 @@
 				"required": [
 					"id",
 					"name",
+					"displayName",
+					"displayNameOverride",
 					"isBoard",
 					"isCandidateBoard",
 					"isKeyholder",
@@ -4238,6 +4250,11 @@
 			},
 			"KeyholderParams": {
 				"properties": {
+					"displayName": {
+						"type": "string",
+						"nullable": true,
+						"description": "What the screen calls this person. Blank means the short name is derived\nfrom the full name (given name, plus surname where two people clash)."
+					},
 					"photoUrl": {
 						"type": "string",
 						"nullable": true,

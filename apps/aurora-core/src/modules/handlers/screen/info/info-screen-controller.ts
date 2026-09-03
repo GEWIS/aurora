@@ -166,8 +166,7 @@ export class InfoScreenController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('keyholders')
   public async getInfoKeyholders(): Promise<KeyholderResponse[]> {
-    const keyholders = await this.infoStatusService.getKeyholders();
-    return keyholders.map(InfoStatusService.toKeyholderResponse);
+    return this.infoStatusService.getKeyholderResponses();
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
@@ -177,13 +176,18 @@ export class InfoScreenController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: KeyholderParams,
   ): Promise<KeyholderResponse> {
-    logger.audit(req.user, `Update info screen keyholder ${id} (photo / candidate board).`);
+    logger.audit(req.user, `Update info screen keyholder ${id}.`);
     const keyholder = await this.infoStatusService.updateKeyholder(id, body);
     if (!keyholder) {
       this.setStatus(404);
       return undefined as unknown as KeyholderResponse;
     }
-    return InfoStatusService.toKeyholderResponse(keyholder);
+    // Re-derive over the whole registry: naming this person can change whether
+    // somebody else's given name is still unambiguous.
+    const responses = await this.infoStatusService.getKeyholderResponses();
+    await this.getHandler()?.emitRoomStatus();
+    await this.getHandler()?.emitPcUsage();
+    return responses.find((r) => r.id === id)!;
   }
 
   /**

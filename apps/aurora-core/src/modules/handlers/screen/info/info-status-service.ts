@@ -1,4 +1,5 @@
 import Keyholder from './entities/keyholder';
+import { displayNames } from './display-name';
 import RoomStatus from './entities/room-status';
 
 /**
@@ -22,6 +23,11 @@ function lastResetBoundary(now: Date): Date {
 
 export interface KeyholderParams {
   /**
+   * What the screen calls this person. Blank means the short name is derived
+   * from the full name (given name, plus surname where two people clash).
+   */
+  displayName?: string | null;
+  /**
    * Profile photo shown on the info screen. Not part of the GEWIS records, so
    * it is set here or nowhere.
    */
@@ -35,7 +41,12 @@ export interface KeyholderParams {
 
 export interface KeyholderResponse {
   id: number;
+  /** Full name, as the association records it. */
   name: string;
+  /** What the screen shows: the override when set, else the derived short name. */
+  displayName: string;
+  /** The override itself, empty when the display name is derived. */
+  displayNameOverride: string | null;
   isBoard: boolean;
   isCandidateBoard: boolean;
   isKeyholder: boolean;
@@ -78,10 +89,20 @@ export interface RoomStatusResponse {
  * person(s) + beer time).
  */
 export default class InfoStatusService {
-  public static toKeyholderResponse(keyholder: Keyholder): KeyholderResponse {
+  /**
+   * @param shown effective display names for the whole registry (see
+   * {@link displayNames}); a name is only derivable in the context of everyone
+   * else, so it cannot be computed from one row.
+   */
+  public static toKeyholderResponse(
+    keyholder: Keyholder,
+    shown: Map<number, string>,
+  ): KeyholderResponse {
     return {
       id: keyholder.id,
       name: keyholder.name,
+      displayName: shown.get(keyholder.id) ?? keyholder.name,
+      displayNameOverride: keyholder.displayName,
       isBoard: keyholder.isBoard,
       isCandidateBoard: keyholder.isCandidateBoard,
       isKeyholder: keyholder.isKeyholder,
@@ -92,6 +113,17 @@ export default class InfoStatusService {
 
   public async getKeyholders(): Promise<Keyholder[]> {
     return Keyholder.find({ order: { name: 'ASC' } });
+  }
+
+  /**
+   * The whole registry as responses. Display names are derived across the set,
+   * so this is the only way to build a correct response: one row does not know
+   * whether its given name is ambiguous.
+   */
+  public async getKeyholderResponses(): Promise<KeyholderResponse[]> {
+    const keyholders = await this.getKeyholders();
+    const shown = displayNames(keyholders);
+    return keyholders.map((k) => InfoStatusService.toKeyholderResponse(k, shown));
   }
 
   /**
@@ -106,6 +138,8 @@ export default class InfoStatusService {
 
     keyholder.photoUrl = params.photoUrl ?? null;
     keyholder.isCandidateBoard = params.isCandidateBoard ?? false;
+    // Blank means "derive it" rather than "call this person nothing".
+    keyholder.displayName = (params.displayName ?? '').trim() || null;
     return keyholder.save();
   }
 

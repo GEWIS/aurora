@@ -106,6 +106,13 @@
         :value="visibleKeyholders"
       >
         <Column field="name" header="Name" />
+        <Column header="Shown as">
+          <template #body="{ data }">
+            <span :class="data.displayNameOverride ? '' : 'opacity-70'">
+              {{ data.displayName }}
+            </span>
+          </template>
+        </Column>
         <Column header="Board">
           <template #body="{ data }">
             <i v-if="data.isBoard" class="pi pi-star-fill text-amber-400" />
@@ -152,6 +159,13 @@
     <!-- Keyholder edit dialog -->
     <Dialog v-model:visible="dialogVisible" :header="`Edit ${editName}`" modal>
       <div class="flex flex-col gap-4 w-96">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm opacity-70">Shown as</label>
+          <InputText v-model="form.displayName" :placeholder="editDerivedName" />
+          <small class="opacity-70">
+            Leave blank to use "{{ editDerivedName }}". A full name rarely fits the screen.
+          </small>
+        </div>
         <div class="flex items-center gap-2">
           <Checkbox v-model="form.isCandidateBoard" binary input-id="kh-candidate" />
           <label for="kh-candidate">Candidate board</label>
@@ -272,7 +286,10 @@ const visibleKeyholders = computed(() => {
 const dialogVisible = ref(false);
 const editId = ref<number | null>(null);
 const editName = ref('');
+/** The name the screen would derive, shown as the placeholder for the override. */
+const editDerivedName = ref('');
 const form = reactive({
+  displayName: '',
   isCandidateBoard: false,
   photoUrl: '',
 });
@@ -311,6 +328,10 @@ async function saveRoom() {
 function openEdit(keyholder: KeyholderResponse) {
   editId.value = keyholder.id;
   editName.value = keyholder.name;
+  editDerivedName.value = keyholder.displayNameOverride
+    ? keyholder.name.trim().split(/\s+/)[0]
+    : keyholder.displayName;
+  form.displayName = keyholder.displayNameOverride ?? '';
   form.isCandidateBoard = keyholder.isCandidateBoard;
   form.photoUrl = keyholder.photoUrl ?? '';
   dialogVisible.value = true;
@@ -319,6 +340,7 @@ function openEdit(keyholder: KeyholderResponse) {
 async function saveKeyholder() {
   if (editId.value === null) return;
   await infoStore.updateKeyholder(editId.value, {
+    displayName: form.displayName || null,
     isCandidateBoard: form.isCandidateBoard,
     photoUrl: form.photoUrl || null,
   });

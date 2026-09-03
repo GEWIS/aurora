@@ -10,7 +10,8 @@
     Members are identified by their GEWIS membership number (lidnr), read from
     Active Directory; aurora derives the board/keyholder symbols from that
     number, so login names never leave this script. The name is sent purely to
-    be displayed.
+    be displayed, and is the given name: a seat on the screen is about one short
+    name wide.
 
     Run it from a scheduled task on a domain-joined machine that can reach the
     room's PCs. It never throws on a single unreachable machine: that PC is
@@ -129,9 +130,16 @@ function Resolve-Member {
             $memberId = [int] $Matches[1]
         }
 
-        # Prefer the full name; fall back to the given name and then the login
-        # so a machine in use never shows a blank label.
-        $name = @($user.DisplayName, $user.GivenName, $user.SamAccountName) |
+        # A seat on the screen is about one short name wide, so send the given
+        # name rather than the full one. Aurora shows a keyholder under the name
+        # its own registry holds; this is what everybody else is called.
+        $firstOfDisplay = $null
+        if (-not [string]::IsNullOrWhiteSpace($user.DisplayName)) {
+            $firstOfDisplay = $user.DisplayName -split '\s+' |
+                Where-Object { $_ -ne '' } |
+                Select-Object -First 1
+        }
+        $name = @($user.GivenName, $firstOfDisplay, $user.SamAccountName) |
             Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
             Select-Object -First 1
 

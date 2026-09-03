@@ -7,13 +7,19 @@ const base: RoomStatusResponse = {
   open: true,
   responsible: [
     {
-      name: 'Robin van Dijke',
+      name: 'Jan van den Jansen',
       isBoard: false,
       isCandidateBoard: false,
       isKeyholder: true,
       photoUrl: null,
     },
-    { name: 'Kim', isBoard: true, isCandidateBoard: false, isKeyholder: false, photoUrl: null },
+    {
+      name: 'Pietersen',
+      isBoard: true,
+      isCandidateBoard: false,
+      isKeyholder: false,
+      photoUrl: null,
+    },
   ],
   beerTime: null,
   lastCall: null,
@@ -24,13 +30,13 @@ const base: RoomStatusResponse = {
 describe('RoomStatusWidget', () => {
   it('splits the responsible name into a big first name and small last name', () => {
     render(<RoomStatusWidget status={base} />);
-    expect(screen.getByText('Robin')).toBeInTheDocument();
-    expect(screen.getByText('van Dijke')).toBeInTheDocument();
+    expect(screen.getByText('Jan')).toBeInTheDocument();
+    expect(screen.getByText('van den Jansen')).toBeInTheDocument();
   });
 
   it('handles a single-word name (no last-name line)', () => {
     render(<RoomStatusWidget status={base} />);
-    expect(screen.getByText('Kim')).toBeInTheDocument();
+    expect(screen.getByText('Pietersen')).toBeInTheDocument();
   });
 
   it('shows the closed message when the room is closed', () => {

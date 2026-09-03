@@ -27,7 +27,10 @@ machine in a single payload:
   `employeeNumber` attribute in Active Directory. It is the identity: aurora
   matches it against the keyholder registry to decide whether to show a board
   star or a key. Login names are never sent.
-- `name` is only there to be displayed.
+- `name` is only there to be displayed, and is the given name rather than the
+  full one: a seat on the screen is about one short name wide. Aurora shows a
+  member its keyholder registry knows under the registry's own short name, so
+  this mainly decides what everybody else is called.
 - Omitting `status` lets aurora infer it: `lockedAt` → locked, `remote` →
   remote, no user → free, otherwise in use. Send `status` explicitly only for
   `offline` and `maintenance`, which no session can express.

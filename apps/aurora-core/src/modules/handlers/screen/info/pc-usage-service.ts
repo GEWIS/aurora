@@ -1,9 +1,22 @@
-import PcStatus, { PcStatusType, PcOverride, VDESKTOP_PC_ID } from './entities/pc-status';
+import PcStatus, {
+  PcSessionUser,
+  PcStatusType,
+  PcOverride,
+  VDESKTOP_PC_ID,
+} from './entities/pc-status';
 import Keyholder from './entities/keyholder';
 
 export interface PcStatusParams {
   pcId: string;
-  username?: string | null;
+  /**
+   * GEWIS membership number of the person logged in, or null for an account
+   * that belongs to no member (a guest or service login). This is the identity:
+   * the keyholder registry is matched on it, so the login name never reaches
+   * aurora at all.
+   */
+  memberId?: number | null;
+  /** Name to show for that session. Ignored when nobody is logged in. */
+  name?: string | null;
   remote?: boolean;
   lockedAt?: string | null;
   status?: PcStatusType;
@@ -19,10 +32,12 @@ export interface SetPcOverrideParams {
 
 /** One logged-in user, annotated from the keyholder registry. */
 export interface PcUser {
-  username: string;
+  /** Membership number, or null for an account that belongs to no member. */
+  memberId: number | null;
+  name: string;
   /**
    * Board/keyholder symbol derived from the keyholder registry, or '' when the
-   * user is unknown/not a keyholder.
+   * member is not in it (or the account belongs to no member).
    */
   symbol: string;
 }
@@ -61,14 +76,13 @@ export default class PcUsageService {
   }
 
   /**
-   * Derive the symbol for a username by matching it against the keyholder
-   * registry (case-insensitive, on any of the keyholder's usernames).
+   * Derive the symbol for a session by matching its membership number against
+   * the keyholder registry. An account that belongs to no member, or a member
+   * the registry does not list, gets no symbol.
    */
-  public static deriveSymbol(username: string | null, keyholders: Keyholder[]): string {
-    if (!username) return '';
-    const match = keyholders.find((k) =>
-      (k.usernames ?? []).some((u) => u.toLowerCase() === username.toLowerCase()),
-    );
+  public static deriveSymbol(memberId: number | null, keyholders: Keyholder[]): string {
+    if (memberId === null) return '';
+    const match = keyholders.find((k) => k.memberId === memberId);
     if (!match) return '';
     if (match.isBoard) return '★';
     if (match.isCandidateBoard && match.isKeyholder) return '🍭';
@@ -98,7 +112,7 @@ export default class PcUsageService {
 
     const writes = physical.map((input) =>
       PcUsageService.upsert(input.pcId, {
-        usernames: input.username ? [input.username] : [],
+        users: PcUsageService.toSessionUser(input),
         remote: input.remote ?? false,
         lockedAt: input.lockedAt ? new Date(input.lockedAt) : null,
         status: input.status ?? PcUsageService.inferStatus(input),
@@ -124,38 +138,55 @@ export default class PcUsageService {
    * meaningful "the vdesktop is locked" once several people share it.
    */
   public static foldVirtual(inputs: PcStatusParams[]): {
-    usernames: string[];
+    users: PcSessionUser[];
     remote: boolean;
     lockedAt: null;
     status: PcStatusType;
   } {
-    const usernames = [
-      ...new Set(
-        inputs
-          .map((input) => (input.username ?? '').trim())
-          .filter((username) => username !== '' && username !== '-'),
-      ),
-    ];
+    const users: PcSessionUser[] = [];
+    const seen = new Set<string>();
+    for (const input of inputs) {
+      const [user] = PcUsageService.toSessionUser(input);
+      if (!user) continue;
+      // Members de-duplicate on their membership number, so two sessions of the
+      // same person collapse; nameless accounts fall back to the shown name.
+      const key = user.memberId !== null ? `m${user.memberId}` : `n${user.name.toLowerCase()}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      users.push(user);
+    }
     return {
-      usernames,
+      users,
       remote: true,
       lockedAt: null,
-      status: usernames.length > 0 ? PcStatusType.REMOTE : PcStatusType.FREE,
+      status: users.length > 0 ? PcStatusType.REMOTE : PcStatusType.FREE,
     };
+  }
+
+  /**
+   * The session a report describes, as a zero- or one-element list. An entry
+   * with neither a membership number nor a name is nobody: the seat is free.
+   */
+  public static toSessionUser(input: PcStatusParams): PcSessionUser[] {
+    const name = (input.name ?? '').trim();
+    const memberId = input.memberId ?? null;
+    // '-' is the "nobody is logged in" sentinel reporters may send.
+    if (memberId === null && (name === '' || name === '-')) return [];
+    return [{ memberId, name: name || `Member ${memberId}` }];
   }
 
   /** Create or update one PC row, keeping it fresh for the staleness rule. */
   private static async upsert(
     pcId: string,
     values: {
-      usernames: string[];
+      users: PcSessionUser[];
       remote: boolean;
       lockedAt: Date | null;
       status: PcStatusType;
     },
   ): Promise<void> {
     const pc = (await PcStatus.findOne({ where: { pcId } })) ?? PcStatus.create({ pcId });
-    pc.usernames = values.usernames;
+    pc.users = values.users;
     pc.remote = values.remote;
     pc.lockedAt = values.lockedAt;
     pc.status = values.status;
@@ -173,7 +204,7 @@ export default class PcUsageService {
   private static inferStatus(input: PcStatusParams): PcStatusType {
     if (input.lockedAt) return PcStatusType.LOCKED;
     if (input.remote) return PcStatusType.REMOTE;
-    if (!input.username || input.username === '-') return PcStatusType.FREE;
+    if (PcUsageService.toSessionUser(input).length === 0) return PcStatusType.FREE;
     return PcStatusType.IN_USE;
   }
 
@@ -226,12 +257,13 @@ export default class PcUsageService {
         const active =
           status === PcStatusType.OFFLINE || status === PcStatusType.MAINTENANCE
             ? []
-            : (pc.usernames ?? []);
+            : (pc.users ?? []);
         return {
           pcId: pc.pcId,
-          users: active.map((username) => ({
-            username,
-            symbol: PcUsageService.deriveSymbol(username, keyholders),
+          users: active.map((user) => ({
+            memberId: user.memberId,
+            name: user.name,
+            symbol: PcUsageService.deriveSymbol(user.memberId, keyholders),
           })),
           remote: pc.remote,
           lockedAt: pc.lockedAt ? pc.lockedAt.toISOString() : null,

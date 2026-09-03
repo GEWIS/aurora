@@ -72,12 +72,9 @@ const DEFAULT_SYNC_INTERVAL_MINUTES = 60;
  * holds a key and `/boards` for who is currently on the board. The registry is
  * the **union** of the two, so a board member without a key is still listed.
  *
- * Three fields are deliberately **not** taken from the API, because the API has
- * no notion of them and overwriting them would silently discard backoffice work:
+ * Two fields are deliberately **not** taken from the API, because the API has no
+ * notion of them and overwriting them would silently discard backoffice work:
  *
- * - `usernames` — the API identifies members by membership number and name, not
- *   by login. A new row is seeded with the member's full name so there is
- *   something to match on; after that it is backoffice-owned.
  * - `isCandidateBoard` — no such concept in the API; a backoffice toggle.
  * - `photoUrl` — never part of the directory's state.
  */
@@ -247,6 +244,14 @@ export default class GewisKeyholderSyncService {
     return Number.isInteger(person.lidnr) && person.lidnr > 0 && person.name.length > 0;
   }
 
+  /**
+   * The candidate-board flag a row should keep. Installing a candidate board as
+   * the board clears it; otherwise the backoffice's value stands.
+   */
+  public static candidateBoardAfterSync(current: boolean, isBoard: boolean): boolean {
+    return isBoard ? false : current;
+  }
+
   /** OR the flags of the same member found in the other endpoint. */
   public static mergeFlags(
     existing: GewisKeyholder | undefined,
@@ -267,8 +272,8 @@ export default class GewisKeyholderSyncService {
    * A local row is matched by membership number first. A row that has none
    * (added by hand in the backoffice) but whose name matches is **adopted**
    * rather than deleted and recreated — that keeps its backoffice-managed
-   * `photoUrl` and `usernames`, which the sync never provides. Everything still
-   * unmatched is removed, per the "the API is the sole authority" policy.
+   * `photoUrl`, which the sync never provides. Everything still unmatched is
+   * removed, per the "the API is the sole authority" policy.
    */
   public static plan(remote: GewisKeyholder[], local: Keyholder[]): KeyholderSyncPlan {
     const byMember = new Map(local.filter((k) => k.memberId !== null).map((k) => [k.memberId!, k]));
@@ -294,34 +299,29 @@ export default class GewisKeyholderSyncService {
   }
 
   /**
-   * Whether this row's name was changed in the backoffice, in which case the
-   * sync must not overwrite it. A row whose name still equals the last value the
-   * API reported has not been touched.
-   */
-  public static nameIsOverridden(keyholder: Pick<Keyholder, 'name' | 'syncedName'>): boolean {
-    return keyholder.syncedName !== null && keyholder.name !== keyholder.syncedName;
-  }
-
-  /**
    * Write one member to the registry, creating the row or updating the one it
    * was matched to.
    *
-   * The API owns `isBoard` and `isKeyholder`, which follow the decisions it
-   * records and are always overwritten. `name` is only written when it has not
-   * been overridden in the backoffice. `usernames` is seeded from the full name
-   * on a new row and never written again; `isCandidateBoard` and `photoUrl` are
-   * never written at all.
+   * The API owns the name, `isBoard` and `isKeyholder`: they follow the records
+   * it keeps and are always overwritten, so the screen cannot drift from what
+   * the association's own administration says. `photoUrl` is never written.
+   *
+   * `isCandidateBoard` is a backoffice toggle the API knows nothing about, with
+   * one exception: a candidate board that gets installed becomes the board, and
+   * nobody would think to untick the box. Clearing it here keeps a row from
+   * claiming both, which would otherwise sit there until the next election.
    */
   private static async sync(person: GewisKeyholder, existing?: Keyholder): Promise<void> {
-    const keyholder = existing ?? Keyholder.create({ photoUrl: null, usernames: [person.name] });
+    const keyholder = existing ?? Keyholder.create({ photoUrl: null });
 
-    if (!existing || !GewisKeyholderSyncService.nameIsOverridden(keyholder)) {
-      keyholder.name = person.name;
-    }
-    keyholder.syncedName = person.name;
+    keyholder.name = person.name;
     keyholder.memberId = person.lidnr;
     keyholder.isBoard = person.isBoard;
     keyholder.isKeyholder = person.isKeyholder;
+    keyholder.isCandidateBoard = GewisKeyholderSyncService.candidateBoardAfterSync(
+      keyholder.isCandidateBoard ?? false,
+      person.isBoard,
+    );
     await keyholder.save();
   }
 

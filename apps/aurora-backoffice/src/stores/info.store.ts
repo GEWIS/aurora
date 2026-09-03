@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
 import {
-  createInfoKeyholder,
-  deleteInfoKeyholder,
   deleteInfoPc,
   getInfoKeyholders,
   getInfoKeyholderSyncStatus,
@@ -13,7 +11,6 @@ import {
   type KeyholderSyncStatus,
   type PcOverride,
   type PcStatusResponse,
-  revertInfoKeyholder,
   type RoomStatusParams,
   type RoomStatusResponse,
   setInfoPcOverride,
@@ -89,28 +86,12 @@ export const useInfoStore = defineStore('info', {
       const res = await deleteInfoPc({ path: { pcId } });
       if (res.response.ok) await this.fetchPcUsage();
     },
-    async createKeyholder(params: KeyholderParams) {
-      const res = await createInfoKeyholder({ body: params });
-      if (res.response.ok && res.data) this.keyholders.push(res.data);
-    },
     async updateKeyholder(id: number, params: KeyholderParams) {
       const res = await updateInfoKeyholder({ path: { id }, body: params });
       if (res.response.ok && res.data) {
         const index = this.keyholders.findIndex((k) => k.id === id);
         if (index >= 0) this.keyholders.splice(index, 1, res.data);
       }
-    },
-    /** Restore a synced keyholder's name to the GEWIS API's value. */
-    async revertKeyholder(id: number) {
-      const res = await revertInfoKeyholder({ path: { id } });
-      if (res.response.ok && res.data) {
-        const index = this.keyholders.findIndex((k) => k.id === id);
-        if (index >= 0) this.keyholders.splice(index, 1, res.data);
-      }
-    },
-    async deleteKeyholder(id: number) {
-      const res = await deleteInfoKeyholder({ path: { id } });
-      if (res.response.ok) this.keyholders = this.keyholders.filter((k) => k.id !== id);
     },
     async saveRoomStatus(params: RoomStatusParams) {
       const res = await setInfoRoomStatus({ body: params });

@@ -310,7 +310,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
       ],
       'circle',
     ),
-    bool('showUsernames', 'Show usernames', true),
+    bool('showUsernames', 'Show names', true),
     bool('showVdesktops', 'Show virtual desktops', true),
   ],
   services: [

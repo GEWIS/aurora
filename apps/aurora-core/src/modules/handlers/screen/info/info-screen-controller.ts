@@ -210,67 +210,19 @@ export class InfoScreenController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
-  @Post('keyholders')
-  public async createInfoKeyholder(
-    @Request() req: ExpressRequest,
-    @Body() body: KeyholderParams,
-  ): Promise<KeyholderResponse> {
-    logger.audit(req.user, `Create info screen keyholder "${body.name}".`);
-    const keyholder = await this.infoStatusService.createKeyholder(body);
-    return InfoStatusService.toKeyholderResponse(keyholder);
-  }
-
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
   @Put('keyholders/{id}')
   public async updateInfoKeyholder(
     id: number,
     @Request() req: ExpressRequest,
     @Body() body: KeyholderParams,
   ): Promise<KeyholderResponse> {
-    logger.audit(req.user, `Update info screen keyholder ${id}.`);
+    logger.audit(req.user, `Update info screen keyholder ${id} (photo / candidate board).`);
     const keyholder = await this.infoStatusService.updateKeyholder(id, body);
     if (!keyholder) {
       this.setStatus(404);
       return undefined as unknown as KeyholderResponse;
     }
     return InfoStatusService.toKeyholderResponse(keyholder);
-  }
-
-  /**
-   * Restore a synced keyholder's name to the GEWIS API's own value.
-   */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
-  @Post('keyholders/{id}/revert')
-  public async revertInfoKeyholder(
-    id: number,
-    @Request() req: ExpressRequest,
-  ): Promise<KeyholderResponse> {
-    logger.audit(req.user, `Revert info screen keyholder ${id} to its synced state.`);
-    const keyholder = await this.infoStatusService.revertKeyholder(id);
-    if (keyholder === null) {
-      this.setStatus(404);
-      return undefined as unknown as KeyholderResponse;
-    }
-    if (keyholder === undefined) {
-      throw new HttpApiException(400, 'This keyholder does not come from the GEWIS API.');
-    }
-    await this.getHandler()?.emitRoomStatus();
-    return InfoStatusService.toKeyholderResponse(keyholder);
-  }
-
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
-  @Delete('keyholders/{id}')
-  public async deleteInfoKeyholder(id: number, @Request() req: ExpressRequest): Promise<void> {
-    logger.audit(req.user, `Delete info screen keyholder ${id}.`);
-    const result = await this.infoStatusService.deleteKeyholder(id);
-    if (result === 'not-found') this.setStatus(404);
-    if (result === 'synced') {
-      throw new HttpApiException(
-        409,
-        'This keyholder comes from the GEWIS API and cannot be deleted; ' +
-          'withdraw the key there instead.',
-      );
-    }
   }
 
   /**

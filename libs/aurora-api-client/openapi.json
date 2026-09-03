@@ -3976,16 +3976,23 @@
 			"PcUser": {
 				"description": "One logged-in user, annotated from the keyholder registry.",
 				"properties": {
-					"username": {
+					"memberId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true,
+						"description": "Membership number, or null for an account that belongs to no member."
+					},
+					"name": {
 						"type": "string"
 					},
 					"symbol": {
 						"type": "string",
-						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nuser is unknown/not a keyholder."
+						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nmember is not in it (or the account belongs to no member)."
 					}
 				},
 				"required": [
-					"username",
+					"memberId",
+					"name",
 					"symbol"
 				],
 				"type": "object",
@@ -4055,9 +4062,16 @@
 					"pcId": {
 						"type": "string"
 					},
-					"username": {
+					"memberId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true,
+						"description": "GEWIS membership number of the person logged in, or null for an account\nthat belongs to no member (a guest or service login). This is the identity:\nthe keyholder registry is matched on it, so the login name never reaches\naurora at all."
+					},
+					"name": {
 						"type": "string",
-						"nullable": true
+						"nullable": true,
+						"description": "Name to show for that session. Ignored when nobody is logged in."
 					},
 					"remote": {
 						"type": "boolean"
@@ -4229,24 +4243,11 @@
 						"type": "string",
 						"nullable": true
 					},
-					"usernames": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
-					"synced": {
-						"type": "boolean",
-						"description": "True when this row comes from the GEWIS keyholder sync. Such a row cannot be\ndeleted (the sync would recreate it), and the flags the API owns cannot be\nedited."
-					},
-					"syncedName": {
-						"type": "string",
+					"memberId": {
+						"type": "number",
+						"format": "double",
 						"nullable": true,
-						"description": "The name the API last reported, for the \"revert\" action."
-					},
-					"nameOverridden": {
-						"type": "boolean",
-						"description": "True when the name shown differs from the API's."
+						"description": "GEWIS membership number this row is synced from."
 					}
 				},
 				"required": [
@@ -4256,42 +4257,23 @@
 					"isCandidateBoard",
 					"isKeyholder",
 					"photoUrl",
-					"usernames",
-					"synced",
-					"syncedName",
-					"nameOverridden"
+					"memberId"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
 			"KeyholderParams": {
 				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"isBoard": {
-						"type": "boolean"
-					},
-					"isCandidateBoard": {
-						"type": "boolean"
-					},
-					"isKeyholder": {
-						"type": "boolean"
-					},
 					"photoUrl": {
 						"type": "string",
-						"nullable": true
+						"nullable": true,
+						"description": "Profile photo shown on the info screen. Not part of the GEWIS records, so\nit is set here or nowhere."
 					},
-					"usernames": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
+					"isCandidateBoard": {
+						"type": "boolean",
+						"description": "Whether this person is on the candidate board. The GEWIS API has no notion\nof a candidate board, so this is the one flag a human decides."
 					}
 				},
-				"required": [
-					"name"
-				],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -12777,44 +12759,6 @@
 					}
 				],
 				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateInfoKeyholder",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/KeyholderResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/KeyholderParams"
-							}
-						}
-					}
-				}
 			}
 		},
 		"/handler/screen/info/keyholders/{id}": {
@@ -12865,78 +12809,6 @@
 						}
 					}
 				}
-			},
-			"delete": {
-				"operationId": "DeleteInfoKeyholder",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/handler/screen/info/keyholders/{id}/revert": {
-			"post": {
-				"operationId": "RevertInfoKeyholder",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/KeyholderResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Restore a synced keyholder's name to the GEWIS API's own value.",
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
 			}
 		},
 		"/handler/screen/info/keyholders/sync": {

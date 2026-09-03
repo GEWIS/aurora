@@ -99,7 +99,7 @@ function SvgIcon({
 
 export default function PcUsageMap({ pcs, settings }: Props) {
   const pcStyle = sStr(settings, 'pcStyle', 'circle');
-  const showUsernames = sBool(settings, 'showUsernames', true);
+  const showNames = sBool(settings, 'showUsernames', true);
   const showVdesktops = sBool(settings, 'showVdesktops', true);
 
   const byId = new Map(pcs.map((pc) => [pc.pcId, pc]));
@@ -146,7 +146,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
         if (!icon && !text) text = id;
 
         const showNumber = text === id;
-        const name = user?.username ?? '';
+        const name = user?.name ?? '';
         const labelY = node.labelAbove ? node.y - R - 6 : node.y + R + 20;
 
         return (
@@ -211,7 +211,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
                 {text}
               </text>
             )}
-            {showUsernames && name && (
+            {showNames && name && (
               <text
                 x={node.x}
                 y={labelY}
@@ -243,10 +243,10 @@ export default function PcUsageMap({ pcs, settings }: Props) {
                 const icon = symbolIcon(user.symbol);
                 const y = 56 + i * 22;
                 return (
-                  <g key={user.username}>
+                  <g key={user.memberId ?? user.name}>
                     {icon && <SvgIcon icon={icon} cx={628} cy={y - 5} size={15} fill="white" />}
                     <text x={643} y={y} fontSize="18" fill="white">
-                      {user.username}
+                      {user.name}
                     </text>
                   </g>
                 );

@@ -88,9 +88,13 @@
         <Column header="Users">
           <template #body="{ data }">
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span v-for="user in data.users" :key="user.username" class="flex items-center gap-1">
+              <span
+                v-for="user in data.users"
+                :key="user.memberId ?? user.name"
+                class="flex items-center gap-1"
+              >
                 <i v-if="symbolIcon(user.symbol)" class="pi" :class="symbolIcon(user.symbol)" />
-                {{ user.username }}
+                {{ user.name }}
               </span>
               <span v-if="data.users.length === 0" class="opacity-50">—</span>
             </div>
@@ -161,6 +165,10 @@
           >
             <i class="pi" :class="syncOk ? 'pi-check' : 'pi-times'" /> {{ syncResult }}
           </span>
+          <IconField>
+            <InputIcon class="pi pi-search" />
+            <InputText v-model="keyholderSearch" placeholder="Search" size="small" />
+          </IconField>
           <Button
             v-tooltip.bottom="syncTooltip"
             :disabled="!infoStore.keyholderSync?.enabled"
@@ -170,24 +178,15 @@
             severity="secondary"
             @click="syncKeyholders"
           />
-          <Button icon="pi pi-plus" label="Add keyholder" @click="openCreate" />
         </div>
       </template>
-      <DataTable class="p-datatable-sm" :value="infoStore.keyholders">
-        <Column header="Name">
-          <template #body="{ data }">
-            <div class="flex items-center gap-2">
-              <span>{{ data.name }}</span>
-              <Tag
-                v-if="data.synced"
-                v-tooltip.top="syncedTooltip(data)"
-                icon="pi pi-sitemap"
-                severity="info"
-                value="GEWIS"
-              />
-            </div>
-          </template>
-        </Column>
+      <DataTable
+        class="p-datatable-sm keyholder-table"
+        scroll-height="flex"
+        scrollable
+        :value="visibleKeyholders"
+      >
+        <Column field="name" header="Name" />
         <Column header="Board">
           <template #body="{ data }">
             <i v-if="data.isBoard" class="pi pi-star-fill text-amber-400" />
@@ -203,82 +202,53 @@
             <i v-if="data.isKeyholder" class="pi pi-key text-sky-400" />
           </template>
         </Column>
-        <Column header="Usernames">
-          <template #body="{ data }">{{ data.usernames.join(', ') }}</template>
+        <Column header="Member">
+          <template #body="{ data }">{{ data.memberId ?? '—' }}</template>
         </Column>
         <Column header="">
           <template #body="{ data }">
-            <div class="flex gap-2 justify-end">
+            <div class="flex justify-end">
               <Button
-                v-if="data.nameOverridden"
-                v-tooltip.top="`Restore the name from GEWIS (${data.syncedName})`"
-                icon="pi pi-undo"
+                v-tooltip.top="'Set the photo and the candidate-board flag'"
+                icon="pi pi-pencil"
                 severity="secondary"
                 text
-                @click="revert(data)"
-              />
-              <Button icon="pi pi-pencil" severity="secondary" text @click="openEdit(data)" />
-              <Button
-                v-tooltip.top="
-                  data.synced ? 'Synced from GEWIS — withdraw the key there instead' : undefined
-                "
-                :disabled="data.synced"
-                icon="pi pi-trash"
-                severity="danger"
-                text
-                @click="remove(data)"
+                @click="openEdit(data)"
               />
             </div>
           </template>
         </Column>
         <template #empty>
-          <div class="text-center italic opacity-70 py-4">No keyholders yet</div>
+          <div class="text-center italic opacity-70 py-4">
+            {{
+              keyholderSearch
+                ? 'No keyholders match that search.'
+                : 'No keyholders. The list is filled by the GEWIS sync.'
+            }}
+          </div>
         </template>
       </DataTable>
     </AppContainer>
 
     <!-- Keyholder edit dialog -->
-    <Dialog
-      v-model:visible="dialogVisible"
-      :header="editId ? 'Edit keyholder' : 'Add keyholder'"
-      modal
-    >
+    <Dialog v-model:visible="dialogVisible" :header="`Edit ${editName}`" modal>
       <div class="flex flex-col gap-4 w-96">
-        <Message v-if="editSynced" :closable="false" severity="info">
-          Synced from GEWIS. The board and keyholder flags follow the association's own records; the
-          name, photo, candidate-board flag and usernames are managed here.
+        <Message :closable="false" severity="info">
+          Who is a keyholder or on the board, and what they are called, follows the association's
+          own records. Only these two are set here.
         </Message>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm opacity-70">Name</label>
-          <InputText v-model="form.name" />
-          <small v-if="editSyncedName && form.name !== editSyncedName" class="opacity-70">
-            GEWIS: {{ editSyncedName }}
-          </small>
-        </div>
-        <div class="flex items-center gap-2">
-          <Checkbox v-model="form.isBoard" binary :disabled="editSynced" input-id="kh-board" />
-          <label for="kh-board">Board member</label>
-        </div>
         <div class="flex items-center gap-2">
           <Checkbox v-model="form.isCandidateBoard" binary input-id="kh-candidate" />
           <label for="kh-candidate">Candidate board</label>
-        </div>
-        <div class="flex items-center gap-2">
-          <Checkbox v-model="form.isKeyholder" binary :disabled="editSynced" input-id="kh-key" />
-          <label for="kh-key">Keyholder</label>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Photo URL</label>
           <InputText v-model="form.photoUrl" placeholder="https://…" />
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm opacity-70">Usernames (comma separated)</label>
-          <InputText v-model="usernamesText" placeholder="JDOE, JANE" />
-        </div>
       </div>
       <template #footer>
         <Button label="Cancel" severity="secondary" text @click="dialogVisible = false" />
-        <Button :disabled="!form.name" label="Save" @click="saveKeyholder" />
+        <Button label="Save" @click="saveKeyholder" />
       </template>
     </Dialog>
   </div>
@@ -305,17 +275,6 @@ const syncTooltip = computed(() => {
     ? `Also runs automatically every ${sync.intervalMinutes} minutes`
     : 'Only runs automatically at server startup';
 });
-
-/** Explains the GEWIS badge, naming the API's own value when overridden. */
-function syncedTooltip(keyholder: KeyholderResponse): string {
-  return keyholder.nameOverridden
-    ? `Synced from GEWIS, renamed here (GEWIS: ${keyholder.syncedName})`
-    : 'Synced from GEWIS';
-}
-
-async function revert(keyholder: KeyholderResponse) {
-  await infoStore.revertKeyholder(keyholder.id);
-}
 
 async function syncKeyholders() {
   syncing.value = true;
@@ -385,20 +344,24 @@ const beerTimeOptions: { label: string; value: string | null }[] = [
   { label: '17:00', value: '17:00' },
 ];
 
+/** Free-text filter over the keyholder list; matches the name or the number. */
+const keyholderSearch = ref('');
+
+const visibleKeyholders = computed(() => {
+  const needle = keyholderSearch.value.trim().toLowerCase();
+  if (!needle) return infoStore.keyholders;
+  return infoStore.keyholders.filter(
+    (k) => k.name.toLowerCase().includes(needle) || String(k.memberId ?? '').includes(needle),
+  );
+});
+
 const dialogVisible = ref(false);
 const editId = ref<number | null>(null);
+const editName = ref('');
 const form = reactive({
-  name: '',
-  isBoard: false,
   isCandidateBoard: false,
-  isKeyholder: false,
   photoUrl: '',
 });
-const usernamesText = ref('');
-
-/** The sync state of the row being edited, so the dialog can lock its fields. */
-const editSynced = ref(false);
-const editSyncedName = ref<string | null>(null);
 
 onMounted(async () => {
   await infoStore.init();
@@ -431,54 +394,21 @@ async function saveRoom() {
   });
 }
 
-function openCreate() {
-  editId.value = null;
-  form.name = '';
-  form.isBoard = false;
-  form.isCandidateBoard = false;
-  form.isKeyholder = false;
-  form.photoUrl = '';
-  usernamesText.value = '';
-  editSynced.value = false;
-  editSyncedName.value = null;
-  dialogVisible.value = true;
-}
-
 function openEdit(keyholder: KeyholderResponse) {
   editId.value = keyholder.id;
-  form.name = keyholder.name;
-  form.isBoard = keyholder.isBoard;
+  editName.value = keyholder.name;
   form.isCandidateBoard = keyholder.isCandidateBoard;
-  form.isKeyholder = keyholder.isKeyholder;
   form.photoUrl = keyholder.photoUrl ?? '';
-  usernamesText.value = keyholder.usernames.join(', ');
-  editSynced.value = keyholder.synced;
-  editSyncedName.value = keyholder.syncedName;
   dialogVisible.value = true;
 }
 
 async function saveKeyholder() {
-  const params = {
-    name: form.name,
-    isBoard: form.isBoard,
+  if (editId.value === null) return;
+  await infoStore.updateKeyholder(editId.value, {
     isCandidateBoard: form.isCandidateBoard,
-    isKeyholder: form.isKeyholder,
     photoUrl: form.photoUrl || null,
-    usernames: usernamesText.value
-      .split(',')
-      .map((u) => u.trim())
-      .filter(Boolean),
-  };
-  if (editId.value) {
-    await infoStore.updateKeyholder(editId.value, params);
-  } else {
-    await infoStore.createKeyholder(params);
-  }
+  });
   dialogVisible.value = false;
-}
-
-async function remove(keyholder: KeyholderResponse) {
-  await infoStore.deleteKeyholder(keyholder.id);
 }
 </script>
 
@@ -491,6 +421,11 @@ async function remove(keyholder: KeyholderResponse) {
 }
 :deep(.pc-table .p-button) {
   padding: 0.2rem;
+}
+
+/* Keep the keyholder list from growing the page; it scrolls within its card. */
+:deep(.keyholder-table) {
+  max-height: 28rem;
 }
 
 /* Let the PC-usage table fill the full height of its card (scroll-height=flex). */

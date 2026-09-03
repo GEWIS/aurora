@@ -1,5 +1,18 @@
 import { Entity, Column } from 'typeorm';
 import BaseEntity from '../../../../root/entities/base-entity';
+import { jsonTransformer } from '../../../../../helpers/transformers';
+
+/**
+ * One logged-in session as reported by the room's PC agent. The GEWIS
+ * membership number is the identity — it is what the keyholder registry is
+ * matched on — and the name is only there to be shown, so an account that
+ * belongs to no member (a guest or service login) still displays sensibly with
+ * a null `memberId`.
+ */
+export interface PcSessionUser {
+  memberId: number | null;
+  name: string;
+}
 
 /**
  * Possible states of a physical or virtual PC in the GEWIS room.
@@ -51,9 +64,16 @@ export default class PcStatus extends BaseEntity {
    * The users currently logged in. A physical PC has at most one; the virtual
    * desktop is a single PC that many people use at the same time, so it holds
    * one entry per active session. Empty when the PC is free or offline.
+   *
+   * `text` + JSON rather than the usual `simple-array`: an entry is a pair
+   * (membership number, name), which a comma-separated list cannot hold.
    */
-  @Column({ type: 'simple-array', nullable: true })
-  public usernames: string[];
+  @Column({
+    type: 'text',
+    nullable: true,
+    transformer: jsonTransformer<PcSessionUser[]>(),
+  })
+  public users: PcSessionUser[];
 
   /**
    * Whether the session is a remote/virtual desktop session.

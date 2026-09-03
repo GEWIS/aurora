@@ -15,18 +15,11 @@ const remote = (
 });
 
 /** A local row without touching the database. */
-const local = (
-  id: number,
-  name: string,
-  memberId: number | null = null,
-  syncedName: string | null = memberId ? name : null,
-): Keyholder =>
+const local = (id: number, name: string, memberId: number | null = null): Keyholder =>
   ({
     id,
     name,
     memberId,
-    syncedName,
-    usernames: [],
     photoUrl: null,
     isCandidateBoard: false,
   }) as unknown as Keyholder;
@@ -74,8 +67,7 @@ describe('GewisKeyholderSyncService.plan', () => {
   });
 
   it('adopts a manually added row with the same name rather than recreating it', () => {
-    // The manual row carries a backoffice-set photo and login names; recreating
-    // would lose both.
+    // The manual row carries a backoffice-set photo; recreating would lose it.
     const manual = local(7, 'Jane Doe');
     const plan = GewisKeyholderSyncService.plan([remote(1234, 'Jane Doe')], [manual]);
     expect(plan.create).toHaveLength(0);
@@ -104,22 +96,17 @@ describe('GewisKeyholderSyncService.plan', () => {
   });
 });
 
-describe('GewisKeyholderSyncService.nameIsOverridden', () => {
-  it('is false for a row whose name still matches the API', () => {
-    expect(
-      GewisKeyholderSyncService.nameIsOverridden({ name: 'Jane Doe', syncedName: 'Jane Doe' }),
-    ).toBe(false);
+describe('GewisKeyholderSyncService.candidateBoardAfterSync', () => {
+  it('clears the flag once the candidate board is installed as the board', () => {
+    expect(GewisKeyholderSyncService.candidateBoardAfterSync(true, true)).toBe(false);
   });
 
-  it('is true once the name has been edited in the backoffice', () => {
-    expect(
-      GewisKeyholderSyncService.nameIsOverridden({ name: 'Jane', syncedName: 'Jane Doe' }),
-    ).toBe(true);
+  it('leaves the backoffice value alone for everyone else', () => {
+    expect(GewisKeyholderSyncService.candidateBoardAfterSync(true, false)).toBe(true);
+    expect(GewisKeyholderSyncService.candidateBoardAfterSync(false, false)).toBe(false);
   });
 
-  it('is false for a row that never came from the API', () => {
-    expect(GewisKeyholderSyncService.nameIsOverridden({ name: 'Jane', syncedName: null })).toBe(
-      false,
-    );
+  it('does not set the flag for a board member who never had it', () => {
+    expect(GewisKeyholderSyncService.candidateBoardAfterSync(false, true)).toBe(false);
   });
 });

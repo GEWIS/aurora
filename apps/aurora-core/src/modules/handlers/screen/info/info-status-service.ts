@@ -1,6 +1,5 @@
 import Keyholder from './entities/keyholder';
 import RoomStatus from './entities/room-status';
-import GewisKeyholderSyncService from './gewis-keyholder-sync-service';
 
 /**
  * Hour of day (local) at which the room state resets for the new day (06:00):
@@ -22,12 +21,16 @@ function lastResetBoundary(now: Date): Date {
 }
 
 export interface KeyholderParams {
-  name: string;
-  isBoard?: boolean;
-  isCandidateBoard?: boolean;
-  isKeyholder?: boolean;
+  /**
+   * Profile photo shown on the info screen. Not part of the GEWIS records, so
+   * it is set here or nowhere.
+   */
   photoUrl?: string | null;
-  usernames?: string[];
+  /**
+   * Whether this person is on the candidate board. The GEWIS API has no notion
+   * of a candidate board, so this is the one flag a human decides.
+   */
+  isCandidateBoard?: boolean;
 }
 
 export interface KeyholderResponse {
@@ -37,17 +40,8 @@ export interface KeyholderResponse {
   isCandidateBoard: boolean;
   isKeyholder: boolean;
   photoUrl: string | null;
-  usernames: string[];
-  /**
-   * True when this row comes from the GEWIS keyholder sync. Such a row cannot be
-   * deleted (the sync would recreate it), and the flags the API owns cannot be
-   * edited.
-   */
-  synced: boolean;
-  /** The name the API last reported, for the "revert" action. */
-  syncedName: string | null;
-  /** True when the name shown differs from the API's. */
-  nameOverridden: boolean;
+  /** GEWIS membership number this row is synced from. */
+  memberId: number | null;
 }
 
 export interface RoomStatusParams {
@@ -78,8 +72,10 @@ export interface RoomStatusResponse {
 }
 
 /**
- * Manages the backoffice-owned info screen data: the keyholder registry and the
- * current room status (responsible person(s) + beer time).
+ * Manages the info screen's people and room state: the keyholder registry (kept
+ * in step with the GEWIS records by the sync, and only annotated here with a
+ * photo and the candidate-board flag) and the current room status (responsible
+ * person(s) + beer time).
  */
 export default class InfoStatusService {
   public static toKeyholderResponse(keyholder: Keyholder): KeyholderResponse {
@@ -90,10 +86,7 @@ export default class InfoStatusService {
       isCandidateBoard: keyholder.isCandidateBoard,
       isKeyholder: keyholder.isKeyholder,
       photoUrl: keyholder.photoUrl,
-      usernames: keyholder.usernames ?? [],
-      synced: keyholder.memberId !== null,
-      syncedName: keyholder.syncedName,
-      nameOverridden: GewisKeyholderSyncService.nameIsOverridden(keyholder),
+      memberId: keyholder.memberId,
     };
   }
 
@@ -101,68 +94,19 @@ export default class InfoStatusService {
     return Keyholder.find({ order: { name: 'ASC' } });
   }
 
-  public async createKeyholder(params: KeyholderParams): Promise<Keyholder> {
-    const keyholder = Keyholder.create({
-      name: params.name,
-      isBoard: params.isBoard ?? false,
-      isCandidateBoard: params.isCandidateBoard ?? false,
-      isKeyholder: params.isKeyholder ?? false,
-      photoUrl: params.photoUrl ?? null,
-      usernames: params.usernames ?? [],
-    });
-    return keyholder.save();
-  }
-
   /**
-   * Update a keyholder. On a synced row `isBoard` and `isKeyholder` are ignored:
-   * they follow the decisions the GEWIS API records, so accepting them here
-   * would produce an edit that silently disappears at the next sync. The name,
-   * the photo, the login names and the candidate-board flag are always applied —
-   * the sync does not own those. Enforced server-side so it holds regardless of
-   * the client.
+   * Update the two fields the GEWIS records do not cover. Everything else —
+   * who is a keyholder, who is on the board, what they are called, and whether
+   * the row exists at all — follows the sync, so there is nothing else to
+   * accept here.
    */
   public async updateKeyholder(id: number, params: KeyholderParams): Promise<Keyholder | null> {
     const keyholder = await Keyholder.findOne({ where: { id } });
     if (!keyholder) return null;
 
-    keyholder.name = params.name;
     keyholder.photoUrl = params.photoUrl ?? null;
     keyholder.isCandidateBoard = params.isCandidateBoard ?? false;
-    keyholder.usernames = params.usernames ?? [];
-    if (keyholder.memberId === null) {
-      keyholder.isBoard = params.isBoard ?? false;
-      keyholder.isKeyholder = params.isKeyholder ?? false;
-    }
     return keyholder.save();
-  }
-
-  /**
-   * Restore a synced keyholder's name to what the GEWIS API reports. The photo
-   * and the login names are left alone: they are not part of the API's state, so
-   * there is nothing to restore them to and clearing them would just lose them.
-   *
-   * Returns null when there is no such row, and undefined when the row is not
-   * synced (nothing to revert to).
-   */
-  public async revertKeyholder(id: number): Promise<Keyholder | null | undefined> {
-    const keyholder = await Keyholder.findOne({ where: { id } });
-    if (!keyholder) return null;
-    if (keyholder.memberId === null || keyholder.syncedName === null) return undefined;
-
-    keyholder.name = keyholder.syncedName;
-    return keyholder.save();
-  }
-
-  /**
-   * Delete a keyholder. Synced rows are refused: the next sync would recreate
-   * them, so the delete would only appear to work.
-   */
-  public async deleteKeyholder(id: number): Promise<'deleted' | 'not-found' | 'synced'> {
-    const keyholder = await Keyholder.findOne({ where: { id } });
-    if (!keyholder) return 'not-found';
-    if (keyholder.memberId !== null) return 'synced';
-    await keyholder.remove();
-    return 'deleted';
   }
 
   /**

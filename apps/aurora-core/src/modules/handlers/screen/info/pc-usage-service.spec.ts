@@ -10,43 +10,73 @@ function keyholder(overrides: Partial<Keyholder>): Keyholder {
     isCandidateBoard: false,
     isKeyholder: false,
     photoUrl: null,
-    usernames: [],
+    memberId: null,
     ...overrides,
   });
 }
 
 describe('PcUsageService.deriveSymbol', () => {
   const keyholders = [
-    keyholder({ name: 'Board', isBoard: true, usernames: ['BEST'] }),
-    keyholder({
-      name: 'Candidate+Key',
-      isCandidateBoard: true,
-      isKeyholder: true,
-      usernames: ['CK'],
-    }),
-    keyholder({ name: 'Candidate', isCandidateBoard: true, usernames: ['CAND'] }),
-    keyholder({ name: 'Key', isKeyholder: true, usernames: ['KEY'] }),
+    keyholder({ name: 'Board', isBoard: true, memberId: 1 }),
+    keyholder({ name: 'Candidate+Key', isCandidateBoard: true, isKeyholder: true, memberId: 2 }),
+    keyholder({ name: 'Candidate', isCandidateBoard: true, memberId: 3 }),
+    keyholder({ name: 'Key', isKeyholder: true, memberId: 4 }),
   ];
 
   it('prefers the board symbol', () => {
-    expect(PcUsageService.deriveSymbol('best', keyholders)).toBe('★');
+    expect(PcUsageService.deriveSymbol(1, keyholders)).toBe('★');
   });
 
   it('uses the candidate+keyholder symbol', () => {
-    expect(PcUsageService.deriveSymbol('CK', keyholders)).toBe('🍭');
+    expect(PcUsageService.deriveSymbol(2, keyholders)).toBe('🍭');
   });
 
   it('uses the candidate symbol', () => {
-    expect(PcUsageService.deriveSymbol('CAND', keyholders)).toBe('🍬');
+    expect(PcUsageService.deriveSymbol(3, keyholders)).toBe('🍬');
   });
 
   it('uses the keyholder symbol', () => {
-    expect(PcUsageService.deriveSymbol('KEY', keyholders)).toBe('🔑');
+    expect(PcUsageService.deriveSymbol(4, keyholders)).toBe('🔑');
   });
 
-  it('returns empty for unknown or null usernames', () => {
-    expect(PcUsageService.deriveSymbol('unknown', keyholders)).toBe('');
+  it('returns empty for a member the registry does not list', () => {
+    expect(PcUsageService.deriveSymbol(999, keyholders)).toBe('');
+  });
+
+  it('returns empty for an account that belongs to no member', () => {
     expect(PcUsageService.deriveSymbol(null, keyholders)).toBe('');
+  });
+
+  it('does not match a manually added row, which has no membership number', () => {
+    const manual = [keyholder({ name: 'Manual', isBoard: true, memberId: null })];
+    expect(PcUsageService.deriveSymbol(null, manual)).toBe('');
+  });
+});
+
+describe('PcUsageService.toSessionUser', () => {
+  it('reads a member session', () => {
+    expect(PcUsageService.toSessionUser({ pcId: '1', memberId: 1234, name: 'Jane Doe' })).toEqual([
+      { memberId: 1234, name: 'Jane Doe' },
+    ]);
+  });
+
+  it('keeps a named account that belongs to no member', () => {
+    expect(PcUsageService.toSessionUser({ pcId: '1', name: 'join.gewis.nl' })).toEqual([
+      { memberId: null, name: 'join.gewis.nl' },
+    ]);
+  });
+
+  it('falls back to the membership number when no name was reported', () => {
+    expect(PcUsageService.toSessionUser({ pcId: '1', memberId: 1234 })).toEqual([
+      { memberId: 1234, name: 'Member 1234' },
+    ]);
+  });
+
+  it('treats an empty report, and the legacy "-" sentinel, as nobody', () => {
+    expect(PcUsageService.toSessionUser({ pcId: '1' })).toEqual([]);
+    expect(PcUsageService.toSessionUser({ pcId: '1', name: '' })).toEqual([]);
+    expect(PcUsageService.toSessionUser({ pcId: '1', name: '-' })).toEqual([]);
+    expect(PcUsageService.toSessionUser({ pcId: '1', memberId: null, name: null })).toEqual([]);
   });
 });
 
@@ -64,41 +94,52 @@ describe('PcUsageService.isPhysical', () => {
 describe('PcUsageService.foldVirtual', () => {
   it('collapses the reported sessions into one PC with many users', () => {
     const folded = PcUsageService.foldVirtual([
-      { pcId: 'vdesk-a', username: 'jdoe', remote: true },
-      { pcId: 'vdesk-b', username: 'jane', remote: true },
+      { pcId: 'vdesktop', memberId: 1, name: 'Jane', remote: true },
+      { pcId: 'vdesktop', memberId: 2, name: 'John', remote: true },
     ]);
-    expect(folded.usernames).toEqual(['jdoe', 'jane']);
+    expect(folded.users).toEqual([
+      { memberId: 1, name: 'Jane' },
+      { memberId: 2, name: 'John' },
+    ]);
     expect(folded.status).toBe(PcStatusType.REMOTE);
     expect(folded.remote).toBe(true);
   });
 
-  it('de-duplicates a user with two sessions', () => {
+  it('de-duplicates a member with two sessions', () => {
     const folded = PcUsageService.foldVirtual([
-      { pcId: 'vdesk-a', username: 'jdoe' },
-      { pcId: 'vdesk-b', username: 'jdoe' },
+      { pcId: 'vdesktop', memberId: 1, name: 'Jane' },
+      { pcId: 'vdesktop', memberId: 1, name: 'Jane' },
     ]);
-    expect(folded.usernames).toEqual(['jdoe']);
+    expect(folded.users).toEqual([{ memberId: 1, name: 'Jane' }]);
   });
 
-  it('ignores sessions with no real user', () => {
+  it('de-duplicates memberless accounts by name instead', () => {
     const folded = PcUsageService.foldVirtual([
-      { pcId: 'vdesk-a', username: null },
-      { pcId: 'vdesk-b', username: '' },
-      { pcId: 'vdesk-c', username: '-' },
-      { pcId: 'vdesk-d', username: '  jane  ' },
+      { pcId: 'vdesktop', name: 'Guest' },
+      { pcId: 'vdesktop', name: 'guest' },
     ]);
-    expect(folded.usernames).toEqual(['jane']);
+    expect(folded.users).toEqual([{ memberId: null, name: 'Guest' }]);
+  });
+
+  it('ignores sessions with nobody logged in', () => {
+    const folded = PcUsageService.foldVirtual([
+      { pcId: 'vdesktop', name: null },
+      { pcId: 'vdesktop', name: '' },
+      { pcId: 'vdesktop', name: '-' },
+      { pcId: 'vdesktop', memberId: 5, name: 'Jane' },
+    ]);
+    expect(folded.users).toEqual([{ memberId: 5, name: 'Jane' }]);
   });
 
   it('is free, not remote-in-use, when nobody is logged in', () => {
-    const folded = PcUsageService.foldVirtual([{ pcId: 'vdesk-a', username: null }]);
-    expect(folded.usernames).toEqual([]);
+    const folded = PcUsageService.foldVirtual([{ pcId: 'vdesktop', name: null }]);
+    expect(folded.users).toEqual([]);
     expect(folded.status).toBe(PcStatusType.FREE);
   });
 
   it('drops lockedAt, which only describes a single session', () => {
     const folded = PcUsageService.foldVirtual([
-      { pcId: 'vdesk-a', username: 'jdoe', lockedAt: new Date().toISOString() },
+      { pcId: 'vdesktop', memberId: 1, name: 'Jane', lockedAt: new Date().toISOString() },
     ]);
     expect(folded.lockedAt).toBeNull();
   });

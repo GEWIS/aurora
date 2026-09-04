@@ -46,7 +46,7 @@
     "jwt-decode": "4.0.0",
     "mime-types": "3.0.2",
     "multer": "2.0.2",
-    "mysql2": "3.16.1",
+    "mysql2": "3.22.5",
     "node-cron": "4.2.1",
     "passport": "0.7.0",
     "passport-custom": "1.1.1",

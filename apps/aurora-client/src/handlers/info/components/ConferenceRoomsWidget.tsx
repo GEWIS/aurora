@@ -35,7 +35,9 @@ export default function ConferenceRoomsWidget({ rooms, settings }: Props) {
     : rooms.summary;
 
   if (mode === 'timeline') {
-    return <ConferenceTimeline rooms={{ ...rooms, rooms: scopedRooms }} />;
+    // The summary is scoped alongside the rooms, or a widget showing one room
+    // would head it with the count for the whole building.
+    return <ConferenceTimeline rooms={{ ...rooms, rooms: scopedRooms, summary }} />;
   }
 
   const list = onlyAvailable ? scopedRooms.filter((r) => r.available) : scopedRooms;

@@ -36,4 +36,38 @@ describe('ConferenceRoomsService', () => {
     const busy = ConferenceRoomsService.busyToday(ical, now);
     expect(busy).toHaveLength(1);
   });
+
+  it('keeps a booking that started yesterday and is still running', () => {
+    const ical = [
+      'BEGIN:VEVENT',
+      'SUMMARY:Long night',
+      'DTSTART:20260707T230000',
+      'DTEND:20260708T013000',
+      'END:VEVENT',
+    ].join('\n');
+    const now = new Date(2026, 6, 8, 0, 30, 0);
+    const busy = ConferenceRoomsService.busyToday(ical, now);
+    expect(busy).toHaveLength(1);
+    expect(ConferenceRoomsService.isAvailable(busy, now)).toBe(false);
+  });
+
+  it('drops a booking that ended before today', () => {
+    const ical = [
+      'BEGIN:VEVENT',
+      'SUMMARY:Yesterday',
+      'DTSTART:20260707T100000',
+      'DTEND:20260707T110000',
+      'END:VEVENT',
+    ].join('\n');
+    const busy = ConferenceRoomsService.busyToday(ical, new Date(2026, 6, 8, 9, 0, 0));
+    expect(busy).toHaveLength(0);
+  });
+
+  it('keeps an event with no end on the day it starts', () => {
+    const ical = ['BEGIN:VEVENT', 'SUMMARY:Point', 'DTSTART:20260708T100000', 'END:VEVENT'].join(
+      '\n',
+    );
+    const busy = ConferenceRoomsService.busyToday(ical, new Date(2026, 6, 8, 9, 0, 0));
+    expect(busy).toHaveLength(1);
+  });
 });

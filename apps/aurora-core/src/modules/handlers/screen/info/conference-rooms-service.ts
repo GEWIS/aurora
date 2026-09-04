@@ -107,11 +107,26 @@ export default class ConferenceRoomsService {
     };
   }
 
-  /** Parse an iCal feed into today's busy intervals, sorted by start. */
+  /**
+   * Parse an iCal feed into today's busy intervals, sorted by start.
+   *
+   * An interval counts as today's when it *overlaps* today, not when it starts
+   * today: a booking running 23:00-01:30 is still occupying the room at 00:30,
+   * by which point its start is yesterday. Filtering on the start date alone
+   * dropped it and reported the room free while somebody was sitting in it.
+   */
   public static busyToday(ical: string, now: Date): RoomBusyInterval[] {
+    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+
     return CalendarService.parse(ical)
-      .filter((e) => ConferenceRoomsService.sameDay(new Date(e.start), now))
       .map((e) => ({ start: e.start, end: e.end ?? e.start }))
+      .filter((b) => {
+        const start = new Date(b.start).getTime();
+        // A zero-length event (no DTEND) still belongs to the day it starts on.
+        const end = Math.max(new Date(b.end).getTime(), start + 1);
+        return start < dayEnd && end > dayStart;
+      })
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   }
 
@@ -119,14 +134,6 @@ export default class ConferenceRoomsService {
   public static isAvailable(busy: RoomBusyInterval[], now: Date): boolean {
     const t = now.getTime();
     return !busy.some((b) => new Date(b.start).getTime() <= t && t < new Date(b.end).getTime());
-  }
-
-  private static sameDay(a: Date, b: Date): boolean {
-    return (
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate()
-    );
   }
 
   public static summarize(rooms: ConferenceRoom[]): string {

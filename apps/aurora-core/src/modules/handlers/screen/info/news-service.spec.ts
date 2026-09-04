@@ -36,3 +36,41 @@ describe('NewsService.injectFakeHeadlines', () => {
     expect(result.slice(-2)).toEqual(real);
   });
 });
+
+describe('NewsService.parseRss entity decoding', () => {
+  const feed = (title: string) =>
+    `<rss><channel><item><title>${title}</title></item></channel></rss>`;
+  const titleOf = (title: string) => NewsService.parseRss(feed(title), 'Test')[0]?.title;
+
+  it('decodes a decimal reference', () => {
+    expect(titleOf('Pippi&#8217;s kleindochter debuteert op de US Open')).toBe(
+      'Pippi’s kleindochter debuteert op de US Open',
+    );
+  });
+
+  it('decodes a hexadecimal reference', () => {
+    expect(titleOf('Caf&#x00e9; sluit')).toBe('Café sluit');
+  });
+
+  it('decodes named entities beyond the basic five', () => {
+    expect(titleOf('Beurs &ndash; kabinet &lsquo;bezorgd&rsquo;')).toBe(
+      'Beurs – kabinet ‘bezorgd’',
+    );
+  });
+
+  it('maps the Windows-1252 block feeds mislabel as Unicode', () => {
+    expect(titleOf('Pippi&#146;s kleindochter')).toBe('Pippi’s kleindochter');
+  });
+
+  it('resolves in one pass, so an escaped ampersand stays literal', () => {
+    expect(titleOf('Marks &amp;#8217; Spencer')).toBe('Marks &#8217; Spencer');
+  });
+
+  it('leaves an unknown reference alone rather than dropping it', () => {
+    expect(titleOf('Tom &nosuchentity; Jerry')).toBe('Tom &nosuchentity; Jerry');
+  });
+
+  it('still unwraps CDATA', () => {
+    expect(titleOf('<![CDATA[Ren&eacute; wint]]>')).toBe('René wint');
+  });
+});

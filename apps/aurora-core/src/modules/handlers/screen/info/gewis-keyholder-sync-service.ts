@@ -274,6 +274,10 @@ export default class GewisKeyholderSyncService {
    * rather than deleted and recreated — that keeps its backoffice-managed
    * `photoUrl`, which the sync never provides. Everything still unmatched is
    * removed, per the "the API is the sole authority" policy.
+   *
+   * A matched row only lands in `update` when a field it owns actually differs.
+   * A steady-state run is then reported as the no-op it is, instead of claiming
+   * to have updated the entire registry every hour.
    */
   public static plan(remote: GewisKeyholder[], local: Keyholder[]): KeyholderSyncPlan {
     const byMember = new Map(local.filter((k) => k.memberId !== null).map((k) => [k.memberId!, k]));
@@ -287,8 +291,12 @@ export default class GewisKeyholderSyncService {
     for (const person of remote) {
       const existing = byMember.get(person.lidnr) ?? byName.get(person.name.trim().toLowerCase());
       if (existing) {
+        // Outside the dirty check: an unchanged row is still accounted for, and
+        // leaving it out here would have it removed as unmatched.
         matched.add(existing.id);
-        plan.update.push({ local: existing, remote: person });
+        if (GewisKeyholderSyncService.differs(existing, person)) {
+          plan.update.push({ local: existing, remote: person });
+        }
       } else {
         plan.create.push(person);
       }
@@ -296,6 +304,25 @@ export default class GewisKeyholderSyncService {
 
     plan.remove = local.filter((k) => !matched.has(k.id));
     return plan;
+  }
+
+  /**
+   * Whether writing `person` onto `local` would change anything. Covers exactly
+   * the fields {@link sync} assigns, so the two cannot drift apart: a field the
+   * sync starts writing has to be compared here too.
+   */
+  public static differs(local: Keyholder, person: GewisKeyholder): boolean {
+    return (
+      local.name !== person.name ||
+      local.memberId !== person.lidnr ||
+      local.isBoard !== person.isBoard ||
+      local.isKeyholder !== person.isKeyholder ||
+      local.isCandidateBoard !==
+        GewisKeyholderSyncService.candidateBoardAfterSync(
+          local.isCandidateBoard ?? false,
+          person.isBoard,
+        )
+    );
   }
 
   /**

@@ -14,14 +14,22 @@ const remote = (
   ...flags,
 });
 
-/** A local row without touching the database. */
-const local = (id: number, name: string, memberId: number | null = null): Keyholder =>
+/** A local row without touching the database, matching `remote` by default. */
+const local = (
+  id: number,
+  name: string,
+  memberId: number | null = null,
+  fields: Partial<Keyholder> = {},
+): Keyholder =>
   ({
     id,
     name,
     memberId,
     photoUrl: null,
+    isBoard: false,
+    isKeyholder: true,
     isCandidateBoard: false,
+    ...fields,
   }) as unknown as Keyholder;
 
 describe('GewisKeyholderSyncService.guard', () => {
@@ -79,6 +87,30 @@ describe('GewisKeyholderSyncService.plan', () => {
     const manual = local(7, '  jane doe ');
     const plan = GewisKeyholderSyncService.plan([remote(1234, 'Jane Doe')], [manual]);
     expect(plan.update.map((u) => u.local)).toEqual([manual]);
+  });
+
+  it('leaves a row that already matches out of the plan entirely', () => {
+    const row = local(1, 'Jane Doe', 1234);
+    const plan = GewisKeyholderSyncService.plan([remote(1234, 'Jane Doe')], [row]);
+    expect(plan.create).toHaveLength(0);
+    expect(plan.update).toHaveLength(0);
+    // Still matched, or it would be removed as unaccounted for.
+    expect(plan.remove).toHaveLength(0);
+  });
+
+  it('updates a row whose flags drifted from the API', () => {
+    const row = local(1, 'Jane Doe', 1234, { isBoard: true });
+    const plan = GewisKeyholderSyncService.plan([remote(1234, 'Jane Doe')], [row]);
+    expect(plan.update.map((u) => u.local)).toEqual([row]);
+  });
+
+  it('updates a candidate board that has been installed as the board', () => {
+    const row = local(1, 'Jane Doe', 1234, { isBoard: true, isCandidateBoard: true });
+    const plan = GewisKeyholderSyncService.plan(
+      [remote(1234, 'Jane Doe', { isBoard: true })],
+      [row],
+    );
+    expect(plan.update.map((u) => u.local)).toEqual([row]);
   });
 
   it('removes rows the API no longer accounts for', () => {

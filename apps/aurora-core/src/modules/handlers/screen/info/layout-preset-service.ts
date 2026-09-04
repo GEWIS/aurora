@@ -1,5 +1,6 @@
-import { DeepPartial } from 'typeorm';
+import { DeepPartial, Not } from 'typeorm';
 import InfoLayoutPreset from './entities/info-layout-preset';
+import { HttpApiException, HttpStatusCode } from '../../../../helpers/custom-error';
 import LayoutService from './layout-service';
 import { WidgetPlacement } from './widget-catalog';
 
@@ -49,6 +50,7 @@ export default class LayoutPresetService {
   }
 
   public async create(params: LayoutPresetParams): Promise<InfoLayoutPreset> {
+    await LayoutPresetService.assertNameFree(params.name);
     const preset = InfoLayoutPreset.create(LayoutPresetService.sanitizeParams(params));
     return preset.save();
   }
@@ -56,8 +58,30 @@ export default class LayoutPresetService {
   public async update(id: number, params: LayoutPresetParams): Promise<InfoLayoutPreset | null> {
     const preset = await InfoLayoutPreset.findOne({ where: { id } });
     if (!preset) return null;
+    await LayoutPresetService.assertNameFree(params.name, id);
     Object.assign(preset, LayoutPresetService.sanitizeParams(params));
     return preset.save();
+  }
+
+  /**
+   * The name is unique in the database, and letting that surface as a driver
+   * error costs the caller its message: the constraint failure leaves the error
+   * handler on its catch-all branch, which answers with a bare string the
+   * backoffice then renders as an empty toast. Check first and say what is
+   * wrong instead.
+   *
+   * @param exceptId the row being updated, which may of course keep its own name
+   */
+  private static async assertNameFree(name: string, exceptId?: number): Promise<void> {
+    const clash = await InfoLayoutPreset.findOne({
+      where: exceptId === undefined ? { name } : { name, id: Not(exceptId) },
+    });
+    if (clash) {
+      throw new HttpApiException(
+        HttpStatusCode.Conflict,
+        `A configuration named "${name}" already exists.`,
+      );
+    }
   }
 
   public async delete(id: number): Promise<boolean> {

@@ -421,11 +421,21 @@
           placeholder="e.g. Borrel night"
           @keyup.enter="confirmSaveAs"
         />
-        <small class="opacity-60">Saving under an existing name creates a new configuration.</small>
+        <small class="opacity-60">
+          {{
+            presetWithTypedName
+              ? 'A configuration with this name exists; saving replaces it.'
+              : 'Saved configurations are shared with every screen.'
+          }}
+        </small>
       </div>
       <template #footer>
         <Button label="Cancel" severity="secondary" text @click="saveAsVisible = false" />
-        <Button :disabled="!saveAsName.trim()" label="Save" @click="confirmSaveAs" />
+        <Button
+          :disabled="!saveAsName.trim()"
+          :label="presetWithTypedName ? 'Replace' : 'Save'"
+          @click="confirmSaveAs"
+        />
       </template>
     </Dialog>
   </div>
@@ -867,11 +877,27 @@ function openSaveAs() {
   saveAsVisible.value = true;
 }
 
+/** The saved configuration the typed name would collide with, if any. */
+const presetWithTypedName = computed<LayoutPresetResponse | undefined>(() => {
+  const name = saveAsName.value.trim();
+  if (!name) return undefined;
+  return presetStore.presets.find((p) => p.name === name);
+});
+
+/**
+ * Names are unique, and the dialog opens pre-filled with the selected
+ * configuration's name, so reusing one is the common case rather than a
+ * mistake. Treat it as the overwrite it plainly is instead of failing on the
+ * constraint.
+ */
 async function confirmSaveAs() {
   const name = saveAsName.value.trim();
   if (!name) return;
-  const created = await presetStore.create(presetPayload(name));
-  if (created) selectedPresetId.value = created.id;
+  const existing = presetWithTypedName.value;
+  const saved = existing
+    ? await presetStore.update(existing.id, presetPayload(name))
+    : await presetStore.create(presetPayload(name));
+  if (saved) selectedPresetId.value = saved.id;
   saveAsVisible.value = false;
 }
 

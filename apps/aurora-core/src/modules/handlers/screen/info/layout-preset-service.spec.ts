@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import LayoutPresetService from './layout-preset-service';
 import InfoLayoutPreset from './entities/info-layout-preset';
+import { HttpStatusCode } from '../../../../helpers/custom-error';
 
 /** Build a preset-like object without touching the DB. */
 function fakePreset(overrides: Partial<InfoLayoutPreset> = {}): InfoLayoutPreset {
@@ -46,5 +47,40 @@ describe('LayoutPresetService.toResponse', () => {
     expect(res.defaultPanelBackground).toBe('#374151|50|1|1');
     expect(res.placements).toEqual([]);
     expect(res.modals).toEqual([]);
+  });
+});
+
+describe('LayoutPresetService name uniqueness', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  const params = { name: 'Borrel night', placements: [], modals: [] };
+
+  it('refuses to create a second configuration with a taken name', async () => {
+    vi.spyOn(InfoLayoutPreset, 'findOne').mockResolvedValue(fakePreset());
+    await expect(new LayoutPresetService().create(params)).rejects.toMatchObject({
+      status: HttpStatusCode.Conflict,
+      message: 'A configuration named "Borrel night" already exists.',
+    });
+  });
+
+  it('lets a configuration keep its own name', async () => {
+    const preset = fakePreset();
+    const save = vi.fn().mockResolvedValue(preset);
+    // The row being updated, then the clash lookup that excludes it.
+    vi.spyOn(InfoLayoutPreset, 'findOne')
+      .mockResolvedValueOnce({ ...preset, save } as unknown as InfoLayoutPreset)
+      .mockResolvedValueOnce(null);
+    await expect(new LayoutPresetService().update(1, params)).resolves.toBe(preset);
+    expect(save).toHaveBeenCalled();
+  });
+
+  it('refuses to rename a configuration onto another one', async () => {
+    const preset = fakePreset();
+    vi.spyOn(InfoLayoutPreset, 'findOne')
+      .mockResolvedValueOnce(preset)
+      .mockResolvedValueOnce(fakePreset({ id: 2 }));
+    await expect(new LayoutPresetService().update(1, params)).rejects.toMatchObject({
+      status: HttpStatusCode.Conflict,
+    });
   });
 });

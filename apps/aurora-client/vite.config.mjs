@@ -6,6 +6,12 @@ const coreWsUrl = coreUrl.replace(/^http/, 'ws');
 export default defineConfig({
   base: '/',
   plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
+  },
   server: {
     host: '0.0.0.0',
     port: 8081,

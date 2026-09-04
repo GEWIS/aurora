@@ -36,7 +36,14 @@ export function setupErrorHandler(app: Express) {
       res.status(428).json(err.message);
     } else {
       logger.error(err);
-      res.status(500).json('Internal server error.');
+      // Shaped like an HttpApiException: the backoffice reads `name`/`message`
+      // off every error body, and a bare string leaves it with an empty toast.
+      res.status(500).json({
+        name: 'Internal Server Error',
+        message: 'Internal server error.',
+        status: 500,
+        statusCode: 500,
+      });
     }
 
     next();

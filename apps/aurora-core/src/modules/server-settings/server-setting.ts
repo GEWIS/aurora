@@ -11,6 +11,10 @@ import {
   PosterScreenHandlerSettings,
   PosterScreenHandlerSettingsDefaults,
 } from '../handlers/screen/poster/poster-screen-handler-settings';
+import {
+  InfoScreenSettings,
+  InfoScreenSettingsDefaults,
+} from '../handlers/screen/info/info-screen-settings';
 import { jsonTransformer } from '../../helpers/transformers';
 
 export interface ISettings
@@ -19,6 +23,7 @@ export interface ISettings
     ModeSettings,
     ScreenHandlerSettings,
     PosterScreenHandlerSettings,
+    InfoScreenSettings,
     OrderSettings {}
 
 export const SettingsDefaults: ISettings = {
@@ -26,6 +31,7 @@ export const SettingsDefaults: ISettings = {
   ...ModeSettingsDefaults,
   ...ScreenHandlerSettingsDefaults,
   ...PosterScreenHandlerSettingsDefaults,
+  ...InfoScreenSettingsDefaults,
   ...OrderSettingsDefault,
 };
 

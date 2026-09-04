@@ -270,7 +270,9 @@ foreach ($pcId in ($Machines.Keys | Sort-Object { [int] $_ })) {
             $entry.remote = [bool] $session.IsRemote
 
             # Only a console session can be locked; an RDP session that shows the
-            # logon screen is somebody connecting, not a locked desk.
+            # logon screen is somebody connecting, not a locked desk. The time is
+            # this run's detection, not the lock's start: aurora keeps the earliest
+            # timestamp of a continuous lock, so this may safely be 'now' every run.
             if ($session.IsConsole -and (Test-Locked -ComputerName $computer)) {
                 $entry.lockedAt = (Get-Date).ToUniversalTime().ToString('o')
             }

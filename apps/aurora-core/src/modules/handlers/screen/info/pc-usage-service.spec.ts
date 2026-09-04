@@ -144,3 +144,28 @@ describe('PcUsageService.foldVirtual', () => {
     expect(folded.lockedAt).toBeNull();
   });
 });
+
+describe('PcUsageService.mergeLockedAt', () => {
+  it('takes the reported timestamp for a lock first detected', () => {
+    const detected = new Date('2026-09-04T10:00:00Z');
+    expect(PcUsageService.mergeLockedAt(null, detected)).toBe(detected);
+  });
+
+  it('keeps the earlier timestamp while the same lock keeps being reported', () => {
+    const start = new Date('2026-09-04T10:00:00Z');
+    const nextReport = new Date('2026-09-04T10:05:00Z');
+    expect(PcUsageService.mergeLockedAt(start, nextReport)).toBe(start);
+  });
+
+  it('takes the reported timestamp when it is earlier than the stored one', () => {
+    // A reporter ahead of the server clock must not push the start forward.
+    const stored = new Date('2026-09-04T10:05:00Z');
+    const reported = new Date('2026-09-04T10:00:00Z');
+    expect(PcUsageService.mergeLockedAt(stored, reported)).toBe(reported);
+  });
+
+  it('clears the timestamp when the report says the PC is no longer locked', () => {
+    const stored = new Date('2026-09-04T10:00:00Z');
+    expect(PcUsageService.mergeLockedAt(stored, null)).toBeNull();
+  });
+});

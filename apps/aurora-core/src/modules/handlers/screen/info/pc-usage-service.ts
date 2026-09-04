@@ -14,6 +14,12 @@ export interface PcStatusParams {
   /** Name to show for that session. Ignored when nobody is logged in. */
   name?: string | null;
   remote?: boolean;
+  /**
+   * When the session was locked, to the reporter's best knowledge: its
+   * detection time. The service keeps the earliest timestamp of a continuous
+   * lock (see {@link PcUsageService.mergeLockedAt}), so a reporter may safely
+   * send the current time on every run.
+   */
   lockedAt?: string | null;
   status?: PcStatusType;
 }
@@ -152,6 +158,20 @@ export default class PcUsageService {
   }
 
   /**
+   * When the PC was locked, given what the report and the stored row say. A
+   * reporter can only observe that a PC is locked right now — it has no memory
+   * of when the lock started — so a lock reported while the row already says
+   * locked is the same episode and keeps the earlier timestamp. Otherwise the
+   * duration on the map would reset to zero on every report instead of growing.
+   * Pure, so the rule is unit tested without a database.
+   */
+  public static mergeLockedAt(previous: Date | null, incoming: Date | null): Date | null {
+    if (!incoming) return null;
+    if (previous && previous < incoming) return previous;
+    return incoming;
+  }
+
+  /**
    * The session a report describes, as a zero- or one-element list. An entry
    * with neither a membership number nor a name is nobody: the seat is free.
    */
@@ -176,7 +196,7 @@ export default class PcUsageService {
     const pc = (await PcStatus.findOne({ where: { pcId } })) ?? PcStatus.create({ pcId });
     pc.users = values.users;
     pc.remote = values.remote;
-    pc.lockedAt = values.lockedAt;
+    pc.lockedAt = PcUsageService.mergeLockedAt(pc.lockedAt ?? null, values.lockedAt);
     pc.status = values.status;
     // Always refresh updatedAt so a PC re-reported with unchanged values is
     // still considered fresh; otherwise TypeORM skips the UPDATE (no column

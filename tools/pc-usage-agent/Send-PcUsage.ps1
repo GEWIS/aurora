@@ -191,7 +191,7 @@ function Get-Sessions {
 
         # ">console  jdoe  2  Active  ..." — the leading > marks the current
         # session and is not part of the name.
-        $fields = ($line -replace '^\s*>', '') -split '\s+' | Where-Object { $_ -ne '' }
+        $fields = @(($line -replace '^\s*>', '') -split '\s+' | Where-Object { $_ -ne '' })
         if ($fields.Count -lt 3) { continue }
 
         $sessionName = $fields[0]
@@ -291,7 +291,7 @@ if (-not [string]::IsNullOrWhiteSpace($VirtualDesktopHost)) {
     } elseif (-not (Test-Online -ComputerName $VirtualDesktopHost)) {
         $report.Add(@{ pcId = 'vdesktop'; status = 'offline' })
     } else {
-        $sessions = Get-Sessions -ComputerName $VirtualDesktopHost
+        $sessions = @(Get-Sessions -ComputerName $VirtualDesktopHost)
         if ($sessions.Count -eq 0) {
             # Still report the machine, so an empty vdesktop reads as free
             # rather than going stale into offline.

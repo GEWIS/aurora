@@ -17,26 +17,46 @@
           <Select
             v-model="room.responsible1"
             filter
+            :filter-fields="['name', 'memberId']"
+            filter-placeholder="Search by name or member ID"
             fluid
             option-label="name"
-            option-value="name"
+            option-value="memberId"
             :options="infoStore.keyholders"
             placeholder="Select a keyholder"
             show-clear
-          />
+          >
+            <template #option="{ option }">
+              <KeyholderLabel :keyholder="option" />
+            </template>
+            <template #value="{ value, placeholder: empty }">
+              <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />
+              <span v-else class="opacity-60">{{ empty }}</span>
+            </template>
+          </Select>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Responsible person 2</label>
           <Select
             v-model="room.responsible2"
             filter
+            :filter-fields="['name', 'memberId']"
+            filter-placeholder="Search by name or member ID"
             fluid
             option-label="name"
-            option-value="name"
+            option-value="memberId"
             :options="infoStore.keyholders"
             placeholder="Select a keyholder (optional)"
             show-clear
-          />
+          >
+            <template #option="{ option }">
+              <KeyholderLabel :keyholder="option" />
+            </template>
+            <template #value="{ value, placeholder: empty }">
+              <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />
+              <span v-else class="opacity-60">{{ empty }}</span>
+            </template>
+          </Select>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Beer time</label>
@@ -187,6 +207,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { type KeyholderResponse } from '@gewis/aurora-api-client';
 import AppContainer from '@/layout/AppContainer.vue';
+import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
 
 const infoStore = useInfoStore();
@@ -216,10 +237,16 @@ async function syncKeyholders() {
   syncing.value = false;
 }
 
+/** The registry row a responsible-person selection points at, if it still exists. */
+function keyholderById(memberId: number | null | undefined): KeyholderResponse | undefined {
+  if (memberId == null) return undefined;
+  return infoStore.keyholders.find((k) => k.memberId === memberId);
+}
+
 const room = reactive<{
   open: boolean;
-  responsible1: string | null;
-  responsible2: string | null;
+  responsible1: number | null;
+  responsible2: number | null;
   beerTime: string | null;
   lastCall: string;
   closedMessage: string;
@@ -303,8 +330,8 @@ watch(
   (status) => {
     if (!status) return;
     room.open = status.open;
-    room.responsible1 = status.responsible[0]?.name ?? null;
-    room.responsible2 = status.responsible[1]?.name ?? null;
+    room.responsible1 = status.responsible[0]?.memberId ?? null;
+    room.responsible2 = status.responsible[1]?.memberId ?? null;
     room.beerTime = status.beerTime ?? null;
     room.lastCall = status.lastCall ?? '';
     room.closedMessage = status.closedMessage ?? '';
@@ -316,8 +343,8 @@ watch(
 async function saveRoom() {
   await infoStore.saveRoomStatus({
     open: room.open,
-    responsible1: room.responsible1 || null,
-    responsible2: room.responsible2 || null,
+    responsible1MemberId: room.responsible1,
+    responsible2MemberId: room.responsible2,
     beerTime: room.beerTime,
     lastCall: room.lastCall || null,
     closedMessage: room.closedMessage || null,

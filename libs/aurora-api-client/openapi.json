@@ -4093,6 +4093,12 @@
 			},
 			"ResponsibleResponse": {
 				"properties": {
+					"memberId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true,
+						"description": "Membership number, so the backoffice can round-trip the selection."
+					},
 					"name": {
 						"type": "string"
 					},
@@ -4111,6 +4117,7 @@
 					}
 				},
 				"required": [
+					"memberId",
 					"name",
 					"isBoard",
 					"isCandidateBoard",
@@ -4164,12 +4171,15 @@
 					"open": {
 						"type": "boolean"
 					},
-					"responsible1": {
-						"type": "string",
-						"nullable": true
+					"responsible1MemberId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true,
+						"description": "Membership number of the first responsible person, or null for nobody."
 					},
-					"responsible2": {
-						"type": "string",
+					"responsible2MemberId": {
+						"type": "number",
+						"format": "double",
 						"nullable": true
 					},
 					"beerTime": {

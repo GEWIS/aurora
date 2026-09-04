@@ -22,16 +22,20 @@ export default class RoomStatus extends BaseEntity {
   public open: boolean;
 
   /**
-   * Name of the (first) person responsible for the room, or null.
+   * GEWIS membership number of the (first) person responsible for the room, or
+   * null.
+   *
+   * The number rather than the name: the sync overwrites a keyholder's name
+   * from the GEWIS records whenever it changes upstream, and a stored name
+   * would then quietly stop matching, blanking the photo and the board flags
+   * with nothing to show for it.
    */
-  @Column({ type: 'varchar', nullable: true })
-  public responsible1: string | null;
+  @Column({ type: 'int', nullable: true })
+  public responsible1MemberId: number | null;
 
-  /**
-   * Name of the second person responsible for the room, or null.
-   */
-  @Column({ type: 'varchar', nullable: true })
-  public responsible2: string | null;
+  /** Membership number of the second person responsible, or null. */
+  @Column({ type: 'int', nullable: true })
+  public responsible2MemberId: number | null;
 
   /**
    * Time of the daily "beer time" countdown as "HH:mm", or null when there is

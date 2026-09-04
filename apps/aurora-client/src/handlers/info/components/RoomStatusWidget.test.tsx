@@ -7,6 +7,7 @@ const base: RoomStatusResponse = {
   open: true,
   responsible: [
     {
+      memberId: 1234,
       name: 'Jan van den Jansen',
       isBoard: false,
       isCandidateBoard: false,
@@ -14,6 +15,7 @@ const base: RoomStatusResponse = {
       photoUrl: null,
     },
     {
+      memberId: 5678,
       name: 'Pietersen',
       isBoard: true,
       isCandidateBoard: false,

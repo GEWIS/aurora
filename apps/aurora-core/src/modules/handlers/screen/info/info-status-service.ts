@@ -57,8 +57,9 @@ export interface KeyholderResponse {
 
 export interface RoomStatusParams {
   open: boolean;
-  responsible1?: string | null;
-  responsible2?: string | null;
+  /** Membership number of the first responsible person, or null for nobody. */
+  responsible1MemberId?: number | null;
+  responsible2MemberId?: number | null;
   beerTime?: string | null;
   lastCall?: string | null;
   closedMessage?: string | null;
@@ -66,6 +67,8 @@ export interface RoomStatusParams {
 }
 
 export interface ResponsibleResponse {
+  /** Membership number, so the backoffice can round-trip the selection. */
+  memberId: number | null;
   name: string;
   isBoard: boolean;
   isCandidateBoard: boolean;
@@ -152,8 +155,8 @@ export default class InfoStatusService {
     if (existing.length > 0) return existing[0];
     return RoomStatus.create({
       open: false,
-      responsible1: null,
-      responsible2: null,
+      responsible1MemberId: null,
+      responsible2MemberId: null,
       beerTime: null,
       closedMessage: null,
     }).save();
@@ -162,8 +165,8 @@ export default class InfoStatusService {
   public async setRoomStatus(params: RoomStatusParams): Promise<RoomStatus> {
     const status = await this.getRoomStatusEntity();
     status.open = params.open;
-    status.responsible1 = params.responsible1 ?? null;
-    status.responsible2 = params.responsible2 ?? null;
+    status.responsible1MemberId = params.responsible1MemberId ?? null;
+    status.responsible2MemberId = params.responsible2MemberId ?? null;
     status.beerTime = params.beerTime ?? null;
     status.lastCall = params.lastCall ?? null;
     status.closedMessage = params.closedMessage ?? null;
@@ -193,8 +196,8 @@ export default class InfoStatusService {
   }
 
   /**
-   * Build the room-status response, annotating each responsible person with
-   * board/keyholder flags by matching their name against the keyholder registry.
+   * Build the room-status response, resolving each responsible person against
+   * the keyholder registry by membership number for their name and flags.
    * State last set on an earlier logical day is reported as reset (see isStale).
    */
   public async getRoomStatus(): Promise<RoomStatusResponse> {
@@ -202,21 +205,27 @@ export default class InfoStatusService {
     const stale = InfoStatusService.isStale(status.updatedAt, new Date());
     const keyholders = await this.getKeyholders();
 
-    const annotate = (name: string | null): ResponsibleResponse | null => {
-      if (!name) return null;
-      const match = keyholders.find((k) => k.name.toLowerCase() === name.toLowerCase());
+    // Resolved from the registry, so the name shown always matches what the
+    // GEWIS records currently say. A number with no row left behind it means the
+    // person is no longer a keyholder at all, and showing a stale name would be
+    // worse than showing nobody.
+    const annotate = (memberId: number | null): ResponsibleResponse | null => {
+      if (memberId === null) return null;
+      const match = keyholders.find((k) => k.memberId === memberId);
+      if (!match) return null;
       return {
-        name,
-        isBoard: match?.isBoard ?? false,
-        isCandidateBoard: match?.isCandidateBoard ?? false,
-        isKeyholder: match?.isKeyholder ?? false,
-        photoUrl: match?.photoUrl ?? null,
+        memberId,
+        name: match.name,
+        isBoard: match.isBoard,
+        isCandidateBoard: match.isCandidateBoard,
+        isKeyholder: match.isKeyholder,
+        photoUrl: match.photoUrl,
       };
     };
 
     const responsible = stale
       ? []
-      : [annotate(status.responsible1), annotate(status.responsible2)].filter(
+      : [annotate(status.responsible1MemberId), annotate(status.responsible2MemberId)].filter(
           (r): r is ResponsibleResponse => r !== null,
         );
 

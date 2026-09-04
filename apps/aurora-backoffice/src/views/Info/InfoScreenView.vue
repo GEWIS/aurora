@@ -121,6 +121,7 @@
       </template>
       <DataTable
         class="p-datatable-sm keyholder-table"
+        data-key="id"
         scroll-height="flex"
         scrollable
         :value="visibleKeyholders"
@@ -204,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { type KeyholderResponse } from '@gewis/aurora-api-client';
 import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
@@ -289,6 +290,27 @@ const beerTimeOptions: { label: string; value: string | null }[] = [
 const keyholderSearch = ref('');
 
 /**
+ * What the list actually filters on, a beat behind what is being typed.
+ *
+ * The field and the table live in the same component, so every keystroke
+ * re-renders this view. That is cheap in itself, but only as long as the table's
+ * `value` keeps its identity: the moment the filter changes, the computed
+ * rebuilds the array and PrimeVue re-renders every row and cell underneath it.
+ * Settling first keeps that to once per pause instead of once per letter.
+ */
+const appliedSearch = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(keyholderSearch, (value) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    appliedSearch.value = value;
+  }, 150);
+});
+
+onUnmounted(() => clearTimeout(searchTimer));
+
+/**
  * Board first, then candidate board, then the remaining keyholders, and by name
  * within each group. Someone with several flags sorts under the highest one, so
  * a board member who also holds a key appears once, at the top.
@@ -301,7 +323,7 @@ function rank(k: KeyholderResponse): number {
 }
 
 const visibleKeyholders = computed(() => {
-  const needle = keyholderSearch.value.trim().toLowerCase();
+  const needle = appliedSearch.value.trim().toLowerCase();
   const matching = needle
     ? infoStore.keyholders.filter(
         (k) => k.name.toLowerCase().includes(needle) || String(k.memberId ?? '').includes(needle),

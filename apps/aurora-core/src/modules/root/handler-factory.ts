@@ -21,6 +21,7 @@ import {
   StageEffectsHandler,
   StaticPosterHandler,
   TimeTrailRaceScreenHandler,
+  InfoScreenHandler,
 } from '../handlers/screen';
 
 /**
@@ -89,6 +90,7 @@ export default class HandlerFactory {
         RoomResponsibleLegacyHandler,
         () => new RoomResponsibleLegacyHandler(socket),
       ),
+      this.createHandler(InfoScreenHandler, () => new InfoScreenHandler(socket)),
     ];
     return screenHandlers.filter((h) => h != null);
   }

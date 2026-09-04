@@ -56,6 +56,10 @@ export default function VerticalScroll({
   const loopAnimate = useCallback(() => {
     if (timeoutRef) clearTimeout(timeoutRef);
     const duration = animate();
+    // When the content fits, animate() returns undefined and there is nothing
+    // to scroll. Bail out instead of scheduling a 0ms timer, which would bump
+    // `iteration` immediately and re-trigger the effect in a tight loop.
+    if (duration === undefined) return;
     setTimeoutRef(setTimeout(() => setIteration((v) => v + 1), duration));
   }, [animate, timeoutRef]);
 

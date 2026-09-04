@@ -15,6 +15,7 @@ export interface ISecurityGroups {
   scenes: ISecuritySections;
   effects: ISecuritySections;
   poster: ISecuritySections;
+  infoscreen: ISecuritySections;
   roomresponsible: ISecuritySections;
   centurion: ISecuritySections;
   timetrail: ISecuritySections;
@@ -100,6 +101,11 @@ export const securityGroups = {
     privileged: [SecurityGroup.ADMIN],
   },
   poster: {
+    base: allSecuritySubscriberGroups,
+    privileged: privilegedSecurityGroups,
+    subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
+  },
+  infoscreen: {
     base: allSecuritySubscriberGroups,
     privileged: privilegedSecurityGroups,
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],

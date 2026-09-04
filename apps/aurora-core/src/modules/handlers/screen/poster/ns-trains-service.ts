@@ -51,7 +51,7 @@ export interface TrainResponse {
 }
 
 export default class NsTrainsService {
-  public async getTrains() {
+  public async getTrains(station: string = 'EHV') {
     const config = {
       headers: {
         'Ocp-Apim-Subscription-Key': process.env.NS_KEY,
@@ -61,7 +61,7 @@ export default class NsTrainsService {
     const departures = (
       await axios.get(
         'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/departures' +
-          '?station=EHV&maxJourneys=40',
+          `?station=${encodeURIComponent(station)}&maxJourneys=40`,
         config,
       )
     ).data.payload.departures as NsTrainResponse[];

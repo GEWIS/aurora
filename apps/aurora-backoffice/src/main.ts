@@ -58,6 +58,8 @@ import {
   TreeTable,
 } from 'primevue';
 import InputGroup from 'primevue/inputgroup';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 import { client } from '@gewis/aurora-api-client/client';
 import router from './router';
 import App from './App.vue';
@@ -136,6 +138,8 @@ app.component('Message', Message);
 app.component('FloatLabel', FloatLabel);
 app.component('Popover', Popover);
 app.component('ColorPicker', ColorPicker);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
 app.component('InputGroup', InputGroup);
 app.component('InputGroupAddon', InputGroupAddon);
 

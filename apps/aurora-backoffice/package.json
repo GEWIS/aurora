@@ -20,6 +20,7 @@
     "@vee-validate/yup": "4.15.1",
     "cronstrue": "2.61.0",
     "dotenv": "16.6.1",
+    "grid-layout-plus": "^1.1.1",
     "pinia": "3.0.3",
     "primeicons": "7.0.0",
     "primevue": "4.3.6",

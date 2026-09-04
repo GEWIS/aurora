@@ -19,6 +19,8 @@ const settingsStore = useServerSettingsStore();
 const model = computed<MenuItem[]>(() => {
   const showPosters =
     authStore.isInSecurityGroup('poster', 'base') && settingsStore.featureEnabled('Poster');
+  const showInfoScreen =
+    authStore.isInSecurityGroup('infoscreen', 'base') && settingsStore.featureEnabled('InfoScreen');
   const showAudit = authStore.isInSecurityGroup('audit', 'base');
   const showCenturion =
     authStore.isInSecurityGroup('centurion', 'privileged') &&
@@ -45,9 +47,16 @@ const model = computed<MenuItem[]>(() => {
         showAudit && { label: 'Logs', icon: 'pi pi-fw pi-book', to: '/audit' },
       ].filter(Boolean),
     },
-    showPosters && {
+    (showPosters || showInfoScreen) && {
       label: 'Screens',
-      items: [{ label: 'Posters', icon: 'pi pi-fw pi-image', to: '/poster/posters' }],
+      items: [
+        showPosters && { label: 'Posters', icon: 'pi pi-fw pi-image', to: '/poster/posters' },
+        showInfoScreen && {
+          label: 'Info Screen',
+          icon: 'pi pi-fw pi-desktop',
+          to: '/info-screen',
+        },
+      ].filter(Boolean),
     },
     {
       label: 'Lights',

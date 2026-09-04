@@ -45,3 +45,66 @@ describe('CalendarService.parseDate', () => {
     expect(date.toISOString()).toBe('2026-07-07T12:00:00.000Z');
   });
 });
+
+describe('CalendarService.parseDate with a TZID', () => {
+  it('reads a timestamp as wall-clock time in the named zone', () => {
+    // 23:55 in Amsterdam in January is 22:55 UTC.
+    const date = CalendarService.parseDate('20260101T235500', 'Europe/Amsterdam');
+    expect(date.toISOString()).toBe('2026-01-01T22:55:00.000Z');
+  });
+
+  it('follows the zone across a DST change', () => {
+    // Same wall clock in July, when Amsterdam is two hours ahead.
+    const date = CalendarService.parseDate('20260701T235500', 'Europe/Amsterdam');
+    expect(date.toISOString()).toBe('2026-07-01T21:55:00.000Z');
+  });
+
+  it('keeps honouring an explicit Z over the parameter', () => {
+    const date = CalendarService.parseDate('20260101T235500Z', 'Europe/Amsterdam');
+    expect(date.toISOString()).toBe('2026-01-01T23:55:00.000Z');
+  });
+
+  it('leaves an all-day date on its own day', () => {
+    const date = CalendarService.parseDate('20260101', 'Europe/Amsterdam');
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(0);
+    expect(date.getDate()).toBe(1);
+  });
+
+  it('falls back to floating time for a zone the runtime does not know', () => {
+    const date = CalendarService.parseDate('20260101T235500', 'Mars/Olympus_Mons');
+    expect(date.getHours()).toBe(23);
+    expect(date.getMinutes()).toBe(55);
+  });
+});
+
+describe('CalendarService.timeZoneOf', () => {
+  it('finds the zone among the other parameters', () => {
+    expect(CalendarService.timeZoneOf(['VALUE=DATE-TIME', 'TZID=Europe/Amsterdam'])).toBe(
+      'Europe/Amsterdam',
+    );
+  });
+
+  it('unquotes a quoted zone', () => {
+    expect(CalendarService.timeZoneOf(['TZID="Europe/Amsterdam"'])).toBe('Europe/Amsterdam');
+  });
+
+  it('returns nothing when the property carries no zone', () => {
+    expect(CalendarService.timeZoneOf(['VALUE=DATE'])).toBeUndefined();
+  });
+});
+
+describe('CalendarService.parse with zoned events', () => {
+  it('converts each event with its own zone', () => {
+    const feed = `BEGIN:VCALENDAR
+BEGIN:VEVENT
+SUMMARY:Amsterdam evening
+DTSTART;TZID=Europe/Amsterdam:20260101T235500
+DTEND;TZID=Europe/Amsterdam:20260102T003000
+END:VEVENT
+END:VCALENDAR`;
+    const [event] = CalendarService.parse(feed);
+    expect(event.start).toBe('2026-01-01T22:55:00.000Z');
+    expect(event.end).toBe('2026-01-01T23:30:00.000Z');
+  });
+});

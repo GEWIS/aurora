@@ -97,7 +97,7 @@ export default function ProgressBar({
             {!minimal && title}
           </div>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-          <div className="text-right" onClick={nextPoster} id="progress-bar-clock">
+          <div className="text-right w-1/5" onClick={nextPoster} id="progress-bar-clock">
             <Clock color={clockColor} shouldTick={clockTick} />
           </div>
         </div>

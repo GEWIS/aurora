@@ -39,6 +39,25 @@ describe('BeerPanel setting: altColor', () => {
   });
 });
 
+describe('BeerPanel setting: animateGlass', () => {
+  it('renders rising bubbles in the glass by default', () => {
+    render(<BeerPanel beerTime="00:00" lastCall={null} settings={{ altColor: true }} />);
+    expect(screen.getByTestId('beer-bubbles')).toBeInTheDocument();
+  });
+
+  it('keeps a static glass when the animation is off', () => {
+    render(
+      <BeerPanel
+        beerTime="00:00"
+        lastCall={null}
+        settings={{ altColor: true, animateGlass: false }}
+      />,
+    );
+    expect(screen.getByTestId('beer-glass')).toBeInTheDocument();
+    expect(screen.queryByTestId('beer-bubbles')).not.toBeInTheDocument();
+  });
+});
+
 describe('BeerPanel setting: showLastCall', () => {
   it('shows the room last-call time at beer time when enabled', () => {
     render(<BeerPanel beerTime="00:00" lastCall="22:00" settings={{ showLastCall: true }} />);

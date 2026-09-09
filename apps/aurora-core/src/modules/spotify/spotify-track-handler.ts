@@ -46,7 +46,7 @@ export default class SpotifyTrackHandler {
     return {
       title: item.name,
       artists: item.artists.map((a) => a.name),
-      cover: item.album.images[0].url,
+      cover: item.album.images[0]?.url,
       startTime: new Date(this.playStateUpdateTime.getTime() - state.progress_ms),
       trackURI: item.uri,
     };
@@ -80,7 +80,7 @@ export default class SpotifyTrackHandler {
     }
   }
 
-  private setNextTrackEvent(state: PlaybackState): void {
+  private setNextTrackEvent(item: Track, state: PlaybackState): void {
     if (!state.is_playing) return;
     if (this.syncLoopTimer) {
       clearTimeout(this.syncLoopTimer);
@@ -89,8 +89,17 @@ export default class SpotifyTrackHandler {
 
     this.syncLoopTimer = setTimeout(
       this.syncLoop.bind(this),
-      state.item.duration_ms - state.progress_ms + 10,
+      item.duration_ms - state.progress_ms + 10,
     );
+  }
+
+  /**
+   * The playing item, but only when it is an actual track. Spotify returns a
+   * null item for ads, and for episodes unless additional_types asks for them.
+   */
+  private static playingTrack(state: PlaybackState | undefined): Track | null {
+    if (!state || state.currently_playing_type !== 'track') return null;
+    return (state.item as Track | null) ?? null;
   }
 
   /**
@@ -117,40 +126,48 @@ export default class SpotifyTrackHandler {
   private async syncLoop() {
     if (!this.api.client) return;
 
+    let state: PlaybackState | undefined;
     try {
-      const state = await this.api.client.player.getCurrentlyPlayingTrack();
-      this.playStateUpdateTime = new Date();
-
-      // If Spotify started playing a track, starts playing a new track or resumes playing audio...
-      if (
-        state &&
-        state.currently_playing_type === 'track' &&
-        (!this.playState ||
-          this.playState.item?.id !== state.item?.id ||
-          (!this.playState.is_playing && state.is_playing))
-      ) {
-        this.setNextTrackEvent(state);
-
-        const item = state.item as Track;
-        this.musicEmitter.emitSpotify('change_track', [
-          this.asTrackChangeEvent(item, state),
-        ] as TrackChangeEvent[]);
-
-        logger.info(
-          `Now playing: ${item.artists.map((a) => a.name).join(', ')} - ${item.name} (${item.uri})`,
-        );
-      }
-
-      if ((!state || !state.is_playing) && this.playState && this.playState.is_playing) {
-        this.musicEmitter.emitSpotify('stop');
-        logger.info('Spotify paused/stopped');
-      }
-
-      this.playState = state;
+      state = await this.api.client.player.getCurrentlyPlayingTrack();
     } catch (e) {
       // Transient failures (e.g. a network blip reaching the Spotify API) are
       // expected; the loop retries on the next tick, so this is not fatal.
       logger.warn(`Spotify sync failed, will retry: ${String(e)}`);
+      return;
+    }
+
+    this.playStateUpdateTime = new Date();
+
+    // Advance the state before emitting, so a payload that trips up the event
+    // building costs a single tick instead of wedging the loop on a stale track.
+    const previous = this.playState;
+    this.playState = state;
+
+    const previousTrack = SpotifyTrackHandler.playingTrack(previous);
+    const track = SpotifyTrackHandler.playingTrack(state);
+
+    // If Spotify started playing a track, starts playing a new track or resumes playing audio...
+    if (
+      state &&
+      track &&
+      (!previous || previousTrack?.id !== track.id || (!previous.is_playing && state.is_playing))
+    ) {
+      this.setNextTrackEvent(track, state);
+
+      this.musicEmitter.emitSpotify('change_track', [
+        this.asTrackChangeEvent(track, state),
+      ] as TrackChangeEvent[]);
+
+      logger.info(
+        `Now playing: ${track.artists.map((a) => a.name).join(', ')} - ${track.name} (${track.uri})`,
+      );
+    }
+
+    // Ads and episodes keep is_playing true while carrying no track, so they
+    // count as stopped rather than leaving the last track on screen.
+    if ((!track || !state?.is_playing) && previousTrack && previous?.is_playing) {
+      this.musicEmitter.emitSpotify('stop');
+      logger.info('Spotify paused/stopped');
     }
   }
 }

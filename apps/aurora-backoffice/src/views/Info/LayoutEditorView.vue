@@ -43,11 +43,17 @@
           />
           <Button
             :disabled="!store.selectedScreenId || store.saving"
-            icon="pi pi-save"
             label="Save to screen"
             :loading="store.saving"
             @click="save"
-          />
+          >
+            <template #icon>
+              <Transition mode="out-in" name="check-pop">
+                <i v-if="justSavedLayout" key="check" class="pi pi-check" />
+                <i v-else key="save" class="pi pi-save" />
+              </Transition>
+            </template>
+          </Button>
         </div>
       </template>
 
@@ -431,18 +437,19 @@
       </div>
       <template #footer>
         <Button label="Cancel" severity="secondary" text @click="saveAsVisible = false" />
-        <Button
-          :disabled="!saveAsName.trim()"
-          :label="presetWithTypedName ? 'Replace' : 'Save'"
-          @click="confirmSaveAs"
-        />
+        <Button :disabled="!saveAsName.trim()" :loading="savingAs" @click="confirmSaveAs">
+          <Transition mode="out-in" name="check-pop">
+            <i v-if="justSavedAs" key="check" class="pi pi-check" />
+            <span v-else key="label">{{ presetWithTypedName ? 'Replace' : 'Save' }}</span>
+          </Transition>
+        </Button>
       </template>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import type { MenuItem } from 'primevue/menuitem';
 import type Menu from 'primevue/menu';
@@ -824,6 +831,9 @@ function buildPlacements(): WidgetPlacement[] {
   }));
 }
 
+const justSavedLayout = ref(false);
+let justSavedLayoutTimer: ReturnType<typeof setTimeout> | undefined;
+
 async function save() {
   await store.save(
     buildPlacements(),
@@ -833,6 +843,9 @@ async function save() {
     backgroundColor.value,
     defaultPanelBackground.value,
   );
+  justSavedLayout.value = true;
+  clearTimeout(justSavedLayoutTimer);
+  justSavedLayoutTimer = setTimeout(() => (justSavedLayout.value = false), 1200);
 }
 
 /**
@@ -890,14 +903,23 @@ const presetWithTypedName = computed<LayoutPresetResponse | undefined>(() => {
  * mistake. Treat it as the overwrite it plainly is instead of failing on the
  * constraint.
  */
+const savingAs = ref(false);
+const justSavedAs = ref(false);
+
 async function confirmSaveAs() {
   const name = saveAsName.value.trim();
   if (!name) return;
+  savingAs.value = true;
   const existing = presetWithTypedName.value;
   const saved = existing
     ? await presetStore.update(existing.id, presetPayload(name))
     : await presetStore.create(presetPayload(name));
+  savingAs.value = false;
   if (saved) selectedPresetId.value = saved.id;
+  await nextTick();
+  justSavedAs.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  justSavedAs.value = false;
   saveAsVisible.value = false;
 }
 
@@ -949,4 +971,20 @@ function tilePreviewStyle(item: GridItemData): Record<string, string> {
 async function copyToAll() {
   await store.copyToAll();
 }
+
+onUnmounted(() => clearTimeout(justSavedLayoutTimer));
 </script>
+
+<style scoped>
+.check-pop-enter-active,
+.check-pop-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.check-pop-enter-from,
+.check-pop-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+</style>

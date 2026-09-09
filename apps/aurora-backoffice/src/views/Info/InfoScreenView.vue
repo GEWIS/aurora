@@ -8,9 +8,22 @@
         </RouterLink>
       </template>
       <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-3">
-          <ToggleSwitch v-model="room.open" />
-          <span>{{ room.open ? 'Room is open' : 'Room is closed' }}</span>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm opacity-70">Room status</label>
+          <SelectButton
+            v-model="room.open"
+            :allow-empty="false"
+            option-label="label"
+            option-value="value"
+            :options="roomOpenOptions"
+          >
+            <template #option="{ option }">
+              <span class="flex items-center gap-2">
+                <i :class="option.icon" />
+                {{ option.label }}
+              </span>
+            </template>
+          </SelectButton>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Responsible person 1</label>
@@ -89,7 +102,22 @@
           <label class="text-sm opacity-70">Closed message</label>
           <InputText v-model="room.closedMessage" placeholder="GEWIS is closed" />
         </div>
-        <Button class="self-end" label="Save room status" @click="saveRoom" />
+        <div class="flex items-center justify-end gap-3">
+          <Transition name="check-pop">
+            <span v-if="roomDirty" class="flex items-center gap-2 text-sm text-amber-400">
+              <i class="pi pi-exclamation-circle" />
+              Unsaved changes
+            </span>
+          </Transition>
+          <Button label="Save room status" :loading="savingRoom" @click="saveRoom">
+            <template #icon>
+              <Transition mode="out-in" name="check-pop">
+                <i v-if="justSavedRoom" key="check" class="pi pi-check" />
+                <i v-else key="save" class="pi pi-save" />
+              </Transition>
+            </template>
+          </Button>
+        </div>
       </div>
     </AppContainer>
 
@@ -198,15 +226,20 @@
       </div>
       <template #footer>
         <Button label="Cancel" severity="secondary" text @click="dialogVisible = false" />
-        <Button label="Save" @click="saveKeyholder" />
+        <Button :loading="savingKeyholder" @click="saveKeyholder">
+          <Transition mode="out-in" name="check-pop">
+            <i v-if="justSavedKeyholder" key="check" class="pi pi-check" />
+            <span v-else key="label">Save</span>
+          </Transition>
+        </Button>
       </template>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { type KeyholderResponse } from '@gewis/aurora-api-client';
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { type KeyholderResponse, type RoomStatusResponse } from '@gewis/aurora-api-client';
 import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
@@ -244,7 +277,7 @@ function keyholderById(memberId: number | null | undefined): KeyholderResponse |
   return infoStore.keyholders.find((k) => k.memberId === memberId);
 }
 
-const room = reactive<{
+interface RoomForm {
   open: boolean;
   responsible1: number | null;
   responsible2: number | null;
@@ -252,15 +285,30 @@ const room = reactive<{
   lastCall: string;
   closedMessage: string;
   coffeeStatus: number;
-}>({
-  open: false,
-  responsible1: null,
-  responsible2: null,
-  beerTime: null,
-  lastCall: '',
-  closedMessage: '',
-  coffeeStatus: 0,
-});
+}
+
+function formFromStatus(status: RoomStatusResponse | null): RoomForm {
+  return {
+    open: status?.open ?? false,
+    responsible1: status?.responsible[0]?.memberId ?? null,
+    responsible2: status?.responsible[1]?.memberId ?? null,
+    beerTime: status?.beerTime ?? null,
+    lastCall: status?.lastCall ?? '',
+    closedMessage: status?.closedMessage ?? '',
+    coffeeStatus: status?.coffeeStatus ?? 0,
+  };
+}
+
+const room = reactive<RoomForm>(formFromStatus(null));
+
+const roomDirty = computed(
+  () => JSON.stringify(room) !== JSON.stringify(formFromStatus(infoStore.roomStatus)),
+);
+
+const roomOpenOptions: { label: string; value: boolean; icon: string }[] = [
+  { label: 'Open', value: true, icon: 'pi pi-lock-open' },
+  { label: 'Closed', value: false, icon: 'pi pi-lock' },
+];
 
 // Coffee/tea status codes, matching the legacy screen.
 const coffeeOptions: { label: string; value: number }[] = [
@@ -308,7 +356,10 @@ watch(keyholderSearch, (value) => {
   }, 150);
 });
 
-onUnmounted(() => clearTimeout(searchTimer));
+onUnmounted(() => {
+  clearTimeout(searchTimer);
+  clearTimeout(justSavedRoomTimer);
+});
 
 /**
  * Board first, then candidate board, then the remaining keyholders, and by name
@@ -351,18 +402,17 @@ watch(
   () => infoStore.roomStatus,
   (status) => {
     if (!status) return;
-    room.open = status.open;
-    room.responsible1 = status.responsible[0]?.memberId ?? null;
-    room.responsible2 = status.responsible[1]?.memberId ?? null;
-    room.beerTime = status.beerTime ?? null;
-    room.lastCall = status.lastCall ?? '';
-    room.closedMessage = status.closedMessage ?? '';
-    room.coffeeStatus = status.coffeeStatus ?? 0;
+    Object.assign(room, formFromStatus(status));
   },
   { immediate: true },
 );
 
+const savingRoom = ref(false);
+const justSavedRoom = ref(false);
+let justSavedRoomTimer: ReturnType<typeof setTimeout> | undefined;
+
 async function saveRoom() {
+  savingRoom.value = true;
   await infoStore.saveRoomStatus({
     open: room.open,
     responsible1MemberId: room.responsible1,
@@ -372,6 +422,11 @@ async function saveRoom() {
     closedMessage: room.closedMessage || null,
     coffeeStatus: room.coffeeStatus,
   });
+  savingRoom.value = false;
+  await nextTick();
+  justSavedRoom.value = true;
+  clearTimeout(justSavedRoomTimer);
+  justSavedRoomTimer = setTimeout(() => (justSavedRoom.value = false), 1200);
 }
 
 function openEdit(keyholder: KeyholderResponse) {
@@ -386,18 +441,39 @@ function openEdit(keyholder: KeyholderResponse) {
   dialogVisible.value = true;
 }
 
+const savingKeyholder = ref(false);
+const justSavedKeyholder = ref(false);
+
 async function saveKeyholder() {
   if (editId.value === null) return;
+  savingKeyholder.value = true;
   await infoStore.updateKeyholder(editId.value, {
     displayName: form.displayName || null,
     isCandidateBoard: form.isCandidateBoard,
     photoUrl: form.photoUrl || null,
   });
+  savingKeyholder.value = false;
+  await nextTick();
+  justSavedKeyholder.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  justSavedKeyholder.value = false;
   dialogVisible.value = false;
 }
 </script>
 
 <style scoped>
+.check-pop-enter-active,
+.check-pop-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.check-pop-enter-from,
+.check-pop-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
 /* Denser rows so more keyholders fit in the same vertical space. */
 :deep(.keyholder-table td),
 :deep(.keyholder-table th) {

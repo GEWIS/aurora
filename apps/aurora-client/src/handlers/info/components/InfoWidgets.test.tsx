@@ -3,12 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { ServiceState } from '@gewis/aurora-api-client';
 import type {
   ConferenceRoomsResponse,
+  RainRadarResponse,
   ServicesHealthResponse,
   WeatherResponse,
 } from '@gewis/aurora-api-client';
 import ServicesWidget from './ServicesWidget';
 import ConferenceRoomsWidget from './ConferenceRoomsWidget';
 import WeatherForecastWidget from './WeatherForecastWidget';
+import RainRadarChart from './RainRadarChart';
 
 const services: ServicesHealthResponse = {
   summary: 'Most services are operational',
@@ -127,5 +129,28 @@ describe('WeatherForecastWidget', () => {
     );
     expect(container.querySelector('svg')).not.toBeNull();
     expect(screen.queryByText('21°')).not.toBeInTheDocument();
+  });
+});
+
+describe('RainRadarChart', () => {
+  const radar = (precip: number[]): RainRadarResponse => ({
+    start: 1_757_400_000,
+    interval: 300,
+    precip,
+    noRainExpected: precip.every((p) => p < 0.1),
+  });
+
+  it('snaps the y-axis to a round maximum above the observed peak', () => {
+    render(<RainRadarChart radar={radar([0, 1.2, 3, 0.4, 0])} />);
+    expect(screen.getByText('5 mm/h')).toBeInTheDocument();
+    expect(screen.getByText('2.5')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  it('keeps a 1 mm/h axis for a dry forecast', () => {
+    render(<RainRadarChart radar={radar([0, 0, 0, 0, 0])} />);
+    expect(screen.getByText('1 mm/h')).toBeInTheDocument();
+    expect(screen.getByText('0.5')).toBeInTheDocument();
+    expect(screen.getByText('No rain expected')).toBeInTheDocument();
   });
 });

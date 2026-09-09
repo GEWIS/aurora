@@ -107,7 +107,7 @@ export const securityGroups = {
   },
   infoscreen: {
     base: allSecuritySubscriberGroups,
-    privileged: privilegedSecurityGroups,
+    privileged: [...privilegedSecurityGroups, SecurityGroup.KEY_HOLDER],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
   roomresponsible: {

@@ -22,13 +22,18 @@
     </div>
     <template #footer>
       <Button label="Cancel" severity="secondary" text @click="emit('update:visible', false)" />
-      <Button :disabled="!form.name" label="Save" @click="save" />
+      <Button :disabled="!form.name" :loading="saving" @click="save">
+        <Transition mode="out-in" name="check-pop">
+          <i v-if="justSaved" key="check" class="pi pi-check" />
+          <span v-else key="label">Save</span>
+        </Transition>
+      </Button>
     </template>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { nextTick, reactive, ref, watch } from 'vue';
 import { useCallerStore } from '@/stores/caller.store';
 import ValidateButton from '@/views/Info/ValidateButton.vue';
 
@@ -50,6 +55,9 @@ watch(
   },
 );
 
+const saving = ref(false);
+const justSaved = ref(false);
+
 async function save() {
   const params = {
     name: form.name,
@@ -59,9 +67,29 @@ async function save() {
       .filter(Boolean),
     photoUrl: form.photoUrl || null,
   };
+  saving.value = true;
   if (props.editId != null) await store.updateCaller(props.editId, params);
   else await store.createCaller(params);
+  saving.value = false;
+  await nextTick();
+  justSaved.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  justSaved.value = false;
   emit('saved');
   emit('update:visible', false);
 }
 </script>
+
+<style scoped>
+.check-pop-enter-active,
+.check-pop-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.check-pop-enter-from,
+.check-pop-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+</style>

@@ -2,6 +2,7 @@ import { remainingInWords } from '../countdown';
 import { sBool, WidgetSettings } from '../settings';
 import useSecondTick from '../useSecondTick';
 import { nextBeerTime } from './RoomStatusWidget';
+import BeerGlass, { FOAM_HEIGHT } from './BeerGlass';
 
 interface Props {
   beerTime: string | null;
@@ -9,14 +10,11 @@ interface Props {
   settings?: WidgetSettings;
 }
 
-/** Beer glass: a solid amber body with a solid white foam head on top. */
-const BEER_GLASS_BG = 'linear-gradient(to top, #eb9c07 0% 74%, #fff9ed 82% 100%)';
-
 /**
  * Placeable beer-time panel (as in the sketch): "Not today" when no beer time is
  * set, "Beer starts at HH:MM" + a remaining-time line before beer time, and
  * "It's beer 'o clock" once it has passed. In alt mode the panel background turns
- * into a filled beer glass (amber beer with a white foam head) at beer time. The
+ * into a filled beer glass (rising bubbles under a foam head) at beer time. The
  * full-screen countdown overlay is a separate modal widget.
  */
 export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
@@ -25,6 +23,7 @@ export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
   const altColor = sBool(settings, 'altColor', true);
   const showIcon = sBool(settings, 'showIcon', true);
   const showLastCall = sBool(settings, 'showLastCall', true);
+  const animateGlass = sBool(settings, 'animateGlass', true);
 
   const target = beerTime ? nextBeerTime(beerTime, now) : null;
 
@@ -48,16 +47,12 @@ export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
   const beerGlass = altColor && isBeerTime;
 
   return (
-    <div className="relative flex h-full w-full items-center overflow-hidden font-raleway">
-      {beerGlass && (
-        <div
-          data-testid="beer-glass"
-          className="pointer-events-none absolute inset-0"
-          style={{ background: BEER_GLASS_BG }}
-        />
-      )}
+    <div className="relative flex h-full w-full flex-col overflow-hidden font-raleway">
+      {beerGlass && <BeerGlass animated={animateGlass} />}
+      {/* Skip the foam head so the content centres in the beer, not the panel. */}
+      {beerGlass && <div className="shrink-0" style={{ height: `${FOAM_HEIGHT}%` }} />}
       <div
-        className={`relative z-10 flex h-full w-full items-center gap-3 p-4 ${
+        className={`relative z-10 flex w-full flex-1 items-center justify-center gap-5 px-4 py-2 ${
           beerGlass ? 'text-amber-950' : 'text-white text-shadow'
         }`}
       >
@@ -65,7 +60,7 @@ export default function BeerPanel({ beerTime, lastCall, settings }: Props) {
           <img
             src={isBeerTime ? '/base/beer-full.svg' : '/base/beer-empty.svg'}
             alt="beer"
-            className="h-12 w-12 shrink-0"
+            className="h-16 w-[3.38rem] shrink-0"
           />
         )}
         <div className="flex min-w-0 flex-col justify-center">

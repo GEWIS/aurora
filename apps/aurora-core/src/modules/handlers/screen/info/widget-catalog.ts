@@ -271,6 +271,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
   ],
   beer: [
     bool('altColor', 'Highlight in orange after beer time', true),
+    bool('animateGlass', 'Animate the beer glass (bubbles and foam)', true),
     bool('showIcon', 'Show glass icon', true),
     bool('showLastCall', 'Show last-call time (set in room status)', true),
   ],

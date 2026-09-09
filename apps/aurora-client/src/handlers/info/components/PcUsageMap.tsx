@@ -115,7 +115,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
     <svg
       viewBox="0 0 830 350"
       preserveAspectRatio="xMidYMid meet"
-      className="h-full w-full font-raleway"
+      className="h-full w-full font-lato"
     >
       {/* Room outline, ported from the legacy map_room.svg. */}
       <g fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round">
@@ -147,7 +147,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
 
         const showNumber = text === id;
         const name = user?.name ?? '';
-        const labelY = node.labelAbove ? node.y - R - 6 : node.y + R + 20;
+        const labelY = node.labelAbove ? node.y - R - 12 : node.y + R + 28;
 
         return (
           <g key={id}>
@@ -201,7 +201,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
             ) : (
               <text
                 x={node.x}
-                y={pcStyle === 'icon' ? node.y - 1 : node.y + 1}
+                y={pcStyle === 'icon' ? node.y - R * 0.25 + 2 : node.y}
                 textAnchor="middle"
                 dominantBaseline="central"
                 fontSize={showNumber ? 18 : 20}

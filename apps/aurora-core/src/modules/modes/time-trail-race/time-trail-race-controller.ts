@@ -4,7 +4,7 @@ import { Request as ExpressRequest } from 'express';
 import TimeTrailRaceMode from './time-trail-race-mode';
 import ModeManager from '../mode-manager';
 import { SecurityNames } from '../../../helpers/security';
-import { RegisterPlayerParams } from './time-trail-race-entities';
+import { RegisterPlayerParams } from '../../events/time-trail-race-entities';
 import ModeDisabledError from '../mode-disabled-error';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
 import logger from '../../../logger';

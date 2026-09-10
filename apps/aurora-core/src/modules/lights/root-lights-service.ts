@@ -1,33 +1,33 @@
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { LightsController } from './entities';
+import { LightsController } from '../root/entities';
 import {
   LightsGroup,
   LightsMovingHeadRgb,
   LightsMovingHeadWheel,
   LightsPar,
   LightsSwitch,
-} from '../lights/entities';
+} from './entities';
 import dataSource from '../../database';
-import LightsFixture from '../lights/entities/lights-fixture';
-import ColorsRgb, { IColorsRgb } from '../lights/entities/colors-rgb';
-import LightsMovingHead from '../lights/entities/lights-moving-head';
-import LightsGroupPars from '../lights/entities/lights-group-pars';
-import LightsGroupMovingHeadRgbs from '../lights/entities/lights-group-moving-head-rgbs';
-import LightsGroupMovingHeadWheels from '../lights/entities/lights-group-moving-head-wheels';
-import Movement, { IMovement } from '../lights/entities/movement';
+import LightsFixture from './entities/lights-fixture';
+import ColorsRgb, { IColorsRgb } from './entities/colors-rgb';
+import LightsMovingHead from './entities/lights-moving-head';
+import LightsGroupPars from './entities/lights-group-pars';
+import LightsGroupMovingHeadRgbs from './entities/lights-group-moving-head-rgbs';
+import LightsGroupMovingHeadWheels from './entities/lights-group-moving-head-wheels';
+import Movement, { IMovement } from './entities/movement';
 import AuthService from '../auth/auth-service';
-import LightsParShutterOptions from '../lights/entities/lights-par-shutter-options';
-import LightsMovingHeadRgbShutterOptions from '../lights/entities/lights-moving-head-rgb-shutter-options';
-import LightsMovingHeadWheelShutterOptions from '../lights/entities/lights-moving-head-wheel-shutter-options';
+import LightsParShutterOptions from './entities/lights-par-shutter-options';
+import LightsMovingHeadRgbShutterOptions from './entities/lights-moving-head-rgb-shutter-options';
+import LightsMovingHeadWheelShutterOptions from './entities/lights-moving-head-wheel-shutter-options';
 import LightsFixtureShutterOptions, {
   ShutterOption,
-} from '../lights/entities/lights-fixture-shutter-options';
-import LightsWheelColorChannelValue from '../lights/entities/lights-wheel-color-channel-value';
-import LightsWheelGoboChannelValue from '../lights/entities/lights-wheel-gobo-channel-value';
-import LightsWheelRotateChannelValue from '../lights/entities/lights-wheel-rotate-channel-value';
+} from './entities/lights-fixture-shutter-options';
+import LightsWheelColorChannelValue from './entities/lights-wheel-color-channel-value';
+import LightsWheelGoboChannelValue from './entities/lights-wheel-gobo-channel-value';
+import LightsWheelRotateChannelValue from './entities/lights-wheel-rotate-channel-value';
 
 import LightsSwitchManager from './lights-switch-manager';
-import { WheelColor } from '../lights/color-definitions';
+import { WheelColor } from './color-definitions';
 
 export interface LightsControllerResponse extends Pick<
   LightsController,

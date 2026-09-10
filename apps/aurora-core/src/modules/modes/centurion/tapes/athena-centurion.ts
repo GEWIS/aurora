@@ -1,4 +1,4 @@
-import MixTape from './mix-tape';
+import MixTape from '../../../lights/mix-tape';
 
 const athenaCenturion: MixTape = {
   name: 'Centurion',

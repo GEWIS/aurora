@@ -4,7 +4,7 @@ import { Request as ExpressRequest } from 'express';
 import ModeManager from '../mode-manager';
 import CenturionMode from './centurion-mode';
 import { SecurityNames } from '../../../helpers/security';
-import MixTape, { HornData, SongData } from './tapes/mix-tape';
+import MixTape, { HornData, SongData } from '../../lights/mix-tape';
 import tapes from './tapes';
 import ModeDisabledError from '../mode-disabled-error';
 import logger from '../../../logger';

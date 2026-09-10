@@ -1,4 +1,4 @@
-import { LightsEffectBuilder } from '../../../lights/effects/lights-effect';
+import { LightsEffectBuilder } from './effects/lights-effect';
 
 export type HornData = {
   counter: number;

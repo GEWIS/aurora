@@ -4,9 +4,13 @@ import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
 import TimeTrailRaceScreenHandler from '../../handlers/screen/time-trail-race-screen-handler';
 import { LightsGroup } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
-import { TimeTrailRaceState } from './time-trail-race-state';
+import { TimeTrailRaceState } from '../../events/time-trail-race-state';
 import { BackofficeSyncEmitter } from '../../events/backoffice-sync-emitter';
-import { PlayerParams, RegisterPlayerParams, ScoreboardItem } from './time-trail-race-entities';
+import {
+  PlayerParams,
+  RegisterPlayerParams,
+  ScoreboardItem,
+} from '../../events/time-trail-race-entities';
 import {
   RaceFinishedEvent,
   RaceInitializedEvent,
@@ -14,7 +18,7 @@ import {
   RacePlayerRegisteredEvent,
   RaceScoreboardEvent,
   RaceStartedEvent,
-} from './time-trail-race-events';
+} from '../../events/time-trail-race-events';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
 import TimeTrailRaceLightsHandler from '../../handlers/lights/time-trail-race-lights-handler';
 import { SimpleBeatGenerator, BeatManager, BeatPriorities } from '../../beats';

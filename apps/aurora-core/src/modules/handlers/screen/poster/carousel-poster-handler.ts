@@ -1,4 +1,4 @@
-import BaseScreenHandler from '../../base-screen-handler';
+import BaseScreenHandler from '../../../root/base-screen-handler';
 import { Namespace } from 'socket.io';
 import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
 import { TrackChangeEvent } from '../../../events/music-emitter-events';

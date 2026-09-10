@@ -3,7 +3,7 @@ import { LightsGroup, LightsSwitch } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
 import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
 import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import MixTape, { FeedEvent, Horn, Song, SongData } from './tapes/mix-tape';
+import MixTape, { FeedEvent, Horn, Song, SongData } from '../../lights/mix-tape';
 import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
 import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
 import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
@@ -15,10 +15,10 @@ import Wave from '../../lights/effects/color/wave';
 import Sparkle from '../../lights/effects/color/sparkle';
 import { BeatManager, BeatPriorities, SimpleBeatGenerator } from '../../beats';
 import logger from '../../../logger';
-import LightsSwitchManager from '../../root/lights-switch-manager';
+import LightsSwitchManager from '../../lights/lights-switch-manager';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
 import { ISettings } from '../../server-settings/server-setting';
-import RootLightsService from '../../root/root-lights-service';
+import RootLightsService from '../../lights/root-lights-service';
 import {
   getRandomLightsEffectDirection,
   getRandomLightsEffectPattern,

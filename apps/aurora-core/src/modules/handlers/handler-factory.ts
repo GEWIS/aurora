@@ -1,18 +1,18 @@
-import BaseLightsHandler from '../handlers/base-lights-handler';
+import BaseLightsHandler from '../lights/base-lights-handler';
 import { Server } from 'socket.io';
 import { MusicEmitter } from '../events';
-import { RandomEffectsHandler } from '../handlers/lights';
-import SetEffectsHandler from '../handlers/lights/set-effects-handler';
-import DevelopEffectsHandler from '../handlers/lights/develop-effects-handler';
-import { ScenesHandler } from '../handlers/lights/scenes-handler';
-import EffectSequenceHandler from '../handlers/lights/effect-sequence-handler';
-import TimeTrailRaceLightsHandler from '../handlers/lights/time-trail-race-lights-handler';
+import { RandomEffectsHandler } from './lights';
+import SetEffectsHandler from './lights/set-effects-handler';
+import DevelopEffectsHandler from './lights/develop-effects-handler';
+import { ScenesHandler } from './lights/scenes-handler';
+import EffectSequenceHandler from './lights/effect-sequence-handler';
+import TimeTrailRaceLightsHandler from './lights/time-trail-race-lights-handler';
 import { FeatureFlagManager } from '../server-settings';
-import BaseHandler from '../handlers/base-handler';
-import BaseAudioHandler from '../handlers/base-audio-handler';
-import SimpleAudioHandler from '../handlers/audio/simple-audio-handler';
+import BaseHandler from '../root/base-handler';
+import BaseAudioHandler from '../root/base-audio-handler';
+import SimpleAudioHandler from './audio/simple-audio-handler';
 import { SocketioNamespaces } from '../../socketio-namespaces';
-import BaseScreenHandler from '../handlers/base-screen-handler';
+import BaseScreenHandler from '../root/base-screen-handler';
 import {
   CenturionScreenHandler,
   CurrentlyPlayingTrackHandler,
@@ -22,7 +22,7 @@ import {
   StaticPosterHandler,
   TimeTrailRaceScreenHandler,
   InfoScreenHandler,
-} from '../handlers/screen';
+} from './screen';
 
 /**
  * Object to create the set of all handlers belonging to each listener

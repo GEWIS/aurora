@@ -1,15 +1,15 @@
 import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
-import HandlerManager from './handler-manager';
+import HandlerManager from '../root/handler-manager';
 import {
   LightsGroup,
   LightsGroupMovingHeadRgbs,
   LightsGroupMovingHeadWheels,
   LightsGroupPars,
   LightsSwitch,
-} from '../lights/entities';
-import { StrobeProps } from '../lights/effects/color/strobe';
+} from './entities';
+import { StrobeProps } from './effects/color/strobe';
 import { SecurityNames } from '../../helpers/security';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';
@@ -17,7 +17,7 @@ import dataSource from '../../database';
 import LightsSwitchManager from './lights-switch-manager';
 import { HttpStatusCode } from 'axios';
 import RootLightsOperationsService from './root-lights-operations-service';
-import { DEFAULT_MASTER_DIMMER } from '../lights/entities/lights-group-fixture';
+import { DEFAULT_MASTER_DIMMER } from './entities/lights-group-fixture';
 
 interface GroupFixtureOverrideParams {
   /**

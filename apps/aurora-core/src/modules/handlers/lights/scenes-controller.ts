@@ -2,7 +2,7 @@ import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Body, Delete, Get, Post, Query, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import ScenesService, { CreateSceneParams, LightsSceneResponse } from './scenes-service';
-import RootLightsService from '../../root/root-lights-service';
+import RootLightsService from '../../lights/root-lights-service';
 import HandlerManager from '../../root/handler-manager';
 import { LightsGroup } from '../../lights/entities';
 import { ScenesHandler } from './scenes-handler';

@@ -1,8 +1,7 @@
 import { ISettings } from './server-setting';
 import ServerSettingsStore, { FeatureFlagResponse } from './server-settings-store';
-import BaseHandler from '../handlers/base-handler';
 
-type HandlerClass = new (...args: any[]) => BaseHandler<any>;
+type HandlerClass = new (...args: any[]) => object;
 
 /**
  * Being an extension of the ServerSettingsStore, the Feature Flag Manager is responsible for

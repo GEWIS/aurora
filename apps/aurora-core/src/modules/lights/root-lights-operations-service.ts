@@ -4,9 +4,9 @@ import {
   LightsGroupMovingHeadRgbs,
   LightsGroupMovingHeadWheels,
   LightsGroupPars,
-} from '../lights/entities';
-import HandlerManager from './handler-manager';
-import { DEFAULT_MASTER_DIMMER } from '../lights/entities/lights-group-fixture';
+} from './entities';
+import HandlerManager from '../root/handler-manager';
+import { DEFAULT_MASTER_DIMMER } from './entities/lights-group-fixture';
 
 export default class RootLightsOperationsService {
   /**

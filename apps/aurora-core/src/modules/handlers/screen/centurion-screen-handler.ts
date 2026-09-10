@@ -1,7 +1,7 @@
-import BaseScreenHandler from '../base-screen-handler';
+import BaseScreenHandler from '../../root/base-screen-handler';
 import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
-import MixTape from '../../modes/centurion/tapes/mix-tape';
 import { RgbColor } from '../../lights/color-definitions';
+import MixTape from '../../lights/mix-tape';
 import { FeatureEnabled } from '../../server-settings';
 
 @FeatureEnabled('Centurion')

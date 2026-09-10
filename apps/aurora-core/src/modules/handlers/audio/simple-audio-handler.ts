@@ -1,5 +1,5 @@
 import { Namespace } from 'socket.io';
-import BaseAudioHandler from '../base-audio-handler';
+import BaseAudioHandler from '../../root/base-audio-handler';
 import { MusicEmitter } from '../../events';
 import logger from '../../../logger';
 

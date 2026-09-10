@@ -1,31 +1,23 @@
 import { Server } from 'socket.io';
-import BaseAudioHandler from '../handlers/base-audio-handler';
-import BaseLightsHandler from '../handlers/base-lights-handler';
-import BaseScreenHandler from '../handlers/base-screen-handler';
+import BaseScreenHandler from './base-screen-handler';
+import BaseAudioHandler from './base-audio-handler';
+import BaseLightsHandler from '../lights/base-lights-handler';
 import SubscribeEntity from './entities/subscribe-entity';
-import BaseHandler from '../handlers/base-handler';
-import SimpleAudioHandler from '../handlers/audio/simple-audio-handler';
+import BaseHandler from './base-handler';
 import dataSource from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsGroup } from '../lights/entities';
-import { RandomEffectsHandler } from '../handlers/lights';
-import SetEffectsHandler from '../handlers/lights/set-effects-handler';
-import DevelopEffectsHandler from '../handlers/lights/develop-effects-handler';
 import { BeatEvent, TrackChangeEvent } from '../events/music-emitter-events';
-import { CurrentlyPlayingTrackHandler, CenturionScreenHandler } from '../handlers/screen';
-// eslint-disable-next-line import/no-cycle -- TODO fix cyclic dependency
-import { ScenesHandler } from '../handlers/lights/scenes-handler';
-import EffectSequenceHandler from '../handlers/lights/effect-sequence-handler';
-import { MusicEmitter } from '../events';
-import StageEffectsHandler from '../handlers/screen/stage-effects-handler';
+import { ShowOrdersEvent } from '../events/order-emitter';
 import { SocketioNamespaces } from '../../socketio-namespaces';
 import logger from '../../logger';
-import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';
-import TimeTrailRaceScreenHandler from '../handlers/screen/time-trail-race-screen-handler';
-import TimeTrailRaceLightsHandler from '../handlers/lights/time-trail-race-lights-handler';
-import HandlerFactory from './handler-factory';
-import { ShowOrdersEvent } from '../events/order-emitter-events';
 import EmitterStore from '../events/emitter-store';
+
+export interface HandlerSet {
+  audio: BaseAudioHandler[];
+  lights: BaseLightsHandler[];
+  screen: BaseScreenHandler[];
+}
 
 /**
  * Main broker for managing handlers. This object registers entities to their
@@ -79,17 +71,15 @@ export default class HandlerManager {
   private constructor(
     private io: Server,
     private emitterStore: EmitterStore,
+    handlers: HandlerSet,
   ) {
     this.emitterStore.musicEmitter.on('beat', this.beat.bind(this));
     this.emitterStore.musicEmitter.on('change_track', this.changeTrack.bind(this));
     this.emitterStore.orderEmitter.on('orders', this.showOrders.bind(this));
 
-    const factory = new HandlerFactory(this.io, this.emitterStore.musicEmitter);
-
-    // Register all handlers
-    this._handlers.set(Audio, factory.createAudioHandlers());
-    this._handlers.set(LightsGroup, factory.createLightHandlers());
-    this._handlers.set(Screen, factory.createScreenHandlers());
+    this._handlers.set(Audio, handlers.audio);
+    this._handlers.set(LightsGroup, handlers.lights);
+    this._handlers.set(Screen, handlers.screen);
   }
 
   /**
@@ -97,12 +87,16 @@ export default class HandlerManager {
    * the first time an instance is requested and a new object should be created
    * @param io
    * @param emitterStore
+   * @param handlers the handler instances to manage, grouped by entity type
    */
-  public static getInstance(io?: Server, emitterStore?: EmitterStore) {
-    if (this.instance == null && (io === undefined || emitterStore === undefined)) {
+  public static getInstance(io?: Server, emitterStore?: EmitterStore, handlers?: HandlerSet) {
+    if (
+      this.instance == null &&
+      (io === undefined || emitterStore === undefined || handlers === undefined)
+    ) {
       throw new Error('Not all parameters provided to initialize');
     } else if (this.instance == null) {
-      this.instance = new HandlerManager(io!, emitterStore!);
+      this.instance = new HandlerManager(io!, emitterStore!, handlers!);
     }
     return this.instance;
   }

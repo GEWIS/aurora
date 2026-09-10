@@ -1,3 +1,5 @@
+import { registerSettingsDefaults } from '../server-settings/server-setting';
+
 export interface OrderSettings {
   Orders: boolean;
   'Orders.DefaultTimeoutSeconds': number;
@@ -13,9 +15,15 @@ export interface OrderSettings {
   'Orders.WebhookPublicKeyExpirySeconds': number;
 }
 
+declare module '../server-settings/server-setting' {
+  interface ISettings extends OrderSettings {}
+}
+
 export const OrderSettingsDefault: OrderSettings = {
   Orders: true,
   'Orders.DefaultTimeoutSeconds': 120,
   'Orders.WebhookPublicKeyURL': '',
   'Orders.WebhookPublicKeyExpirySeconds': 60 * 60,
 };
+
+registerSettingsDefaults(OrderSettingsDefault);

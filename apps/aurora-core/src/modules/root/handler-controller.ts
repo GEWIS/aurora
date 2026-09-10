@@ -5,7 +5,7 @@ import HandlerManager from './handler-manager';
 import { Audio, Screen } from './entities';
 import RootAudioService, { AudioResponse } from './root-audio-service';
 import { LightsGroup } from '../lights/entities';
-import RootLightsService, { LightsGroupResponse } from './root-lights-service';
+import RootLightsService, { LightsGroupResponse } from '../lights/root-lights-service';
 import RootScreenService, { ScreenResponse } from './root-screen-service';
 import { SecurityNames } from '../../helpers/security';
 import HandlerService from './handler-service';

@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { LightsScene, LightsSceneEffect } from '../../lights/entities/scenes';
 import dataSource from '../../../database';
-import { BaseLightsGroupResponse } from '../../root/root-lights-service';
+import { BaseLightsGroupResponse } from '../../lights/root-lights-service';
 import { LightsEffectsColorCreateParams } from '../../lights/effects/color';
 import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement';
 

@@ -1,4 +1,4 @@
-import BaseLightsHandler from '../base-lights-handler';
+import BaseLightsHandler from '../../lights/base-lights-handler';
 import { BeatEvent } from '../../events/music-emitter-events';
 import { LightsGroup } from '../../lights/entities';
 import SetEffectsHandler from './set-effects-handler';

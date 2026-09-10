@@ -1,4 +1,4 @@
-import MixTape from './mix-tape';
+import MixTape from '../../../lights/mix-tape';
 
 const centurion: MixTape = {
   name: 'Totale Escalatie 9darisch',

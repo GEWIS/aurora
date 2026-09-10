@@ -3,7 +3,7 @@ import dataSource from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsGroup } from '../lights/entities';
 import ModeManager from '../modes/mode-manager';
-import RootLightsOperationsService from './root-lights-operations-service';
+import RootLightsOperationsService from '../lights/root-lights-operations-service';
 import { DEFAULT_MASTER_DIMMER } from '../lights/entities/lights-group-fixture';
 
 export default class HandlerService {

@@ -2,7 +2,7 @@ import dataSource from '../database';
 import { TimedEvent } from '../modules/timed-events/entities';
 import RootScreenService from '../modules/root/root-screen-service';
 import CarouselPosterHandler from '../modules/handlers/screen/poster/carousel-poster-handler';
-import RootLightsService from '../modules/root/root-lights-service';
+import RootLightsService from '../modules/lights/root-lights-service';
 import { LightsGroup } from '../modules/lights/entities';
 import RootAudioService from '../modules/root/root-audio-service';
 import SimpleAudioHandler from '../modules/handlers/audio/simple-audio-handler';

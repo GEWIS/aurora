@@ -5,7 +5,7 @@ import { TimedEvent } from './entities';
 import { AuditService } from '../audit';
 import HandlerManager from '../root/handler-manager';
 import RootAudioService from '../root/root-audio-service';
-import RootLightsService from '../root/root-lights-service';
+import RootLightsService from '../lights/root-lights-service';
 import RootScreenService from '../root/root-screen-service';
 import { Screen } from '../root/entities';
 import { StaticPosterHandler } from '../handlers/screen';

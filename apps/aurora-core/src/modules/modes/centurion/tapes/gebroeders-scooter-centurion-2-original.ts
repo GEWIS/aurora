@@ -1,4 +1,4 @@
-import MixTape, { FeedEvent } from './mix-tape';
+import MixTape, { FeedEvent } from '../../../lights/mix-tape';
 import SearchLight from '../../../lights/effects/movement/search-light';
 import { StaticColor, Wave } from '../../../lights/effects/color';
 import { RgbColor } from '../../../lights/color-definitions';

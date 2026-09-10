@@ -1,5 +1,6 @@
 import { IFile } from '../../../files/entities';
 import { HexColor } from '../../../lights/color-definitions';
+import { registerSettingsDefaults } from '../../../server-settings/server-setting';
 
 export interface PosterScreenHandlerSettings {
   /**
@@ -50,6 +51,10 @@ export interface PosterScreenHandlerSettings {
   'Poster.Trello': boolean;
 }
 
+declare module '../../../server-settings/server-setting' {
+  interface ISettings extends PosterScreenHandlerSettings {}
+}
+
 export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = {
   Poster: true,
   'Poster.DefaultMinimal': false,
@@ -61,3 +66,5 @@ export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = 
   'Poster.ClockShouldTick': true,
   'Poster.Trello': true,
 };
+
+registerSettingsDefaults(PosterScreenHandlerSettingsDefaults);

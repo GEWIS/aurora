@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import SubscribeEntity from '../root/entities/subscribe-entity';
+import SubscribeEntity from './entities/subscribe-entity';
 import { BeatEvent } from '../events/music-emitter-events';
 import logger from '../../logger';
+import { HANDLER_CLASS_BRAND } from '../server-settings/feature-enabled';
 
 export default abstract class BaseHandler<T extends SubscribeEntity> {
+  // Branded marker needed by Feature Flags to check whether a class is a handler
+  public static readonly [HANDLER_CLASS_BRAND] = true;
+
   /**
    * Used to distinguish multiple instances of the same handler type
    */

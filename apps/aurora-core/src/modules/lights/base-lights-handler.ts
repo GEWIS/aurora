@@ -1,5 +1,5 @@
-import BaseHandler from './base-handler';
-import { LightsGroup } from '../lights/entities';
+import BaseHandler from '../root/base-handler';
+import { LightsGroup } from './entities';
 
 export default abstract class BaseLightsHandler extends BaseHandler<LightsGroup> {
   /**

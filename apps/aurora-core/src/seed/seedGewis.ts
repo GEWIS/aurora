@@ -1,6 +1,6 @@
 import RootAudioService from '../modules/root/root-audio-service';
 import RootScreenService from '../modules/root/root-screen-service';
-import RootLightsService from '../modules/root/root-lights-service';
+import RootLightsService from '../modules/lights/root-lights-service';
 import dataSource from '../database';
 import { LightsGroup, LightsMovingHeadWheel, LightsSwitch } from '../modules/lights/entities';
 import { RgbColor, WheelColor } from '../modules/lights/color-definitions';

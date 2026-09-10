@@ -1,13 +1,16 @@
 import { BaseEventEmitter } from './base-event-emitter';
-import BaseAudioHandler from '../handlers/base-audio-handler';
 import { TrackChangeEvent } from './music-emitter-events';
 
+interface AudioHandlerLike {
+  entities: { playing: boolean }[];
+}
+
 export class MusicEmitter extends BaseEventEmitter {
-  private audioHandlers: BaseAudioHandler[] = [];
+  private audioHandlers: AudioHandlerLike[] = [];
 
   private currentlyPlaying: TrackChangeEvent[] | null;
 
-  public registerAudioHandler(handler: BaseAudioHandler) {
+  public registerAudioHandler(handler: AudioHandlerLike) {
     this.audioHandlers.push(handler);
   }
 

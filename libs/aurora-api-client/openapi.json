@@ -1036,119 +1036,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"StrobeProps": {
-				"properties": {
-					"durationMs": {
-						"type": "integer",
-						"format": "int32",
-						"description": "Duration in milliseconds",
-						"minimum": 0
-					}
-				},
-				"type": "object",
-				"additionalProperties": false
-			},
-			"GroupFixtureDimmingParams": {
-				"properties": {
-					"relativeBrightness": {
-						"type": "number",
-						"format": "double",
-						"description": "Relative brightness of the fixture(s). Value in range [0, 1]",
-						"minimum": 0,
-						"maximum": 1
-					}
-				},
-				"required": [
-					"relativeBrightness"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"GroupFixtureOverrideParams": {
-				"properties": {
-					"dmxValues": {
-						"items": {
-							"type": "number",
-							"format": "double",
-							"nullable": true
-						},
-						"type": "array",
-						"description": "Slice of DMX channel values that should be send to the fixture.\nThe first value will be put on CH1, the second on CH2, the third on CH3, etc.\nUse \"null\" to indicate the channel should not be overriden."
-					}
-				},
-				"required": [
-					"dmxValues"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserResponse": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					},
-					"lastSeen": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"endpoints",
-					"lastSeen"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserCreateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
-				"required": [
-					"name",
-					"endpoints"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserUpdateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsControllerResponse": {
+			"AudioResponse": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -1179,7 +1067,58 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LightsControllerCreateParams": {
+			"AudioCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"defaultHandler": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"defaultHandler"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SetAudioPlayingParams": {
+				"properties": {
+					"playing": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"playing"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HandlerResponse_AudioResponse_": {
+				"properties": {
+					"entities": {
+						"items": {
+							"$ref": "#/components/schemas/AudioResponse"
+						},
+						"type": "array"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"entities",
+					"id",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NewHandlerParams": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -1191,7 +1130,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LightsSwitchResponse": {
+			"LightsControllerResponse": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -1208,24 +1147,16 @@
 					"name": {
 						"type": "string"
 					},
-					"dmxChannel": {
-						"type": "number",
-						"format": "double",
-						"description": "DMX channel this lights switch is on"
-					},
-					"onValue": {
-						"type": "number",
-						"format": "double",
-						"description": "DMX value to send to the channel to turn on the switch"
+					"socketIds": {
+						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
+						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
 					}
 				},
 				"required": [
 					"id",
 					"createdAt",
 					"updatedAt",
-					"name",
-					"dmxChannel",
-					"onValue"
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1765,649 +1696,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LightsInGroup": {
-				"properties": {
-					"fixtureId": {
-						"type": "number",
-						"format": "double"
-					},
-					"firstChannel": {
-						"type": "integer",
-						"format": "int32",
-						"minimum": 0
-					},
-					"positionX": {
-						"type": "number",
-						"format": "float",
-						"description": "Position of the fixture within the group's grid/line",
-						"minimum": 0
-					},
-					"positionY": {
-						"type": "number",
-						"format": "float",
-						"description": "Position of the fixture within the group's grid.\nShould be undefined if the group is a line of fixtures\n(and not a grid).",
-						"minimum": 0
-					}
-				},
-				"required": [
-					"fixtureId",
-					"firstChannel",
-					"positionX"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsGroupCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"defaultHandler": {
-						"type": "string"
-					},
-					"groupInMiddle": {
-						"type": "boolean",
-						"description": "Whether the group of lights is situated in the middle of the room, or at the side.\nHandlers can use this to determine which effects to use."
-					},
-					"gridSizeX": {
-						"type": "number",
-						"format": "float",
-						"description": "Size (width) of the X axis where all the fixtures are positioned.\nAll fixtures should have their positionX be in range [0, gridSizeX).",
-						"minimum": 0
-					},
-					"gridSizeY": {
-						"type": "number",
-						"format": "float",
-						"description": "Size (width) of the Y axis where all the fixtures are positioned.\n0 if the lights are positioned in a line (and not in a grid)",
-						"minimum": 0
-					},
-					"pars": {
-						"items": {
-							"$ref": "#/components/schemas/LightsInGroup"
-						},
-						"type": "array"
-					},
-					"movingHeadRgbs": {
-						"items": {
-							"$ref": "#/components/schemas/LightsInGroup"
-						},
-						"type": "array"
-					},
-					"movingHeadWheels": {
-						"items": {
-							"$ref": "#/components/schemas/LightsInGroup"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"name",
-					"defaultHandler",
-					"groupInMiddle",
-					"gridSizeX",
-					"pars",
-					"movingHeadRgbs",
-					"movingHeadWheels"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsSwitchCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"dmxChannel": {
-						"type": "number",
-						"format": "double",
-						"description": "DMX channel this lights switch is on"
-					},
-					"onValue": {
-						"type": "number",
-						"format": "double",
-						"description": "DMX value to send to the channel to turn on the switch"
-					}
-				},
-				"required": [
-					"name",
-					"dmxChannel",
-					"onValue"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ShutterOptionValues": {
-				"properties": {
-					"open": {
-						"type": "number",
-						"format": "double"
-					},
-					"strobe": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"open",
-					"strobe"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsParCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"nrChannels": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterOptionValues": {
-						"$ref": "#/components/schemas/ShutterOptionValues"
-					},
-					"masterDimChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorRedChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorGreenChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorBlueChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorColdWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorWarmWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorAmberChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorUvChannel": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"name",
-					"nrChannels",
-					"colorRedChannel",
-					"colorGreenChannel",
-					"colorBlueChannel"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsMovingHeadRgbCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"nrChannels": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterOptionValues": {
-						"$ref": "#/components/schemas/ShutterOptionValues"
-					},
-					"panChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"finePanChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"tiltChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"fineTiltChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"movingSpeedChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"basePanValue": {
-						"type": "number",
-						"format": "double"
-					},
-					"panMirrored": {
-						"type": "boolean"
-					},
-					"tiltMirrored": {
-						"type": "boolean"
-					},
-					"masterDimChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorRedChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorGreenChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorBlueChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorColdWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorWarmWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorAmberChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorUvChannel": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"name",
-					"nrChannels",
-					"panChannel",
-					"tiltChannel",
-					"colorRedChannel",
-					"colorGreenChannel",
-					"colorBlueChannel"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"LightsMovingHeadWheelCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"nrChannels": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterOptionValues": {
-						"$ref": "#/components/schemas/ShutterOptionValues"
-					},
-					"panChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"finePanChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"tiltChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"fineTiltChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"movingSpeedChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"basePanValue": {
-						"type": "number",
-						"format": "double"
-					},
-					"panMirrored": {
-						"type": "boolean"
-					},
-					"tiltMirrored": {
-						"type": "boolean"
-					},
-					"masterDimChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"shutterChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorWheelChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"colorWheelChannelValues": {
-						"items": {
-							"properties": {
-								"value": {
-									"type": "number",
-									"format": "double"
-								},
-								"name": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"value",
-								"name"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					},
-					"goboWheelChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"goboWheelChannelValues": {
-						"items": {
-							"properties": {
-								"value": {
-									"type": "number",
-									"format": "double"
-								},
-								"name": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"value",
-								"name"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					},
-					"goboRotateChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"goboRotateChannelValues": {
-						"items": {
-							"properties": {
-								"value": {
-									"type": "number",
-									"format": "double"
-								},
-								"name": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"value",
-								"name"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"name",
-					"nrChannels",
-					"panChannel",
-					"tiltChannel",
-					"masterDimChannel",
-					"colorWheelChannel",
-					"colorWheelChannelValues",
-					"goboWheelChannel",
-					"goboWheelChannelValues",
-					"goboRotateChannelValues"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"RgbColor": {
-				"enum": [
-					"white",
-					"red",
-					"green",
-					"blue",
-					"yellow",
-					"lightblue",
-					"orange",
-					"rosered",
-					"purple",
-					"cyan",
-					"pink",
-					"gold",
-					"brown",
-					"lightpink",
-					"lime",
-					"mint",
-					"uv",
-					"blindingwhite"
-				],
-				"type": "string"
-			},
-			"Required_IColorsRgb_": {
-				"properties": {
-					"redChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"greenChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"blueChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"coldWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"warmWhiteChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"amberChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"uvChannel": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"redChannel",
-					"greenChannel",
-					"blueChannel",
-					"coldWhiteChannel",
-					"warmWhiteChannel",
-					"amberChannel",
-					"uvChannel"
-				],
-				"type": "object",
-				"description": "Make all properties in T required"
-			},
-			"Pick_IColorsRgb.redChannel-or-greenChannel-or-blueChannel_": {
-				"properties": {
-					"redChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"blueChannel": {
-						"type": "number",
-						"format": "double"
-					},
-					"greenChannel": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"redChannel",
-					"blueChannel",
-					"greenChannel"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"RgbColorSpecification": {
-				"properties": {
-					"definitionLimited": {
-						"$ref": "#/components/schemas/Pick_IColorsRgb.redChannel-or-greenChannel-or-blueChannel_"
-					},
-					"hex": {
-						"$ref": "#/components/schemas/HexColor"
-					},
-					"complementary": {
-						"items": {
-							"$ref": "#/components/schemas/RgbColor"
-						},
-						"type": "array"
-					},
-					"alternative": {
-						"$ref": "#/components/schemas/WheelColor"
-					},
-					"definition": {
-						"$ref": "#/components/schemas/Required_IColorsRgb_"
-					}
-				},
-				"required": [
-					"definitionLimited",
-					"hex",
-					"complementary",
-					"alternative",
-					"definition"
-				],
-				"type": "object"
-			},
-			"LightsColorResponse": {
-				"properties": {
-					"color": {
-						"$ref": "#/components/schemas/RgbColor"
-					},
-					"spec": {
-						"$ref": "#/components/schemas/RgbColorSpecification"
-					}
-				},
-				"required": [
-					"color",
-					"spec"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"AudioResponse": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
-					},
-					"socketIds": {
-						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
-						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
-					}
-				},
-				"required": [
-					"id",
-					"createdAt",
-					"updatedAt",
-					"name"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"AudioCreateParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"defaultHandler": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name",
-					"defaultHandler"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"SetAudioPlayingParams": {
-				"properties": {
-					"playing": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"playing"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"HandlerResponse_AudioResponse_": {
-				"properties": {
-					"entities": {
-						"items": {
-							"$ref": "#/components/schemas/AudioResponse"
-						},
-						"type": "array"
-					},
-					"id": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"entities",
-					"id",
-					"name"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"NewHandlerParams": {
-				"properties": {
-					"name": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"HandlerResponse_LightsGroupResponse_": {
 				"properties": {
 					"entities": {
@@ -2451,6 +1739,72 @@
 					"id",
 					"name"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					},
+					"lastSeen": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"endpoints",
+					"lastSeen"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserCreateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
+				"required": [
+					"name",
+					"endpoints"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserUpdateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -3010,6 +2364,29 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"RgbColor": {
+				"enum": [
+					"white",
+					"red",
+					"green",
+					"blue",
+					"yellow",
+					"lightblue",
+					"orange",
+					"rosered",
+					"purple",
+					"cyan",
+					"pink",
+					"gold",
+					"brown",
+					"lightpink",
+					"lime",
+					"mint",
+					"uv",
+					"blindingwhite"
+				],
+				"type": "string"
+			},
 			"CenturionStateResponse": {
 				"properties": {
 					"tape": {
@@ -3095,6 +2472,629 @@
 					"events",
 					"horns",
 					"duration"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"StrobeProps": {
+				"properties": {
+					"durationMs": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Duration in milliseconds",
+						"minimum": 0
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GroupFixtureDimmingParams": {
+				"properties": {
+					"relativeBrightness": {
+						"type": "number",
+						"format": "double",
+						"description": "Relative brightness of the fixture(s). Value in range [0, 1]",
+						"minimum": 0,
+						"maximum": 1
+					}
+				},
+				"required": [
+					"relativeBrightness"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GroupFixtureOverrideParams": {
+				"properties": {
+					"dmxValues": {
+						"items": {
+							"type": "number",
+							"format": "double",
+							"nullable": true
+						},
+						"type": "array",
+						"description": "Slice of DMX channel values that should be send to the fixture.\nThe first value will be put on CH1, the second on CH2, the third on CH3, etc.\nUse \"null\" to indicate the channel should not be overriden."
+					}
+				},
+				"required": [
+					"dmxValues"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsControllerCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsSwitchResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
+					},
+					"dmxChannel": {
+						"type": "number",
+						"format": "double",
+						"description": "DMX channel this lights switch is on"
+					},
+					"onValue": {
+						"type": "number",
+						"format": "double",
+						"description": "DMX value to send to the channel to turn on the switch"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"updatedAt",
+					"name",
+					"dmxChannel",
+					"onValue"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsInGroup": {
+				"properties": {
+					"fixtureId": {
+						"type": "number",
+						"format": "double"
+					},
+					"firstChannel": {
+						"type": "integer",
+						"format": "int32",
+						"minimum": 0
+					},
+					"positionX": {
+						"type": "number",
+						"format": "float",
+						"description": "Position of the fixture within the group's grid/line",
+						"minimum": 0
+					},
+					"positionY": {
+						"type": "number",
+						"format": "float",
+						"description": "Position of the fixture within the group's grid.\nShould be undefined if the group is a line of fixtures\n(and not a grid).",
+						"minimum": 0
+					}
+				},
+				"required": [
+					"fixtureId",
+					"firstChannel",
+					"positionX"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsGroupCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"defaultHandler": {
+						"type": "string"
+					},
+					"groupInMiddle": {
+						"type": "boolean",
+						"description": "Whether the group of lights is situated in the middle of the room, or at the side.\nHandlers can use this to determine which effects to use."
+					},
+					"gridSizeX": {
+						"type": "number",
+						"format": "float",
+						"description": "Size (width) of the X axis where all the fixtures are positioned.\nAll fixtures should have their positionX be in range [0, gridSizeX).",
+						"minimum": 0
+					},
+					"gridSizeY": {
+						"type": "number",
+						"format": "float",
+						"description": "Size (width) of the Y axis where all the fixtures are positioned.\n0 if the lights are positioned in a line (and not in a grid)",
+						"minimum": 0
+					},
+					"pars": {
+						"items": {
+							"$ref": "#/components/schemas/LightsInGroup"
+						},
+						"type": "array"
+					},
+					"movingHeadRgbs": {
+						"items": {
+							"$ref": "#/components/schemas/LightsInGroup"
+						},
+						"type": "array"
+					},
+					"movingHeadWheels": {
+						"items": {
+							"$ref": "#/components/schemas/LightsInGroup"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"name",
+					"defaultHandler",
+					"groupInMiddle",
+					"gridSizeX",
+					"pars",
+					"movingHeadRgbs",
+					"movingHeadWheels"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsSwitchCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"dmxChannel": {
+						"type": "number",
+						"format": "double",
+						"description": "DMX channel this lights switch is on"
+					},
+					"onValue": {
+						"type": "number",
+						"format": "double",
+						"description": "DMX value to send to the channel to turn on the switch"
+					}
+				},
+				"required": [
+					"name",
+					"dmxChannel",
+					"onValue"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ShutterOptionValues": {
+				"properties": {
+					"open": {
+						"type": "number",
+						"format": "double"
+					},
+					"strobe": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"open",
+					"strobe"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsParCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"nrChannels": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterOptionValues": {
+						"$ref": "#/components/schemas/ShutterOptionValues"
+					},
+					"masterDimChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorRedChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorGreenChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorBlueChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorColdWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorWarmWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorAmberChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorUvChannel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"nrChannels",
+					"colorRedChannel",
+					"colorGreenChannel",
+					"colorBlueChannel"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsMovingHeadRgbCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"nrChannels": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterOptionValues": {
+						"$ref": "#/components/schemas/ShutterOptionValues"
+					},
+					"panChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"finePanChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"tiltChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"fineTiltChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"movingSpeedChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"basePanValue": {
+						"type": "number",
+						"format": "double"
+					},
+					"panMirrored": {
+						"type": "boolean"
+					},
+					"tiltMirrored": {
+						"type": "boolean"
+					},
+					"masterDimChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorRedChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorGreenChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorBlueChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorColdWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorWarmWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorAmberChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorUvChannel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"nrChannels",
+					"panChannel",
+					"tiltChannel",
+					"colorRedChannel",
+					"colorGreenChannel",
+					"colorBlueChannel"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LightsMovingHeadWheelCreateParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"nrChannels": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterOptionValues": {
+						"$ref": "#/components/schemas/ShutterOptionValues"
+					},
+					"panChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"finePanChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"tiltChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"fineTiltChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"movingSpeedChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"basePanValue": {
+						"type": "number",
+						"format": "double"
+					},
+					"panMirrored": {
+						"type": "boolean"
+					},
+					"tiltMirrored": {
+						"type": "boolean"
+					},
+					"masterDimChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"shutterChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorWheelChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"colorWheelChannelValues": {
+						"items": {
+							"properties": {
+								"value": {
+									"type": "number",
+									"format": "double"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"value",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"goboWheelChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"goboWheelChannelValues": {
+						"items": {
+							"properties": {
+								"value": {
+									"type": "number",
+									"format": "double"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"value",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"goboRotateChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"goboRotateChannelValues": {
+						"items": {
+							"properties": {
+								"value": {
+									"type": "number",
+									"format": "double"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"value",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"name",
+					"nrChannels",
+					"panChannel",
+					"tiltChannel",
+					"masterDimChannel",
+					"colorWheelChannel",
+					"colorWheelChannelValues",
+					"goboWheelChannel",
+					"goboWheelChannelValues",
+					"goboRotateChannelValues"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Required_IColorsRgb_": {
+				"properties": {
+					"redChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"greenChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"blueChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"coldWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"warmWhiteChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"amberChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"uvChannel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"redChannel",
+					"greenChannel",
+					"blueChannel",
+					"coldWhiteChannel",
+					"warmWhiteChannel",
+					"amberChannel",
+					"uvChannel"
+				],
+				"type": "object",
+				"description": "Make all properties in T required"
+			},
+			"Pick_IColorsRgb.redChannel-or-greenChannel-or-blueChannel_": {
+				"properties": {
+					"redChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"blueChannel": {
+						"type": "number",
+						"format": "double"
+					},
+					"greenChannel": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"redChannel",
+					"blueChannel",
+					"greenChannel"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"RgbColorSpecification": {
+				"properties": {
+					"definitionLimited": {
+						"$ref": "#/components/schemas/Pick_IColorsRgb.redChannel-or-greenChannel-or-blueChannel_"
+					},
+					"hex": {
+						"$ref": "#/components/schemas/HexColor"
+					},
+					"complementary": {
+						"items": {
+							"$ref": "#/components/schemas/RgbColor"
+						},
+						"type": "array"
+					},
+					"alternative": {
+						"$ref": "#/components/schemas/WheelColor"
+					},
+					"definition": {
+						"$ref": "#/components/schemas/Required_IColorsRgb_"
+					}
+				},
+				"required": [
+					"definitionLimited",
+					"hex",
+					"complementary",
+					"alternative",
+					"definition"
+				],
+				"type": "object"
+			},
+			"LightsColorResponse": {
+				"properties": {
+					"color": {
+						"$ref": "#/components/schemas/RgbColor"
+					},
+					"spec": {
+						"$ref": "#/components/schemas/RgbColorSpecification"
+					}
+				},
+				"required": [
+					"color",
+					"spec"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -7944,1733 +7944,6 @@
 				]
 			}
 		},
-		"/lights/group/{id}/strobe/enable": {
-			"post": {
-				"operationId": "EnableStrobeOnLightsGroup",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Enable the strobe for all fixtures in the given group",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": false,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/StrobeProps"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/group/{id}/strobe/disable": {
-			"post": {
-				"operationId": "DisableStrobeOnLightsGroup",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Disable the strobe for all fixtures in the given group",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/{id}/freeze": {
-			"post": {
-				"operationId": "FreezeLightsGroup",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Store the next state of all fixtures in the given LightsGroup and do not change them anymore\n(i.e. freeze the fixture in its current state)",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/{id}/unfreeze": {
-			"post": {
-				"operationId": "UnfreezeLightsGroup",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Unfreeze the DMX values",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/{id}/dimmer": {
-			"post": {
-				"operationId": "SetLightsGroupMasterDimmer",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					},
-					"404": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/GroupFixtureDimmingParams"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "ClearLightsGroupMasterDimmer",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					},
-					"404": {
-						"description": "",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/par/{id}/override": {
-			"post": {
-				"operationId": "SetGroupParOverride",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/group/par/{id}/reset": {
-			"post": {
-				"operationId": "ResetGroupPar",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/par/{id}/freeze": {
-			"post": {
-				"operationId": "FreezeGroupPar",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/par/{id}/unfreeze": {
-			"post": {
-				"operationId": "UnfreezeGroupPar",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Unfreeze the DMX values",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-rgb/{id}/override": {
-			"post": {
-				"operationId": "SetGroupMovingHeadRgbOverride",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/group/moving-head-rgb/{id}/reset": {
-			"post": {
-				"operationId": "ResetGroupMovingHeadRgb",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-rgb/{id}/freeze": {
-			"post": {
-				"operationId": "FreezeGroupMovingHeadRgb",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-rgb/{id}/unfreeze": {
-			"post": {
-				"operationId": "UnfreezeMovingHeadRgb",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Unfreeze the DMX values",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-wheel/{id}/override": {
-			"post": {
-				"operationId": "SetGroupMovingHeadWheelOverride",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/group/moving-head-wheel/{id}/reset": {
-			"post": {
-				"operationId": "ResetGroupMovingHeadWheel",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-wheel/{id}/freeze": {
-			"post": {
-				"operationId": "FreezeGroupMovingHeadWheel",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group/moving-head-wheel/{id}/unfreeze": {
-			"post": {
-				"operationId": "UnfreezeMovingHeadWheel",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "Unfreeze the DMX values",
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/switch/{id}/on": {
-			"post": {
-				"operationId": "TurnOnLightsSwitch",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/switch/{id}/off": {
-			"post": {
-				"operationId": "TurnOffLightsSwitch",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/user/integration/endpoints": {
-			"get": {
-				"operationId": "GetIntegrationEndpoints",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"type": "string"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get a list of all endpoints that an integration user could access.",
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/user/integration": {
-			"get": {
-				"operationId": "GetAllIntegrationUsers",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/IntegrationUserResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/user/integration/{id}": {
-			"get": {
-				"operationId": "GetSingleIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"patch": {
-				"operationId": "UpdateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteIntegrationUser",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/user/integration/{id}/key": {
-			"get": {
-				"operationId": "GetIntegrationUserKey",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/controller": {
-			"get": {
-				"operationId": "GetLightsControllers",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsControllerResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateLightsController",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LightsControllerResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsControllerCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/controller/{id}": {
-			"get": {
-				"operationId": "GetSingleLightsController",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LightsControllerResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/switch": {
-			"get": {
-				"operationId": "GetAllLightsSwitches",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsSwitchResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "enabled",
-						"required": false,
-						"schema": {
-							"type": "boolean"
-						}
-					}
-				]
-			}
-		},
-		"/lights/group": {
-			"get": {
-				"operationId": "GetLightsGroups",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsGroupResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/lights/group/{id}": {
-			"get": {
-				"operationId": "GetSingleLightsGroup",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LightsGroupResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/controller/{id}/groups": {
-			"get": {
-				"operationId": "GetControllerLightsGroups",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsGroupResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/lights/controller/{id}/group": {
-			"post": {
-				"operationId": "CreateLightsGroup",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LightsGroupResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsGroupCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/controller/{id}/switches": {
-			"get": {
-				"operationId": "GetControllerLightsSwitches",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsSwitchResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"post": {
-				"operationId": "CreateLightsSwitch",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/LightsSwitchResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsSwitchCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/fixture/par": {
-			"get": {
-				"operationId": "GetAllLightsPars",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/ParResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateLightsPar",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ParResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsParCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/fixture/moving-head/rgb": {
-			"get": {
-				"operationId": "GetAllLightsMovingHeadsRgb",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/MovingHeadRgbResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateLightsMovingHeadRgb",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/MovingHeadRgbResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsMovingHeadRgbCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/fixture/moving-head/wheel": {
-			"get": {
-				"operationId": "GetAllLightsMovingHeadsWheel",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/MovingHeadWheelResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateLightsMovingHeadWheel",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/MovingHeadWheelResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/LightsMovingHeadWheelCreateParams"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/effects": {
-			"get": {
-				"operationId": "GetAllLightsEffects",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"type": "string"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/lights/colors": {
-			"get": {
-				"operationId": "GetAllLightsColors",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/LightsColorResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Lights"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
-						]
-					},
-					{
-						"integration": [
-							"getAllLightsColors"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/audio": {
 			"get": {
 				"operationId": "GetAudios",
@@ -10062,6 +8335,256 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/user/integration/endpoints": {
+			"get": {
+				"operationId": "GetIntegrationEndpoints",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get a list of all endpoints that an integration user could access.",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/integration": {
+			"get": {
+				"operationId": "GetAllIntegrationUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IntegrationUserResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/integration/{id}": {
+			"get": {
+				"operationId": "GetSingleIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteIntegrationUser",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/user/integration/{id}/key": {
+			"get": {
+				"operationId": "GetIntegrationUserKey",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/orders": {
@@ -11247,6 +9770,1483 @@
 							"screen-subscriber",
 							"lights-subscriber",
 							"integration-user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/lights/group/{id}/strobe/enable": {
+			"post": {
+				"operationId": "EnableStrobeOnLightsGroup",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Enable the strobe for all fixtures in the given group",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StrobeProps"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/group/{id}/strobe/disable": {
+			"post": {
+				"operationId": "DisableStrobeOnLightsGroup",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Disable the strobe for all fixtures in the given group",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/{id}/freeze": {
+			"post": {
+				"operationId": "FreezeLightsGroup",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Store the next state of all fixtures in the given LightsGroup and do not change them anymore\n(i.e. freeze the fixture in its current state)",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/{id}/unfreeze": {
+			"post": {
+				"operationId": "UnfreezeLightsGroup",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Unfreeze the DMX values",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/{id}/dimmer": {
+			"post": {
+				"operationId": "SetLightsGroupMasterDimmer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupFixtureDimmingParams"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "ClearLightsGroupMasterDimmer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/par/{id}/override": {
+			"post": {
+				"operationId": "SetGroupParOverride",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/group/par/{id}/reset": {
+			"post": {
+				"operationId": "ResetGroupPar",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/par/{id}/freeze": {
+			"post": {
+				"operationId": "FreezeGroupPar",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/par/{id}/unfreeze": {
+			"post": {
+				"operationId": "UnfreezeGroupPar",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Unfreeze the DMX values",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-rgb/{id}/override": {
+			"post": {
+				"operationId": "SetGroupMovingHeadRgbOverride",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/group/moving-head-rgb/{id}/reset": {
+			"post": {
+				"operationId": "ResetGroupMovingHeadRgb",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-rgb/{id}/freeze": {
+			"post": {
+				"operationId": "FreezeGroupMovingHeadRgb",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-rgb/{id}/unfreeze": {
+			"post": {
+				"operationId": "UnfreezeMovingHeadRgb",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Unfreeze the DMX values",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-wheel/{id}/override": {
+			"post": {
+				"operationId": "SetGroupMovingHeadWheelOverride",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupFixtureOverrideParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/group/moving-head-wheel/{id}/reset": {
+			"post": {
+				"operationId": "ResetGroupMovingHeadWheel",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Perform the fixture's internal reset operation if possible. Do nothing otherwise",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-wheel/{id}/freeze": {
+			"post": {
+				"operationId": "FreezeGroupMovingHeadWheel",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group/moving-head-wheel/{id}/unfreeze": {
+			"post": {
+				"operationId": "UnfreezeMovingHeadWheel",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Unfreeze the DMX values",
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/switch/{id}/on": {
+			"post": {
+				"operationId": "TurnOnLightsSwitch",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/switch/{id}/off": {
+			"post": {
+				"operationId": "TurnOffLightsSwitch",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/controller": {
+			"get": {
+				"operationId": "GetLightsControllers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsControllerResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateLightsController",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsControllerResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsControllerCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/controller/{id}": {
+			"get": {
+				"operationId": "GetSingleLightsController",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsControllerResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/switch": {
+			"get": {
+				"operationId": "GetAllLightsSwitches",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsSwitchResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "enabled",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				]
+			}
+		},
+		"/lights/group": {
+			"get": {
+				"operationId": "GetLightsGroups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsGroupResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/lights/group/{id}": {
+			"get": {
+				"operationId": "GetSingleLightsGroup",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsGroupResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/controller/{id}/groups": {
+			"get": {
+				"operationId": "GetControllerLightsGroups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsGroupResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"lights-subscriber"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/lights/controller/{id}/group": {
+			"post": {
+				"operationId": "CreateLightsGroup",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsGroupResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsGroupCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/controller/{id}/switches": {
+			"get": {
+				"operationId": "GetControllerLightsSwitches",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsSwitchResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"lights-subscriber"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateLightsSwitch",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsSwitchResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsSwitchCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/fixture/par": {
+			"get": {
+				"operationId": "GetAllLightsPars",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ParResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateLightsPar",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ParResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsParCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/fixture/moving-head/rgb": {
+			"get": {
+				"operationId": "GetAllLightsMovingHeadsRgb",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/MovingHeadRgbResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateLightsMovingHeadRgb",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MovingHeadRgbResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsMovingHeadRgbCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/fixture/moving-head/wheel": {
+			"get": {
+				"operationId": "GetAllLightsMovingHeadsWheel",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/MovingHeadWheelResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateLightsMovingHeadWheel",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MovingHeadWheelResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LightsMovingHeadWheelCreateParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lights/effects": {
+			"get": {
+				"operationId": "GetAllLightsEffects",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/lights/colors": {
+			"get": {
+				"operationId": "GetAllLightsColors",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/LightsColorResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Lights"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber",
+							"integration-user"
+						]
+					},
+					{
+						"integration": [
+							"getAllLightsColors"
 						]
 					}
 				],

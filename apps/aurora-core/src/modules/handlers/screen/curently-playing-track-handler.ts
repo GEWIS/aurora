@@ -1,4 +1,4 @@
-import BaseScreenHandler from '../base-screen-handler';
+import BaseScreenHandler from '../../root/base-screen-handler';
 import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
 
 export default class CurrentlyPlayingTrackHandler extends BaseScreenHandler {

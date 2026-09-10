@@ -1,4 +1,4 @@
-import RootLightsService, { LightsInGroup } from '../modules/root/root-lights-service';
+import RootLightsService, { LightsInGroup } from '../modules/lights/root-lights-service';
 
 export async function seedDiscoFloor(
   width: number,

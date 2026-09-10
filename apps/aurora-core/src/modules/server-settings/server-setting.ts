@@ -1,39 +1,20 @@
 import { Column, Entity } from 'typeorm';
 import BaseEntity from '../root/entities/base-entity';
-import { SudoSOSSettings, SudoSOSSettingsDefault } from '../sudosos/sudosos-settings';
-import { ModeSettings, ModeSettingsDefaults } from '../modes/mode-settings';
-import {
-  ScreenHandlerSettings,
-  ScreenHandlerSettingsDefaults,
-} from '../handlers/screen/screen-handler-settings';
-import { OrderSettings, OrderSettingsDefault } from '../orders/order-settings';
-import {
-  PosterScreenHandlerSettings,
-  PosterScreenHandlerSettingsDefaults,
-} from '../handlers/screen/poster/poster-screen-handler-settings';
-import {
-  InfoScreenSettings,
-  InfoScreenSettingsDefaults,
-} from '../handlers/screen/info/info-screen-settings';
 import { jsonTransformer } from '../../helpers/transformers';
+import type {} from '../../register-settings';
 
-export interface ISettings
-  extends
-    SudoSOSSettings,
-    ModeSettings,
-    ScreenHandlerSettings,
-    PosterScreenHandlerSettings,
-    InfoScreenSettings,
-    OrderSettings {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ISettings {}
 
-export const SettingsDefaults: ISettings = {
-  ...SudoSOSSettingsDefault,
-  ...ModeSettingsDefaults,
-  ...ScreenHandlerSettingsDefaults,
-  ...PosterScreenHandlerSettingsDefaults,
-  ...InfoScreenSettingsDefaults,
-  ...OrderSettingsDefault,
-};
+const settingsDefaults: Partial<ISettings> = {};
+
+export function registerSettingsDefaults<T extends Partial<ISettings>>(defaults: T): void {
+  Object.assign(settingsDefaults, defaults);
+}
+
+export function getSettingsDefaults(): ISettings {
+  return settingsDefaults as ISettings;
+}
 
 /**
  * Key-value store

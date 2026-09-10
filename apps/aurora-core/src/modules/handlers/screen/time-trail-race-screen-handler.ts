@@ -1,4 +1,5 @@
-import BaseScreenHandler from '../base-screen-handler';
+import BaseScreenHandler from '../../root/base-screen-handler';
+import { FeatureEnabled } from '../../server-settings';
 import {
   RaceFinishedEvent,
   RaceInitializedEvent,
@@ -6,8 +7,7 @@ import {
   RacePlayerRegisteredEvent,
   RaceScoreboardEvent,
   RaceStartedEvent,
-} from '../../modes/time-trail-race/time-trail-race-events';
-import { FeatureEnabled } from '../../server-settings';
+} from '../../events/time-trail-race-events';
 
 @FeatureEnabled('TimeTrailRace')
 export default class TimeTrailRaceScreenHandler extends BaseScreenHandler {

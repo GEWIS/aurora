@@ -1,10 +1,10 @@
 import { Namespace } from 'socket.io';
 import { EventParams } from 'socket.io/dist/typed-events';
 import BaseHandler from './base-handler';
-import Screen from '../root/entities/screen';
+import Screen from './entities/screen';
 import { TrackChangeEvent } from '../events/music-emitter-events';
+import { ShowOrdersEvent } from '../events/order-emitter';
 import { SocketioNamespaces } from '../../socketio-namespaces';
-import { ShowOrdersEvent } from '../events/order-emitter-events';
 import { FeatureEnabled } from '../server-settings';
 
 export default abstract class BaseScreenHandler extends BaseHandler<Screen> {

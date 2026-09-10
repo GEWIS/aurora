@@ -1,4 +1,4 @@
-import MixTape, { FeedEvent } from './mix-tape';
+import MixTape, { FeedEvent } from '../../../lights/mix-tape';
 import centurion2Original from './gebroeders-scooter-centurion-2-original';
 
 const missingHorn: FeedEvent = {

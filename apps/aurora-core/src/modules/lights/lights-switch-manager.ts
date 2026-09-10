@@ -1,4 +1,4 @@
-import { LightsSwitch } from '../lights/entities';
+import { LightsSwitch } from './entities';
 
 export default class LightsSwitchManager {
   private static instance: LightsSwitchManager;

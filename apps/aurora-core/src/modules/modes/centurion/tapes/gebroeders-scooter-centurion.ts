@@ -1,4 +1,4 @@
-import MixTape from './mix-tape';
+import MixTape from '../../../lights/mix-tape';
 import SearchLight from '../../../lights/effects/movement/search-light';
 import { Fire, SingleFlood, StaticColor } from '../../../lights/effects/color';
 import { RgbColor } from '../../../lights/color-definitions';

@@ -5,7 +5,7 @@ import gebroedersScooterTotaleEscalatien from './gebroeders-scooter-totale-escal
 import gebroedersScooterTotaleEscalatieNegendarisch from './gebroeders-scooter-totale-escalatie-negendarisch';
 import athenaCenturion from './athena-centurion';
 import boomCenturion from './boom-centurion';
-import MixTape, { Horn } from './mix-tape';
+import MixTape, { Horn } from '../../../lights/mix-tape';
 
 const tapes = [
   gebroedersScooterCenturion,
@@ -62,4 +62,4 @@ export function validateTape(tape: MixTape) {
 
 export default tapes;
 
-export { default as MixTape } from './mix-tape';
+export { default as MixTape } from '../../../lights/mix-tape';

@@ -1,4 +1,5 @@
 import './env';
+import { registerAllSettings } from './register-settings';
 import { createServer } from 'http';
 import * as fs from 'fs';
 import path from 'node:path';
@@ -6,10 +7,11 @@ import logger from './logger';
 import createHttp from './http';
 import dataSource from './database';
 import HandlerManager from './modules/root/handler-manager';
+import { HandlerFactory } from './modules/handlers';
 import createWebsocket from './socketio';
 import './modules/audit/audit-logger';
 import { SpotifyApiHandler, SpotifyTrackHandler } from './modules/spotify';
-import LightsControllerManager from './modules/root/lights-controller-manager';
+import LightsControllerManager from './modules/lights/lights-controller-manager';
 import ModeManager from './modules/modes/mode-manager';
 import { BeatManager } from './modules/beats';
 import {
@@ -24,7 +26,7 @@ import { EmitterStore } from './modules/events';
 import Types from './types';
 import { OrderManager } from './modules/orders';
 import TimedEventsService from './modules/timed-events/timed-events-service';
-import LightsSwitchManager from './modules/root/lights-switch-manager';
+import LightsSwitchManager from './modules/lights/lights-switch-manager';
 import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
 import GewisKeyholderSyncService from './modules/handlers/screen/info/gewis-keyholder-sync-service';
 
@@ -47,6 +49,7 @@ async function createApp(): Promise<void> {
 
   await dataSource.initialize();
 
+  registerAllSettings();
   await ServerSettingsStore.getInstance().initialize();
   const featureFlagManager = new FeatureFlagManager();
   await TimedEventsService.getInstance().registerAllDatabaseEvents();
@@ -59,7 +62,12 @@ async function createApp(): Promise<void> {
   BeatManager.getInstance().init(emitterStore.beatEmitter);
 
   const lightsSwitchManager = LightsSwitchManager.getInstance();
-  const handlerManager = HandlerManager.getInstance(io, emitterStore);
+  const handlerFactory = new HandlerFactory(io, emitterStore.musicEmitter);
+  const handlerManager = HandlerManager.getInstance(io, emitterStore, {
+    audio: handlerFactory.createAudioHandlers(),
+    lights: handlerFactory.createLightHandlers(),
+    screen: handlerFactory.createScreenHandlers(),
+  });
   await handlerManager.init();
   const socketConnectionManager = new SocketConnectionManager(
     handlerManager,

@@ -14,13 +14,13 @@ import RootLightsService, {
   MovingHeadWheelResponse,
   ParResponse,
 } from './root-lights-service';
-import { LIGHTS_EFFECTS } from '../lights/effects';
+import { LIGHTS_EFFECTS } from './effects';
 import {
   RgbColor,
   rgbColorDefinitions,
   rgbColors,
   RgbColorSpecification,
-} from '../lights/color-definitions';
+} from './color-definitions';
 import { SecurityGroup, SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';
 import { Request as ExpressRequest } from 'express';

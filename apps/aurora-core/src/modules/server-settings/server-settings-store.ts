@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import ServerSetting, { ISettings, SettingsDefaults } from './server-setting';
+import ServerSetting, { ISettings, getSettingsDefaults } from './server-setting';
 import dataSource from '../../database';
 import { FileStorage } from '../files/storage/file-storage';
 import { DiskStorage } from '../files/storage';
@@ -64,9 +64,10 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
 
     const settings = await this.repo.find();
     const promises: Promise<ServerSetting>[] = [];
+    const settingsDefaults = getSettingsDefaults();
 
     // Save any new key-value pairs to the database if they don't yet exist
-    Object.entries(SettingsDefaults).forEach((entry) => {
+    Object.entries(settingsDefaults).forEach((entry) => {
       const key = entry[0] as keyof ISettings;
       const value = entry[1];
       const setting = settings.find((s) => s.key === key);
@@ -81,7 +82,7 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
     settings.push(...(await Promise.all(promises)));
 
     const map = new Map<ServerSetting['key'], ServerSetting['value']>();
-    Object.keys(SettingsDefaults).forEach((key) => {
+    Object.keys(settingsDefaults).forEach((key) => {
       const setting = settings.find((s) => s.key === key);
       if (!setting) throw new Error(`Setting "${key}" missing during initialization`);
       map.set(setting.key, setting.value);

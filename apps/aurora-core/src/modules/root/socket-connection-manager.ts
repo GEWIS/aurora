@@ -5,14 +5,14 @@ import HandlerManager from './handler-manager';
 import { AuthUser } from '../auth';
 import dataSource from '../../database';
 import { Audio, LightsController, Screen } from './entities';
-import BaseLightsHandler from '../handlers/base-lights-handler';
+import BaseLightsHandler from '../lights/base-lights-handler';
 import { LightsGroup } from '../lights/entities';
 import { SECURE_NAMESPACES, SocketioNamespaces } from '../../socketio-namespaces';
 import SubscribeEntity from './entities/subscribe-entity';
-import BaseHandler from '../handlers/base-handler';
+import BaseHandler from './base-handler';
 import logger from '../../logger';
 import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';
-import LightsSwitchManager from './lights-switch-manager';
+import LightsSwitchManager from '../lights/lights-switch-manager';
 import EntityStatusManager from './status-manager';
 
 export default class SocketConnectionManager {

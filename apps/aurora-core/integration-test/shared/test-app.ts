@@ -1,5 +1,6 @@
 import { Express } from 'express';
 import supertest, { type Agent as TestAgent } from 'supertest';
+import { registerAllSettings } from '@aurora/register-settings';
 import dataSource from '@aurora/database';
 import { createServer } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
@@ -7,6 +8,7 @@ import ServerSettingsStore from '@aurora/modules/server-settings/server-settings
 import { EmitterStore } from '@aurora/modules/events';
 import { BeatManager } from '@aurora/modules/beats';
 import HandlerManager from '@aurora/modules/root/handler-manager';
+import { HandlerFactory } from '@aurora/modules/handlers';
 import httpModule from '@aurora/http';
 
 export interface TestApp {
@@ -56,6 +58,7 @@ export class TestEnvironment {
           await dataSource.initialize();
         }
 
+        registerAllSettings();
         await ServerSettingsStore.getInstance().initialize();
         const emitterStore = EmitterStore.getInstance();
         BeatManager.getInstance().init(emitterStore.beatEmitter);
@@ -64,7 +67,12 @@ export class TestEnvironment {
 
         const httpServer = createServer(this.app);
         const io = new SocketIoServer(httpServer);
-        HandlerManager.getInstance(io, emitterStore);
+        const factory = new HandlerFactory(io, emitterStore.musicEmitter);
+        HandlerManager.getInstance(io, emitterStore, {
+          audio: factory.createAudioHandlers(),
+          lights: factory.createLightHandlers(),
+          screen: factory.createScreenHandlers(),
+        });
         await HandlerManager.getInstance().init();
 
         return this.app;

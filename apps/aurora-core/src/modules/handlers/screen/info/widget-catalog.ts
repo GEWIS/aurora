@@ -423,7 +423,7 @@ const CHILD_SETTINGS: Record<string, WidgetSetting[]> = {
 
 const RAW_CATALOG: Omit<WidgetCatalogItem, 'settings'>[] = [
   // Placeable panels
-  { id: 'clock', name: 'Time & date', category: 'information', icon: 'pi-clock', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 3, maxH: 2, modal: false }, // prettier-ignore
+  { id: 'clock', name: 'Time & date', category: 'information', icon: 'pi-clock', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 6, maxH: 4, modal: false }, // prettier-ignore
   { id: 'weather', name: 'Weather forecast', category: 'information', icon: 'pi-cloud', defaultW: 3, defaultH: 2, minW: 2, minH: 1, maxW: 4, maxH: 5, modal: false }, // prettier-ignore
   { id: 'room-responsible', name: 'Room responsibles', category: 'room', icon: 'pi-users', defaultW: 2, defaultH: 3, minW: 2, minH: 2, maxW: 3, maxH: 4, modal: false }, // prettier-ignore
   { id: 'beer', name: 'Beer time', category: 'room', icon: 'pi-star', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 2, maxH: 2, modal: false }, // prettier-ignore

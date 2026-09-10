@@ -49,7 +49,18 @@ export default class ValidationService {
   private async validateIcal(url: string): Promise<ValidationResult> {
     try {
       const { data } = await axios.get<string>(url, { responseType: 'text', timeout: TIMEOUT });
+      // A Google Calendar embed/share page answers 200 with HTML; without this
+      // check it would validate green and then parse to zero events forever.
+      if (!data.includes('BEGIN:VCALENDAR')) {
+        return {
+          valid: false,
+          message: 'The URL is reachable but is not an iCal feed (no VCALENDAR found).',
+        };
+      }
       const events = CalendarService.parse(data);
+      if (events.length === 0) {
+        return { valid: false, message: 'Calendar reachable, but no events were found.' };
+      }
       return { valid: true, message: `Calendar OK — ${events.length} event(s) parsed.` };
     } catch (e) {
       return { valid: false, message: `Could not fetch/parse the calendar: ${errMessage(e)}` };

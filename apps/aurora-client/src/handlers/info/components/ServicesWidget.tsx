@@ -21,6 +21,18 @@ const STATE_COLORS: Record<ServiceState, string> = {
   [ServiceState.UNKNOWN]: '#aaaaaa',
 };
 
+/** Anything but a clean `up` is worth looking at, matching the `onlyOffline` setting. */
+function needsAttention(state: ServiceState): boolean {
+  return state !== ServiceState.UP;
+}
+
+/** Unhealthy entries first, each block keeping the status page's own order. */
+function byState<T extends { state: ServiceState }>(entries: T[]): T[] {
+  return [...entries].sort(
+    (a, b) => Number(needsAttention(b.state)) - Number(needsAttention(a.state)),
+  );
+}
+
 function Dot({ state }: { state: ServiceState }) {
   return (
     <span
@@ -64,7 +76,11 @@ export default function ServicesWidget({ services: broadcast, settings }: Props)
   }
 
   const { groups } = services;
-  const unfolded = (state: ServiceState) => !onlyOffline || state !== ServiceState.UP;
+  const unfolded = (state: ServiceState) => !onlyOffline || needsAttention(state);
+  // Anything not fully up is pinned above the healthy entries, and freezes the
+  // scroller, so what is broken stays on screen instead of drifting past.
+  const groupsByState = byState(groups);
+  const anyAttention = groups.some((g) => needsAttention(g.state));
   // Rendered rows, so the scroller restarts when folding/unfolding changes what
   // there is to scroll through.
   const rows = groups.reduce((n, g) => n + 1 + (unfolded(g.state) ? g.services.length : 0), 0);
@@ -75,9 +91,9 @@ export default function ServicesWidget({ services: broadcast, settings }: Props)
         <div className="mb-3 shrink-0 text-2xl font-semibold">{services.summary}</div>
       )}
       <div className="min-h-0 flex-1">
-        <VerticalScroll visible items={rows} scrollEmptySpace>
+        <VerticalScroll visible paused={anyAttention} items={rows} scrollEmptySpace>
           <div className="flex flex-col gap-2">
-            {groups.map((group) => (
+            {groupsByState.map((group) => (
               <div key={group.name}>
                 <div className="flex items-center gap-2 text-xl">
                   <Dot state={group.state} />
@@ -87,7 +103,7 @@ export default function ServicesWidget({ services: broadcast, settings }: Props)
                 </div>
                 {unfolded(group.state) && (
                   <div className="ml-6 mt-1 flex flex-col gap-1">
-                    {group.services.map((s) => (
+                    {byState(group.services).map((s) => (
                       <div key={s.host} className="flex items-center gap-2 text-lg opacity-80">
                         <Dot state={s.state} />
                         <span>{s.host}</span>

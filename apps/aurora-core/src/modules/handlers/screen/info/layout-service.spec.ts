@@ -18,8 +18,8 @@ const child = (c: Partial<ChildWidget> & { id: string }): ChildWidget =>
 describe('LayoutService.sanitizePlacements', () => {
   it('clamps width/height to the catalog min/max span', () => {
     const [p] = LayoutService.sanitizePlacements([place({ id: 'clock', w: 8, h: 5 })]);
-    expect(p.w).toBe(3);
-    expect(p.h).toBe(2);
+    expect(p.w).toBe(6);
+    expect(p.h).toBe(4);
   });
 
   it('clamps x so the widget stays within the grid', () => {

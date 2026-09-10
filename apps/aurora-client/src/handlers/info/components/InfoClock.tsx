@@ -1,12 +1,48 @@
+import { CSSProperties } from 'react';
 import { formatHhMmSs } from '../countdown';
 import { sBool, sStr, WidgetSettings } from '../settings';
 import useSecondTick from '../useSecondTick';
-import DigitalTime from './DigitalTime';
+import DigitalTime, { timeEmWidth } from './DigitalTime';
 import AnalogClock from './AnalogClock';
 
 const HOUR_MS = 60 * 60 * 1000;
 const COUNTDOWN_WINDOW_HOURS = 44;
 const DEFAULT_TZ = 'Europe/Amsterdam';
+
+/** Average character width (em) of the date/label lines, which use no fixed cells. */
+const LABEL_CHAR_EM = 0.52;
+
+/** The widget fills its card and is queried for both axes, so text can scale to either. */
+const CONTAINER: CSSProperties = { containerType: 'size' };
+
+/** Caption size and gap as a fraction of the time above it. */
+const CAPTION_RATIO = 0.26;
+const CAPTION_GAP_RATIO = 0.08;
+
+/**
+ * Font size that fills the card: as wide as `em` characters allow, capped at
+ * `heightPct` of the card height so a short, wide card stays inside its bounds.
+ */
+function fitFont(em: number, heightPct: number): string {
+  return `min(${(96 / em).toFixed(2)}cqw, ${heightPct}cqh)`;
+}
+
+/** Width (cqw) at which a proportional label line still fits the card. */
+function labelWidthFit(text: string): string {
+  return `${(96 / (text.length * LABEL_CHAR_EM)).toFixed(2)}cqw`;
+}
+
+/**
+ * The line under the digital time. Sized off the time itself rather than the
+ * card, so the pair keeps its proportions as the widget grows, and still capped
+ * to the card width for long dates.
+ */
+function captionStyle(text: string, timeFont: string): CSSProperties {
+  return {
+    fontSize: `min(calc(${timeFont} * ${CAPTION_RATIO}), ${labelWidthFit(text)})`,
+    marginTop: `calc(${timeFont} * ${CAPTION_GAP_RATIO})`,
+  };
+}
 
 function pad(n: number): string {
   return Math.floor(Math.abs(n)).toString().padStart(2, '0');
@@ -69,11 +105,21 @@ export default function InfoClock({ settings }: Props) {
 
   if (mode === 'analog') {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 font-raleway text-white text-shadow">
+      <div
+        className="flex h-full w-full flex-col items-center justify-center gap-2 font-raleway text-white text-shadow"
+        style={CONTAINER}
+      >
         <div className="min-h-0 flex-1">
           <AnalogClock hours={h} minutes={m} seconds={s} showSeconds={showSeconds} />
         </div>
-        {showDate && <div className="shrink-0 text-xl opacity-80">{dateText}</div>}
+        {showDate && (
+          <div
+            className="shrink-0 leading-none opacity-80"
+            style={{ fontSize: `min(${labelWidthFit(dateText)}, 12cqh)` }}
+          >
+            {dateText}
+          </div>
+        )}
       </div>
     );
   }
@@ -84,10 +130,22 @@ export default function InfoClock({ settings }: Props) {
 
   if (withinWindow) {
     const sign = diffMs >= 0 ? '-' : '+';
+    const countdown = `${sign}${formatHhMmSs(diffMs)}`;
+    const label = 'until 1 July';
+    const timeFont = fitFont(timeEmWidth(countdown), 60);
     return (
-      <div className="flex flex-col items-end font-raleway text-white text-shadow">
-        <DigitalTime className="text-7xl tracking-tight" value={`${sign}${formatHhMmSs(diffMs)}`} />
-        <div className="text-2xl opacity-80">until 1 July</div>
+      <div
+        className="flex h-full w-full flex-col items-end justify-center font-raleway text-white text-shadow"
+        style={CONTAINER}
+      >
+        <DigitalTime
+          className="leading-none tracking-tight"
+          style={{ fontSize: timeFont }}
+          value={countdown}
+        />
+        <div className="leading-none opacity-80" style={captionStyle(label, timeFont)}>
+          {label}
+        </div>
       </div>
     );
   }
@@ -96,11 +154,23 @@ export default function InfoClock({ settings }: Props) {
   const time = showSeconds
     ? `${pad(displayHour)}:${pad(m)}:${pad(s)}`
     : `${pad(displayHour)}:${pad(m)}`;
+  const timeFont = fitFont(timeEmWidth(time), showDate ? 60 : 80);
 
   return (
-    <div className="flex flex-col items-end font-raleway text-white text-shadow">
-      <DigitalTime className="text-7xl tracking-tight" value={time} />
-      {showDate && <div className="text-2xl opacity-80">{dateText}</div>}
+    <div
+      className="flex h-full w-full flex-col items-end justify-center font-raleway text-white text-shadow"
+      style={CONTAINER}
+    >
+      <DigitalTime
+        className="leading-none tracking-tight"
+        style={{ fontSize: timeFont }}
+        value={time}
+      />
+      {showDate && (
+        <div className="leading-none opacity-80" style={captionStyle(dateText, timeFont)}>
+          {dateText}
+        </div>
+      )}
     </div>
   );
 }

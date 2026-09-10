@@ -31,6 +31,7 @@ export default function SpotifyBar({ track, settings }: Props) {
         <img src={track.cover} alt="cover" className="h-14 w-14 shrink-0 rounded" />
       )}
       <div className="flex min-w-0 flex-col leading-tight">
+        <span className="truncate text-sm uppercase tracking-wide text-white/50">Now playing</span>
         <span className="truncate text-2xl font-semibold">{track.title}</span>
         <span className="truncate text-xl italic opacity-80">{artist}</span>
       </div>

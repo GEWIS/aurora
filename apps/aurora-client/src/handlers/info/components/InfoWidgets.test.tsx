@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { PropsWithChildren } from 'react';
 import { render, screen } from '@testing-library/react';
 import { ServiceState } from '@gewis/aurora-api-client';
 import type {
@@ -11,6 +12,16 @@ import ServicesWidget from './ServicesWidget';
 import ConferenceRoomsWidget from './ConferenceRoomsWidget';
 import WeatherForecastWidget from './WeatherForecastWidget';
 import RainRadarChart from './RainRadarChart';
+
+// Only ServicesWidget scrolls here; render its content plainly and record whether
+// the scroller was told to hold still.
+const scrollPaused = vi.fn();
+vi.mock('../../../components/VerticalScroll', () => ({
+  default: ({ children, paused }: PropsWithChildren<{ paused?: boolean }>) => {
+    scrollPaused(paused);
+    return <div>{children}</div>;
+  },
+}));
 
 const services: ServicesHealthResponse = {
   summary: 'Most services are operational',
@@ -41,6 +52,19 @@ const rooms: ConferenceRoomsResponse = {
   ],
 };
 
+// Builders for the ordering tests, so each one states exactly the health it needs.
+const group = (name: string, state: ServiceState) => ({
+  name,
+  state,
+  services: [{ name, host: `${name}.host`, state }],
+});
+const health = (groups: ServicesHealthResponse['groups']): ServicesHealthResponse => ({
+  summary: 'summary',
+  groups,
+});
+const groupOrder = () =>
+  screen.getAllByText(/^(healthy|broken|planned)$/).map((el) => el.textContent);
+
 describe('ServicesWidget', () => {
   it('renders the summary and unfolds every group by default', () => {
     render(<ServicesWidget services={services} />);
@@ -69,6 +93,49 @@ describe('ServicesWidget', () => {
     expect(colors).toContain('rgb(220, 38, 38)'); // down  #dc2626
     expect(colors).toContain('rgb(92, 221, 139)'); // up    #5cdd8b
     expect(colors).toContain('rgb(23, 71, 245)'); // maintenance #1747f5
+  });
+
+  it('pins the groups that need attention above the healthy ones and holds the scroller', () => {
+    render(
+      <ServicesWidget
+        services={health([
+          group('healthy', ServiceState.UP),
+          group('broken', ServiceState.DOWN),
+          group('planned', ServiceState.MAINTENANCE),
+        ])}
+      />,
+    );
+    // Down and maintenance first; the healthy group drops below.
+    expect(groupOrder()).toEqual(['broken', 'planned', 'healthy']);
+    expect(scrollPaused).toHaveBeenLastCalledWith(true);
+  });
+
+  it('pins the offline service above the healthy ones inside its group', () => {
+    render(
+      <ServicesWidget
+        services={health([
+          {
+            ...group('broken', ServiceState.DOWN),
+            services: [
+              { name: 'up', host: 'up.host', state: ServiceState.UP },
+              { name: 'down', host: 'down.host', state: ServiceState.DOWN },
+            ],
+          },
+        ])}
+      />,
+    );
+    const order = screen.getAllByText(/\.host$/).map((el) => el.textContent);
+    expect(order).toEqual(['down.host', 'up.host']);
+  });
+
+  it('keeps the status page order and keeps scrolling while everything is up', () => {
+    render(
+      <ServicesWidget
+        services={health([group('healthy', ServiceState.UP), group('planned', ServiceState.UP)])}
+      />,
+    );
+    expect(groupOrder()).toEqual(['healthy', 'planned']);
+    expect(scrollPaused).toHaveBeenLastCalledWith(false);
   });
 
   it('shows a fallback when no data', () => {

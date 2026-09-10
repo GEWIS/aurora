@@ -55,7 +55,7 @@ const TITLES: Record<string, string | undefined> = {
   weather: 'Weather forecast',
   'room-responsible': undefined,
   beer: 'Beer time',
-  spotify: 'Spotify',
+  spotify: undefined,
   events: 'Events today',
   trains: 'Departures',
   news: undefined,

@@ -6,6 +6,8 @@ interface Props extends PropsWithChildren {
   items?: number;
   scrollEmptySpace?: boolean;
   delay?: number;
+  /** Hold the content at the top instead of scrolling it, for pinned content that must stay in view. */
+  paused?: boolean;
 }
 
 export default function VerticalScroll({
@@ -14,6 +16,7 @@ export default function VerticalScroll({
   timeout,
   items,
   scrollEmptySpace,
+  paused,
 }: Props) {
   // ReturnType used instead of number as one of the dependencies uses @types/node as dependency
   const [timeoutRef, setTimeoutRef] = useState<ReturnType<typeof setTimeout> | undefined>();
@@ -64,7 +67,12 @@ export default function VerticalScroll({
   }, [animate, timeoutRef]);
 
   useEffect(() => {
-    if (!containerRef || !childRef || !visible) return;
+    if (!containerRef || !childRef || !visible || paused) {
+      // Cancelling drops the transform, so pausing mid-scroll snaps back to the
+      // top rather than freezing part-way down.
+      childRef.current?.getAnimations?.().forEach((a) => a.cancel());
+      return;
+    }
 
     loopAnimate();
 
@@ -72,7 +80,7 @@ export default function VerticalScroll({
       if (timeoutRef) clearTimeout(timeoutRef);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO; should these be exhaustive?
-  }, [containerRef, childRef, visible, items, iteration]);
+  }, [containerRef, childRef, visible, paused, items, iteration]);
 
   return (
     <div ref={containerRef} className="w-full h-full overflow-hidden">

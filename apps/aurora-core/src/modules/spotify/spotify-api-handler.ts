@@ -85,8 +85,7 @@ export default class SpotifyApiHandler {
     return {
       ...token,
       expires: Date.now() + token.expires_in * 1000,
-      // A (new) refresh token is not returned, so reuse the old to make a correct AccessToken
-      refresh_token: accessToken.refresh_token,
+      refresh_token: token.refresh_token || accessToken.refresh_token,
     };
   }
 

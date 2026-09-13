@@ -370,6 +370,9 @@ importers:
       qs:
         specifier: 6.14.1
         version: 6.14.1
+      reflect-metadata:
+        specifier: 0.2.2
+        version: 0.2.2
       socket.io:
         specifier: 4.8.3
         version: 4.8.3(supports-color@5.5.0)
@@ -382,6 +385,9 @@ importers:
       tsoa:
         specifier: 7.0.0-alpha.0
         version: 7.0.0-alpha.0
+      tsyringe:
+        specifier: 4.10.0
+        version: 4.10.0
       typeorm:
         specifier: 0.3.28
         version: 0.3.28(babel-plugin-macros@3.1.0)(mysql2@3.16.1)(sqlite3@5.1.7(supports-color@5.5.0))(supports-color@5.5.0)(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@22.20.1)(typescript@5.9.3))
@@ -10007,6 +10013,10 @@ packages:
     resolution: {integrity: sha512-BL5MGkRln6aDYhb0xbQlEAGw743BaZYWdbWtdJOBriYJboKgUUYCadFp2/FpBBZquBC/ezNBn7wMMPx7FDZUDw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
+
+  tsyringe@4.10.0:
+    resolution: {integrity: sha512-axr3IdNuVIxnaK5XGEUFTu3YmAQ6lllgrvqfEoR16g/HGnYY/6We4oWENtAnzK6/LpJ2ur9PAb80RBt7/U4ugw==}
+    engines: {node: '>= 6.0.0'}
 
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
@@ -21925,6 +21935,10 @@ snapshots:
       esbuild: 0.28.2
     optionalDependencies:
       fsevents: 2.3.3
+
+  tsyringe@4.10.0:
+    dependencies:
+      tslib: 1.14.1
 
   tunnel-agent@0.6.0:
     dependencies:

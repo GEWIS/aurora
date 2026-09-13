@@ -160,6 +160,7 @@
     "authenticationModule": "src/modules/auth/authentication.ts",
     "basePath": "/api",
     "routesDir": "build",
-    "middleware": "express"
+    "middleware": "express",
+    "iocModule": "src/ioc"
   }
 }

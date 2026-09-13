@@ -2,7 +2,7 @@ import { Board, Card, Checklist, TrelloClient, TrelloList } from './client';
 import PosterService from '../local/poster-service';
 import axios from 'axios';
 import Poster, { FooterSize, PosterType } from '../local/poster';
-import dataSource from '../../../../../database';
+import { getDataSource } from '../../../../../database';
 import { FeatureEnabled } from '../../../../server-settings';
 
 interface CardEntry {
@@ -310,7 +310,7 @@ export class TrelloPosterManager {
     const list = lists.find((l) => l.name === basePosterListName);
     if (!list) throw new Error(`Could not find the list called "${basePosterListName}"`);
 
-    const repo = dataSource.getRepository(Poster);
+    const repo = getDataSource().getRepository(Poster);
 
     const desired = this.collectCards(list, board);
     const desiredById = new Map(desired.filter((d) => d.card.id).map((d) => [d.card.id!, d]));

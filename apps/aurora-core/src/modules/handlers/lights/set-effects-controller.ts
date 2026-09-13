@@ -1,4 +1,5 @@
 import { Controller, Patch, TsoaResponse } from '@tsoa/runtime';
+import { injectable } from 'tsyringe';
 import { Body, Delete, Get, Post, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import SetEffectsHandler from './set-effects-handler';
@@ -21,9 +22,14 @@ interface ColorsRequest {
   colors: RgbColor[];
 }
 
+@injectable()
 @Route('handler/lights/set-effects')
 @Tags('Handlers')
 export class SetEffectsController extends Controller {
+  constructor(private readonly handlerManager: HandlerManager) {
+    super();
+  }
+
   /**
    * Given a list of color effects to create, add the given effects to the lightsgroup with the
    * given ID. Remove all color effects if an empty array is given
@@ -38,7 +44,7 @@ export class SetEffectsController extends Controller {
     @Request() req: ExpressRequest,
     @Body() effects: LightsEffectsColorCreateParams[],
   ) {
-    const handler: SetEffectsHandler | undefined = HandlerManager.getInstance()
+    const handler: SetEffectsHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === SetEffectsHandler.name) as SetEffectsHandler | undefined;
     if (!handler) throw new Error('SetEffectsHandler not found');
@@ -76,7 +82,7 @@ export class SetEffectsController extends Controller {
     @Body() colors: ColorsRequest,
     @Res() notFoundResponse: TsoaResponse<HttpStatusCode.NotFound, { message: string }>,
   ) {
-    const handler: SetEffectsHandler | undefined = HandlerManager.getInstance()
+    const handler: SetEffectsHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === SetEffectsHandler.name) as SetEffectsHandler | undefined;
     if (!handler) throw new Error('SetEffectsHandler not found');
@@ -110,7 +116,7 @@ export class SetEffectsController extends Controller {
     @Request() req: ExpressRequest,
     @Body() effects: LightsEffectsMovementCreateParams[],
   ) {
-    const handler: SetEffectsHandler | undefined = HandlerManager.getInstance()
+    const handler: SetEffectsHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === SetEffectsHandler.name) as SetEffectsHandler | undefined;
     if (!handler) throw new Error('SetEffectsHandler not found');

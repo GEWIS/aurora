@@ -1,4 +1,5 @@
 import { Body, Get, Post, Request, Response, Route, Security, SuccessResponse, Tags } from 'tsoa';
+import { injectable } from 'tsyringe';
 import { Controller } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import ModeManager from '../mode-manager';
@@ -53,15 +54,13 @@ interface MixTapeResponse extends Pick<MixTape, 'name' | 'artist' | 'coverUrl'> 
   duration: number;
 }
 
+@injectable()
 @Route('modes/centurion')
 @Tags('Modes')
 @FeatureEnabled('Centurion')
 export class CenturionController extends Controller {
-  private modeManager: ModeManager;
-
-  constructor() {
+  constructor(private readonly modeManager: ModeManager) {
     super();
-    this.modeManager = ModeManager.getInstance();
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.centurion.base)

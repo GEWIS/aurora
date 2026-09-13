@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Res, Route, Security, Tags, Request } from 'tsoa';
+import { injectable } from 'tsyringe';
 import { TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import RootAudioService, { AudioCreateParams, AudioResponse } from './root-audio-service';
@@ -12,9 +13,14 @@ interface SetAudioPlayingParams {
   playing: boolean;
 }
 
+@injectable()
 @Route('audio')
 @Tags('Audios')
 export class RootAudioController extends Controller {
+  constructor(private readonly handlerManager: HandlerManager) {
+    super();
+  }
+
   @Security(SecurityNames.LOCAL, securityGroups.audio.base)
   @Get()
   public async getAudios(): Promise<AudioResponse[]> {
@@ -44,7 +50,7 @@ export class RootAudioController extends Controller {
 
     logger.debug(`Update playing state for audio ${id}: ${JSON.stringify(params)}`);
 
-    const audioHandlers = HandlerManager.getInstance().getHandlers(Audio);
+    const audioHandlers = this.handlerManager.getHandlers(Audio);
     audioHandlers.forEach((h) =>
       (h.entities as Audio[]).forEach((audio: Audio) => {
         if (audio.id === id) {

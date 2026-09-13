@@ -1,4 +1,5 @@
 import { Controller } from '@tsoa/runtime';
+import { injectable } from 'tsyringe';
 import { Body, Delete, Get, Post, Put, Route, Security, Tags } from 'tsoa';
 import EventSpec from './event-spec';
 import { SecurityNames } from '../../helpers/security';
@@ -18,14 +19,12 @@ interface TimedEventResponse {
   skipNext: boolean;
 }
 
+@injectable()
 @Route('timed-events')
 @Tags('Timed Events')
 export class TimedEventsController extends Controller {
-  private service: TimedEventsService;
-
-  constructor() {
+  constructor(private readonly service: TimedEventsService) {
     super();
-    this.service = TimedEventsService.getInstance();
   }
 
   public toTimedEventResponse(timedEvent: TimedEvent): TimedEventResponse {

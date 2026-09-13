@@ -1,4 +1,5 @@
 import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
+import { injectable } from 'tsyringe';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import HandlerManager from '../root/handler-manager';
@@ -37,9 +38,14 @@ interface GroupFixtureDimmingParams {
   relativeBrightness: number;
 }
 
+@injectable()
 @Route('lights')
 @Tags('Lights')
 export class RootLightsOperationsController extends Controller {
+  constructor(private readonly lightsSwitchManager: LightsSwitchManager) {
+    super();
+  }
+
   private getGroups(): LightsGroup[] {
     return new RootLightsOperationsService().getGroups();
   }
@@ -462,7 +468,7 @@ export class RootLightsOperationsController extends Controller {
       return;
     }
 
-    LightsSwitchManager.getInstance().enableSwitch(lightsSwitch);
+    this.lightsSwitchManager.enableSwitch(lightsSwitch);
 
     logger.audit(req.user, `Turn on lights switch "${lightsSwitch.name}"`);
   }
@@ -476,7 +482,7 @@ export class RootLightsOperationsController extends Controller {
       return;
     }
 
-    LightsSwitchManager.getInstance().disableSwitch(lightsSwitch);
+    this.lightsSwitchManager.disableSwitch(lightsSwitch);
 
     logger.audit(req.user, `Turn off lights switch "${lightsSwitch.name}"`);
   }

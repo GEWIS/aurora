@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import path from 'node:path';
 import logger from './logger';
 import createHttp from './http';
-import dataSource from './database';
+import { getDataSource } from './database';
 import HandlerManager from './modules/root/handler-manager';
 import { HandlerFactory } from './modules/handlers';
 import createWebsocket from './socketio';
@@ -47,7 +47,7 @@ async function createApp(): Promise<void> {
     fs.cpSync(audioFromPath, audioToPath, { recursive: true });
   }
 
-  await dataSource.initialize();
+  await getDataSource().initialize();
 
   registerAllSettings();
   await ServerSettingsStore.getInstance().initialize();

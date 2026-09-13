@@ -4,7 +4,7 @@ import BaseAudioHandler from './base-audio-handler';
 import BaseLightsHandler from '../lights/base-lights-handler';
 import SubscribeEntity from './entities/subscribe-entity';
 import BaseHandler from './base-handler';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsGroup } from '../lights/entities';
 import { BeatEvent, TrackChangeEvent } from '../events/music-emitter-events';
@@ -54,7 +54,7 @@ export default class HandlerManager {
     if (this.initialized) throw new Error('HandlerManager already initialized.');
     await Promise.all(
       Array.from(this._handlers.keys()).map(async (entity) => {
-        const entities = await dataSource.manager.find(entity);
+        const entities = await getDataSource().manager.find(entity);
         entities.forEach((instance) => {
           const handlers = this._handlers.get(instance.constructor as typeof SubscribeEntity);
           if (handlers === undefined)

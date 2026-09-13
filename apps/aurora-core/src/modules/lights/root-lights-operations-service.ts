@@ -1,4 +1,4 @@
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import {
   LightsGroup,
   LightsGroupMovingHeadRgbs,
@@ -36,28 +36,36 @@ export default class RootLightsOperationsService {
       });
     }
 
-    const dbLightsGroup = await dataSource.getRepository(LightsGroup).findOne({
-      where: { id },
-      relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
-    });
+    const dbLightsGroup = await getDataSource()
+      .getRepository(LightsGroup)
+      .findOne({
+        where: { id },
+        relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
+      });
     if (!dbLightsGroup) return;
 
     // Store the master brightness in the database, in case a lights group switches handlers
     if (dbLightsGroup.pars.length > 0)
-      await dataSource.getRepository(LightsGroupPars).update(
-        dbLightsGroup.pars.map((p) => p.id),
-        { masterRelativeBrightness },
-      );
+      await getDataSource()
+        .getRepository(LightsGroupPars)
+        .update(
+          dbLightsGroup.pars.map((p) => p.id),
+          { masterRelativeBrightness },
+        );
     if (dbLightsGroup.movingHeadRgbs.length > 0)
-      await dataSource.getRepository(LightsGroupMovingHeadRgbs).update(
-        dbLightsGroup.movingHeadRgbs.map((p) => p.id),
-        { masterRelativeBrightness },
-      );
+      await getDataSource()
+        .getRepository(LightsGroupMovingHeadRgbs)
+        .update(
+          dbLightsGroup.movingHeadRgbs.map((p) => p.id),
+          { masterRelativeBrightness },
+        );
     if (dbLightsGroup.movingHeadWheels.length > 0)
-      await dataSource.getRepository(LightsGroupMovingHeadWheels).update(
-        dbLightsGroup.movingHeadWheels.map((p) => p.id),
-        { masterRelativeBrightness },
-      );
+      await getDataSource()
+        .getRepository(LightsGroupMovingHeadWheels)
+        .update(
+          dbLightsGroup.movingHeadWheels.map((p) => p.id),
+          { masterRelativeBrightness },
+        );
   }
 
   /**

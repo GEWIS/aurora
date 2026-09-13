@@ -1,7 +1,6 @@
 import Carousel from './local-carousel';
 import CarouselPoster from './local-carousel-poster';
-import dataSource from '../../../../../database';
-
+import { getDataSource } from '../../../../../database';
 /**
  * Id of the single carousel currently in use. Once multiple carousels are
  * supported this hardcoded value can be replaced by a real selection.
@@ -14,11 +13,13 @@ export default class CarouselPosterService {
    * @param carouselId The id of the carousel to read.
    */
   public async getOrder(carouselId: number): Promise<number[]> {
-    const rows = await dataSource.getRepository(CarouselPoster).find({
-      where: { carouselId },
-      order: { ordering: 'ASC' },
-      select: { posterId: true },
-    });
+    const rows = await getDataSource()
+      .getRepository(CarouselPoster)
+      .find({
+        where: { carouselId },
+        order: { ordering: 'ASC' },
+        select: { posterId: true },
+      });
     return rows.map((row) => row.posterId);
   }
 
@@ -28,7 +29,7 @@ export default class CarouselPosterService {
    * @param posterIds The poster IDs in the desired display order.
    */
   public async setOrder(carouselId: number, posterIds: number[]): Promise<void> {
-    await dataSource.transaction(async (manager) => {
+    await getDataSource().transaction(async (manager) => {
       const carouselRepo = manager.getRepository(Carousel);
       const carousel =
         (await carouselRepo.findOne({ where: { id: carouselId } })) ??

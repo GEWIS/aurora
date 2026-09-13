@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import supertest, { type Agent as TestAgent } from 'supertest';
 import { registerAllSettings } from '@aurora/register-settings';
-import dataSource from '@aurora/database';
+import { getDataSource } from '@aurora/database';
 import { createServer } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import ServerSettingsStore from '@aurora/modules/server-settings/server-settings-store';
@@ -54,8 +54,8 @@ export class TestEnvironment {
     // Memoize the initialization promise to resolve concurrent race conditions
     if (!this.initPromise) {
       this.initPromise = (async () => {
-        if (!dataSource.isInitialized) {
-          await dataSource.initialize();
+        if (!getDataSource().isInitialized) {
+          await getDataSource().initialize();
         }
 
         registerAllSettings();
@@ -83,8 +83,8 @@ export class TestEnvironment {
   }
 
   public async destroyTestApp(): Promise<void> {
-    if (dataSource.isInitialized) {
-      await dataSource.destroy();
+    if (getDataSource().isInitialized) {
+      await getDataSource().destroy();
     }
     this.app = null;
     this.initPromise = null;

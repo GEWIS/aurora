@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { File } from '../../../../files/entities';
 import Poster, { FooterSize, PosterType } from './poster';
 import { DiskStorage } from '../../../../files/storage';
-import dataSource from '../../../../../database';
+import { getDataSource } from '../../../../../database';
 import { HttpApiException } from '../../../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 import FileResponse from '../../../../files/entities/file-response';
@@ -75,14 +75,16 @@ export interface PosterResponse {
 export default class PosterService {
   private storage: FileStorage;
 
-  private repo: Repository<Poster>;
+  private get repo(): Repository<Poster> {
+    return getDataSource().getRepository(Poster);
+  }
 
-  private fileRepo: Repository<File>;
+  private get fileRepo(): Repository<File> {
+    return getDataSource().getRepository(File);
+  }
 
   constructor() {
     this.storage = new DiskStorage('posters');
-    this.repo = dataSource.getRepository(Poster);
-    this.fileRepo = dataSource.getRepository(File);
   }
 
   /**
@@ -169,7 +171,7 @@ export default class PosterService {
 
     const fileParams = await this.storage.saveFile(filename, filedata);
     try {
-      return await dataSource.transaction(async (manager) => {
+      return await getDataSource().transaction(async (manager) => {
         const file = await manager.getRepository(File).save(fileParams);
         poster.files = [...(poster.files ?? []), file];
         return manager.getRepository(Poster).save(poster);
@@ -201,7 +203,7 @@ export default class PosterService {
    * @param params The fields of the poster to be updated as specified in UpdatePosterParams.
    */
   public async updatePoster(id: number, params: UpdatePosterRequest): Promise<Poster> {
-    return dataSource.transaction(async (manager) => {
+    return getDataSource().transaction(async (manager) => {
       const repo = manager.getRepository(Poster);
       const poster = await repo.findOneBy({ id });
       if (poster === null) {

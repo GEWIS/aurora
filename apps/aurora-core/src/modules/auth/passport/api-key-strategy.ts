@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as CustomStrategy } from 'passport-custom';
 import { HttpStatusCode } from 'axios';
 import { HttpApiException } from '../../../helpers/custom-error';
-import database from '../../../database';
+import { getDataSource } from '../../../database';
 import { ApiKey } from '../entities';
 
 passport.use(
@@ -12,10 +12,12 @@ passport.use(
       callback(new HttpApiException(HttpStatusCode.BadRequest, 'Missing API Key'), undefined);
     }
 
-    const identity = await database.getRepository(ApiKey).findOne({
-      where: { key: req.body.key },
-      relations: { audio: true, lightsController: true, screen: true, integrationUser: true },
-    });
+    const identity = await getDataSource()
+      .getRepository(ApiKey)
+      .findOne({
+        where: { key: req.body.key },
+        relations: { audio: true, lightsController: true, screen: true, integrationUser: true },
+      });
     if (!identity) {
       callback(new HttpApiException(HttpStatusCode.NotFound, 'Key not found'), undefined);
       return;

@@ -3,7 +3,7 @@ import { TypeormStore } from 'connect-typeorm';
 import { RequestHandler } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { Session } from './entities';
 
 export default class SessionMiddleware {
@@ -24,7 +24,7 @@ export default class SessionMiddleware {
       saveUninitialized: false,
       store: new TypeormStore({
         limitSubquery: false, // MariaDB
-      }).connect(dataSource.getRepository(Session)),
+      }).connect(getDataSource().getRepository(Session)),
     });
   }
 

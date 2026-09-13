@@ -1,4 +1,6 @@
+import 'reflect-metadata';
 import './env';
+import { container } from './ioc';
 import { registerAllSettings } from './register-settings';
 import { createServer } from 'http';
 import * as fs from 'fs';
@@ -69,6 +71,7 @@ async function createApp(): Promise<void> {
     screen: handlerFactory.createScreenHandlers(),
   });
   await handlerManager.init();
+  container.registerInstance(HandlerManager, handlerManager);
   const socketConnectionManager = new SocketConnectionManager(
     handlerManager,
     lightsSwitchManager,

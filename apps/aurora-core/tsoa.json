@@ -1,7 +1,9 @@
 {
   "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/**/*-controller.ts"],
+  "controllerPathGlobs": [
+    "src/**/*-controller.ts"
+  ],
   "spec": {
     "name": "Aurora Core API",
     "version": "1.0.0",
@@ -32,7 +34,10 @@
     "specFileBaseName": "openapi",
     "host": "",
     "specVersion": 3,
-    "schemes": ["http", "https"],
+    "schemes": [
+      "http",
+      "https"
+    ],
     "specMerging": "recursive",
     "spec": {
       "components": {
@@ -54,7 +59,9 @@
           },
           "ApiKeyParameters": {
             "type": "object",
-            "required": ["key"],
+            "required": [
+              "key"
+            ],
             "properties": {
               "key": {
                 "type": "string"
@@ -82,7 +89,9 @@
             },
             "security": [],
             "parameters": [],
-            "tags": ["Authentication"],
+            "tags": [
+              "Authentication"
+            ],
             "requestBody": {
               "content": {
                 "application/json": {
@@ -111,7 +120,9 @@
             },
             "security": [],
             "parameters": [],
-            "tags": ["Authentication"],
+            "tags": [
+              "Authentication"
+            ],
             "requestBody": {
               "required": true,
               "content": {
@@ -141,7 +152,9 @@
             },
             "security": [],
             "parameters": [],
-            "tags": ["Authentication"],
+            "tags": [
+              "Authentication"
+            ],
             "requestBody": {
               "content": {
                 "application/json": {
@@ -160,6 +173,7 @@
     "authenticationModule": "src/modules/auth/authentication.ts",
     "basePath": "/api",
     "routesDir": "build",
-    "middleware": "express"
+    "middleware": "express",
+    "iocModule": "src/ioc"
   }
 }

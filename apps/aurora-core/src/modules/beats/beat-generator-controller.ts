@@ -1,4 +1,5 @@
 import { Controller } from '@tsoa/runtime';
+import { injectable } from 'tsyringe';
 import { Body, Delete, Get, Post, Request, Route, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import { SimpleBeatGenerator, ArtificialBeatGeneratorParams } from './simple-beat-generator';
@@ -15,14 +16,18 @@ const REAL_TIME_BEAT_GENERATOR_ID = 'realtime';
 const REAL_TIME_BEAT_GENERATOR_NAME = 'Real Time Beat Detector';
 
 @Tags('Beat Generator')
+@injectable()
 @Route('beat-generator')
 export class BeatGeneratorController extends Controller {
+  constructor(private readonly beatManager: BeatManager) {
+    super();
+  }
+
   @Get('')
   @Security(SecurityNames.LOCAL, securityGroups.beats.privileged)
   public getAllBeatGenerators(): BeatGeneratorResponse[] {
-    const manager = BeatManager.getInstance();
-    const generators = manager.getAll();
-    return generators.map((g) => manager.asResponse(g));
+    const generators = this.beatManager.getAll();
+    return generators.map((g) => this.beatManager.asResponse(g));
   }
 
   /**
@@ -32,12 +37,11 @@ export class BeatGeneratorController extends Controller {
   @Post('real-time')
   @Security(SecurityNames.INTEGRATION, ['setRealTimeBeatDetector'])
   public setRealTimeBeatDetector(@Body() params: ArtificialBeatGeneratorParams) {
-    const manager = BeatManager.getInstance();
-    const generator = manager.get(REAL_TIME_BEAT_GENERATOR_ID);
+    const generator = this.beatManager.get(REAL_TIME_BEAT_GENERATOR_ID);
     if (generator) {
       (generator as SimpleBeatGenerator).setBpm(params.bpm);
     } else {
-      manager.add(
+      this.beatManager.add(
         new SimpleBeatGenerator(
           REAL_TIME_BEAT_GENERATOR_ID,
           REAL_TIME_BEAT_GENERATOR_NAME,
@@ -54,10 +58,9 @@ export class BeatGeneratorController extends Controller {
   @Delete('real-time')
   @Security(SecurityNames.INTEGRATION, ['stopRealTimeBeatDetector'])
   public stopRealTimeBeatDetector() {
-    const manager = BeatManager.getInstance();
-    const generator = manager.get(REAL_TIME_BEAT_GENERATOR_ID);
+    const generator = this.beatManager.get(REAL_TIME_BEAT_GENERATOR_ID);
     if (generator) {
-      manager.remove(generator.getId());
+      this.beatManager.remove(generator.getId());
     }
   }
 
@@ -65,8 +68,7 @@ export class BeatGeneratorController extends Controller {
   @Security(SecurityNames.INTEGRATION, ['getArtificialBeatGenerator'])
   @Get('artificial')
   public getArtificialBeatGenerator(): ArtificialBeatGeneratorParams | null {
-    const manager = BeatManager.getInstance();
-    const generator = manager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
+    const generator = this.beatManager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
     if (!generator) return null;
     return {
       bpm: (generator as SimpleBeatGenerator).bpm,
@@ -82,12 +84,11 @@ export class BeatGeneratorController extends Controller {
   ) {
     logger.audit(req.user, `Set Artificial Beat Generator BPM to "${params.bpm}".`);
 
-    const manager = BeatManager.getInstance();
-    const generator = manager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
+    const generator = this.beatManager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
     if (generator) {
-      manager.remove(generator.getId());
+      this.beatManager.remove(generator.getId());
     }
-    manager.add(
+    this.beatManager.add(
       new SimpleBeatGenerator(
         ARTIFICIAL_BEAT_GENERATOR_ID,
         ARTIFICIAL_BEAT_GENERATOR_NAME,
@@ -103,12 +104,11 @@ export class BeatGeneratorController extends Controller {
   public stopArtificialBeatGenerator(@Request() req: ExpressRequest) {
     logger.audit(req.user, 'Stop Artificial Beat Generator.');
 
-    const manager = BeatManager.getInstance();
-    const generator = manager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
+    const generator = this.beatManager.get(ARTIFICIAL_BEAT_GENERATOR_ID);
     if (!generator) {
       this.setStatus(404);
       return;
     }
-    manager.remove(generator.getId());
+    this.beatManager.remove(generator.getId());
   }
 }

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import AsyncLock from 'async-lock';
 import HandlerManager from './handler-manager';
 import { AuthUser } from '../auth';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { Audio, LightsController, Screen } from './entities';
 import BaseLightsHandler from '../lights/base-lights-handler';
 import { LightsGroup } from '../lights/entities';
@@ -70,13 +70,13 @@ export default class SocketConnectionManager {
    * crashed and is now restarted.
    */
   public async clearSavedSocketIds() {
-    const audioRepo = dataSource.getRepository(Audio);
+    const audioRepo = getDataSource().getRepository(Audio);
     await this.clearSavedSocketIdsForEntity(audioRepo);
 
-    const screenRepo = dataSource.getRepository(Screen);
+    const screenRepo = getDataSource().getRepository(Screen);
     await this.clearSavedSocketIdsForEntity(screenRepo);
 
-    const lightsControllerRepo = dataSource.getRepository(LightsController);
+    const lightsControllerRepo = getDataSource().getRepository(LightsController);
     await this.clearSavedSocketIdsForEntity(lightsControllerRepo);
   }
 
@@ -169,7 +169,7 @@ export default class SocketConnectionManager {
         }
         if (user.audioId) {
           await this.updateSocketIdForEntity(
-            dataSource.getRepository(Audio),
+            getDataSource().getRepository(Audio),
             user.audioId,
             this.handlerManager.getHandlers(Audio),
             namespace,
@@ -180,7 +180,7 @@ export default class SocketConnectionManager {
         }
         if (user.screenId) {
           await this.updateSocketIdForEntity(
-            dataSource.getRepository(Screen),
+            getDataSource().getRepository(Screen),
             user.screenId,
             this.handlerManager.getHandlers(Screen),
             namespace,
@@ -191,7 +191,7 @@ export default class SocketConnectionManager {
         }
         if (user.lightsControllerId) {
           const controller = await this.updateSocketIdForEntity(
-            dataSource.getRepository(LightsController),
+            getDataSource().getRepository(LightsController),
             user.lightsControllerId,
             [],
             namespace,

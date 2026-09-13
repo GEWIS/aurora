@@ -1,4 +1,4 @@
-import dataSource from '../database';
+import { getDataSource } from '../database';
 import { TimedEvent } from '../modules/timed-events/entities';
 import RootScreenService from '../modules/root/root-screen-service';
 import CarouselPosterHandler from '../modules/handlers/screen/poster/carousel-poster-handler';
@@ -8,7 +8,7 @@ import RootAudioService from '../modules/root/root-audio-service';
 import SimpleAudioHandler from '../modules/handlers/audio/simple-audio-handler';
 
 export default async function seedDatabaseHubble(): Promise<LightsGroup[]> {
-  const timedEventsRepo = dataSource.getRepository(TimedEvent);
+  const timedEventsRepo = getDataSource().getRepository(TimedEvent);
   await timedEventsRepo.save([
     {
       cronExpression: '39 5 * * *',

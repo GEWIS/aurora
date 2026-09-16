@@ -1,9 +1,21 @@
 import { Body, Delete, Post, Request, Route, Security, SuccessResponse, Tags } from 'tsoa';
 import { injectable } from 'tsyringe';
+import { container, registerPort } from '../../ioc';
 import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
 import { Request as ExpressRequest } from 'express';
 import ModeManager from './mode-manager';
+import HandlerManager from '../root/handler-manager';
+import ModeSession from './mode-session';
+import LightsControl from '../plugins/ports/lights-control';
+import AudioControl from '../plugins/ports/audio-control';
+import ScreenChannel from '../plugins/ports/screen-channel';
+import BeatSource from '../plugins/ports/beat-source';
+import BeatManager from '../beats/beat-manager';
+import SetEffectsHandler from '../handlers/lights/set-effects-handler';
+import SimpleAudioHandler from '../handlers/audio/simple-audio-handler';
+import { CenturionScreenHandler, TimeTrailRaceScreenHandler } from '../handlers/screen';
+import TimeTrailRaceLightsHandler from '../handlers/lights/time-trail-race-lights-handler';
 import SubscribeEntity from '../root/entities/subscribe-entity';
 import { LightsGroup } from '../lights/entities';
 import { Audio, Screen } from '../root/entities';
@@ -36,7 +48,11 @@ interface TimeTrailRaceParams extends EnableModeParams {
 @Route('modes')
 @Tags('Modes')
 export class ModeController extends Controller {
-  constructor(private readonly modeManager: ModeManager) {
+  constructor(
+    private readonly modeManager: ModeManager,
+    private readonly handlerManager: HandlerManager,
+    private readonly beatManager: BeatManager,
+  ) {
     super();
   }
 
@@ -92,8 +108,25 @@ export class ModeController extends Controller {
 
     const { lights, screens, audios } = await this.mapBodyToEntities(params);
 
-    await this.modeManager.enableMode(CenturionMode, 'centurion', async () => {
-      const centurionMode = new CenturionMode(lights, screens, audios);
+    const lightsHandler = this.handlerManager.requireHandler(LightsGroup, SetEffectsHandler);
+    const screenHandler = this.handlerManager.requireHandler(Screen, CenturionScreenHandler);
+    const audioHandler = this.handlerManager.requireHandler(Audio, SimpleAudioHandler);
+
+    const session = new ModeSession(this.handlerManager, [
+      { entities: lights, handler: lightsHandler },
+      { entities: screens, handler: screenHandler },
+      { entities: audios, handler: audioHandler },
+    ]);
+    session.claim();
+
+    await this.modeManager.enableMode(CenturionMode, 'centurion', session, async () => {
+      const scope = container.createChildContainer();
+      registerPort(scope, LightsControl, lightsHandler);
+      registerPort(scope, AudioControl, audioHandler);
+      registerPort(scope, ScreenChannel, screenHandler);
+      registerPort(scope, BeatSource, this.beatManager);
+
+      const centurionMode = scope.resolve(CenturionMode);
       await centurionMode.initialize(this.modeManager.musicEmitter);
       centurionMode.loadTape(tape);
       return centurionMode;
@@ -129,8 +162,28 @@ export class ModeController extends Controller {
 
     const { lights, screens, audios } = await this.mapBodyToEntities(params);
 
-    await this.modeManager.enableMode(TimeTrailRaceMode, 'time-trail-racing', () => {
-      const timeTrailRaceMode = new TimeTrailRaceMode(lights, screens, audios);
+    const lightsHandler = this.handlerManager.requireHandler(
+      LightsGroup,
+      TimeTrailRaceLightsHandler,
+    );
+    const screenHandler = this.handlerManager.requireHandler(Screen, TimeTrailRaceScreenHandler);
+    const audioHandler = this.handlerManager.requireHandler(Audio, SimpleAudioHandler);
+
+    const session = new ModeSession(this.handlerManager, [
+      { entities: lights, handler: lightsHandler },
+      { entities: screens, handler: screenHandler },
+      { entities: audios, handler: audioHandler },
+    ]);
+    session.claim();
+
+    await this.modeManager.enableMode(TimeTrailRaceMode, 'time-trail-racing', session, () => {
+      const scope = container.createChildContainer();
+      scope.registerInstance(TimeTrailRaceLightsHandler, lightsHandler);
+      registerPort(scope, AudioControl, audioHandler);
+      registerPort(scope, ScreenChannel, screenHandler);
+      registerPort(scope, BeatSource, this.beatManager);
+
+      const timeTrailRaceMode = scope.resolve(TimeTrailRaceMode);
       timeTrailRaceMode.initialize(this.modeManager.backofficeSyncEmitter, params.sessionName);
       return timeTrailRaceMode;
     });

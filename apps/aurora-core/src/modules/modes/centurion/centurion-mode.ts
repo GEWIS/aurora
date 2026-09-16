@@ -1,19 +1,20 @@
-import BaseMode from '../base-mode';
-import { LightsGroup, LightsSwitch } from '../../lights/entities';
-import { Audio, Screen } from '../../root/entities';
-import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
-import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
+import Mode from '../mode';
+import { injectable } from 'tsyringe';
+import ScreenChannel from '../../plugins/ports/screen-channel';
+import LightsControl from '../../plugins/ports/lights-control';
+import AudioControl from '../../plugins/ports/audio-control';
+import BeatSource from '../../plugins/ports/beat-source';
+import { LightsSwitch } from '../../lights/entities';
 import MixTape, { FeedEvent, Horn, Song, SongData } from '../../lights/mix-tape';
 import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
 import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
 import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
 import { MusicEmitter } from '../../events';
 import { TrackChangeEvent } from '../../events/music-emitter-events';
-import { CenturionScreenHandler } from '../../handlers/screen';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import Wave from '../../lights/effects/color/wave';
 import Sparkle from '../../lights/effects/color/sparkle';
-import { BeatManager, BeatPriorities, SimpleBeatGenerator } from '../../beats';
+import { BeatPriorities, SimpleBeatGenerator } from '../../beats';
 import logger from '../../../logger';
 import LightsSwitchManager from '../../lights/lights-switch-manager';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
@@ -22,21 +23,25 @@ import RootLightsService from '../../lights/root-lights-service';
 import {
   getRandomLightsEffectDirection,
   getRandomLightsEffectPattern,
-  LightsEffectDirection,
-  LightsEffectPattern,
 } from '../../lights/effects/lights-effect-pattern';
 
-const LIGHTS_HANDLER = 'SetEffectsHandler';
-const AUDIO_HANDLER = 'SimpleAudioHandler';
-const SCREEN_HANDLER = 'CenturionScreenHandler';
+export type CenturionScreenEvents = {
+  loaded: MixTape;
+  start: void;
+  stop: void;
+  change_colors: RgbColor[];
+  horn: { strobeTime: number; counter: number };
+};
+
 const STROBE_TIME = 1500; // Milliseconds
 
+// Decorator order matters: `@FeatureEnabled` replaces the class with a wrapper subclass,
+// and tsyringe records constructor parameters against the exact class it was applied to.
+// Applied innermost (below `@injectable`), it would hand back a wrapper the container knows
+// nothing about, and the mode would be constructed with no arguments at all.
+@injectable()
 @FeatureEnabled('Centurion')
-export default class CenturionMode extends BaseMode<
-  SetEffectsHandler,
-  CenturionScreenHandler,
-  SimpleAudioHandler
-> {
+export default class CenturionMode implements Mode {
   public tape: MixTape;
 
   private discoballs: LightsSwitch[] = [];
@@ -58,8 +63,6 @@ export default class CenturionMode extends BaseMode<
 
   public currentColors?: RgbColor[];
 
-  private beatManager: BeatManager;
-
   private beatGeneratorBackground: SimpleBeatGenerator;
 
   private beatGeneratorSong: SimpleBeatGenerator | undefined;
@@ -73,11 +76,13 @@ export default class CenturionMode extends BaseMode<
     return this.feedEvents.length > 0;
   }
 
-  constructor(lights: LightsGroup[], screens: Screen[], audios: Audio[]) {
-    super(lights, screens, audios, LIGHTS_HANDLER, SCREEN_HANDLER, AUDIO_HANDLER);
-
-    this.audioHandler.addSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
-    this.beatManager = BeatManager.getInstance();
+  constructor(
+    private readonly lightsControl: LightsControl,
+    private readonly audioControl: AudioControl,
+    private readonly screenChannel: ScreenChannel<CenturionScreenEvents>,
+    private readonly beatSource: BeatSource,
+  ) {
+    this.audioControl.addSyncTimingHandler(this.syncFeedEvents.bind(this));
   }
 
   public async initialize(musicEmitter: MusicEmitter) {
@@ -102,7 +107,7 @@ export default class CenturionMode extends BaseMode<
 
   public loadTape(tape: MixTape) {
     this.tape = tape;
-    this.screenHandler.loaded(tape);
+    this.screenChannel.emit('loaded', tape);
     logger.info(`Initialized centurion tape "${tape.name}"`);
   }
 
@@ -111,21 +116,21 @@ export default class CenturionMode extends BaseMode<
    */
   public start(): boolean {
     if (this.tape.songFile.startsWith('http')) {
-      this.audioHandler.play(this.tape.songFile, this.timestamp);
+      this.audioControl.play(this.tape.songFile, this.timestamp);
     } else {
-      this.audioHandler.play(`/static${this.tape.songFile}`, this.timestamp);
+      this.audioControl.play(`/static${this.tape.songFile}`, this.timestamp);
     }
 
     this.registerFeedEvents(this.timestamp);
     this.fireLastFeedEvent(this.timestamp);
 
-    this.screenHandler.start();
+    this.screenChannel.emit('start');
     this.beatGeneratorBackground = new SimpleBeatGenerator(
       'background',
       'Centurion (Background)',
       130,
     );
-    this.beatManager.add(this.beatGeneratorBackground, BeatPriorities.BACKGROUND_BEAT_GENERATOR);
+    this.beatSource.add(this.beatGeneratorBackground, BeatPriorities.BACKGROUND_BEAT_GENERATOR);
     logger.info('Started centurion playback.');
     return true;
   }
@@ -137,7 +142,7 @@ export default class CenturionMode extends BaseMode<
   public skip(seconds: number) {
     if (seconds < 0) throw new Error('Timestamp has to be positive');
     this.timestamp = seconds;
-    this.audioHandler.setPlayback(seconds);
+    this.audioControl.setPlayback(seconds);
 
     if (this.playing) {
       // Lazy solution for figuring out whether the discoball should be on:
@@ -158,11 +163,11 @@ export default class CenturionMode extends BaseMode<
    * Stop playing the given mixtape and all its effects
    */
   public stop() {
-    this.audioHandler.stop();
-    this.screenHandler.stop();
+    this.audioControl.stop();
+    this.screenChannel.emit('stop');
     this.stopFeedEvents();
     this.setSongBeatGenerator();
-    this.beatManager.remove(this.beatGeneratorBackground.getId());
+    this.beatSource.remove(this.beatGeneratorBackground.getId());
     logger.info('Paused centurion playback.');
 
     this.timestamp = (new Date().getTime() - this.startTime.getTime()) / 1000;
@@ -300,13 +305,13 @@ export default class CenturionMode extends BaseMode<
    */
   private setSongBeatGenerator(bpm?: number) {
     if (this.beatGeneratorSong) {
-      this.beatManager.remove(this.beatGeneratorSong.getId());
+      this.beatSource.remove(this.beatGeneratorSong.getId());
       this.beatGeneratorSong = undefined;
     }
 
     if (bpm) {
       this.beatGeneratorSong = new SimpleBeatGenerator('centurion', 'Centurion', bpm);
-      this.beatManager.add(this.beatGeneratorSong, BeatPriorities.CENTURION_BEAT_GENERATOR);
+      this.beatSource.add(this.beatGeneratorSong, BeatPriorities.CENTURION_BEAT_GENERATOR);
     }
   }
 
@@ -339,23 +344,23 @@ export default class CenturionMode extends BaseMode<
     const movingHeadEffectColor = StaticColor.build({ color: RgbColor.WHITE });
     const newEffectBuilder = this.getRandomParEffect(colorNames);
 
-    this.lights.forEach((l) => {
+    this.lightsControl.groups.forEach((l) => {
       // If we have a moving head, assign a movement effect
       if ((l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) && l.groupInMiddle) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectCenterBuilder]);
+        this.lightsControl.setMovementEffect(l, [newMovementEffectCenterBuilder]);
       }
       if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectSideBuilder]);
+        this.lightsControl.setMovementEffect(l, [newMovementEffectSideBuilder]);
       }
       // If we have a wheel moving head, assign a static color
       if (l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setColorEffect(l, [movingHeadEffectColor]);
+        this.lightsControl.setColorEffect(l, [movingHeadEffectColor]);
         // Otherwise use a random effect!
       } else {
-        this.lightsHandler.setColorEffect(l, [newEffectBuilder]);
+        this.lightsControl.setColorEffect(l, [newEffectBuilder]);
       }
     });
-    this.screenHandler.changeColors(colorNames);
+    this.screenChannel.emit('change_colors', colorNames);
   }
 
   /**
@@ -368,7 +373,7 @@ export default class CenturionMode extends BaseMode<
 
     if (event.type === 'horn') {
       this.lastHornEvent = event;
-      this.lights.forEach((l) => {
+      this.lightsControl.groups.forEach((l) => {
         l.pars.forEach((p) => p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME));
         l.movingHeadRgbs.forEach((p) =>
           p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME),
@@ -377,7 +382,10 @@ export default class CenturionMode extends BaseMode<
           p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME),
         );
       });
-      this.screenHandler.horn(event.data.strobeTime ?? STROBE_TIME, event.data.counter);
+      this.screenChannel.emit('horn', {
+        strobeTime: event.data.strobeTime ?? STROBE_TIME,
+        counter: event.data.counter,
+      });
     } else if (event.type === 'song') {
       this.lastSongEvent = event;
       this.setBpmFromSong(event.data);
@@ -398,7 +406,7 @@ export default class CenturionMode extends BaseMode<
           event.data.effects.movingHeadWheelMovement &&
           event.data.effects.movingHeadWheelMovement.length === 0);
 
-      this.lights.forEach((l) => {
+      this.lightsControl.groups.forEach((l) => {
         if (event.data.discoBall && isEffectDisableAll && !this.hasDiscoBall()) {
           // If we want to only have the disco ball turned on, but our setup does not have one,
           // we should just do random light effects
@@ -416,8 +424,8 @@ export default class CenturionMode extends BaseMode<
         }
         if (event.data.reset) {
           // Reset effect
-          this.lightsHandler.removeColorEffect(l);
-          this.lightsHandler.removeMovementEffect(l);
+          this.lightsControl.removeColorEffect(l);
+          this.lightsControl.removeMovementEffect(l);
           return;
         }
         if (event.data.random) {
@@ -429,23 +437,23 @@ export default class CenturionMode extends BaseMode<
         }
         if (l.pars.length > 0 && event.data.effects.pars) {
           // Color effect for pars
-          this.lightsHandler.setColorEffect(l, event.data.effects.pars);
+          this.lightsControl.setColorEffect(l, event.data.effects.pars);
         }
         if (l.movingHeadRgbs.length > 0) {
           // Color effect for moving head rgb
           if (event.data.effects.movingHeadRgbColor)
-            this.lightsHandler.setColorEffect(l, event.data.effects.movingHeadRgbColor);
+            this.lightsControl.setColorEffect(l, event.data.effects.movingHeadRgbColor);
           // Movement effect for moving head rgb
           if (event.data.effects.movingHeadRgbMovement)
-            this.lightsHandler.setMovementEffect(l, event.data.effects.movingHeadRgbMovement);
+            this.lightsControl.setMovementEffect(l, event.data.effects.movingHeadRgbMovement);
         }
         if (l.movingHeadWheels.length > 0) {
           // Color effect for moving head wheel
           if (event.data.effects.movingHeadWheelColor)
-            this.lightsHandler.setColorEffect(l, event.data.effects.movingHeadWheelColor);
+            this.lightsControl.setColorEffect(l, event.data.effects.movingHeadWheelColor);
           // Movement effect for moving head wheel
           if (event.data.effects.movingHeadWheelMovement)
-            this.lightsHandler.setMovementEffect(l, event.data.effects.movingHeadWheelMovement);
+            this.lightsControl.setMovementEffect(l, event.data.effects.movingHeadWheelMovement);
         }
       });
     } else if (event.type === 'bpm') {
@@ -525,7 +533,6 @@ export default class CenturionMode extends BaseMode<
    */
   public destroy() {
     this.stop();
-    this.audioHandler.removeSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
-    super.destroy();
+    this.audioControl.removeSyncTimingHandler(this.syncFeedEvents.bind(this));
   }
 }

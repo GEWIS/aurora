@@ -13,6 +13,8 @@ import { SocketioNamespaces } from '../../socketio-namespaces';
 import logger from '../../logger';
 import EmitterStore from '../events/emitter-store';
 
+export type HandlerClass<H> = abstract new (...args: never[]) => H;
+
 export interface HandlerSet {
   audio: BaseAudioHandler[];
   lights: BaseLightsHandler[];
@@ -99,6 +101,31 @@ export default class HandlerManager {
       this.instance = new HandlerManager(io!, emitterStore!, handlers!);
     }
     return this.instance;
+  }
+
+  /**
+   * The handler of the given class currently registered for the given entity type.
+   */
+  public findHandler<H extends BaseHandler<SubscribeEntity>>(
+    entity: typeof SubscribeEntity,
+    handler: HandlerClass<H>,
+  ): H | undefined {
+    return this.getHandlers(entity).find((candidate) => candidate instanceof handler) as
+      | H
+      | undefined;
+  }
+
+  /**
+   * As {@link findHandler}, but throws when the handler is not registered.
+   */
+  public requireHandler<H extends BaseHandler<SubscribeEntity>>(
+    entity: typeof SubscribeEntity,
+    handler: HandlerClass<H>,
+  ): H {
+    const found = this.findHandler(entity, handler);
+    if (!found) throw new Error(`Handler "${handler.name}" is not registered.`);
+
+    return found;
   }
 
   /**

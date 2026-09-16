@@ -16,3 +16,15 @@ export const iocContainer: IocContainer = {
     return container.get<T>(newable);
   },
 };
+
+/**
+ * Bind a port to the instance that satisfies it.
+ */
+export function registerPort<T>(
+  scope: Container,
+  port: abstract new (...args: never[]) => T,
+  instance: T,
+): void {
+  scope.bind(port).toConstantValue(instance);
+}
+

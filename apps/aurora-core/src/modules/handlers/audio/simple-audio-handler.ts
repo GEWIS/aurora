@@ -1,9 +1,10 @@
+import AudioControl from '../../plugins/ports/audio-control';
 import { Namespace } from 'socket.io';
 import BaseAudioHandler from '../../root/base-audio-handler';
 import { MusicEmitter } from '../../events';
 import logger from '../../../logger';
 
-export default class SimpleAudioHandler extends BaseAudioHandler {
+export default class SimpleAudioHandler extends BaseAudioHandler implements AudioControl {
   private socket: Namespace;
 
   private onSyncAudioTimings: ((params: { startTime: number; timestamp: number }) => void)[] = [];
@@ -24,9 +25,7 @@ export default class SimpleAudioHandler extends BaseAudioHandler {
    * Add an audio sync timing handler function
    * @param handler
    */
-  public addSyncAudioTimingHandler(
-    handler: (params: { startTime: number; timestamp: number }) => void,
-  ) {
+  public addSyncTimingHandler(handler: (params: { startTime: number; timestamp: number }) => void) {
     this.onSyncAudioTimings.push(handler);
   }
 
@@ -34,7 +33,7 @@ export default class SimpleAudioHandler extends BaseAudioHandler {
    * Remove an audio sync timing handler function
    * @param handler
    */
-  public removeSyncAudioTimingHandler(
+  public removeSyncTimingHandler(
     handler: (params: { startTime: number; timestamp: number }) => void,
   ) {
     this.onSyncAudioTimings = this.onSyncAudioTimings.filter((h) => h === handler);

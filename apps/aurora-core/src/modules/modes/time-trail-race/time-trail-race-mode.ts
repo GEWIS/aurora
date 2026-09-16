@@ -1,9 +1,9 @@
 import crypto from 'crypto';
-import BaseMode from '../base-mode';
-import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import TimeTrailRaceScreenHandler from '../../handlers/screen/time-trail-race-screen-handler';
-import { LightsGroup } from '../../lights/entities';
-import { Audio, Screen } from '../../root/entities';
+import { injectable } from 'inversify';
+import Mode from '../mode';
+import ScreenChannel from '../../plugins/ports/screen-channel';
+import AudioControl from '../../plugins/ports/audio-control';
+import BeatSource from '../../plugins/ports/beat-source';
 import { TimeTrailRaceState } from '../../events/time-trail-race-state';
 import { BackofficeSyncEmitter } from '../../events/backoffice-sync-emitter';
 import {
@@ -20,24 +20,27 @@ import {
   RaceStartedEvent,
 } from '../../events/time-trail-race-events';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
+
+/**
+ * The events the time trail race screen view listens for. Owned by this mode, not by Aurora.
+ */
+export type TimeTrailRaceScreenEvents = {
+  'race-initialized': RaceInitializedEvent;
+  'race-player-registered': RacePlayerRegisteredEvent;
+  'race-player-ready': RacePlayerReadyEvent;
+  'race-started': RaceStartedEvent;
+  'race-finished': RaceFinishedEvent;
+  'race-scoreboard': RaceScoreboardEvent;
+};
 import TimeTrailRaceLightsHandler from '../../handlers/lights/time-trail-race-lights-handler';
-import { SimpleBeatGenerator, BeatManager, BeatPriorities } from '../../beats';
+import { SimpleBeatGenerator, BeatPriorities } from '../../beats';
 import logger from '../../../logger';
 import { SpotifyTrackHandler } from '../../spotify';
 
-const LIGHTS_HANDLER = 'TimeTrailRaceLightsHandler';
-const SCREEN_HANDLER = 'TimeTrailRaceScreenHandler';
-const AUDIO_HANDLER = 'SimpleAudioHandler';
-
 const MUSIC_FILE = '/static/audio/benny-hill-theme.mp3';
 
-export default class TimeTrailRaceMode extends BaseMode<
-  TimeTrailRaceLightsHandler,
-  TimeTrailRaceScreenHandler,
-  SimpleAudioHandler
-> {
-  private beatManager: BeatManager;
-
+@injectable()
+export default class TimeTrailRaceMode implements Mode {
   private timeTrailBeatGenerator: SimpleBeatGenerator | undefined;
 
   private backofficeSyncEmitter: BackofficeSyncEmitter;
@@ -58,13 +61,14 @@ export default class TimeTrailRaceMode extends BaseMode<
 
   destroy(): void {
     this.stopBeats();
-    super.destroy();
   }
 
-  constructor(lights: LightsGroup[], screens: Screen[], audios: Audio[]) {
-    super(lights, screens, audios, LIGHTS_HANDLER, SCREEN_HANDLER, AUDIO_HANDLER);
-
-    this.beatManager = BeatManager.getInstance();
+  constructor(
+    private readonly lightsHandler: TimeTrailRaceLightsHandler,
+    private readonly audioControl: AudioControl,
+    private readonly screenChannel: ScreenChannel<TimeTrailRaceScreenEvents>,
+    private readonly beatSource: BeatSource,
+  ) {
     this.spotify = SpotifyTrackHandler.getInstance();
   }
 
@@ -81,7 +85,7 @@ export default class TimeTrailRaceMode extends BaseMode<
    */
   private stopBeats(): void {
     if (this.timeTrailBeatGenerator) {
-      this.beatManager.remove(this.timeTrailBeatGenerator.getId());
+      this.beatSource.remove(this.timeTrailBeatGenerator.getId());
       this.timeTrailBeatGenerator = undefined;
     }
   }
@@ -95,7 +99,7 @@ export default class TimeTrailRaceMode extends BaseMode<
       state: this._state,
       sessionName,
     };
-    this.screenHandler.initialized(event);
+    this.screenChannel.emit('race-initialized', event);
     this.backofficeSyncEmitter.emit('race-initialize', event);
 
     this.lightsHandler.setLightsToParty();
@@ -129,7 +133,7 @@ export default class TimeTrailRaceMode extends BaseMode<
       player: this.playerParams,
       scoreboard: this.scoreboard,
     };
-    this.screenHandler.playerRegistered(event);
+    this.screenChannel.emit('race-player-registered', event);
     this.backofficeSyncEmitter.emit('race-player-registered', event);
 
     logger.trace(`Time Trail Race player "${params.name}" registered`);
@@ -152,7 +156,7 @@ export default class TimeTrailRaceMode extends BaseMode<
       sessionName: this._sessionName,
       player: this.playerParams,
     };
-    this.screenHandler.playerReady(event);
+    this.screenChannel.emit('race-player-ready', event);
     this.backofficeSyncEmitter.emit('race-player-ready', event);
 
     this.lightsHandler.setLightsToWhite();
@@ -180,13 +184,13 @@ export default class TimeTrailRaceMode extends BaseMode<
       startTime: this.startTime,
       player: this.playerParams,
     };
-    this.screenHandler.started(event);
+    this.screenChannel.emit('race-started', event);
     this.backofficeSyncEmitter.emit('race-start', event);
-    this.audioHandler.play(MUSIC_FILE);
+    this.audioControl.play(MUSIC_FILE);
 
     this.lightsHandler.setLightsToParty();
     this.timeTrailBeatGenerator = new SimpleBeatGenerator('time-trail', 'Time Trail Race', 125);
-    this.beatManager.add(this.timeTrailBeatGenerator, BeatPriorities.TIME_TRAIL_BEAT_GENERATOR);
+    this.beatSource.add(this.timeTrailBeatGenerator, BeatPriorities.TIME_TRAIL_BEAT_GENERATOR);
 
     logger.trace(`Time trail race player started at ${this.startTime.toLocaleTimeString()}`);
 
@@ -218,9 +222,9 @@ export default class TimeTrailRaceMode extends BaseMode<
       player: this.lastScore,
       scoreboard: this.scoreboard,
     };
-    this.screenHandler.finished(event);
+    this.screenChannel.emit('race-finished', event);
     this.backofficeSyncEmitter.emit('race-finish', event);
-    this.audioHandler.stop();
+    this.audioControl.stop();
 
     this.lightsHandler.setLightsToWhite();
     this.stopBeats();
@@ -241,7 +245,7 @@ export default class TimeTrailRaceMode extends BaseMode<
       player: this.lastScore,
       scoreboard: this.scoreboard,
     };
-    this.screenHandler.showScoreboard(event);
+    this.screenChannel.emit('race-scoreboard', event);
     this.backofficeSyncEmitter.emit('race-scoreboard', event);
     this.stopBeats();
 

@@ -1,6 +1,7 @@
-import BaseMode from './base-mode';
-import { MusicEmitter } from '../events';
-import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';
+import Mode from './mode';
+import ModeSession from './mode-session';
+
+type ModeKey = abstract new (...args: never[]) => Mode;
 import EmitterStore from '../events/emitter-store';
 
 export default class ModeManager {
@@ -8,7 +9,7 @@ export default class ModeManager {
 
   private _emitterStore: EmitterStore;
 
-  private modes: Map<typeof BaseMode, BaseMode<any, any, any> | undefined> = new Map();
+  private modes: Map<ModeKey, { mode: Mode; session: ModeSession }> = new Map();
 
   private initialized = false;
 
@@ -25,9 +26,10 @@ export default class ModeManager {
     this.initialized = true;
   }
 
-  public async enableMode<T extends BaseMode<any, any, any>>(
-    modeClass: typeof BaseMode<any, any, any>,
+  public async enableMode<T extends Mode>(
+    modeClass: ModeKey,
     name: string,
+    session: ModeSession,
     createMode: () => T | Promise<T>,
   ): Promise<T> {
     // If an instance of this mode already exist, destroy it before creating a new one
@@ -35,18 +37,21 @@ export default class ModeManager {
 
     const mode = await createMode();
 
-    this.modes.set(modeClass, mode);
+    this.modes.set(modeClass, { mode, session });
     this._emitterStore.backofficeSyncEmitter.emit(`mode_${name}_update`);
     return mode;
   }
 
-  public getMode(modeClass: typeof BaseMode<any, any, any>) {
-    return this.modes.get(modeClass);
+  public getMode(modeClass: ModeKey) {
+    return this.modes.get(modeClass)?.mode;
   }
 
-  public disableMode(modeClass: typeof BaseMode<any, any, any>, name?: string) {
-    const instance = this.modes.get(modeClass);
-    if (instance) instance.destroy();
+  public disableMode(modeClass: ModeKey, name?: string) {
+    const running = this.modes.get(modeClass);
+    if (running) {
+      running.mode.destroy();
+      running.session.release();
+    }
     if (name) this._emitterStore.backofficeSyncEmitter.emit(`mode_${name}_update`);
     return this.modes.delete(modeClass);
   }
@@ -63,8 +68,9 @@ export default class ModeManager {
    * Stops all modes
    */
   public reset() {
-    this.modes.forEach((mode, modeClass) => {
-      mode?.destroy();
+    this.modes.forEach((running, modeClass) => {
+      running.mode.destroy();
+      running.session.release();
       this.modes.delete(modeClass);
     });
   }

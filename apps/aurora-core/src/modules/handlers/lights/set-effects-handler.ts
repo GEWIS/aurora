@@ -1,12 +1,16 @@
+import LightsControl from '../../plugins/ports/lights-control';
 import EffectsHandler, { GroupEffectsMap } from './effects-handler';
 import { LightsGroup } from '../../lights/entities';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import { LIGHTS_EFFECTS, LightsEffectsCreateParams } from '../../lights/effects';
 import { LightsEffectsColorCreateParams } from '../../lights/effects/color';
 import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement';
-import { RgbColor } from '../../lights/color-definitions';
 
-export default class SetEffectsHandler extends EffectsHandler {
+export default class SetEffectsHandler extends EffectsHandler implements LightsControl {
+  public get groups(): LightsGroup[] {
+    return this.entities;
+  }
+
   /**
    * Attach the given effect to the given lightsGroup
    * @param lightsGroup

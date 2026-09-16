@@ -1,9 +1,14 @@
 import BaseScreenHandler from '../../root/base-screen-handler';
 import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
-import { RgbColor } from '../../lights/color-definitions';
-import MixTape from '../../lights/mix-tape';
 import { FeatureEnabled } from '../../server-settings';
 
+/**
+ * Screens driven by Centurion.
+ *
+ * Centurion sends its own events through the `ScreenChannel` this provides, so those names
+ * and payloads live in `CenturionScreenEvents` rather than here. Beats and track changes
+ * come from the host rather than from the mode, so they are forwarded here.
+ */
 @FeatureEnabled('Centurion')
 export default class CenturionScreenHandler extends BaseScreenHandler {
   beat(event: BeatEvent): void {
@@ -12,25 +17,5 @@ export default class CenturionScreenHandler extends BaseScreenHandler {
 
   changeTrack(event: TrackChangeEvent[]): void {
     this.sendEvent('change_track', event);
-  }
-
-  changeColors(colors: RgbColor[]): void {
-    this.sendEvent('change_colors', colors);
-  }
-
-  horn(strobeTime: number, counter: number): void {
-    this.sendEvent('horn', { strobeTime, counter });
-  }
-
-  loaded(tape: MixTape): void {
-    this.sendEvent('loaded', tape);
-  }
-
-  start(): void {
-    this.sendEvent('start');
-  }
-
-  stop(): void {
-    this.sendEvent('stop');
   }
 }

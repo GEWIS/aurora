@@ -1,3 +1,4 @@
+import BeatSource from '../plugins/ports/beat-source';
 import { BeatGenerator } from './beat-generator';
 import { BeatEmitter, BeatEvent, GeneratorBeatEvent } from '../events';
 import BeatPropagator from './beat-propagator';
@@ -18,7 +19,7 @@ export interface BeatGeneratorResponse {
  * External interface class responsible for holding all beat generator instances and
  * transmitting the beats of the leading (highest-prio) generator.
  */
-export default class BeatManager {
+export default class BeatManager implements BeatSource {
   private static instance: BeatManager;
 
   private beatEmitter: BeatEmitter;

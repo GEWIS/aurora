@@ -2,6 +2,7 @@ import { describe, beforeAll, afterEach, it, expect, vi } from 'vitest';
 import axios, { AxiosError, type AxiosResponse } from 'axios';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
+import { stubOlympicsApi } from '../shared/olympics-api';
 
 let testApp: TestApp;
 
@@ -384,6 +385,9 @@ describe('GET /api/handler/screen/poster/carousel/olympics/medal-table', () => {
   });
 
   it('returns 200 with admin auth and medal table data', async () => {
+    // ARRANGE
+    stubOlympicsApi();
+
     // ACT
     const res = await testApp.authorizedAgent.get(
       '/api/handler/screen/poster/carousel/olympics/medal-table',
@@ -392,6 +396,7 @@ describe('GET /api/handler/screen/poster/carousel/olympics/medal-table', () => {
     // ASSERT
     expect(res.status).toBe(200);
     expect(res.body).toBeInstanceOf(Array);
+    expect(res.body[0]).toMatchObject({ countryName: 'United States', gold: 40, rank: 1 });
   });
 });
 
@@ -407,6 +412,9 @@ describe('GET /api/handler/screen/poster/carousel/olympics/country-medals', () =
   });
 
   it('returns 200 with admin auth and Dutch medals data', async () => {
+    // ARRANGE
+    stubOlympicsApi();
+
     // ACT
     const res = await testApp.authorizedAgent.get(
       '/api/handler/screen/poster/carousel/olympics/country-medals',

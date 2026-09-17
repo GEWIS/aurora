@@ -40,7 +40,10 @@
             show-clear
           >
             <template #option="{ option }">
-              <KeyholderLabel :is-self="option.memberId === authStore.getMemberId" :keyholder="option" />
+              <KeyholderLabel
+                :is-self="option.memberId === authStore.getMemberId"
+                :keyholder="option"
+              />
             </template>
             <template #value="{ value, placeholder: empty }">
               <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />
@@ -63,7 +66,10 @@
             show-clear
           >
             <template #option="{ option }">
-              <KeyholderLabel :is-self="option.memberId === authStore.getMemberId" :keyholder="option" />
+              <KeyholderLabel
+                :is-self="option.memberId === authStore.getMemberId"
+                :keyholder="option"
+              />
             </template>
             <template #value="{ value, placeholder: empty }">
               <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />

@@ -35,12 +35,12 @@
             fluid
             option-label="name"
             option-value="memberId"
-            :options="infoStore.keyholders"
+            :options="responsibleOptions"
             placeholder="Select a keyholder"
             show-clear
           >
             <template #option="{ option }">
-              <KeyholderLabel :keyholder="option" />
+              <KeyholderLabel :is-self="option.memberId === authStore.getMemberId" :keyholder="option" />
             </template>
             <template #value="{ value, placeholder: empty }">
               <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />
@@ -58,12 +58,12 @@
             fluid
             option-label="name"
             option-value="memberId"
-            :options="infoStore.keyholders"
+            :options="responsibleOptions"
             placeholder="Select a keyholder (optional)"
             show-clear
           >
             <template #option="{ option }">
-              <KeyholderLabel :keyholder="option" />
+              <KeyholderLabel :is-self="option.memberId === authStore.getMemberId" :keyholder="option" />
             </template>
             <template #value="{ value, placeholder: empty }">
               <KeyholderLabel v-if="keyholderById(value)" :keyholder="keyholderById(value)!" />
@@ -243,8 +243,10 @@ import { type KeyholderResponse, type RoomStatusResponse } from '@gewis/aurora-a
 import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
+import { useAuthStore } from '@/stores/auth.store';
 
 const infoStore = useInfoStore();
+const authStore = useAuthStore();
 
 // --- GEWIS keyholder sync ---------------------------------------------------
 
@@ -276,6 +278,13 @@ function keyholderById(memberId: number | null | undefined): KeyholderResponse |
   if (memberId == null) return undefined;
   return infoStore.keyholders.find((k) => k.memberId === memberId);
 }
+
+/** The keyholders for the responsible-person pickers, with the logged-in user pinned first. */
+const responsibleOptions = computed(() => {
+  const self = keyholderById(authStore.getMemberId);
+  if (!self) return infoStore.keyholders;
+  return [self, ...infoStore.keyholders.filter((k) => k !== self)];
+});
 
 interface RoomForm {
   open: boolean;

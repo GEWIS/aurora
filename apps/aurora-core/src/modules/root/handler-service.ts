@@ -1,5 +1,5 @@
 import HandlerManager from './handler-manager';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsGroup } from '../lights/entities';
 import ModeManager from '../modes/mode-manager';
@@ -17,9 +17,9 @@ export default class HandlerService {
   }
 
   async resetToDefaults() {
-    const audios = await dataSource.getRepository(Audio).find();
-    const screens = await dataSource.getRepository(Screen).find();
-    const lights = await dataSource.getRepository(LightsGroup).find();
+    const audios = await getDataSource().getRepository(Audio).find();
+    const screens = await getDataSource().getRepository(Screen).find();
+    const lights = await getDataSource().getRepository(LightsGroup).find();
 
     // Set all subscribers to their default handlers (can be none)
     audios.forEach((audio) => this.handlerManager.registerHandler(audio, audio.defaultHandler));

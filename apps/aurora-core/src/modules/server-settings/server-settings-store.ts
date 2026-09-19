@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import ServerSetting, { ISettings, getSettingsDefaults } from './server-setting';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { FileStorage } from '../files/storage/file-storage';
 import { DiskStorage } from '../files/storage';
 
@@ -20,12 +20,19 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
 
   private initialized = false;
 
-  private repo: Repository<ServerSetting>;
-
   private settings: ISettings;
 
-  constructor() {
-    this.repo = dataSource.getRepository(ServerSetting);
+  /**
+   * Resolved on first use rather than in the constructor.
+   *
+   * `FeatureEnabled` is a decorator factory, so its body — which calls
+   * `getInstance()` — runs when a decorated class is *defined*, i.e. on import. Taking
+   * the repository in the constructor therefore constructed the DataSource at import
+   * time for all 24 modules using the decorator, which is the side effect this store
+   * must not reintroduce. See `src/database.spec.ts`.
+   */
+  private get repo(): Repository<ServerSetting> {
+    return getDataSource().getRepository(ServerSetting);
   }
 
   /**

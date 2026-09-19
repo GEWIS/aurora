@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { ApiKey } from './entities';
 import logger from '../../logger';
 
@@ -30,7 +30,7 @@ export default async function apiKeyMiddleware(req: Request, res: Response, next
 
   try {
     // Find the user in the database
-    const identity = await dataSource.getRepository(ApiKey).findOne({ where: { key } });
+    const identity = await getDataSource().getRepository(ApiKey).findOne({ where: { key } });
     if (identity) {
       req.user = identity.asAuthUser();
     }

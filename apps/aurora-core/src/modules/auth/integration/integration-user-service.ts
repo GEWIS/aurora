@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import IntegrationUser from './entities/integration-user';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { HttpApiException } from '../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 import IntegrationEndpointManager from './integration-endpoint-manager';
@@ -21,7 +21,7 @@ export default class IntegrationUserService {
   private repo: Repository<IntegrationUser>;
 
   constructor(repo?: Repository<IntegrationUser>) {
-    this.repo = repo ?? dataSource.getRepository(IntegrationUser);
+    this.repo = repo ?? getDataSource().getRepository(IntegrationUser);
   }
 
   public static asResponse(user: IntegrationUser): IntegrationUserResponse {

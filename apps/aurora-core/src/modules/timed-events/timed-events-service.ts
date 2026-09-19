@@ -1,7 +1,7 @@
 import CronManager, { CronExpressionError } from './cron-manager';
 import { Repository } from 'typeorm';
 import { HttpApiException, HttpStatusCode } from '../../helpers/custom-error';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { TimedEvent } from './entities';
 import logger from '../../logger';
 
@@ -15,11 +15,12 @@ export default class TimedEventsService {
 
   private cronManager: CronManager;
 
-  private repo: Repository<TimedEvent>;
+  private get repo(): Repository<TimedEvent> {
+    return getDataSource().getRepository(TimedEvent);
+  }
 
   constructor() {
     this.cronManager = new CronManager(this.eventIsSkipped.bind(this));
-    this.repo = dataSource.getRepository(TimedEvent);
   }
 
   public static getInstance() {

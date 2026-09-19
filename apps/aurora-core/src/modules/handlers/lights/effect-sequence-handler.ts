@@ -3,7 +3,7 @@ import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
 import { LightsGroup } from '../../lights/entities';
 import { LightsTrackEffect } from '../../lights/entities/sequences/lights-track-effect';
 import LightsEffect from '../../lights/effects/lights-effect';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { MusicEmitter } from '../../events';
 import logger from '../../../logger';
 import { databaseEffectToObject } from './database-effects-helper';
@@ -170,7 +170,7 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
 
     this.stopSequence(true);
 
-    dataSource
+    getDataSource()
       .getRepository(LightsTrackEffect)
       .find({
         where: { trackUri: event.trackURI },

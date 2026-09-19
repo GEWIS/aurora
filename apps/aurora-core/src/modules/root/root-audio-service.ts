@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Audio } from './entities';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import AuthService from '../auth/auth-service';
 
 export interface AudioResponse extends Pick<
@@ -11,10 +11,8 @@ export interface AudioResponse extends Pick<
 export interface AudioCreateParams extends Pick<Audio, 'name' | 'defaultHandler'> {}
 
 export default class RootAudioService {
-  private repository: Repository<Audio>;
-
-  constructor() {
-    this.repository = dataSource.getRepository(Audio);
+  private get repository(): Repository<Audio> {
+    return getDataSource().getRepository(Audio);
   }
 
   public static toAudioResponse(audio: Audio): AudioResponse {

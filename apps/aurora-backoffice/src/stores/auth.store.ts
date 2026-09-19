@@ -28,6 +28,7 @@ import { useServerSettingsStore } from '@/stores/server-settings.store';
  * @param securityGroups - The security groups
  */
 interface AuthStore {
+  id: string | null;
   name: string | null;
   roles: SecurityGroup[];
   securityGroups?: ISecurityGroups;
@@ -36,6 +37,7 @@ interface AuthStore {
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthStore => ({
+    id: null,
     name: null,
     roles: [],
     securityGroups: undefined,
@@ -43,6 +45,10 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     getName: (state) => state.name,
+    getMemberId: (state): number | null => {
+      const match = state.id?.match(/^m(\d+)$/);
+      return match ? Number(match[1]) : null;
+    },
     getRoles: (state) => state.roles,
     getSecurityGroups: (state) => state.securityGroups,
     getAuthenticating: (state) => state.authenticating,
@@ -65,6 +71,7 @@ export const useAuthStore = defineStore('auth', {
         return false;
       }
 
+      this.id = user.data.id;
       this.name = user.data.name;
       this.roles = user.data.roles;
       this.securityGroups = securityGroups.data;
@@ -94,6 +101,7 @@ export const useAuthStore = defineStore('auth', {
         return false;
       }
 
+      this.id = user.data.id;
       this.name = user.data.name;
       this.roles = user.data.roles;
       this.securityGroups = securityGroups.data;
@@ -116,6 +124,7 @@ export const useAuthStore = defineStore('auth', {
       this.authenticating = false;
       if (!user.data || !securityGroups.data) return false;
 
+      this.id = user.data.id;
       this.name = user.data.name;
       this.roles = user.data.roles;
       this.securityGroups = securityGroups.data;

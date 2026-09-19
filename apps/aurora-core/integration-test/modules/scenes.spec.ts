@@ -1,12 +1,34 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
+import HandlerManager from '@aurora/modules/root/handler-manager';
+import { LightsGroup } from '@aurora/modules/lights/entities';
+import { ScenesHandler } from '@aurora/modules/handlers/lights/scenes-handler';
 
 let testApp: TestApp;
 let groupId: number;
 
 const redEffect = { type: 'StaticColor', props: { color: 'red' } };
 const greenEffect = { type: 'StaticColor', props: { color: 'green' } };
+
+async function setHandler(id: number, name: string) {
+  const res = await testApp.authorizedAgent.post(`/api/handler/lights/${id}`).send({ name });
+  expect(res.status).toBeLessThan(300);
+}
+
+/**
+ * Get the color effects the ScenesHandler currently has for the given lights group,
+ * or undefined if the group is not registered to the ScenesHandler
+ */
+function getSceneColorEffects(id: number) {
+  const handler = HandlerManager.getInstance()
+    .getHandlers(LightsGroup)
+    .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler;
+  const entry = Array.from(handler['groupColorEffects'].entries()).find(
+    ([group]) => group.id === id,
+  );
+  return entry?.[1];
+}
 
 async function createScene(name: string, effects: object[]) {
   const res = await testApp.authorizedAgent
@@ -338,5 +360,58 @@ describe('DELETE /api/handler/lights/scenes/active', () => {
 
     // ASSERT
     expect(res.status).toBeLessThan(300);
+  });
+});
+
+describe('ScenesHandler active scene', () => {
+  it('restores the scene effects of a group that leaves and rejoins the handler', async () => {
+    // ARRANGE
+    const scene = await createScene('Rejoin', [{ ...redEffect, lightsGroups: [groupId] }]);
+    await setHandler(groupId, 'ScenesHandler');
+    await testApp.authorizedAgent.post(`/api/handler/lights/scenes/scene/${scene.id}/apply`);
+
+    // ACT
+    await setHandler(groupId, 'SetEffectsHandler');
+    const whileAway = getSceneColorEffects(groupId);
+    await setHandler(groupId, 'ScenesHandler');
+    const active = await testApp.authorizedAgent.get('/api/handler/lights/scenes/active');
+
+    // ASSERT
+    expect(whileAway).toBeUndefined();
+    expect(getSceneColorEffects(groupId)).toHaveLength(1);
+    expect(active.body.scene).toMatchObject({ id: scene.id });
+
+    await testApp.authorizedAgent.delete('/api/handler/lights/scenes/active');
+  });
+
+  it('gives a group assigned after applying the scene its scene effects', async () => {
+    // ARRANGE
+    const scene = await createScene('Late join', [{ ...redEffect, lightsGroups: [groupId] }]);
+    await setHandler(groupId, 'SetEffectsHandler');
+    await testApp.authorizedAgent.post(`/api/handler/lights/scenes/scene/${scene.id}/apply`);
+
+    // ACT
+    await setHandler(groupId, 'ScenesHandler');
+
+    // ASSERT
+    expect(getSceneColorEffects(groupId)).toHaveLength(1);
+
+    await testApp.authorizedAgent.delete('/api/handler/lights/scenes/active');
+  });
+
+  it('keeps the scene active when no groups are left on the handler', async () => {
+    // ARRANGE
+    const scene = await createScene('No groups', [{ ...redEffect, lightsGroups: [groupId] }]);
+    await setHandler(groupId, 'ScenesHandler');
+    await testApp.authorizedAgent.post(`/api/handler/lights/scenes/scene/${scene.id}/apply`);
+
+    // ACT
+    await setHandler(groupId, 'SetEffectsHandler');
+    const res = await testApp.authorizedAgent.get('/api/handler/lights/scenes/active');
+
+    // ASSERT
+    expect(res.body.scene).toMatchObject({ id: scene.id });
+
+    await testApp.authorizedAgent.delete('/api/handler/lights/scenes/active');
   });
 });

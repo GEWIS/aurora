@@ -7,72 +7,70 @@ import { LightsGroup } from '../../lights/entities';
 
 export class ScenesHandler extends EffectsHandler {
   /**
-   * ID of the scene that is currently applied, if any
+   * Scene that is currently active, if any. Lights groups that are registered
+   * to this handler while a scene is active immediately get the scene's effects
    */
-  private activeSceneId: number | null = null;
+  private activeScene: LightsScene | null = null;
 
   tick(): LightsGroup[] {
     return super.tick();
   }
 
   getActiveSceneId(): number | null {
-    return this.activeSceneId;
+    return this.activeScene?.id ?? null;
   }
 
-  // Without any lights groups, no scene can be active
-  public removeEntity(entityCopy: LightsGroup) {
-    super.removeEntity(entityCopy);
-    if (this.entities.length === 0) this.activeSceneId = null;
+  // Also give newly registered groups their effects from the active scene
+  public registerEntity(entity: LightsGroup) {
+    super.registerEntity(entity);
+    if (!this.activeScene) return;
+
+    const group = this.entities.find((e) => e.id === entity.id);
+    if (group) this.applySceneToGroup(this.activeScene, group);
   }
 
   applyScene(scene: LightsScene): void {
     this.clearScene();
-    this.activeSceneId = scene.id;
+    this.activeScene = scene;
 
-    const groupMap = new Map<number, LightsGroup>();
-    const groupEffectsMap = new Map<number, { effectName: string; effectProps: string }[]>();
-    scene.effects.forEach(({ group: groupCopy, effectProps, effectName }) => {
-      // Make sure we have exactly one copy of each group object.
-      // Duplicate group copies behave as different objects.
-      const group = this.entities.find((e) => e.id === groupCopy.id);
-      if (!group) return;
-      if (!groupMap.has(group.id)) groupMap.set(group.id, group);
+    this.entities.forEach((group) => this.applySceneToGroup(scene, group));
+  }
 
-      if (groupEffectsMap.has(group.id)) {
-        groupEffectsMap.get(group.id)?.push({ effectName, effectProps });
-      } else {
-        groupEffectsMap.set(group.id, [{ effectName, effectProps }]);
-      }
+  clearScene() {
+    this.activeScene = null;
+    this.entities.forEach((e) => {
+      this.clearEffect(e);
     });
+  }
+
+  /**
+   * Create and assign the effects the given scene defines for the given group
+   * @param scene
+   * @param group Group object registered to this handler. Duplicate group copies
+   * behave as different objects in the effect maps.
+   */
+  private applySceneToGroup(scene: LightsScene, group: LightsGroup): void {
+    const effects = scene.effects.filter((e) => e.group.id === group.id);
+    if (effects.length === 0) return;
 
     const lightsEffectsColorNames = LIGHTS_EFFECTS_COLOR.map((e) => e.name);
     const lightsEffectsMovementNames = LIGHTS_EFFECTS_MOVEMENT.map((e) => e.name);
 
-    groupEffectsMap.forEach((effects, groupId) => {
-      const group = groupMap.get(groupId)!;
-
-      const effectObjs = effects
+    this.groupColorEffects.set(
+      group,
+      effects
         .filter(({ effectName }) => lightsEffectsColorNames.includes(effectName as any))
         .map(({ effectName, effectProps }) =>
           databaseEffectToObject(group, effectName, effectProps),
-        );
-
-      this.groupColorEffects.set(group, effectObjs);
-      this.groupMovementEffects.set(
-        group,
-        effects
-          .filter(({ effectName }) => lightsEffectsMovementNames.includes(effectName as any))
-          .map(({ effectName, effectProps }) =>
-            databaseEffectToObject(group, effectName, effectProps),
-          ),
-      );
-    });
-  }
-
-  clearScene() {
-    this.activeSceneId = null;
-    this.entities.forEach((e) => {
-      this.clearEffect(e);
-    });
+        ),
+    );
+    this.groupMovementEffects.set(
+      group,
+      effects
+        .filter(({ effectName }) => lightsEffectsMovementNames.includes(effectName as any))
+        .map(({ effectName, effectProps }) =>
+          databaseEffectToObject(group, effectName, effectProps),
+        ),
+    );
   }
 }

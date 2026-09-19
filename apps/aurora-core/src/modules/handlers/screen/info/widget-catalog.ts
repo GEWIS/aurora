@@ -280,6 +280,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
     text('calendarUrl', 'iCal calendar URL', '', 'ical'),
     bool('showTime', 'Show start time', true),
     bool('showEndTime', 'Show end time', false),
+    bool('hidePast', 'Hide finished events', false),
   ],
   trains: [
     text('station', 'NS station code (e.g. EHV, ASD, UT)', 'EHV', 'station'),

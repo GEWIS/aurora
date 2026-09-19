@@ -1,4 +1,4 @@
-import { describe, beforeAll, it, expect } from 'vitest';
+import { describe, beforeAll, it, expect, vi } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 import HandlerManager from '@aurora/modules/root/handler-manager';
@@ -16,15 +16,18 @@ async function setHandler(id: number, name: string) {
   expect(res.status).toBeLessThan(300);
 }
 
+function getScenesHandler() {
+  return HandlerManager.getInstance()
+    .getHandlers(LightsGroup)
+    .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler;
+}
+
 /**
  * Get the color effects the ScenesHandler currently has for the given lights group,
  * or undefined if the group is not registered to the ScenesHandler
  */
 function getSceneColorEffects(id: number) {
-  const handler = HandlerManager.getInstance()
-    .getHandlers(LightsGroup)
-    .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler;
-  const entry = Array.from(handler['groupColorEffects'].entries()).find(
+  const entry = Array.from(getScenesHandler()['groupColorEffects'].entries()).find(
     ([group]) => group.id === id,
   );
   return entry?.[1];
@@ -413,5 +416,29 @@ describe('ScenesHandler active scene', () => {
     expect(res.body.scene).toMatchObject({ id: scene.id });
 
     await testApp.authorizedAgent.delete('/api/handler/lights/scenes/active');
+  });
+});
+
+describe('ScenesHandler blackout', () => {
+  it('blacks out a group once its scene is cleared, but not while the scene is active', async () => {
+    // ARRANGE
+    const scene = await createScene('Blackout', [{ ...redEffect, lightsGroups: [groupId] }]);
+    await setHandler(groupId, 'ScenesHandler');
+    await testApp.authorizedAgent.post(`/api/handler/lights/scenes/scene/${scene.id}/apply`);
+    const handler = getScenesHandler();
+    const group = handler.entities.find((e) => e.id === groupId)!;
+    const blackout = vi.spyOn(group, 'blackout');
+
+    // ACT
+    handler.tick();
+    const callsWhileActive = blackout.mock.calls.length;
+    await testApp.authorizedAgent.delete('/api/handler/lights/scenes/active');
+    handler.tick();
+
+    // ASSERT
+    expect(callsWhileActive).toBe(0);
+    expect(blackout).toHaveBeenCalledTimes(1);
+
+    blackout.mockRestore();
   });
 });

@@ -6,6 +6,7 @@
       <i v-if="keyholder.isKeyholder" class="pi pi-key text-sky-400" />
     </span>
     <span class="truncate">{{ keyholder.name }}</span>
+    <span v-if="isSelf" class="shrink-0 text-xs opacity-70">(you)</span>
     <span class="ml-auto shrink-0 pl-3 text-sm opacity-60">{{ keyholder.memberId ?? '—' }}</span>
   </span>
 </template>
@@ -18,5 +19,5 @@ import type { KeyholderResponse } from '@gewis/aurora-api-client';
  * and their membership number. Used for both the options and the selected value
  * of the responsible-person pickers, so what you search by is also what you see.
  */
-defineProps<{ keyholder: KeyholderResponse }>();
+defineProps<{ keyholder: KeyholderResponse; isSelf?: boolean }>();
 </script>

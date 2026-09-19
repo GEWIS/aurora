@@ -1,4 +1,5 @@
 import { Body, Delete, Post, Request, Route, Security, SuccessResponse, Tags } from 'tsoa';
+import { injectable } from 'tsyringe';
 import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
 import { Request as ExpressRequest } from 'express';
@@ -31,14 +32,12 @@ interface TimeTrailRaceParams extends EnableModeParams {
   sessionName: string;
 }
 
+@injectable()
 @Route('modes')
 @Tags('Modes')
 export class ModeController extends Controller {
-  private modeManager: ModeManager;
-
-  constructor() {
+  constructor(private readonly modeManager: ModeManager) {
     super();
-    this.modeManager = ModeManager.getInstance();
   }
 
   private async findEntities(

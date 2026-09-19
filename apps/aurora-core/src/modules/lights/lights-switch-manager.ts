@@ -5,8 +5,6 @@ export default class LightsSwitchManager {
 
   private enabledSwitches: LightsSwitch[] = [];
 
-  private constructor() {}
-
   public static getInstance(): LightsSwitchManager {
     if (this.instance == null) {
       this.instance = new LightsSwitchManager();

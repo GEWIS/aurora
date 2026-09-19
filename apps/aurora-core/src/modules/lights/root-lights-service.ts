@@ -422,7 +422,7 @@ export default class RootLightsService {
     const controller = await this.controllerRepository.findOne({ where: { id: controllerId } });
     if (controller == null) return null;
 
-    return dataSource.transaction(async (manager) => {
+    const createdGroup = await dataSource.transaction(async (manager) => {
       const group = (await manager.save(LightsGroup, {
         name: params.name,
         defaultHandler: params.defaultHandler,
@@ -482,6 +482,9 @@ export default class RootLightsService {
 
       return group;
     });
+
+    // The saved object does not contain its fixture relations, so reload it
+    return this.getSingleLightsGroup(createdGroup.id);
   }
 
   public async getLightsGroupPar(id: number): Promise<LightsGroupPars | null> {

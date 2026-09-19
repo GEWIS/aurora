@@ -6397,23 +6397,32 @@
 				"additionalProperties": false
 			},
 			"LightsSceneEffectResponse": {
-				"properties": {
-					"effectName": {
-						"type": "string"
-					},
-					"lightsGroups": {
-						"items": {
-							"$ref": "#/components/schemas/BaseLightsGroupResponse"
+				"allOf": [
+					{
+						"properties": {
+							"lightsGroups": {
+								"items": {
+									"$ref": "#/components/schemas/BaseLightsGroupResponse"
+								},
+								"type": "array"
+							}
 						},
-						"type": "array"
+						"required": [
+							"lightsGroups"
+						],
+						"type": "object"
+					},
+					{
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/LightsEffectsColorCreateParams"
+							},
+							{
+								"$ref": "#/components/schemas/LightsEffectsMovementCreateParams"
+							}
+						]
 					}
-				},
-				"required": [
-					"effectName",
-					"lightsGroups"
-				],
-				"type": "object",
-				"additionalProperties": false
+				]
 			},
 			"LightsSceneResponse": {
 				"properties": {
@@ -6491,6 +6500,26 @@
 					"name",
 					"favorite",
 					"effects"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateSceneParams": {
+				"$ref": "#/components/schemas/CreateSceneParams"
+			},
+			"ActiveSceneResponse": {
+				"properties": {
+					"scene": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/LightsSceneResponse"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"scene"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -14152,7 +14181,7 @@
 				]
 			}
 		},
-		"/handler/lights/scenes": {
+		"/handler/lights/scenes/scene": {
 			"get": {
 				"operationId": "GetAllScenes",
 				"responses": {
@@ -14251,7 +14280,7 @@
 				}
 			}
 		},
-		"/handler/lights/scenes/{id}": {
+		"/handler/lights/scenes/scene/{id}": {
 			"get": {
 				"operationId": "GetSingleScene",
 				"responses": {
@@ -14291,6 +14320,72 @@
 					}
 				]
 			},
+			"put": {
+				"operationId": "UpdateScene",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LightsSceneResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"reason": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"reason"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Replace the name, favorite status and effects of an existing scene.\nIf the scene is currently active, it is reapplied with the new effects.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateSceneParams"
+							}
+						}
+					}
+				}
+			},
 			"delete": {
 				"operationId": "DeleteScene",
 				"responses": {
@@ -14322,7 +14417,7 @@
 				]
 			}
 		},
-		"/handler/lights/scenes/{id}/apply": {
+		"/handler/lights/scenes/scene/{id}/apply": {
 			"post": {
 				"operationId": "ApplyScene",
 				"responses": {
@@ -14357,7 +14452,37 @@
 				]
 			}
 		},
-		"/handler/lights/scenes/clear": {
+		"/handler/lights/scenes/active": {
+			"get": {
+				"operationId": "GetActiveScene",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ActiveSceneResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the scene that is currently applied to the ScenesHandler, if any",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": []
+			},
 			"delete": {
 				"operationId": "ClearScene",
 				"responses": {

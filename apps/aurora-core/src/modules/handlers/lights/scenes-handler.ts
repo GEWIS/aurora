@@ -6,12 +6,28 @@ import { LIGHTS_EFFECTS_MOVEMENT } from '../../lights/effects/movement';
 import { LightsGroup } from '../../lights/entities';
 
 export class ScenesHandler extends EffectsHandler {
+  /**
+   * ID of the scene that is currently applied, if any
+   */
+  private activeSceneId: number | null = null;
+
   tick(): LightsGroup[] {
     return super.tick();
   }
 
+  getActiveSceneId(): number | null {
+    return this.activeSceneId;
+  }
+
+  // Without any lights groups, no scene can be active
+  public removeEntity(entityCopy: LightsGroup) {
+    super.removeEntity(entityCopy);
+    if (this.entities.length === 0) this.activeSceneId = null;
+  }
+
   applyScene(scene: LightsScene): void {
     this.clearScene();
+    this.activeSceneId = scene.id;
 
     const groupMap = new Map<number, LightsGroup>();
     const groupEffectsMap = new Map<number, { effectName: string; effectProps: string }[]>();
@@ -54,6 +70,7 @@ export class ScenesHandler extends EffectsHandler {
   }
 
   clearScene() {
+    this.activeSceneId = null;
     this.entities.forEach((e) => {
       this.clearEffect(e);
     });

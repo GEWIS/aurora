@@ -1,5 +1,5 @@
 import HandlerManager from '../../../root/handler-manager';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Screen } from '../../../root/entities';
 import { CarouselPosterHandler } from '../index';
 import { Body, Get, Post, Put, Query, Request, Route, Security, Tags } from 'tsoa';

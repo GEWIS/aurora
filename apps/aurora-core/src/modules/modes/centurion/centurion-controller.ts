@@ -1,5 +1,5 @@
 import { Body, Get, Post, Request, Response, Route, Security, SuccessResponse, Tags } from 'tsoa';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Controller } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import ModeManager from '../mode-manager';

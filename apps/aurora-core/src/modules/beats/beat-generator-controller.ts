@@ -1,5 +1,5 @@
 import { Controller } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Request, Route, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import { SimpleBeatGenerator, ArtificialBeatGeneratorParams } from './simple-beat-generator';

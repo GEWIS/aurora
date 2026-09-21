@@ -1,5 +1,5 @@
 import { Controller } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Get, Request, Route, Security, Tags } from 'tsoa';
 import express from 'express';
 import { HexColor } from '../../../lights/color-definitions';

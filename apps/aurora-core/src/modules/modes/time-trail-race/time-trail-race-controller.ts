@@ -1,5 +1,5 @@
 import { Controller } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Body, Get, Post, Request, Response, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import TimeTrailRaceMode from './time-trail-race-mode';

@@ -43,6 +43,7 @@
     "express-session": "1.19.0",
     "file-type": "16.5.4",
     "globals": "17.1.0",
+    "inversify": "7.11.0",
     "joi": "18.0.2",
     "jwt-decode": "4.0.0",
     "mime-types": "3.0.2",
@@ -60,7 +61,6 @@
     "sqlite3": "5.1.7",
     "swagger-ui-express": "5.0.1",
     "tsoa": "7.0.0-alpha.0",
-    "tsyringe": "4.10.0",
     "typeorm": "0.3.28",
     "uuid": "13.0.0"
   },

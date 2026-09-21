@@ -5,12 +5,12 @@ import HandlerManager from './modules/root/handler-manager';
 
 describe('tsoa IoC container', () => {
   beforeEach(() => {
-    container.clearInstances();
+    container.unbindAllSync();
   });
 
   it('resolves a controller and injects what the composition root registered', () => {
     const handlerManager = { getHandlers: () => [] } as unknown as HandlerManager;
-    container.registerInstance(HandlerManager, handlerManager);
+    container.bind(HandlerManager).toConstantValue(handlerManager);
 
     const controller = iocContainer.get(HandlerController) as HandlerController;
 

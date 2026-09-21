@@ -75,16 +75,11 @@ export interface PosterResponse {
 export default class PosterService {
   private storage: FileStorage;
 
-  private get repo(): Repository<Poster> {
-    return getDataSource().getRepository(Poster);
-  }
-
-  private get fileRepo(): Repository<File> {
-    return getDataSource().getRepository(File);
-  }
+  private repo: Repository<Poster>;
 
   constructor() {
     this.storage = new DiskStorage('posters');
+    this.repo = getDataSource().getRepository(Poster);
   }
 
   /**

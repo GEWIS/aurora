@@ -221,12 +221,13 @@ export interface LightsSwitchCreateParams extends Pick<
 export interface LightsControllerCreateParams extends Pick<LightsController, 'name'> {}
 
 export default class RootLightsService {
-  private get controllerRepository(): Repository<LightsController> {
-    return getDataSource().getRepository(LightsController);
-  }
+  private controllerRepository: Repository<LightsController>;
 
-  private get groupRepository(): Repository<LightsGroup> {
-    return getDataSource().getRepository(LightsGroup);
+  private groupRepository: Repository<LightsGroup>;
+
+  constructor() {
+    this.controllerRepository = getDataSource().getRepository(LightsController);
+    this.groupRepository = getDataSource().getRepository(LightsGroup);
   }
 
   private static toColorResponse(c: ColorsRgb, firstChannel: number): ColorResponse {

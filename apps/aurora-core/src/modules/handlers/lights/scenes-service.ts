@@ -32,8 +32,10 @@ export interface GetLightsSceneOptions {
 }
 
 export default class ScenesService {
-  private get repository(): Repository<LightsScene> {
-    return getDataSource().getRepository(LightsScene);
+  private repository: Repository<LightsScene>;
+
+  constructor() {
+    this.repository = getDataSource().getRepository(LightsScene);
   }
 
   public static toSceneResponse(scene: LightsScene): LightsSceneResponse {

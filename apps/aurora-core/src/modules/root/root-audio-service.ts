@@ -11,8 +11,10 @@ export interface AudioResponse extends Pick<
 export interface AudioCreateParams extends Pick<Audio, 'name' | 'defaultHandler'> {}
 
 export default class RootAudioService {
-  private get repository(): Repository<Audio> {
-    return getDataSource().getRepository(Audio);
+  private repository: Repository<Audio>;
+
+  constructor() {
+    this.repository = getDataSource().getRepository(Audio);
   }
 
   public static toAudioResponse(audio: Audio): AudioResponse {

@@ -55,13 +55,12 @@ export interface PaginatedAuditLogEntryResponse {
 }
 
 export default class AuditService {
-  private get repo(): Repository<AuditLogEntry> {
-    return getDataSource().getRepository(AuditLogEntry);
-  }
+  private repo: Repository<AuditLogEntry>;
 
   private backofficeEmitter: BackofficeSyncEmitter;
 
   constructor() {
+    this.repo = getDataSource().getRepository(AuditLogEntry);
     this.backofficeEmitter = EmitterStore.getInstance().backofficeSyncEmitter;
   }
 

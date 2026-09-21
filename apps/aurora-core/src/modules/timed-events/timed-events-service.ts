@@ -15,11 +15,10 @@ export default class TimedEventsService {
 
   private cronManager: CronManager;
 
-  private get repo(): Repository<TimedEvent> {
-    return getDataSource().getRepository(TimedEvent);
-  }
+  private repo: Repository<TimedEvent>;
 
   constructor() {
+    this.repo = getDataSource().getRepository(TimedEvent);
     this.cronManager = new CronManager(this.eventIsSkipped.bind(this));
   }
 

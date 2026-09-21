@@ -20,12 +20,10 @@ export interface GenerateApiKeyParams {
 export interface IntegrationUserCreateParams extends Pick<IntegrationUser, 'name'> {}
 
 export default class AuthService {
-  private get apiKeyRepository(): Repository<ApiKey> {
-    return getDataSource().getRepository(ApiKey);
-  }
+  private apiKeyRepository: Repository<ApiKey>;
 
-  private get integrationUserRepository(): Repository<IntegrationUser> {
-    return getDataSource().getRepository(IntegrationUser);
+  constructor() {
+    this.apiKeyRepository = getDataSource().getRepository(ApiKey);
   }
 
   private generateKey(): string {

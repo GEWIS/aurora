@@ -14,8 +14,10 @@ export interface ScreenCreateParams extends Pick<
 > {}
 
 export default class RootScreenService {
-  private get repository(): Repository<Screen> {
-    return getDataSource().getRepository(Screen);
+  private repository: Repository<Screen>;
+
+  constructor() {
+    this.repository = getDataSource().getRepository(Screen);
   }
 
   public static toScreenResponse(screen: Screen): ScreenResponse {

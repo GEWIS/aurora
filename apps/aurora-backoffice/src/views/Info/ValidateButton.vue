@@ -41,7 +41,7 @@ async function run() {
   result.value = null;
   const res = await validateInfoValue({ body: { kind: props.kind, value: props.value } });
   result.value =
-    res.response.ok && res.data
+    res.response?.ok && res.data
       ? res.data
       : { valid: false, message: 'Validation request failed.' };
   loading.value = false;

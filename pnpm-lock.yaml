@@ -174,9 +174,6 @@ importers:
       '@giphy/react-components':
         specifier: 10.1.1
         version: 10.1.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(styled-components@6.3.8(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
-      '@hey-api/client-fetch':
-        specifier: 0.13.1
-        version: 0.13.1(@hey-api/openapi-ts@0.99.0(typescript@5.9.3))
       '@tailwindcss/postcss':
         specifier: 4.1.18
         version: 4.1.18
@@ -493,10 +490,6 @@ importers:
         version: 4.1.11(@types/node@22.20.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@22.20.1)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.104.0)(terser@5.48.0)(tsx@4.23.13)(yaml@2.9.0))
 
   libs/aurora-api-client:
-    dependencies:
-      '@hey-api/client-fetch':
-        specifier: 0.10.0
-        version: 0.10.0(@hey-api/openapi-ts@0.99.0(typescript@5.9.3))
     devDependencies:
       '@hey-api/openapi-ts':
         specifier: 0.99.0
@@ -2184,18 +2177,6 @@ packages:
 
   '@hapi/wreck@18.1.2':
     resolution: {integrity: sha512-3dMnV2pfhQiyEqu8DL3VBmxkdLiRDiiUDuG79Dp+UK1gL9ZxAfDOUhB6k3D5MLqcgJJ1IARyGFhwoc1NITr/pg==}
-
-  '@hey-api/client-fetch@0.10.0':
-    resolution: {integrity: sha512-C7vzj4t52qPiHCqjn1l8cRTI2p4pZCd7ViLtJDTHr5ZwI4sWOYC1tmv6bd529qqY6HFFbhGCz4TAZSwKAMJncg==}
-    deprecated: Starting with v0.73.0, this package is bundled directly inside @hey-api/openapi-ts.
-    peerDependencies:
-      '@hey-api/openapi-ts': < 2
-
-  '@hey-api/client-fetch@0.13.1':
-    resolution: {integrity: sha512-29jBRYNdxVGlx5oewFgOrkulZckpIpBIRHth3uHFn1PrL2ucMy52FvWOY3U3dVx2go1Z3kUmMi6lr07iOpUqqA==}
-    deprecated: Starting with v0.73.0, this package is bundled directly inside @hey-api/openapi-ts.
-    peerDependencies:
-      '@hey-api/openapi-ts': < 2
 
   '@hey-api/codegen-core@0.9.1':
     resolution: {integrity: sha512-s97jL1dgTMuiMHv2BZ1X4Tgd99Mf9GOvGdNqNcGwIMmnR+PgYNoraj4Zvp134MKsNCap/m7k0r0vKKnl56pj4w==}
@@ -12680,14 +12661,6 @@ snapshots:
       '@hapi/boom': 10.0.1
       '@hapi/bourne': 3.0.0
       '@hapi/hoek': 11.0.7
-
-  '@hey-api/client-fetch@0.10.0(@hey-api/openapi-ts@0.99.0(typescript@5.9.3))':
-    dependencies:
-      '@hey-api/openapi-ts': 0.99.0(typescript@5.9.3)
-
-  '@hey-api/client-fetch@0.13.1(@hey-api/openapi-ts@0.99.0(typescript@5.9.3))':
-    dependencies:
-      '@hey-api/openapi-ts': 0.99.0(typescript@5.9.3)
 
   '@hey-api/codegen-core@0.9.1':
     dependencies:

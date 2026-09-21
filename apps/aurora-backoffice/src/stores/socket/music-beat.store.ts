@@ -82,7 +82,7 @@ export const useMusicBeatStore = defineStore('music-beat', {
 
       // If there are already generators present, synchronize the list in memory
       // with the fresh list. We do this to preserve the beat state (and not reset it).
-      if (res.response.ok && res.data && this.generators.length > 0) {
+      if (res.response?.ok && res.data && this.generators.length > 0) {
         let notSeenGenerators: BeatGeneratorResponse[] = [...this.generators];
         res.data.forEach((generator: BeatGeneratorResponse) => {
           const index = this.generators.findIndex((g) => g.id === generator.id);
@@ -101,7 +101,7 @@ export const useMusicBeatStore = defineStore('music-beat', {
         notSeenGenerators.forEach((g) => {
           this.handleGeneratorRemove(g);
         });
-      } else if (res.response.ok && res.data) {
+      } else if (res.response?.ok && res.data) {
         this.generators = res.data.map((g) => ({
           id: g.id,
           name: g.name,

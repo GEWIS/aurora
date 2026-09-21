@@ -1,5 +1,5 @@
 import { Get, Route, Security, Tags } from 'tsoa';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Controller } from '@tsoa/runtime';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
 import { ISettings } from '../../server-settings/server-setting';

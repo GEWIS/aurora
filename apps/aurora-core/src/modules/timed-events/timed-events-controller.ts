@@ -1,5 +1,5 @@
 import { Controller } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Put, Route, Security, Tags } from 'tsoa';
 import EventSpec from './event-spec';
 import { SecurityNames } from '../../helpers/security';

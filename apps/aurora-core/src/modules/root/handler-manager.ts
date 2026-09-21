@@ -68,7 +68,7 @@ export default class HandlerManager {
   /**
    * Register all possible handlers in this function
    */
-  constructor(
+  private constructor(
     private io: Server,
     private emitterStore: EmitterStore,
     handlers: HandlerSet,

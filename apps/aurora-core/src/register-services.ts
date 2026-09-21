@@ -1,5 +1,7 @@
 /* istanbul ignore file -- composition root: wiring only, nothing to assert about it */
 /* v8 ignore start */
+import type { ServiceIdentifier } from 'inversify';
+
 import { container } from './ioc';
 
 import HandlerManager from './modules/root/handler-manager';
@@ -12,25 +14,29 @@ import SpotifyApiHandler from './modules/spotify/spotify-api-handler';
 import SpotifyTrackHandler from './modules/spotify/spotify-track-handler';
 import { FeatureFlagManager, ServerSettingsStore } from './modules/server-settings';
 
-export const SERVICES = [
-  HandlerManager,
-  ModeManager,
-  OrderManager,
-  BeatManager,
-  LightsSwitchManager,
-  TimedEventsService,
-  SpotifyApiHandler,
-  SpotifyTrackHandler,
-  FeatureFlagManager,
-  ServerSettingsStore,
-];
-
 /**
  * Bind the long-lived services that controllers depend on into the container.
  */
 export function registerServices(): void {
-  SERVICES.forEach((service) => {
-    container.registerInstance(service as never, service.getInstance() as never);
+  const services: [ServiceIdentifier<unknown>, unknown][] = [
+    [HandlerManager, HandlerManager.getInstance()],
+    [ModeManager, ModeManager.getInstance()],
+    [OrderManager, OrderManager.getInstance()],
+    [BeatManager, BeatManager.getInstance()],
+    [LightsSwitchManager, LightsSwitchManager.getInstance()],
+    [TimedEventsService, TimedEventsService.getInstance()],
+    [SpotifyApiHandler, SpotifyApiHandler.getInstance()],
+    [SpotifyTrackHandler, SpotifyTrackHandler.getInstance()],
+    [FeatureFlagManager, FeatureFlagManager.getInstance()],
+    [ServerSettingsStore, ServerSettingsStore.getInstance()],
+  ];
+
+  services.forEach(([service, instance]) => {
+    if (container.isBound(service)) {
+      container.rebindSync(service).toConstantValue(instance);
+    } else {
+      container.bind(service).toConstantValue(instance);
+    }
   });
 }
 /* v8 ignore stop */

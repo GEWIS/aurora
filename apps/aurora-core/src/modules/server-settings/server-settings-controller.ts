@@ -1,5 +1,5 @@
 import { Controller, FormField, TsoaResponse, UploadedFile } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Res, Route, Security, Tags } from 'tsoa';
 import { SecurityGroup, SecurityNames } from '../../helpers/security';
 import ServerSettingsStore from './server-settings-store';

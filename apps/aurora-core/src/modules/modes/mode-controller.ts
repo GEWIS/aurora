@@ -1,5 +1,5 @@
 import { Body, Delete, Post, Request, Route, Security, SuccessResponse, Tags } from 'tsoa';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
 import { Request as ExpressRequest } from 'express';

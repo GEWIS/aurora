@@ -1,5 +1,5 @@
 import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import HandlerManager from '../root/handler-manager';

@@ -19,7 +19,7 @@ export default class SpotifyTrackHandler {
 
   public musicEmitter: MusicEmitter;
 
-  constructor() {
+  private constructor() {
     this.api = SpotifyApiHandler.getInstance();
     setInterval(this.syncLoop.bind(this), 5000);
     this.syncLoop().then(() => {});

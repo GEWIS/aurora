@@ -37,9 +37,9 @@ const defaultColors: CurrentColors = {
 };
 
 enum Status {
-  'STOPPED' = 'Stopped',
-  'READY' = 'Get ready!',
-  'PLAYING' = 'Playing',
+  STOPPED = 'Stopped',
+  READY = 'Get ready!',
+  PLAYING = 'Playing',
 }
 
 export default function CenturionView({ socket }: Props) {

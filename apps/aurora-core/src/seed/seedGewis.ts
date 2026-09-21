@@ -372,8 +372,8 @@ export default async function seedDatabase() {
   });
 
   return Promise.all(
-    [gewisRoom, gewisBar, gewisLounge, gewisMHRoom, royMHs].map(
-      (g) => dataSource.getRepository(LightsGroup).findOne({ where: { id: g!.id } })!,
+    [gewisRoom, gewisBar, gewisLounge, gewisMHRoom, royMHs].map((g) =>
+      dataSource.getRepository(LightsGroup).findOne({ where: { id: g!.id } })!,
     ),
   );
 }

@@ -57,17 +57,15 @@ const centurion2Original: MixTape = {
     ...new Array(10)
       .fill(103.2)
       .map((baseTimestamp: number, i) => baseTimestamp + i * 1.95)
-      .map(
-        (timestamp): FeedEvent => ({
-          timestamp: timestamp,
-          type: 'effect',
-          data: {
-            effects: {
-              pars: [Wave.build({ colors: [RgbColor.GOLD], singleWave: true, cycleTime: 1000 })],
-            },
+      .map((timestamp): FeedEvent => ({
+        timestamp: timestamp,
+        type: 'effect',
+        data: {
+          effects: {
+            pars: [Wave.build({ colors: [RgbColor.GOLD], singleWave: true, cycleTime: 1000 })],
           },
-        }),
-      ),
+        },
+      })),
     {
       timestamp: 123.8,
       type: 'horn',

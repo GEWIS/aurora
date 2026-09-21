@@ -22,15 +22,6 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
 
   private settings: ISettings;
 
-  /**
-   * Resolved on first use rather than in the constructor.
-   *
-   * `FeatureEnabled` is a decorator factory, so its body — which calls
-   * `getInstance()` — runs when a decorated class is *defined*, i.e. on import. Taking
-   * the repository in the constructor therefore constructed the DataSource at import
-   * time for all 24 modules using the decorator, which is the side effect this store
-   * must not reintroduce. See `src/database.spec.ts`.
-   */
   private get repo(): Repository<ServerSetting> {
     return getDataSource().getRepository(ServerSetting);
   }

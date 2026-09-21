@@ -243,6 +243,82 @@ describe('PUT /api/handler/screen/poster/items/{id}/media', () => {
     expect(res.status).toBe(200);
     expect(res.body.id).toBe(id);
     expect(res.body.files.length).toBe(1);
+    expect(typeof res.body.files[0].id).toBe('number');
+  });
+});
+
+/**
+ * Creates an image poster with a single attached PNG and returns the poster and file ids.
+ */
+async function createPosterWithMedia(): Promise<{ id: number; fileId: number }> {
+  const id = await createPoster({ type: 'img' });
+  const res = await testApp.authorizedAgent
+    .put(`/api/handler/screen/poster/items/${id}/media`)
+    .attach('file', PNG_BUFFER, { filename: 'test.png', contentType: 'image/png' });
+  expect(res.status).toBe(200);
+  return { id, fileId: res.body.files[0].id as number };
+}
+
+describe('DELETE /api/handler/screen/poster/items/{id}/media/{fileId}', () => {
+  it('returns 401 without auth', async () => {
+    // ACT
+    const res = await testApp.unauthorizedAgent.delete(
+      '/api/handler/screen/poster/items/1/media/1',
+    );
+
+    // ASSERT
+    expectApiError(res, 401);
+  });
+
+  it('returns 404 when the poster does not exist', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent.delete(
+      '/api/handler/screen/poster/items/999999/media/1',
+    );
+
+    // ASSERT
+    expectApiError(res, 404);
+  });
+
+  it('returns 404 when the file is not attached to the poster', async () => {
+    // ARRANGE
+    const { id } = await createPosterWithMedia();
+
+    // ACT
+    const res = await testApp.authorizedAgent.delete(
+      `/api/handler/screen/poster/items/${id}/media/999999`,
+    );
+
+    // ASSERT
+    expectApiError(res, 404);
+  });
+
+  it('returns 400 when removing media from a non-media poster', async () => {
+    // ARRANGE
+    const id = await createPoster({ type: 'extern', uri: 'https://example.com/poster.png' });
+
+    // ACT
+    const res = await testApp.authorizedAgent.delete(
+      `/api/handler/screen/poster/items/${id}/media/1`,
+    );
+
+    // ASSERT
+    expectApiError(res, 400);
+  });
+
+  it('returns 200 and removes the file from the poster', async () => {
+    // ARRANGE
+    const { id, fileId } = await createPosterWithMedia();
+
+    // ACT
+    const res = await testApp.authorizedAgent.delete(
+      `/api/handler/screen/poster/items/${id}/media/${fileId}`,
+    );
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(id);
+    expect(res.body.files.length).toBe(0);
   });
 });
 
@@ -280,6 +356,33 @@ describe('PATCH /api/handler/screen/poster/items/{id}', () => {
     expect(res.status).toBe(200);
     expect(res.body.id).toBe(id);
     expect(res.body.label).toBe('Updated label');
+  });
+
+  it('returns 200 and switches a media poster between image and video', async () => {
+    // ARRANGE
+    const id = await createPoster({ type: 'img' });
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .patch(`/api/handler/screen/poster/items/${id}`)
+      .send({ type: 'video' });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.type).toBe('video');
+  });
+
+  it('returns 400 when changing the type of a non-media poster', async () => {
+    // ARRANGE
+    const id = await createPoster({ type: 'extern', uri: 'https://example.com/poster.png' });
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .patch(`/api/handler/screen/poster/items/${id}`)
+      .send({ type: 'video' });
+
+    // ASSERT
+    expectApiError(res, 400);
   });
 });
 

@@ -49,7 +49,9 @@ export interface UpdatePosterRequest extends Partial<
     | 'borrelMode'
     | 'albums'
   >
-> {}
+> {
+  type?: PosterType.IMAGE | PosterType.VIDEO;
+}
 
 export interface PosterResponse {
   id: number;
@@ -93,7 +95,7 @@ export default class PosterService {
     const files: FileResponse[] = (poster.files ?? []).reduce<FileResponse[]>((acc, file) => {
       const location = this.storage.getPublicFileUri(file);
       if (location) {
-        acc.push({ location, name: file.originalName });
+        acc.push({ id: file.id, location, name: file.originalName });
       }
       return acc;
     }, []);
@@ -181,6 +183,38 @@ export default class PosterService {
   }
 
   /**
+   * Removes the given file from the specified media poster and deletes it from storage.
+   * @param id Id of the poster to remove the media from.
+   * @param fileId Id of the file to remove.
+   */
+  public async removeMedia(id: number, fileId: number): Promise<Poster> {
+    const poster = await this.getSinglePoster(id);
+    if (poster.type != PosterType.IMAGE && poster.type != PosterType.VIDEO) {
+      throw new HttpApiException(
+        HttpStatusCode.BadRequest,
+        `Poster with ID "${id}" is not a media poster.`,
+      );
+    }
+
+    const file = (poster.files ?? []).find((f) => f.id === fileId);
+    if (!file) {
+      throw new HttpApiException(
+        HttpStatusCode.NotFound,
+        `File with ID "${fileId}" not found on poster with ID "${id}".`,
+      );
+    }
+
+    const updated = await dataSource.transaction(async (manager) => {
+      poster.files = poster.files.filter((f) => f.id !== fileId);
+      const saved = await manager.getRepository(Poster).save(poster);
+      await manager.getRepository(File).remove(file);
+      return saved;
+    });
+    await this.storage.deleteFile(file);
+    return updated;
+  }
+
+  /**
    * Deletes the given poster from the database and storage.
    * @param id The id of the poster to be deleted.
    */
@@ -206,6 +240,16 @@ export default class PosterService {
       const poster = await repo.findOneBy({ id });
       if (poster === null) {
         throw new HttpApiException(HttpStatusCode.NotFound, `Poster with ID "${id}" not found.`);
+      }
+      if (
+        params.type !== undefined &&
+        poster.type !== PosterType.IMAGE &&
+        poster.type !== PosterType.VIDEO
+      ) {
+        throw new HttpApiException(
+          HttpStatusCode.BadRequest,
+          `Poster with ID "${id}" is not a media poster.`,
+        );
       }
       Object.assign(poster, params);
       return repo.save(poster);

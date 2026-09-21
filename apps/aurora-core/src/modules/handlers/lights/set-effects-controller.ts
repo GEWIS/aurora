@@ -1,5 +1,5 @@
 import { Controller, Patch, TsoaResponse } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import SetEffectsHandler from './set-effects-handler';

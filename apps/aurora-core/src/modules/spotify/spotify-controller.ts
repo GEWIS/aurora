@@ -1,5 +1,5 @@
 import { Delete, Get, Post, Query, Request, Res, Response, Route, Security, Tags } from 'tsoa';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import * as querystring from 'querystring';

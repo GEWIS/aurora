@@ -1,5 +1,5 @@
 import { Controller, Header, Response, TsoaResponse } from '@tsoa/runtime';
-import { injectable } from 'tsyringe';
+import { injectable } from 'inversify';
 import { createVerify } from 'crypto';
 import { FeatureEnabled, ServerSettingsStore } from '../server-settings';
 import { Body, Delete, Get, Post, Res, Route, Tags } from 'tsoa';

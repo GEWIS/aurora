@@ -48,16 +48,16 @@ export const useInfoLayoutStore = defineStore('info-layout', {
     },
     async fetchScreens() {
       const res = await getScreens();
-      if (res.response.ok && res.data) this.screens = res.data;
+      if (res.response?.ok && res.data) this.screens = res.data;
     },
     async fetchCatalog() {
       const res = await getInfoWidgetCatalog();
-      if (res.response.ok && res.data) this.catalog = res.data;
+      if (res.response?.ok && res.data) this.catalog = res.data;
     },
     async selectScreen(screenId: number) {
       this.selectedScreenId = screenId;
       const res = await getInfoLayout({ path: { screenId } });
-      if (res.response.ok && res.data) this.layout = res.data;
+      if (res.response?.ok && res.data) this.layout = res.data;
     },
     async save(
       placements: WidgetPlacement[],
@@ -80,7 +80,7 @@ export const useInfoLayoutStore = defineStore('info-layout', {
           defaultPanelBackground,
         },
       });
-      if (res.response.ok && res.data) this.layout = res.data;
+      if (res.response?.ok && res.data) this.layout = res.data;
       this.saving = false;
     },
     async copyToAll() {

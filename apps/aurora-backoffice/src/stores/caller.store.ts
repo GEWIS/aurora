@@ -31,22 +31,22 @@ export const useCallerStore = defineStore('caller', {
     },
     async fetchCallers() {
       const res = await getInfoCallers();
-      if (res.response.ok && res.data) this.callers = res.data;
+      if (res.response?.ok && res.data) this.callers = res.data;
     },
     async createCaller(params: CallerParams) {
       const res = await createInfoCaller({ body: params });
-      if (res.response.ok && res.data) this.callers.push(res.data);
+      if (res.response?.ok && res.data) this.callers.push(res.data);
     },
     async updateCaller(id: number, params: CallerParams) {
       const res = await updateInfoCaller({ path: { id }, body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.callers.findIndex((c) => c.id === id);
         if (index >= 0) this.callers.splice(index, 1, res.data);
       }
     },
     async deleteCaller(id: number) {
       const res = await deleteInfoCaller({ path: { id } });
-      if (res.response.ok) this.callers = this.callers.filter((c) => c.id !== id);
+      if (res.response?.ok) this.callers = this.callers.filter((c) => c.id !== id);
     },
     /** Trigger a test incoming-call overlay on the screens. */
     async testCall(number: string) {

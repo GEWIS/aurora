@@ -56,7 +56,7 @@ export default function AuthContextProvider({ children }: PropsWithChildren) {
     await authenticate();
 
     const screenRes = await getOwnScreen();
-    if (screenRes.response.ok && screenRes.data) {
+    if (screenRes.response?.ok && screenRes.data) {
       setScreen(screenRes.data);
     }
   }, [authenticate]);

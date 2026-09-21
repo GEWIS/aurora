@@ -30,22 +30,22 @@ export const useNewsSourceStore = defineStore('news-source', {
     },
     async fetchSources() {
       const res = await getInfoNewsSources();
-      if (res.response.ok && res.data) this.sources = res.data;
+      if (res.response?.ok && res.data) this.sources = res.data;
     },
     async createSource(params: NewsSourceParams) {
       const res = await createInfoNewsSource({ body: params });
-      if (res.response.ok && res.data) this.sources.push(res.data);
+      if (res.response?.ok && res.data) this.sources.push(res.data);
     },
     async updateSource(id: number, params: NewsSourceParams) {
       const res = await updateInfoNewsSource({ path: { id }, body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.sources.findIndex((s) => s.id === id);
         if (index >= 0) this.sources.splice(index, 1, res.data);
       }
     },
     async deleteSource(id: number) {
       const res = await deleteInfoNewsSource({ path: { id } });
-      if (res.response.ok) this.sources = this.sources.filter((s) => s.id !== id);
+      if (res.response?.ok) this.sources = this.sources.filter((s) => s.id !== id);
     },
   },
 });

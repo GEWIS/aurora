@@ -45,11 +45,11 @@ export const useInfoStore = defineStore('info', {
     },
     async fetchKeyholders() {
       const res = await getInfoKeyholders();
-      if (res.response.ok && res.data) this.keyholders = res.data;
+      if (res.response?.ok && res.data) this.keyholders = res.data;
     },
     async fetchKeyholderSyncStatus() {
       const res = await getInfoKeyholderSyncStatus();
-      if (res.response.ok && res.data) this.keyholderSync = res.data;
+      if (res.response?.ok && res.data) this.keyholderSync = res.data;
     },
     /**
      * Run the GEWIS sync now and reload the registry. Returns what changed, or
@@ -57,24 +57,24 @@ export const useInfoStore = defineStore('info', {
      */
     async syncKeyholders(): Promise<KeyholderSyncResult | null> {
       const res = await syncInfoKeyholders();
-      if (!res.response.ok || !res.data) return null;
+      if (!res.response?.ok || !res.data) return null;
       await this.fetchKeyholders();
       return res.data;
     },
     async fetchRoomStatus() {
       const res = await getInfoRoomStatus();
-      if (res.response.ok && res.data) this.roomStatus = res.data;
+      if (res.response?.ok && res.data) this.roomStatus = res.data;
     },
     async updateKeyholder(id: number, params: KeyholderParams) {
       const res = await updateInfoKeyholder({ path: { id }, body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.keyholders.findIndex((k) => k.id === id);
         if (index >= 0) this.keyholders.splice(index, 1, res.data);
       }
     },
     async saveRoomStatus(params: RoomStatusParams) {
       const res = await setInfoRoomStatus({ body: params });
-      if (res.response.ok && res.data) this.roomStatus = res.data;
+      if (res.response?.ok && res.data) this.roomStatus = res.data;
     },
   },
 });

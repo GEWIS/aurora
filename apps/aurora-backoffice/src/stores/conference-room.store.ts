@@ -30,22 +30,22 @@ export const useConferenceRoomStore = defineStore('conference-room', {
     },
     async fetchRooms() {
       const res = await getInfoConferenceRoomConfigs();
-      if (res.response.ok && res.data) this.rooms = res.data;
+      if (res.response?.ok && res.data) this.rooms = res.data;
     },
     async createRoom(params: ConferenceRoomParams) {
       const res = await createInfoConferenceRoom({ body: params });
-      if (res.response.ok && res.data) this.rooms.push(res.data);
+      if (res.response?.ok && res.data) this.rooms.push(res.data);
     },
     async updateRoom(id: number, params: ConferenceRoomParams) {
       const res = await updateInfoConferenceRoom({ path: { id }, body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.rooms.findIndex((r) => r.id === id);
         if (index >= 0) this.rooms.splice(index, 1, res.data);
       }
     },
     async deleteRoom(id: number) {
       const res = await deleteInfoConferenceRoom({ path: { id } });
-      if (res.response.ok) this.rooms = this.rooms.filter((r) => r.id !== id);
+      if (res.response?.ok) this.rooms = this.rooms.filter((r) => r.id !== id);
     },
   },
 });

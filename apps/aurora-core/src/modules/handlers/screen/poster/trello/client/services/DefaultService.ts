@@ -1395,15 +1395,7 @@ export class DefaultService {
     prefsSelfJoin: boolean = true,
     prefsCardCovers: boolean = true,
     prefsBackground:
-      | 'blue'
-      | 'orange'
-      | 'green'
-      | 'red'
-      | 'purple'
-      | 'pink'
-      | 'lime'
-      | 'sky'
-      | 'grey' = 'blue',
+      'blue' | 'orange' | 'green' | 'red' | 'purple' | 'pink' | 'lime' | 'sky' | 'grey' = 'blue',
     prefsCardAging: 'pirate' | 'regular' = 'regular',
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -4435,14 +4427,7 @@ export class DefaultService {
     boards?: string,
     boardBackgrounds: 'all' | 'custom' | 'default' | 'none' | 'premium' = 'none',
     boardsInvited?:
-      | 'closed'
-      | 'members'
-      | 'open'
-      | 'organization'
-      | 'pinned'
-      | 'public'
-      | 'starred'
-      | 'unpinned',
+      'closed' | 'members' | 'open' | 'organization' | 'pinned' | 'public' | 'starred' | 'unpinned',
     boardsInvitedFields: BoardFields = 'name,closed,idOrganization,pinned',
     boardStars: boolean = false,
     cards: string = 'none',

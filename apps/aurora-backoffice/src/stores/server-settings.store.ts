@@ -59,7 +59,7 @@ export const useServerSettingsStore = defineStore('server-settings', {
 
       this.loading = true;
       const res = await setSettingFile({ body: { key: setting, file } });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.serverSettings[setting] = res.data.value as never;
       }
       this.loading = false;
@@ -69,7 +69,7 @@ export const useServerSettingsStore = defineStore('server-settings', {
 
       this.loading = true;
       const res = await clearSettingsFile({ body: { key: setting } });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.serverSettings[setting] = res.data.value as never;
       }
       this.loading = false;

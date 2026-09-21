@@ -14,7 +14,7 @@ export const useLightsStore = defineStore('lights', {
     async setLightsGroupBrightness(id: number, relativeBrightness: number) {
       this.brightnessLoading = true;
       const res = await setLightsGroupMasterDimmer({ path: { id }, body: { relativeBrightness } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         await useSubscriberStore().updateLightsGroupInStore(id);
       }
       this.brightnessLoading = false;
@@ -22,7 +22,7 @@ export const useLightsStore = defineStore('lights', {
     async resetLightsGroupBrightness(id: number) {
       this.brightnessLoading = true;
       const res = await clearLightsGroupMasterDimmer({ path: { id } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         await useSubscriberStore().updateLightsGroupInStore(id);
       }
       this.brightnessLoading = false;

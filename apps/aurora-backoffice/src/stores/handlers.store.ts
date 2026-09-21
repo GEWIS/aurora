@@ -17,9 +17,7 @@ import {
 import { useSocketStore } from '@/stores/socket.store';
 
 type Handler =
-  | HandlerResponseAudioResponse
-  | HandlerResponseLightsGroupResponse
-  | HandlerResponseScreenResponse;
+  HandlerResponseAudioResponse | HandlerResponseLightsGroupResponse | HandlerResponseScreenResponse;
 
 /**
  * HandlerStore

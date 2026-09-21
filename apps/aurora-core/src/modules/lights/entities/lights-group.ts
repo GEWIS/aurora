@@ -46,9 +46,7 @@ export default class LightsGroup extends SubscribeEntity {
   public gridSizeY: number;
 
   public get fixtures(): (
-    | LightsGroupPars
-    | LightsGroupMovingHeadWheels
-    | LightsGroupMovingHeadRgbs
+    LightsGroupPars | LightsGroupMovingHeadWheels | LightsGroupMovingHeadRgbs
   )[] {
     return [...this.pars, ...this.movingHeadWheels, ...this.movingHeadRgbs];
   }

@@ -37,9 +37,9 @@ const defaultColors: CurrentColors = {
 };
 
 enum Status {
-  'STOPPED' = 'Stopped',
-  'READY' = 'Get ready!',
-  'PLAYING' = 'Playing',
+  STOPPED = 'Stopped',
+  READY = 'Get ready!',
+  PLAYING = 'Playing',
 }
 
 export default function CenturionView({ socket }: Props) {
@@ -74,7 +74,7 @@ export default function CenturionView({ socket }: Props) {
 
   const init = async () => {
     const resColors = await getAllLightsColors();
-    if (resColors.response.ok && resColors.data) {
+    if (resColors.response?.ok && resColors.data) {
       setColorDefinitions(resColors.data);
     }
 

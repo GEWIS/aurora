@@ -58,17 +58,15 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
     this.events = timestamps
       .map((timestamp): LightsGroupEffect[] => {
         const predefinedEffects = this.sequence.filter((s) => s.timestamp === timestamp);
-        return predefinedEffects.map(
-          (e): LightsGroupEffect => ({
-            startMs: e.timestamp,
-            durationMs: e.duration,
-            endMs: e.timestamp + e.duration,
-            effectName: e.effect,
-            effectProps: JSON.parse(e.effectProps),
-            lightsGroupIds: e.lightGroups.map((l) => l.id),
-            id: e.id,
-          }),
-        );
+        return predefinedEffects.map((e): LightsGroupEffect => ({
+          startMs: e.timestamp,
+          durationMs: e.duration,
+          endMs: e.timestamp + e.duration,
+          effectName: e.effect,
+          effectProps: JSON.parse(e.effectProps),
+          lightsGroupIds: e.lightGroups.map((l) => l.id),
+          id: e.id,
+        }));
       })
       .flat();
 

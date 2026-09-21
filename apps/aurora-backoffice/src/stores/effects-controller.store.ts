@@ -201,13 +201,13 @@ export const useEffectsControllerStore = defineStore('effectsController', {
     },
     async getLightsSwitches() {
       const response = await getAllLightsSwitches();
-      if (!response.response.ok || !response.data) {
+      if (!response.response?.ok || !response.data) {
         return;
       }
 
       this.lightsSwitches = response.data.map((r) => ({ ...r, enabled: false }));
       const response2 = await getAllLightsSwitches({ query: { enabled: true } });
-      if (!response2.response.ok || !response2.data) {
+      if (!response2.response?.ok || !response2.data) {
         return;
       }
       response2.data?.forEach((s) => {
@@ -228,7 +228,7 @@ export const useEffectsControllerStore = defineStore('effectsController', {
     },
     async getButtonEffects() {
       const response = await getAllPredefinedLightsEffects();
-      if (response.response.ok && response.data) {
+      if (response.response?.ok && response.data) {
         this.buttonEffects = response.data;
       }
       this.buttonEffects.sort((a, b) => a.buttonId - b.buttonId);
@@ -240,7 +240,7 @@ export const useEffectsControllerStore = defineStore('effectsController', {
     },
     async createButtonEffect(params: LightsPredefinedEffectCreateParams) {
       const response = await createPredefinedLightsEffect({ body: params });
-      if (response.response.ok && response.data) {
+      if (response.response?.ok && response.data) {
         const index = this.buttonEffects.findIndex((e) => e.buttonId === response.data.buttonId);
         if (index >= 0) {
           this.buttonEffects.splice(index, 1, response.data);
@@ -252,14 +252,14 @@ export const useEffectsControllerStore = defineStore('effectsController', {
     },
     async updateButtonEffect(id: number, body: LightsPredefinedEffectUpdateParams) {
       const response = await updatePredefinedLightsEffect({ path: { id }, body });
-      if (response.response.ok && response.data) {
+      if (response.response?.ok && response.data) {
         const index = this.buttonEffects.findIndex((g) => g.id === id);
         this.buttonEffects.splice(index, 1, response.data);
       }
     },
     async deleteButtonEffect(id: number) {
       const response = await deletePredefinedLightsEffect({ path: { id } });
-      if (response.response.ok) {
+      if (response.response?.ok) {
         const index = this.buttonEffects.findIndex((g) => g.id === id);
         const oldEffect = this.buttonEffects[index];
         this.buttonEffects.splice(index, 1, this.createNullButtonEffect(oldEffect.buttonId));

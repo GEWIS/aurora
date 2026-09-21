@@ -36,7 +36,7 @@ export const useSubscriberStore = defineStore('subscribers', {
     },
     async updateLightsGroupInStore(id: number) {
       const res = await getSingleLightsGroup({ path: { id } });
-      if (!res.response.ok || !res.data) {
+      if (!res.response?.ok || !res.data) {
         return;
       }
 

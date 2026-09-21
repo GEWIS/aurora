@@ -209,11 +209,9 @@ export class RootLightsController extends Controller {
   @Security(SecurityNames.INTEGRATION, ['getAllLightsColors'])
   @Get('colors')
   public getAllLightsColors(): LightsColorResponse[] {
-    return rgbColors.map(
-      (color: RgbColor): LightsColorResponse => ({
-        color,
-        spec: rgbColorDefinitions[color],
-      }),
-    );
+    return rgbColors.map((color: RgbColor): LightsColorResponse => ({
+      color,
+      spec: rgbColorDefinitions[color],
+    }));
   }
 }

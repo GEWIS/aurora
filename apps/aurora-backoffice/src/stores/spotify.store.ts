@@ -24,7 +24,7 @@ export const useSpotifyStore = defineStore('spotify', {
   actions: {
     async init() {
       const res = await getAllSpotifyUsers();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.spotifyUsers = res.data;
       }
       await this.fetchCurrentSpotifyProfile();
@@ -32,13 +32,13 @@ export const useSpotifyStore = defineStore('spotify', {
     },
     async fetchCurrentSpotifyProfile() {
       const res = await getSpotifyProfile();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.currentSpotifyProfile = res.data;
       }
     },
     async deleteSpotifyUser(id: number) {
       const res = await deleteSpotifyUser({ path: { id } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         const index = this.spotifyUsers.findIndex((u) => u.id === id);
         if (index >= 0) {
           this.spotifyUsers.splice(index, 1);
@@ -47,7 +47,7 @@ export const useSpotifyStore = defineStore('spotify', {
     },
     async loginCallback(state: string, code?: string, error?: string) {
       const res = await spotifyLoginCallback({ query: { state, code, error } });
-      if (!res.response.ok) {
+      if (!res.response?.ok) {
         return {
           success: false,
           error: res.error,
@@ -67,7 +67,7 @@ export const useSpotifyStore = defineStore('spotify', {
       }
 
       const res = await switchToSpotifyUser({ path: { id: spotifyUser.id } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.spotifyUsers.forEach((u) => {
           u.active = false;
         });

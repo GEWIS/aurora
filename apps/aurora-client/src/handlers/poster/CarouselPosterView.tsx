@@ -34,7 +34,7 @@ export default function CarouselPosterView({ socket }: Props) {
     setLoading(true);
     // TODO what to do if poster cannot be fetched?
     const newPosters = await getPosters();
-    if (newPosters.response.ok && newPosters.data) {
+    if (newPosters.response?.ok && newPosters.data) {
       setPosters(newPosters.data.posters);
       setBorrelMode(newPosters.data.borrelMode);
     }
@@ -88,7 +88,7 @@ export default function CarouselPosterView({ socket }: Props) {
   useEffect(() => {
     getPosterSettings()
       .then((res) => {
-        if (res.response.ok && res.data) {
+        if (res.response?.ok && res.data) {
           setSettings(res.data);
         }
       })

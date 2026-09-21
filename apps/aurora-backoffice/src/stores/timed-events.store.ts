@@ -50,7 +50,7 @@ export const useTimedEventsStore = defineStore('timed-events', {
     async deleteTimedEvent(id: number): Promise<void> {
       this.loading = true;
       const res = await deleteTimedEvent({ path: { id } });
-      if (res && res.response.ok) {
+      if (res.response?.ok) {
         const index = this.timedEvents.findIndex((f) => f.id === id);
         if (index >= 0) this.timedEvents.splice(index, 1);
       }

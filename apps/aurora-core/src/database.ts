@@ -1,4 +1,4 @@
-import { config } from 'dotenv';
+import { config } from './env';
 import { DataSource, type DataSourceOptions } from 'typeorm';
 import fs from 'fs';
 import ServerSetting from './modules/server-settings/server-setting';

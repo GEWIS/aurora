@@ -4,8 +4,7 @@ describe('database module-load side effects', () => {
   beforeEach(() => {
     vi.resetModules();
 
-    delete process.env.TYPEORM_CONNECTION;
-    delete process.env.TYPEORM_DATABASE;
+    process.env.TYPEORM_CONNECTION = 'not_a_real_driver';
   });
 
   it('imports without a TypeORM environment', async () => {

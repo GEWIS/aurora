@@ -2,7 +2,7 @@ import { Body, Delete, Get, Path, Post, Put, Query, Request, Route, Tags } from 
 import { Controller } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import { Security } from '../../../auth';
-import { SecurityNames } from '../../../../helpers/security';
+import { SecurityGroup, SecurityNames } from '../../../../helpers/security';
 import { securityGroups } from '../../../../helpers/security-groups';
 import logger from '../../../../logger';
 import HandlerManager from '../../../root/handler-manager';
@@ -177,7 +177,11 @@ export class InfoScreenController extends Controller {
     @Body() body: KeyholderParams,
   ): Promise<KeyholderResponse> {
     logger.audit(req.user, `Update info screen keyholder ${id}.`);
-    const keyholder = await this.infoStatusService.updateKeyholder(id, body);
+    const keyholder = await this.infoStatusService.updateKeyholder(
+      id,
+      body,
+      !!req.user?.roles.includes(SecurityGroup.ADMIN),
+    );
     if (!keyholder) {
       this.setStatus(404);
       return undefined as unknown as KeyholderResponse;

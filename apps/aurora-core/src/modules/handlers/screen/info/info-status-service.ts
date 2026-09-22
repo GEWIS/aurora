@@ -1,6 +1,7 @@
 import Keyholder from './entities/keyholder';
 import { displayNames } from './display-name';
 import RoomStatus from './entities/room-status';
+import { HttpApiException, HttpStatusCode } from '../../../../helpers/custom-error';
 
 /**
  * Hour of day (local) at which the room state resets for the new day (06:00):
@@ -134,15 +135,30 @@ export default class InfoStatusService {
    * who is a keyholder, who is on the board, what they are called, and whether
    * the row exists at all — follows the sync, so there is nothing else to
    * accept here.
+   *
+   * @param canRename whether the caller may change the display name (admins
+   * only); resubmitting the current name unchanged is always allowed.
    */
-  public async updateKeyholder(id: number, params: KeyholderParams): Promise<Keyholder | null> {
+  public async updateKeyholder(
+    id: number,
+    params: KeyholderParams,
+    canRename = true,
+  ): Promise<Keyholder | null> {
     const keyholder = await Keyholder.findOne({ where: { id } });
     if (!keyholder) return null;
 
+    // Blank means "derive it" rather than "call this person nothing".
+    const displayName = (params.displayName ?? '').trim() || null;
+    if (!canRename && displayName !== keyholder.displayName) {
+      throw new HttpApiException(
+        HttpStatusCode.Forbidden,
+        'Only admins can change the display name.',
+      );
+    }
+
     keyholder.photoUrl = params.photoUrl ?? null;
     keyholder.isCandidateBoard = params.isCandidateBoard ?? false;
-    // Blank means "derive it" rather than "call this person nothing".
-    keyholder.displayName = (params.displayName ?? '').trim() || null;
+    keyholder.displayName = displayName;
     return keyholder.save();
   }
 

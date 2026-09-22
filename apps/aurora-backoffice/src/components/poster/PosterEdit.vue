@@ -29,6 +29,66 @@
         <InputText id="poster-edit-label" v-model="label" placeholder="Poster Title" />
       </div>
 
+      <div v-if="isMediaPoster" class="flex flex-col gap-2">
+        <label>Files</label>
+        <input
+          ref="fileSelector"
+          accept="image/*,video/*"
+          hidden
+          multiple
+          type="file"
+          @change="handleFileSelect"
+        />
+        <div class="flex flex-row gap-2 items-center">
+          <Button
+            icon="pi pi-upload"
+            label="Add files"
+            severity="secondary"
+            type="button"
+            @click="fileSelector?.click()"
+          />
+          <span v-if="!fileCount" class="text-sm opacity-50 italic">No files chosen</span>
+        </div>
+        <ul v-if="fileCount" class="flex flex-col gap-1 m-0 p-0 list-none">
+          <li
+            v-for="f in keptFiles"
+            :key="`existing-${f.id}`"
+            class="flex flex-row gap-2 items-center text-sm"
+          >
+            <span class="truncate flex-1 min-w-0 opacity-75">{{ f.name }}</span>
+            <Button
+              icon="pi pi-times"
+              severity="secondary"
+              size="small"
+              text
+              type="button"
+              @click="removedFileIds.push(f.id)"
+            />
+          </li>
+          <li
+            v-for="(f, i) in newFiles"
+            :key="`new-${i}`"
+            class="flex flex-row gap-2 items-center text-sm"
+          >
+            <span class="truncate flex-1 min-w-0 opacity-75">{{ f.name }}</span>
+            <Button
+              icon="pi pi-times"
+              severity="secondary"
+              size="small"
+              text
+              type="button"
+              @click="newFiles.splice(i, 1)"
+            />
+          </li>
+        </ul>
+        <Message v-if="submitted && !fileCount" severity="error" size="small" variant="simple">
+          Please keep or add at least one file
+        </Message>
+        <Message v-else-if="mixedMedia" severity="error" size="small" variant="simple">
+          A poster can't mix images and videos. Please use only images or only videos.
+        </Message>
+      </div>
+
       <div v-if="poster.type === PosterType.PHOTO" class="flex flex-col gap-2">
         <label for="poster-edit-albums">Album IDs</label>
         <InputChips
@@ -55,15 +115,22 @@
       <Divider />
 
       <div class="flex flex-row gap-4">
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2 flex-1 min-w-0">
           <label for="poster-edit-timeout">Default timeout (seconds)</label>
-          <InputNumber id="poster-edit-timeout" v-model="defaultTimeout" :min="1" show-buttons />
+          <InputNumber
+            id="poster-edit-timeout"
+            v-model="defaultTimeout"
+            fluid
+            :min="1"
+            show-buttons
+          />
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2 flex-1 min-w-0">
           <label for="poster-edit-footer">Footer size</label>
           <Select
             id="poster-edit-footer"
             v-model="footerSize"
+            fluid
             option-label="label"
             option-value="value"
             :options="footerSizeOptions"
@@ -89,13 +156,19 @@
       </div>
 
       <div class="flex flex-row gap-4">
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2 flex-1 min-w-0">
           <label for="poster-edit-start">Starts at</label>
-          <DatePicker id="poster-edit-start" v-model="startDate" show-icon show-time />
+          <DatePicker id="poster-edit-start" v-model="startDate" fluid show-icon show-time />
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2 flex-1 min-w-0">
           <label for="poster-edit-expiration">Expires at</label>
-          <DatePicker id="poster-edit-expiration" v-model="expirationDate" show-icon show-time />
+          <DatePicker
+            id="poster-edit-expiration"
+            v-model="expirationDate"
+            fluid
+            show-icon
+            show-time
+          />
         </div>
       </div>
 
@@ -126,6 +199,8 @@ import {
   FooterSize,
   type PosterResponse,
   PosterType,
+  PosterTypeImage,
+  PosterTypeVideo,
   type UpdatePosterRequest,
 } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
@@ -154,6 +229,31 @@ const originalAccentColor = ref<string>('');
 const startDate = ref<Date | null>(null);
 const expirationDate = ref<Date | null>(null);
 const borrelMode = ref<boolean>(false);
+const removedFileIds = ref<number[]>([]);
+const newFiles = ref<File[]>([]);
+const fileSelector = ref<HTMLInputElement | null>(null);
+
+const isMediaPoster = computed(
+  () => props.poster.type === PosterType.IMG || props.poster.type === PosterType.VIDEO,
+);
+
+const keptFiles = computed(() =>
+  props.poster.files.filter((f) => !removedFileIds.value.includes(f.id)),
+);
+
+const fileCount = computed(() => keptFiles.value.length + newFiles.value.length);
+
+const mediaChanged = computed(() => removedFileIds.value.length > 0 || newFiles.value.length > 0);
+
+const fileKinds = computed(() => {
+  const kinds = new Set(
+    newFiles.value.map((f) => (f.type.startsWith('video/') ? 'video' : 'image')),
+  );
+  if (keptFiles.value.length) kinds.add(props.poster.type === PosterType.VIDEO ? 'video' : 'image');
+  return kinds;
+});
+
+const mixedMedia = computed(() => fileKinds.value.size > 1);
 
 const defaultAccentColor = computed(() =>
   (settingsStore.serverSettings?.['Poster.DefaultProgressBarColor'] ?? '')
@@ -188,7 +288,16 @@ const open = () => {
   startDate.value = props.poster.startDate ? new Date(props.poster.startDate) : null;
   expirationDate.value = props.poster.expirationDate ? new Date(props.poster.expirationDate) : null;
   borrelMode.value = props.poster.borrelMode;
+  removedFileIds.value = [];
+  newFiles.value = [];
   visible.value = true;
+};
+
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const picked = Array.from(target.files ?? []);
+  target.value = '';
+  newFiles.value = [...newFiles.value, ...picked];
 };
 
 const onAlbumAdd = () => {
@@ -218,8 +327,22 @@ const onSubmit = async () => {
     if (albums.value.length === 0 || albumError.value) return;
   }
 
+  if (isMediaPoster.value) {
+    if (!fileCount.value || mixedMedia.value) return;
+  }
+
   loading.value = true;
-  await store.updatePoster(props.poster.id, buildParams());
+  if (isMediaPoster.value && mediaChanged.value) {
+    const type = fileKinds.value.has('video') ? PosterTypeVideo.VIDEO : PosterTypeImage.IMG;
+    await store.updatePosterMedia(
+      props.poster.id,
+      { ...buildParams(), type },
+      newFiles.value,
+      removedFileIds.value,
+    );
+  } else {
+    await store.updatePoster(props.poster.id, buildParams());
+  }
   loading.value = false;
   visible.value = false;
 };

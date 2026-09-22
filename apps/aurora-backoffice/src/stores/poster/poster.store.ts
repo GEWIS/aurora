@@ -14,6 +14,7 @@ import {
   type MediaPosterRequest,
   type PhotoPosterRequest,
   PosterType,
+  removeMedia,
   setCarouselOrder,
   setPosterBorrelMode,
   setStaticPosterClock,
@@ -176,6 +177,41 @@ export const usePosterStore = defineStore('poster', {
         const index = this.posters.findIndex((p) => p.id === res.data.id);
         this.posters.splice(index, 1, res.data);
       }
+    },
+    /**
+     * Update a file poster: attach the added files, remove the given files and
+     * then apply the new params. Files are attached first so the poster is never
+     * left without media if an upload fails.
+     * @param id
+     * @param params
+     * @param added
+     * @param removedFileIds
+     */
+    async updatePosterMedia(
+      id: number,
+      params: UpdatePosterRequest,
+      added: Blob[],
+      removedFileIds: number[],
+    ) {
+      let latest: PosterResponse | undefined;
+      const apply = () => {
+        if (!latest) return;
+        const index = this.posters.findIndex((p) => p.id === id);
+        this.posters.splice(index, 1, latest);
+      };
+
+      for (const file of added) {
+        const res = await attachMedia({ path: { id }, body: { file } });
+        if (!res.response?.ok || !res.data) return apply();
+        latest = res.data;
+      }
+      for (const fileId of removedFileIds) {
+        const res = await removeMedia({ path: { id, fileId } });
+        if (!res.response?.ok || !res.data) return apply();
+        latest = res.data;
+      }
+      apply();
+      await this.updatePoster(id, params);
     },
     /**
      * Fetch the current activePosterId and clock state for the static poster handler.

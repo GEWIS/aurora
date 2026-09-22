@@ -127,15 +127,16 @@
         </div>
 
         <div class="flex flex-row gap-4">
-          <div class="flex flex-col gap-2 flex-1">
+          <div class="flex flex-col gap-2 flex-1 min-w-0">
             <label for="poster-timeout">Default timeout (seconds)</label>
-            <InputNumber id="poster-timeout" v-model="defaultTimeout" :min="1" show-buttons />
+            <InputNumber id="poster-timeout" v-model="defaultTimeout" fluid :min="1" show-buttons />
           </div>
-          <div class="flex flex-col gap-2 flex-1">
+          <div class="flex flex-col gap-2 flex-1 min-w-0">
             <label for="poster-footer">Footer size</label>
             <Select
               id="poster-footer"
               v-model="footerSize"
+              fluid
               option-label="label"
               option-value="value"
               :options="footerSizeOptions"
@@ -161,13 +162,13 @@
         </div>
 
         <div class="flex flex-row gap-4">
-          <div class="flex flex-col gap-2 flex-1">
+          <div class="flex flex-col gap-2 flex-1 min-w-0">
             <label for="poster-start">Starts at</label>
-            <DatePicker id="poster-start" v-model="startDate" show-icon show-time />
+            <DatePicker id="poster-start" v-model="startDate" fluid show-icon show-time />
           </div>
-          <div class="flex flex-col gap-2 flex-1">
+          <div class="flex flex-col gap-2 flex-1 min-w-0">
             <label for="poster-expiration">Expires at</label>
-            <DatePicker id="poster-expiration" v-model="expirationDate" show-icon show-time />
+            <DatePicker id="poster-expiration" v-model="expirationDate" fluid show-icon show-time />
           </div>
         </div>
 

@@ -86,6 +86,18 @@ export class PosterController extends Controller {
   }
 
   /**
+   * Removes a file from an existing media poster.
+   * @param id Id of the poster.
+   * @param fileId Id of the file to be removed.
+   */
+  @Security(SecurityNames.LOCAL, securityGroups.poster.privileged)
+  @Delete('items/{id}/media/{fileId}')
+  public async removeMedia(id: number, fileId: number): Promise<PosterResponse> {
+    const poster = await this.service.removeMedia(id, fileId);
+    return this.service.toResponse(poster);
+  }
+
+  /**
    * Deletes a specific poster from the database.
    * @param id Indicates the poster to be deleted.
    */

@@ -163,8 +163,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       '@fortawesome/react-fontawesome':
-        specifier: 3.1.1
-        version: 3.1.1(@fortawesome/fontawesome-svg-core@7.1.0)(react@19.2.3)
+        specifier: 3.5.0
+        version: 3.5.0(@fortawesome/fontawesome-svg-core@7.1.0)(react@19.2.3)
       '@gewis/aurora-api-client':
         specifier: workspace:*
         version: link:../../libs/aurora-api-client
@@ -451,10 +451,10 @@ importers:
         version: 4.1.8
       '@typescript-eslint/eslint-plugin':
         specifier: 8.70.0
-        version: 8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
+        version: 8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/parser':
         specifier: 8.70.0
-        version: 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+        version: 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       concurrently:
         specifier: 9.2.4
         version: 9.2.4
@@ -466,7 +466,7 @@ importers:
         version: 10.1.8(eslint@9.39.2(jiti@2.7.0))
       eslint-plugin-import:
         specifier: 2.32.0
-        version: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))
+        version: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))
       nodemon:
         specifier: 3.1.14
         version: 3.1.14
@@ -1862,8 +1862,8 @@ packages:
     resolution: {integrity: sha512-Udu3K7SzAo9N013qt7qmm22/wo2hADdheXtBfxFTecp+ogsc0caQNRKEb7pkvvagUGOpG9wJC1ViH6WXs8oXIA==}
     engines: {node: '>=6'}
 
-  '@fortawesome/react-fontawesome@3.1.1':
-    resolution: {integrity: sha512-EDllr9hpodc21odmUywHS1alXNiCd4E8sp5GJ5s7wYINz8vSmMiNWpALTiuYODb865YyQ/NlyiN4mbXp7HCNqg==}
+  '@fortawesome/react-fontawesome@3.5.0':
+    resolution: {integrity: sha512-63mlRr6fiBbJ0wjr1Cf6dsDGtP2lNvk9lnatKgxs/fIkhslsZT291hIUzJkuUkI9yr69ZvWnWfgb2qXm4QyVaA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@fortawesome/fontawesome-svg-core': ~6 || ~7
@@ -11975,7 +11975,7 @@ snapshots:
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.1.0
 
-  '@fortawesome/react-fontawesome@3.1.1(@fortawesome/fontawesome-svg-core@7.1.0)(react@19.2.3)':
+  '@fortawesome/react-fontawesome@3.5.0(@fortawesome/fontawesome-svg-core@7.1.0)(react@19.2.3)':
     dependencies:
       '@fortawesome/fontawesome-svg-core': 7.1.0
       react: 19.2.3
@@ -13654,10 +13654,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.70.0
       '@typescript-eslint/type-utils': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/utils': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
@@ -13714,7 +13714,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)':
+  '@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.70.0
       '@typescript-eslint/types': 8.70.0
@@ -16114,11 +16114,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0)):
+  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       eslint: 9.39.2(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
     transitivePeerDependencies:
@@ -16190,7 +16190,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -16201,7 +16201,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.2(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0))
+      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.16.2
       is-glob: 4.0.3
@@ -16213,7 +16213,7 @@ snapshots:
       string.prototype.trimend: 1.0.10
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack

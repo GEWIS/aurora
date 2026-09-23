@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import { registerServices } from '@aurora/register-services';
 import { Express } from 'express';
 import supertest, { type Agent as TestAgent } from 'supertest';
 import { registerAllSettings } from '@aurora/register-settings';
@@ -74,6 +76,7 @@ export class TestEnvironment {
           screen: factory.createScreenHandlers(),
         });
         await HandlerManager.getInstance().init();
+        registerServices();
 
         return this.app;
       })();

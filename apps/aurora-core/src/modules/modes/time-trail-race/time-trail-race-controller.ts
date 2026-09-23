@@ -1,4 +1,5 @@
 import { Controller } from '@tsoa/runtime';
+import { injectable } from 'inversify';
 import { Body, Get, Post, Request, Response, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import TimeTrailRaceMode from './time-trail-race-mode';
@@ -11,15 +12,13 @@ import logger from '../../../logger';
 import { FeatureEnabled } from '../../server-settings';
 import { securityGroups } from '../../../helpers/security-groups';
 
+@injectable()
 @Route('modes/time-trail-race')
 @Tags('Modes')
 @FeatureEnabled('TimeTrailRace')
 export class TimeTrailRaceController extends Controller {
-  private modeManager: ModeManager;
-
-  constructor() {
+  constructor(private readonly modeManager: ModeManager) {
     super();
-    this.modeManager = ModeManager.getInstance();
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.timetrail.base)

@@ -1,4 +1,6 @@
+import 'reflect-metadata';
 import './env';
+import { registerServices } from './register-services';
 import { registerAllSettings } from './register-settings';
 import { createServer } from 'http';
 import * as fs from 'fs';
@@ -69,6 +71,7 @@ async function createApp(): Promise<void> {
     screen: handlerFactory.createScreenHandlers(),
   });
   await handlerManager.init();
+  registerServices();
   const socketConnectionManager = new SocketConnectionManager(
     handlerManager,
     lightsSwitchManager,

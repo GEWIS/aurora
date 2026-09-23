@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import '../env';
 import { Command, Option } from 'commander';
 import { getDataSource } from '../database';

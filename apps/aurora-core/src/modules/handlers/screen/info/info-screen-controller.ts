@@ -1,4 +1,5 @@
 import { Body, Delete, Get, Path, Post, Put, Query, Request, Route, Tags } from 'tsoa';
+import { injectable } from 'inversify';
 import { Controller } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import { Security } from '../../../auth';
@@ -44,10 +45,15 @@ import GewisKeyholderSyncService, {
 import RootScreenService from '../../../root/root-screen-service';
 import { HttpApiException } from '../../../../helpers/custom-error';
 
+@injectable()
 @Route('handler/screen/info')
 @Tags('Handlers')
 @FeatureEnabled('InfoScreen')
 export class InfoScreenController extends Controller {
+  constructor(private readonly handlerManager: HandlerManager) {
+    super();
+  }
+
   private infoStatusService = new InfoStatusService();
 
   private pcUsageService = new PcUsageService();
@@ -72,7 +78,7 @@ export class InfoScreenController extends Controller {
    * disabled.
    */
   private getHandler(): InfoScreenHandler | undefined {
-    return HandlerManager.getInstance()
+    return this.handlerManager
       .getHandlers(Screen)
       .find((h) => h.constructor.name === InfoScreenHandler.name) as InfoScreenHandler | undefined;
   }

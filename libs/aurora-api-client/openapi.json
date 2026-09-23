@@ -4220,6 +4220,20 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"BeerTimeResponse": {
+				"properties": {
+					"beerTime": {
+						"type": "string",
+						"nullable": true,
+						"description": "Today's beer time as \"HH:mm\", or null when there is no beer time today."
+					}
+				},
+				"required": [
+					"beerTime"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"KeyholderResponse": {
 				"properties": {
 					"id": {
@@ -12704,6 +12718,35 @@
 						}
 					}
 				}
+			}
+		},
+		"/handler/screen/info/beer-time": {
+			"get": {
+				"operationId": "GetInfoBeerTime",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BeerTimeResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Today's beer time. Intended for external services that display or announce it.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"getInfoBeerTime"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/handler/screen/info/keyholders": {

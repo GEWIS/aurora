@@ -50,7 +50,7 @@
     "sass": "1.104.0",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
-    "vite": "6.3.5",
+    "vite": "6.4.3",
     "vite-plugin-chunk-split": "0.5.0",
     "vue-tsc": "2.2.12"
   },

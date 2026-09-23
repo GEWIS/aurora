@@ -16,7 +16,7 @@
     "@gewis/splash": "2.4.0",
     "@primeuix/themes": "1.2.0",
     "@primevue/core": "4.3.6",
-    "@tailwindcss/postcss": "4.1.14",
+    "@tailwindcss/postcss": "4.3.3",
     "@vee-validate/yup": "4.15.1",
     "cronstrue": "2.61.0",
     "dotenv": "16.6.1",

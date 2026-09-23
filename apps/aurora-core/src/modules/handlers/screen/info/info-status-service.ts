@@ -86,6 +86,11 @@ export interface RoomStatusResponse {
   coffeeStatus: number;
 }
 
+export interface BeerTimeResponse {
+  /** Today's beer time as "HH:mm", or null when there is no beer time today. */
+  beerTime: string | null;
+}
+
 /**
  * Manages the info screen's people and room state: the keyholder registry (kept
  * in step with the GEWIS records by the sync, and only annotated here with a
@@ -253,5 +258,15 @@ export default class InfoStatusService {
       closedMessage: status.closedMessage,
       coffeeStatus: status.coffeeStatus ?? 0,
     };
+  }
+
+  /**
+   * Today's beer time only. State last set on an earlier logical day reports as
+   * no beer time (see isStale).
+   */
+  public async getBeerTime(): Promise<BeerTimeResponse> {
+    const status = await this.getRoomStatusEntity();
+    const stale = InfoStatusService.isStale(status.updatedAt, new Date());
+    return { beerTime: stale ? null : status.beerTime };
   }
 }

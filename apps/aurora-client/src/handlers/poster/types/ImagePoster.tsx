@@ -39,7 +39,11 @@ export default function ImagePoster({ source }: Props) {
         style={{ backgroundImage: `url("${displayUrl}")`, filter: 'blur(1vh)' }}
       />
       <PosterLayer className="flex items-center justify-center">
-        <img src={displayUrl} alt="" className="max-w-full max-h-full bg-black" />
+        <img
+          src={displayUrl}
+          alt=""
+          className="max-w-full max-h-full min-w-0 min-h-0 object-contain bg-black"
+        />
       </PosterLayer>
     </PosterStack>
   );

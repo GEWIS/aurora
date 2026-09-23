@@ -1,4 +1,5 @@
 import { Controller } from '@tsoa/runtime';
+import { injectable } from 'inversify';
 import { Get, Request, Route, Security, Tags } from 'tsoa';
 import express from 'express';
 import { HexColor } from '../../../lights/color-definitions';
@@ -16,29 +17,34 @@ export interface PosterScreenSettingsResponse {
   clockShouldTick: boolean;
 }
 
+@injectable()
 @Route('handler/screen/poster')
 @Tags('Handlers')
 export class BasePosterScreenController extends Controller {
+  constructor(private readonly serverSettingsStore: ServerSettingsStore) {
+    super();
+  }
+
   @Security(SecurityNames.LOCAL, securityGroups.poster.subscriber)
   @Get('settings')
   public getPosterSettings(): PosterScreenSettingsResponse {
-    const store = ServerSettingsStore.getInstance();
-
-    const logo = store.getSetting('Poster.ProgressBarLogo') as ISettings['Poster.ProgressBarLogo'];
-    const stylesheet = store.getSetting(
+    const logo = this.serverSettingsStore.getSetting(
+      'Poster.ProgressBarLogo',
+    ) as ISettings['Poster.ProgressBarLogo'];
+    const stylesheet = this.serverSettingsStore.getSetting(
       'Poster.CustomStylesheet',
     ) as ISettings['Poster.CustomStylesheet'];
 
     return {
-      defaultMinimal: store.getSetting(
+      defaultMinimal: this.serverSettingsStore.getSetting(
         'Poster.DefaultMinimal',
       ) as ISettings['Poster.DefaultMinimal'],
-      defaultProgressBarColor: store.getSetting(
+      defaultProgressBarColor: this.serverSettingsStore.getSetting(
         'Poster.DefaultProgressBarColor',
       ) as ISettings['Poster.DefaultProgressBarColor'],
       progressBarLogo: logo !== '',
       stylesheet: stylesheet !== '',
-      clockShouldTick: store.getSetting(
+      clockShouldTick: this.serverSettingsStore.getSetting(
         'Poster.ClockShouldTick',
       ) as ISettings['Poster.ClockShouldTick'],
     };
@@ -47,10 +53,9 @@ export class BasePosterScreenController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.poster.subscriber)
   @Get('settings/progress-bar-logo')
   public async getSettingsProgressBarLogo(@Request() request: express.Request) {
-    const settingsStore = ServerSettingsStore.getInstance();
-    const fileStorage = settingsStore.getFileStorage();
+    const fileStorage = this.serverSettingsStore.getFileStorage();
 
-    const logo = ServerSettingsStore.getInstance().getSetting(
+    const logo = this.serverSettingsStore.getSetting(
       'Poster.ProgressBarLogo',
     ) as ISettings['Poster.ProgressBarLogo'];
 
@@ -73,10 +78,9 @@ export class BasePosterScreenController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.poster.subscriber)
   @Get('settings/custom-stylesheet')
   public async getSettingsProgressBarStylesheet(@Request() request: express.Request) {
-    const settingsStore = ServerSettingsStore.getInstance();
-    const fileStorage = settingsStore.getFileStorage();
+    const fileStorage = this.serverSettingsStore.getFileStorage();
 
-    const stylesheet = ServerSettingsStore.getInstance().getSetting(
+    const stylesheet = this.serverSettingsStore.getSetting(
       'Poster.CustomStylesheet',
     ) as ISettings['Poster.CustomStylesheet'];
 

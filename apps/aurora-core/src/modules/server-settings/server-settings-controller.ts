@@ -1,4 +1,5 @@
 import { Controller, FormField, TsoaResponse, UploadedFile } from '@tsoa/runtime';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Res, Route, Security, Tags } from 'tsoa';
 import { SecurityGroup, SecurityNames } from '../../helpers/security';
 import ServerSettingsStore from './server-settings-store';
@@ -19,8 +20,16 @@ interface ServerSettingResponse {
 }
 
 @Tags('ServerSettings')
+@injectable()
 @Route('settings')
 export class ServerSettingsController extends Controller {
+  constructor(
+    private readonly featureFlagManager: FeatureFlagManager,
+    private readonly serverSettingsStore: ServerSettingsStore,
+  ) {
+    super();
+  }
+
   /**
    * Get all server settings. NOTE: this can include secrets
    * like private keys!
@@ -28,7 +37,7 @@ export class ServerSettingsController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.serverSettings.privileged)
   @Get('')
   public async getSettings() {
-    return ServerSettingsStore.getInstance().getSettings();
+    return this.serverSettingsStore.getSettings();
   }
 
   /**
@@ -42,13 +51,12 @@ export class ServerSettingsController extends Controller {
     @Body() request: SetServerSettingRequest,
     @Res() validationErrorResponse: TsoaResponse<400, string>,
   ): Promise<ServerSettingResponse> {
-    const store = ServerSettingsStore.getInstance();
-    if (!store.hasSetting(request.key)) {
+    if (!this.serverSettingsStore.hasSetting(request.key)) {
       return validationErrorResponse(400, `Setting with key "${request.key}" not found.`);
     }
 
     const key = request.key as keyof ISettings;
-    const currentValue = store.getSetting(key);
+    const currentValue = this.serverSettingsStore.getSetting(key);
     const currentType = typeof currentValue;
     const newType = typeof request.value;
     if (typeof currentValue !== typeof request.value) {
@@ -58,8 +66,8 @@ export class ServerSettingsController extends Controller {
       );
     }
 
-    await store.setSetting(key, request.value);
-    const newValue = store.getSetting(key);
+    await this.serverSettingsStore.setSetting(key, request.value);
+    const newValue = this.serverSettingsStore.getSetting(key);
     return { key, value: newValue };
   }
 
@@ -72,17 +80,16 @@ export class ServerSettingsController extends Controller {
     @UploadedFile() file: Express.Multer.File,
     @FormField() key: keyof ISettings,
   ): Promise<ServerSettingResponse> {
-    const store = ServerSettingsStore.getInstance();
-    const storage = store.getFileStorage();
+    const storage = this.serverSettingsStore.getFileStorage();
 
-    const currentValue = store.getSetting(key);
+    const currentValue = this.serverSettingsStore.getSetting(key);
     if (currentValue !== '') {
       const existingFile = currentValue as IFile;
       await storage.deleteFile(existingFile);
     }
 
     const value = await storage.saveFile(file.originalname, file.buffer);
-    await store.setSetting(key, value);
+    await this.serverSettingsStore.setSetting(key, value);
 
     return { key, value };
   }
@@ -98,11 +105,10 @@ export class ServerSettingsController extends Controller {
     @Body() request: { key: string },
     @Res() notFoundErrorResponse: TsoaResponse<404, string>,
   ): Promise<ServerSettingResponse> {
-    const store = ServerSettingsStore.getInstance();
-    const storage = store.getFileStorage();
+    const storage = this.serverSettingsStore.getFileStorage();
 
     const key = request.key as keyof ISettings;
-    const currentValue = store.getSetting(key);
+    const currentValue = this.serverSettingsStore.getSetting(key);
     if (currentValue == undefined) {
       return notFoundErrorResponse(404, 'Setting not found');
     }
@@ -111,7 +117,7 @@ export class ServerSettingsController extends Controller {
       await storage.deleteFile(existingFile);
     }
 
-    await store.setSetting(key, '');
+    await this.serverSettingsStore.setSetting(key, '');
 
     return { key, value: '' };
   }
@@ -122,6 +128,6 @@ export class ServerSettingsController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.serverSettings.base)
   @Get('feature-flags')
   public getFeatureFlags() {
-    return FeatureFlagManager.getInstance().getFeatureFlags();
+    return this.featureFlagManager.getFeatureFlags();
   }
 }

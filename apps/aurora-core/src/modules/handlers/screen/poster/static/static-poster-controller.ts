@@ -1,4 +1,5 @@
 import { Controller } from '@tsoa/runtime';
+import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Request, Route, Security, Tags } from 'tsoa';
 import { StaticPosterHandler } from '../../index';
 import HandlerManager from '../../../../root/handler-manager';
@@ -14,14 +15,15 @@ interface SetClockRequest {
   visible: boolean;
 }
 
+@injectable()
 @Route('handler/screen/poster/static')
 @Tags('Handlers')
 export class StaticPosterController extends Controller {
   private screenHandler: StaticPosterHandler;
 
-  constructor() {
+  constructor(private readonly handlerManager: HandlerManager) {
     super();
-    this.screenHandler = HandlerManager.getInstance()
+    this.screenHandler = this.handlerManager
       .getHandlers(Screen)
       .filter((h) => h.constructor.name === StaticPosterHandler.name)[0] as StaticPosterHandler;
   }

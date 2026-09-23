@@ -1,4 +1,5 @@
 import { Delete, Get, Post, Query, Request, Res, Response, Route, Security, Tags } from 'tsoa';
+import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import * as querystring from 'querystring';
@@ -19,9 +20,17 @@ interface SpotifyUserResponse {
   active: boolean;
 }
 
+@injectable()
 @Route('spotify')
 @Tags('Spotify')
 export class SpotifyController extends Controller {
+  constructor(
+    private readonly spotifyApiHandler: SpotifyApiHandler,
+    private readonly spotifyTrackHandler: SpotifyTrackHandler,
+  ) {
+    super();
+  }
+
   public toResponse(user: SpotifyUser): SpotifyUserResponse {
     return {
       id: user.id,
@@ -78,8 +87,8 @@ export class SpotifyController extends Controller {
       return errorResponse(HttpStatusCode.BadRequest, `Could not log in: ${error}`);
     }
 
-    await SpotifyApiHandler.getInstance().bindSpotifyUser(code);
-    const profile = await SpotifyApiHandler.getInstance().getSpotifyUserProfile();
+    await this.spotifyApiHandler.bindSpotifyUser(code);
+    const profile = await this.spotifyApiHandler.getSpotifyUserProfile();
     if (!profile) {
       return profileNotFoundResponse(
         HttpStatusCode.InternalServerError,
@@ -104,7 +113,7 @@ export class SpotifyController extends Controller {
   @Response('200', 'Active user')
   @Response('204', 'No user active')
   public getCurrentSpotifyUser(): SpotifyUserResponse | undefined {
-    const { user } = SpotifyApiHandler.getInstance();
+    const { user } = this.spotifyApiHandler;
     return user ? this.toResponse(user) : undefined;
   }
 
@@ -129,8 +138,8 @@ export class SpotifyController extends Controller {
       this.setStatus(404);
       return;
     }
-    if (SpotifyApiHandler.getInstance().user?.id === user.id) {
-      await SpotifyApiHandler.getInstance().unloadSpotifyUser();
+    if (this.spotifyApiHandler.user?.id === user.id) {
+      await this.spotifyApiHandler.unloadSpotifyUser();
     }
     await SpotifyUser.delete(user.id);
   }
@@ -156,12 +165,11 @@ export class SpotifyController extends Controller {
       );
     }
 
-    const api = SpotifyApiHandler.getInstance();
-    if (api.user?.id === user.id) {
+    if (this.spotifyApiHandler.user?.id === user.id) {
       return alreadyActiveRepsonse(HttpStatusCode.BadRequest, 'User is already active.');
     }
 
-    await api.loadSpotifyUser(user);
+    await this.spotifyApiHandler.loadSpotifyUser(user);
   }
 
   /**
@@ -172,7 +180,7 @@ export class SpotifyController extends Controller {
   @Response('200', 'Active user')
   @Response('204', 'No user active')
   public async getSpotifyProfile(): Promise<SpotifyUserProfile | undefined> {
-    return SpotifyApiHandler.getInstance().getSpotifyUserProfile();
+    return this.spotifyApiHandler.getSpotifyUserProfile();
   }
 
   /**
@@ -181,7 +189,7 @@ export class SpotifyController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Get('currently-playing')
   public getSpotifyCurrentlyPlaying() {
-    return SpotifyTrackHandler.getInstance().musicEmitter.getCurrentlyPlayingTrack;
+    return this.spotifyTrackHandler.musicEmitter.getCurrentlyPlayingTrack;
   }
 
   /**
@@ -190,6 +198,6 @@ export class SpotifyController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Post('skip')
   public async skipSpotifyTrack(): Promise<void> {
-    return SpotifyTrackHandler.getInstance().skipToNext();
+    return this.spotifyTrackHandler.skipToNext();
   }
 }

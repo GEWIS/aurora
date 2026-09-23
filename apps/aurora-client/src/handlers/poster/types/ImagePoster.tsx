@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PosterLayer, PosterStack } from '../components/PosterLayers';
 
 interface Props {
   source: string | string[];
@@ -32,15 +33,15 @@ export default function ImagePoster({ source }: Props) {
   const displayUrl = failed ? '/base/avico-stuk.png' : sourceUrl;
 
   return (
-    <div className="w-full h-full bg-black relative">
-      <div
-        className="absolute w-full h-full opacity-50 z-20 bg-no-repeat bg-cover bg-center"
+    <PosterStack className="bg-black">
+      <PosterLayer
+        className="opacity-50 bg-no-repeat bg-cover bg-center"
         style={{ backgroundImage: `url("${displayUrl}")`, filter: 'blur(1vh)' }}
-      ></div>
-      <div
-        className="object-contain block relative z-30 h-full bg-no-repeat bg-contain bg-center"
+      />
+      <PosterLayer
+        className="bg-no-repeat bg-contain bg-center"
         style={{ backgroundImage: `url("${displayUrl}")` }}
       />
-    </div>
+    </PosterStack>
   );
 }

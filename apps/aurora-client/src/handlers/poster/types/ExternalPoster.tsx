@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { PosterLayer, PosterStack } from '../components/PosterLayers';
 import ImagePoster from './ImagePoster';
 
 interface Props {
@@ -16,15 +17,19 @@ export default function ExternalPoster({ url, visible }: Props) {
   }, [url, visible]);
 
   return (
-    <div className="w-full h-full relative">
-      <ImagePoster source="/base/avico-stuk.png" />
-      <iframe
-        title="External video"
-        className="border-none w-full h-full overflow-hidden absolute top-0 z-30"
-        src={url}
-        seamless
-        ref={ref}
-      />
-    </div>
+    <PosterStack>
+      <PosterLayer>
+        <ImagePoster source="/base/avico-stuk.png" />
+      </PosterLayer>
+      <PosterLayer>
+        <iframe
+          title="External video"
+          className="border-none w-full h-full overflow-hidden"
+          src={url}
+          seamless
+          ref={ref}
+        />
+      </PosterLayer>
+    </PosterStack>
   );
 }

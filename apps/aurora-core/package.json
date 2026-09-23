@@ -62,7 +62,6 @@
     "swagger-ui-express": "5.0.1",
     "tsoa": "7.0.0-alpha.0",
     "typeorm": "0.3.31",
-    "tsyringe": "4.10.0",
     "uuid": "13.0.0"
   },
   "devDependencies": {

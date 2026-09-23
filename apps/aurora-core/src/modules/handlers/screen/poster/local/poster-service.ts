@@ -201,7 +201,7 @@ export default class PosterService {
       );
     }
 
-    const updated = await dataSource.transaction(async (manager) => {
+    const updated = await getDataSource().transaction(async (manager) => {
       poster.files = poster.files.filter((f) => f.id !== fileId);
       const saved = await manager.getRepository(Poster).save(poster);
       await manager.getRepository(File).remove(file);

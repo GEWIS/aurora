@@ -335,8 +335,8 @@ importers:
         specifier: 17.1.0
         version: 17.1.0
       joi:
-        specifier: 18.0.2
-        version: 18.0.2
+        specifier: 18.2.9
+        version: 18.2.9
       jwt-decode:
         specifier: 4.0.0
         version: 4.0.0
@@ -6942,8 +6942,8 @@ packages:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
 
-  joi@18.0.2:
-    resolution: {integrity: sha512-RuCOQMIt78LWnktPoeBL0GErkNaJPTBGcYuyaBvUOQSpcpcLfWrHPPihYdOGbV5pam9VTWbeoF7TsGiHugcjGA==}
+  joi@18.2.9:
+    resolution: {integrity: sha512-2mD929bUVKUhOLQQEVhlf6EZ0Mlo0DeRb5MO7cViR9AXLtBauuccEtB1py9Ocxpo/P7ucnh442iY/iOwrh3IQw==}
     engines: {node: '>= 20'}
 
   joycon@3.1.1:
@@ -18499,7 +18499,7 @@ snapshots:
 
   jiti@2.7.0: {}
 
-  joi@18.0.2:
+  joi@18.2.9:
     dependencies:
       '@hapi/address': 5.1.1
       '@hapi/formula': 3.0.2

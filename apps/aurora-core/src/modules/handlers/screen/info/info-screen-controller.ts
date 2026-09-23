@@ -17,6 +17,7 @@ import NsTrainsService, { TrainResponse } from '../poster/ns-trains-service';
 import { applyTreinLimbo } from './trains-transform';
 import PcUsageService, { PcStatusResponse, SetPcUsageParams } from './pc-usage-service';
 import InfoStatusService, {
+  BeerTimeResponse,
   KeyholderParams,
   KeyholderResponse,
   RoomStatusParams,
@@ -157,6 +158,15 @@ export class InfoScreenController extends Controller {
     await this.infoStatusService.setRoomStatus(body);
     await this.getHandler()?.emitRoomStatus();
     return this.infoStatusService.getRoomStatus();
+  }
+
+  /**
+   * Today's beer time. Intended for external services that display or announce it.
+   */
+  @Security(SecurityNames.INTEGRATION, ['getInfoBeerTime'])
+  @Get('beer-time')
+  public async getInfoBeerTime(): Promise<BeerTimeResponse> {
+    return this.infoStatusService.getBeerTime();
   }
 
   // ---------------------------------------------------------------------------

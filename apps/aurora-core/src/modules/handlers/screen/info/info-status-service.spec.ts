@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InfoStatusService from './info-status-service';
 import Keyholder from './entities/keyholder';
+import RoomStatus from './entities/room-status';
 
 /** Local time, so the tests read the same way the 06:00 boundary is defined. */
 const at = (day: number, hour: number, minute = 0): Date =>
@@ -34,6 +35,36 @@ describe('InfoStatusService.isStale', () => {
 
   it('drops state that is days old', () => {
     expect(InfoStatusService.isStale(at(1, 12), at(4, 12))).toBe(true);
+  });
+});
+
+describe('InfoStatusService.getBeerTime', () => {
+  const stored = (beerTime: string | null, updatedAt: Date): InfoStatusService => {
+    const service = new InfoStatusService();
+    vi.spyOn(service, 'getRoomStatusEntity').mockResolvedValue(
+      Object.assign(new RoomStatus(), { id: 1, open: true, beerTime, updatedAt }),
+    );
+    return service;
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns the stored beer time for state set today', async () => {
+    const service = stored('16:30', new Date());
+    await expect(service.getBeerTime()).resolves.toEqual({ beerTime: '16:30' });
+  });
+
+  it('returns null when no beer time is set', async () => {
+    const service = stored(null, new Date());
+    await expect(service.getBeerTime()).resolves.toEqual({ beerTime: null });
+  });
+
+  it('returns null for state left over from an earlier logical day', async () => {
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+    const service = stored('16:30', twoDaysAgo);
+    await expect(service.getBeerTime()).resolves.toEqual({ beerTime: null });
   });
 });
 

@@ -196,8 +196,8 @@ importers:
         specifier: 6.1.0
         version: 6.1.0(react@19.2.3)
       react-router-dom:
-        specifier: 7.12.0
-        version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 7.18.4
+        version: 7.18.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-scripts:
         specifier: 5.0.1
         version: 5.0.1(@babel/plugin-syntax-flow@7.29.7(@babel/core@7.29.7))(@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7))(@swc/core@1.16.2)(@types/babel__core@7.20.5)(eslint@9.39.2(jiti@1.21.7)(supports-color@5.5.0))(lightningcss@1.33.0)(react@19.2.3)(sass@1.104.1)(supports-color@5.5.0)(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@22.20.4)(typescript@5.9.3))(tsx@4.23.15)(type-fest@4.41.0)(typescript@5.9.3)(yaml@2.9.0)
@@ -451,10 +451,10 @@ importers:
         version: 4.1.8
       '@typescript-eslint/eslint-plugin':
         specifier: 8.70.0
-        version: 8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
+        version: 8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/parser':
         specifier: 8.70.0
-        version: 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+        version: 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       concurrently:
         specifier: 9.2.4
         version: 9.2.4
@@ -466,7 +466,7 @@ importers:
         version: 10.1.8(eslint@9.39.2(jiti@2.7.0))
       eslint-plugin-import:
         specifier: 2.32.0
-        version: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))
+        version: 2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))
       nodemon:
         specifier: 3.1.14
         version: 3.1.14
@@ -8525,15 +8525,15 @@ packages:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
     engines: {node: '>=0.10.0'}
 
-  react-router-dom@7.12.0:
-    resolution: {integrity: sha512-pfO9fiBcpEfX4Tx+iTYKDtPbrSLLCbwJ5EqP+SPYQu1VYCXdy79GSj0wttR0U4cikVdlImZuEZ/9ZNCgoaxwBA==}
+  react-router-dom@7.18.4:
+    resolution: {integrity: sha512-yrfmJHIpDG7taCpqKjT1G5B6q3O2K+RN8/fgNf0lTjCwiPbQ0ei6vXX9ZjQR+7ld8Tr7Z5xmyMnZ8YJrphWQUw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
 
-  react-router@7.12.0:
-    resolution: {integrity: sha512-kTPDYPFzDVGIIGNLS5VJykK0HfHLY5MF3b+xj0/tTyNYL1gF1qs7u67Z9jEhQk2sQ98SUaHxlG31g1JtF7IfVw==}
+  react-router@7.18.4:
+    resolution: {integrity: sha512-PUPQcMhMGRAslLcvtlPz/kmzBEWPhLdgLFrL7pLNepBL6dX0lWj4WD2cUYVgYCuT3jxvghYFg81cDTj44DhetQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
@@ -13654,10 +13654,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.70.0
       '@typescript-eslint/type-utils': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       '@typescript-eslint/utils': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
@@ -13714,7 +13714,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)':
+  '@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.70.0
       '@typescript-eslint/types': 8.70.0
@@ -16114,11 +16114,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0)):
+  eslint-module-utils@2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
       eslint: 9.39.2(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
     transitivePeerDependencies:
@@ -16190,7 +16190,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -16201,7 +16201,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.2(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0))
+      eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10)(eslint@9.39.2(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.16.2
       is-glob: 4.0.3
@@ -16213,7 +16213,7 @@ snapshots:
       string.prototype.trimend: 1.0.10
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.70.0(eslint@9.39.2(jiti@2.7.0))(supports-color@5.5.0)(typescript@5.9.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -19870,13 +19870,13 @@ snapshots:
 
   react-refresh@0.11.0: {}
 
-  react-router-dom@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-router-dom@7.18.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      react-router: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react-router: 7.18.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
 
-  react-router@7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-router@7.18.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       cookie: 1.1.1
       react: 19.2.3

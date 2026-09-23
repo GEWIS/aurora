@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Screen } from './entities';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import AuthService from '../auth/auth-service';
 
 export interface ScreenResponse extends Pick<
@@ -17,7 +17,7 @@ export default class RootScreenService {
   private repository: Repository<Screen>;
 
   constructor() {
-    this.repository = dataSource.getRepository(Screen);
+    this.repository = getDataSource().getRepository(Screen);
   }
 
   public static toScreenResponse(screen: Screen): ScreenResponse {

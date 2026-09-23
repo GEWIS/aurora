@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { LightsScene, LightsSceneEffect } from '../../lights/entities/scenes';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { BaseLightsGroupResponse } from '../../lights/root-lights-service';
 import { LightsEffectsColorCreateParams } from '../../lights/effects/color';
 import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement';
@@ -35,7 +35,7 @@ export default class ScenesService {
   private repository: Repository<LightsScene>;
 
   constructor() {
-    this.repository = dataSource.getRepository(LightsScene);
+    this.repository = getDataSource().getRepository(LightsScene);
   }
 
   public static toSceneResponse(scene: LightsScene): LightsSceneResponse {
@@ -86,7 +86,7 @@ export default class ScenesService {
   }
 
   public async createScene(params: CreateSceneParams): Promise<LightsScene> {
-    const lightsScene = await dataSource.transaction(async (manager) => {
+    const lightsScene = await getDataSource().transaction(async (manager) => {
       const sceneRepo = manager.getRepository(LightsScene);
       const sceneEffectRepo = manager.getRepository(LightsSceneEffect);
       const scene: LightsScene = await sceneRepo.save({

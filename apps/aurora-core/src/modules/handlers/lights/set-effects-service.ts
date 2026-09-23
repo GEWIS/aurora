@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import LightsPredefinedEffect, {
   LightsPredefinedEffectProperties,
 } from '../../lights/entities/scenes/lights-predefined-effect';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { HttpApiException } from '../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 
@@ -27,7 +27,7 @@ export default class SetEffectsService {
   private repo: Repository<LightsPredefinedEffect>;
 
   constructor(repo?: Repository<LightsPredefinedEffect>) {
-    this.repo = repo ?? dataSource.getRepository(LightsPredefinedEffect);
+    this.repo = repo ?? getDataSource().getRepository(LightsPredefinedEffect);
   }
 
   public static toLightsEffectPredefinedEffectResponse(

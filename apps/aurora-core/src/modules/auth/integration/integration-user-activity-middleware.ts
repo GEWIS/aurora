@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { IntegrationUser } from './entities';
 
 /**
@@ -11,7 +11,7 @@ export default async function IntegrationUserActivityMiddleware(
   next: NextFunction,
 ) {
   if (req.user && req.user.integrationUserId) {
-    const repo = dataSource.getRepository(IntegrationUser);
+    const repo = getDataSource().getRepository(IntegrationUser);
     await repo.update(req.user.integrationUserId, {
       lastSeen: new Date(),
     });

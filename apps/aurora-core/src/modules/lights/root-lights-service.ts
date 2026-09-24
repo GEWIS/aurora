@@ -422,7 +422,7 @@ export default class RootLightsService {
     const controller = await this.controllerRepository.findOne({ where: { id: controllerId } });
     if (controller == null) return null;
 
-    return getDataSource().transaction(async (manager) => {
+    const createdGroup = await getDataSource().transaction(async (manager) => {
       const group = (await manager.save(LightsGroup, {
         name: params.name,
         defaultHandler: params.defaultHandler,

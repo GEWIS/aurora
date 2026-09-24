@@ -1,7 +1,7 @@
 import { EntityManager, Repository } from 'typeorm';
 import { LightsScene, LightsSceneEffect } from '../../lights/entities/scenes';
 import { getDataSource } from '../../../database';
-import { BaseLightsGroupResponse } from '../../lights/root-lights-service';
+import RootLightsService, { BaseLightsGroupResponse } from '../../lights/root-lights-service';
 import { LightsEffectsColorCreateParams } from '../../lights/effects/color';
 import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement';
 
@@ -150,7 +150,7 @@ export default class ScenesService {
    * @param params
    */
   public async updateScene(id: number, params: UpdateSceneParams): Promise<LightsScene> {
-    await dataSource.transaction(async (manager) => {
+    await getDataSource().transaction(async (manager) => {
       await manager.getRepository(LightsScene).update(id, {
         name: params.name,
         favorite: params.favorite,

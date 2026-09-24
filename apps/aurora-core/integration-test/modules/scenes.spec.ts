@@ -112,13 +112,11 @@ describe('POST /api/handler/lights/scenes/scene', () => {
 
   it('returns 200 with the created scene including effect props', async () => {
     // ACT
-    const res = await testApp.authorizedAgent
-      .post('/api/handler/lights/scenes/scene')
-      .send({
-        name: 'Test Scene',
-        favorite: true,
-        effects: [{ ...redEffect, lightsGroups: [groupId] }],
-      });
+    const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene').send({
+      name: 'Test Scene',
+      favorite: true,
+      effects: [{ ...redEffect, lightsGroups: [groupId] }],
+    });
 
     // ASSERT
     expect(res.status).toBe(200);
@@ -131,13 +129,11 @@ describe('POST /api/handler/lights/scenes/scene', () => {
 
   it('returns 400 listing the ids of nonexistent lights groups', async () => {
     // ACT
-    const res = await testApp.authorizedAgent
-      .post('/api/handler/lights/scenes/scene')
-      .send({
-        name: 'Invalid Scene',
-        favorite: false,
-        effects: [{ ...redEffect, lightsGroups: [groupId, 999999] }],
-      });
+    const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene').send({
+      name: 'Invalid Scene',
+      favorite: false,
+      effects: [{ ...redEffect, lightsGroups: [groupId, 999999] }],
+    });
 
     // ASSERT
     expect(res.status).toBe(400);
@@ -147,13 +143,11 @@ describe('POST /api/handler/lights/scenes/scene', () => {
 
   it('returns 400 with an unknown effect type', async () => {
     // ACT
-    const res = await testApp.authorizedAgent
-      .post('/api/handler/lights/scenes/scene')
-      .send({
-        name: 'Invalid Scene',
-        favorite: false,
-        effects: [{ type: 'DoesNotExist', props: {}, lightsGroups: [groupId] }],
-      });
+    const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene').send({
+      name: 'Invalid Scene',
+      favorite: false,
+      effects: [{ type: 'DoesNotExist', props: {}, lightsGroups: [groupId] }],
+    });
 
     // ASSERT
     expectValidationError(res);
@@ -292,9 +286,7 @@ describe('POST /api/handler/lights/scenes/scene/{id}/apply', () => {
 
   it('returns 404 with nonexistent id', async () => {
     // ACT
-    const res = await testApp.authorizedAgent.post(
-      '/api/handler/lights/scenes/scene/999999/apply',
-    );
+    const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene/999999/apply');
 
     // ASSERT
     expect(res.status).toBe(404);

@@ -1,6 +1,6 @@
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { injectable } from 'inversify';
-import { Body, Delete, Get, Post, Query, Request, Res, Route, Security, Tags } from 'tsoa';
+import { Body, Delete, Get, Post, Put, Query, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import ScenesService, {
   ActiveSceneResponse,
@@ -108,7 +108,7 @@ export class ScenesController extends Controller {
 
     const updatedScene = await service.updateScene(id, params);
 
-    const handler: ScenesHandler | undefined = HandlerManager.getInstance()
+    const handler: ScenesHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
     if (handler?.getActiveSceneId() === id) {
@@ -132,7 +132,7 @@ export class ScenesController extends Controller {
     }
     await service.deleteScene(id);
 
-    const handler: ScenesHandler | undefined = HandlerManager.getInstance()
+    const handler: ScenesHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
     if (handler?.getActiveSceneId() === id) {
@@ -172,7 +172,7 @@ export class ScenesController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.scenes.base)
   @Get('active')
   public async getActiveScene(): Promise<ActiveSceneResponse> {
-    const handler: ScenesHandler | undefined = HandlerManager.getInstance()
+    const handler: ScenesHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
     if (!handler) throw new Error('ScenesHandler not found');

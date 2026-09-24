@@ -23,7 +23,7 @@
     "grid-layout-plus": "^1.1.1",
     "pinia": "3.0.4",
     "primeicons": "7.0.0",
-    "primevue": "4.3.6",
+    "primevue": "4.5.5",
     "socket.io-client": "4.8.3",
     "tailwind": "4.0.0",
     "tailwindcss-primeui": "0.6.1",

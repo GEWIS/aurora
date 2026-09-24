@@ -14,6 +14,7 @@ import {
   type MediaPosterRequest,
   type PhotoPosterRequest,
   PosterType,
+  removeMedia,
   setCarouselOrder,
   setPosterBorrelMode,
   setStaticPosterClock,
@@ -81,7 +82,7 @@ export const usePosterStore = defineStore('poster', {
     async fetchPosters(updateLoading = true) {
       if (updateLoading) this.loading = true;
       const res = await getAllPosters();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.posters = res.data;
       }
       if (updateLoading) this.loading = false;
@@ -97,7 +98,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async fetchCarouselOrder() {
       const res = await getCarouselOrder();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.carousel.carouselOrder = res.data;
       }
     },
@@ -107,7 +108,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async setPosterOrder(orderedIds: number[]) {
       const res = await setCarouselOrder({ body: { posterIds: orderedIds } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.carousel.carouselOrder = orderedIds;
       }
     },
@@ -117,7 +118,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async createPoster(params: ExternalPosterRequest | PhotoPosterRequest) {
       const res = await createPoster({ body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.posters.push(res.data);
       }
     },
@@ -129,7 +130,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async createPosterMedia(params: MediaPosterRequest, files: Blob[]) {
       const res = await createPoster({ body: params });
-      if (!res.response.ok || !res.data) return;
+      if (!res.response?.ok || !res.data) return;
 
       this.posters.push(res.data);
       const id = res.data.id;
@@ -137,7 +138,7 @@ export const usePosterStore = defineStore('poster', {
       let updated: PosterResponse | undefined;
       for (const file of files) {
         const attachRes = await attachMedia({ path: { id }, body: { file } });
-        if (attachRes.response.ok && attachRes.data) {
+        if (attachRes.response?.ok && attachRes.data) {
           updated = attachRes.data;
         } else {
           await this.deletePoster(id);
@@ -157,7 +158,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async deletePoster(id: number) {
       const res = await deletePoster({ path: { id } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         const index = this.posters.findIndex((p) => p.id === id);
         this.posters.splice(index, 1);
       }
@@ -172,17 +173,52 @@ export const usePosterStore = defineStore('poster', {
         path: { id },
         body: params,
       });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.posters.findIndex((p) => p.id === res.data.id);
         this.posters.splice(index, 1, res.data);
       }
+    },
+    /**
+     * Update a file poster: attach the added files, remove the given files and
+     * then apply the new params. Files are attached first so the poster is never
+     * left without media if an upload fails.
+     * @param id
+     * @param params
+     * @param added
+     * @param removedFileIds
+     */
+    async updatePosterMedia(
+      id: number,
+      params: UpdatePosterRequest,
+      added: Blob[],
+      removedFileIds: number[],
+    ) {
+      let latest: PosterResponse | undefined;
+      const apply = () => {
+        if (!latest) return;
+        const index = this.posters.findIndex((p) => p.id === id);
+        this.posters.splice(index, 1, latest);
+      };
+
+      for (const file of added) {
+        const res = await attachMedia({ path: { id }, body: { file } });
+        if (!res.response?.ok || !res.data) return apply();
+        latest = res.data;
+      }
+      for (const fileId of removedFileIds) {
+        const res = await removeMedia({ path: { id, fileId } });
+        if (!res.response?.ok || !res.data) return apply();
+        latest = res.data;
+      }
+      apply();
+      await this.updatePoster(id, params);
     },
     /**
      * Fetch the current activePosterId and clock state for the static poster handler.
      */
     async fetchStaticPosterState() {
       const res = await getStaticPosterHandlerState();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.static.activePosterId = res.data.activePoster?.id ?? null;
         this.static.clockVisible = res.data.clockVisible;
       }
@@ -193,7 +229,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async setStaticActivePoster(id: number) {
       const res = await showStaticPoster({ path: { id } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.static.activePosterId = id;
       }
     },
@@ -202,7 +238,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async clearStaticActivePoster() {
       const res = await hideStaticPoster();
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.static.activePosterId = null;
       }
     },
@@ -212,7 +248,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async setStaticClockVisibility(visible: boolean) {
       const res = await setStaticPosterClock({ body: { visible } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.static.clockVisible = visible;
       }
     },
@@ -221,7 +257,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async fetchBorrelMode() {
       const res = await getPosterBorrelMode();
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         this.carousel.borrelModePresent = res.data.present;
         this.carousel.borrelModeActive = res.data.enabled;
       }
@@ -232,7 +268,7 @@ export const usePosterStore = defineStore('poster', {
      */
     async setBorrelMode(enabled: boolean) {
       const res = await setPosterBorrelMode({ body: { enabled } });
-      if (res.response.ok) {
+      if (res.response?.ok) {
         this.carousel.borrelModeActive = enabled;
       }
     },
@@ -246,7 +282,7 @@ export const usePosterStore = defineStore('poster', {
         path: { id },
         body: { enabled },
       });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         const index = this.posters.findIndex((p) => p.id === res.data.id);
         this.posters.splice(index, 1, res.data);
       }

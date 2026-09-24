@@ -23,12 +23,12 @@ export const useInfoLayoutPresetStore = defineStore('info-layout-preset', {
     async fetch() {
       this.loading = true;
       const res = await getInfoLayoutPresets();
-      if (res.response.ok && res.data) this.presets = res.data;
+      if (res.response?.ok && res.data) this.presets = res.data;
       this.loading = false;
     },
     async create(params: LayoutPresetParams): Promise<LayoutPresetResponse | null> {
       const res = await createInfoLayoutPreset({ body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         await this.fetch();
         return res.data;
       }
@@ -36,7 +36,7 @@ export const useInfoLayoutPresetStore = defineStore('info-layout-preset', {
     },
     async update(id: number, params: LayoutPresetParams): Promise<LayoutPresetResponse | null> {
       const res = await updateInfoLayoutPreset({ path: { id }, body: params });
-      if (res.response.ok && res.data) {
+      if (res.response?.ok && res.data) {
         await this.fetch();
         return res.data;
       }

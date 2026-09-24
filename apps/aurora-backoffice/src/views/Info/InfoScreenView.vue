@@ -216,10 +216,15 @@
       <div class="flex flex-col gap-4 w-96">
         <div class="flex flex-col gap-1">
           <label class="text-sm opacity-70">Shown as</label>
-          <InputText v-model="form.displayName" :placeholder="editDerivedName" />
-          <small class="opacity-70">
+          <InputText
+            v-model="form.displayName"
+            :disabled="!canRename"
+            :placeholder="editDerivedName"
+          />
+          <small v-if="canRename" class="opacity-70">
             Leave blank to use "{{ editDerivedName }}". A full name rarely fits the screen.
           </small>
+          <small v-else class="opacity-70">Only admins can change the display name.</small>
         </div>
         <div class="flex items-center gap-2">
           <Checkbox v-model="form.isCandidateBoard" binary input-id="kh-candidate" />
@@ -245,7 +250,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { type KeyholderResponse, type RoomStatusResponse } from '@gewis/aurora-api-client';
+import {
+  type KeyholderResponse,
+  type RoomStatusResponse,
+  SecurityGroup,
+} from '@gewis/aurora-api-client';
 import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
@@ -253,6 +262,8 @@ import { useAuthStore } from '@/stores/auth.store';
 
 const infoStore = useInfoStore();
 const authStore = useAuthStore();
+
+const canRename = computed(() => authStore.getRoles.includes(SecurityGroup.ADMIN));
 
 // --- GEWIS keyholder sync ---------------------------------------------------
 

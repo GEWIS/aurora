@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import ServerSetting, { ISettings, getSettingsDefaults } from './server-setting';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { FileStorage } from '../files/storage/file-storage';
 import { DiskStorage } from '../files/storage';
 
@@ -20,12 +20,10 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
 
   private initialized = false;
 
-  private repo: Repository<ServerSetting>;
-
   private settings: ISettings;
 
-  constructor() {
-    this.repo = dataSource.getRepository(ServerSetting);
+  private get repo(): Repository<ServerSetting> {
+    return getDataSource().getRepository(ServerSetting);
   }
 
   /**

@@ -1,4 +1,5 @@
 import HandlerManager from '../../../root/handler-manager';
+import { injectable } from 'inversify';
 import { Screen } from '../../../root/entities';
 import { CarouselPosterHandler } from '../index';
 import { Body, Get, Post, Put, Query, Request, Route, Security, Tags } from 'tsoa';
@@ -37,15 +38,16 @@ export interface CarouselOrderParams {
   posterIds: number[];
 }
 
+@injectable()
 @Route('handler/screen/poster/carousel')
 @Tags('Handlers')
 @FeatureEnabled('Poster')
 export class CarouselPosterController extends Controller {
   protected screenHandler: CarouselPosterHandler;
 
-  constructor() {
+  constructor(private readonly handlerManager: HandlerManager) {
     super();
-    this.screenHandler = HandlerManager.getInstance()
+    this.screenHandler = this.handlerManager
       .getHandlers(Screen)
       .filter((h) => h.constructor.name === CarouselPosterHandler.name)[0] as CarouselPosterHandler;
   }

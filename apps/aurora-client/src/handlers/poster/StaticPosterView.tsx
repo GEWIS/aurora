@@ -1,3 +1,4 @@
+import './components/index.scss';
 import { Socket } from 'socket.io-client';
 import { useEffect, useState } from 'react';
 import {
@@ -39,7 +40,7 @@ export default function StaticPosterView({ socket }: Props) {
   useEffect(() => {
     getPosterSettings()
       .then((res) => {
-        if (res.response.ok && res.data) {
+        if (res.response?.ok && res.data) {
           setSettings(res.data);
         }
       })
@@ -47,7 +48,7 @@ export default function StaticPosterView({ socket }: Props) {
 
     getStaticPosterHandlerState()
       .then((res) => {
-        if (res.response.ok && res.data) {
+        if (res.response?.ok && res.data) {
           handlePosterChange(res.data);
         }
       })

@@ -3130,6 +3130,10 @@
 			},
 			"FileResponse": {
 				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
 					"location": {
 						"type": "string"
 					},
@@ -3138,6 +3142,7 @@
 					}
 				},
 				"required": [
+					"id",
 					"location",
 					"name"
 				],
@@ -3846,6 +3851,16 @@
 						},
 						"type": "array",
 						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\npick from."
+					},
+					"type": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/PosterType.IMAGE"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.VIDEO"
+							}
+						]
 					}
 				},
 				"type": "object",
@@ -4201,6 +4216,20 @@
 				},
 				"required": [
 					"open"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BeerTimeResponse": {
+				"properties": {
+					"beerTime": {
+						"type": "string",
+						"nullable": true,
+						"description": "Today's beer time as \"HH:mm\", or null when there is no beer time today."
+					}
+				},
+				"required": [
+					"beerTime"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -12281,6 +12310,58 @@
 				}
 			}
 		},
+		"/handler/screen/poster/items/{id}/media/{fileId}": {
+			"delete": {
+				"operationId": "RemoveMedia",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a file from an existing media poster.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Id of the poster.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Id of the file to be removed.",
+						"in": "path",
+						"name": "fileId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/handler/screen/info/weather": {
 			"get": {
 				"operationId": "GetInfoWeather",
@@ -12666,6 +12747,35 @@
 						}
 					}
 				}
+			}
+		},
+		"/handler/screen/info/beer-time": {
+			"get": {
+				"operationId": "GetInfoBeerTime",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BeerTimeResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Today's beer time. Intended for external services that display or announce it.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"getInfoBeerTime"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/handler/screen/info/keyholders": {

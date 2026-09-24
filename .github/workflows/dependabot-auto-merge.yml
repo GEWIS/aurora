@@ -1,0 +1,26 @@
+name: Dependabot Auto Approve and Merge
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  dependabot:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+    uses: GEWIS/actions/.github/workflows/dependabot-auto-merge.yml@v1
+    with:
+      auto-approve: true
+      auto-merge: true
+      merge-method: 'squash'

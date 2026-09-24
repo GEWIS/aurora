@@ -1,4 +1,5 @@
 import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
+import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import HandlerManager from '../root/handler-manager';
@@ -13,7 +14,7 @@ import { StrobeProps } from './effects/color/strobe';
 import { SecurityNames } from '../../helpers/security';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import LightsSwitchManager from './lights-switch-manager';
 import { HttpStatusCode } from 'axios';
 import RootLightsOperationsService from './root-lights-operations-service';
@@ -37,15 +38,20 @@ interface GroupFixtureDimmingParams {
   relativeBrightness: number;
 }
 
+@injectable()
 @Route('lights')
 @Tags('Lights')
 export class RootLightsOperationsController extends Controller {
+  constructor(private readonly lightsSwitchManager: LightsSwitchManager) {
+    super();
+  }
+
   private getGroups(): LightsGroup[] {
     return new RootLightsOperationsService().getGroups();
   }
 
   private async getLightsSwitch(id: number): Promise<LightsSwitch | null> {
-    return dataSource.getRepository(LightsSwitch).findOne({ where: { id } });
+    return getDataSource().getRepository(LightsSwitch).findOne({ where: { id } });
   }
 
   /**
@@ -129,10 +135,12 @@ export class RootLightsOperationsController extends Controller {
     @Body() params: GroupFixtureDimmingParams,
     @Res() notFoundResponse: TsoaResponse<HttpStatusCode.NotFound, { message: string }>,
   ) {
-    const dbLightsGroup = await dataSource.getRepository(LightsGroup).findOne({
-      where: { id },
-      relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
-    });
+    const dbLightsGroup = await getDataSource()
+      .getRepository(LightsGroup)
+      .findOne({
+        where: { id },
+        relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
+      });
     if (!dbLightsGroup) {
       return notFoundResponse(HttpStatusCode.NotFound, { message: 'Lights group not found' });
     }
@@ -157,10 +165,12 @@ export class RootLightsOperationsController extends Controller {
     id: number,
     @Res() notFoundResponse: TsoaResponse<HttpStatusCode.NotFound, { message: string }>,
   ) {
-    const dbLightsGroup = await dataSource.getRepository(LightsGroup).findOne({
-      where: { id },
-      relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
-    });
+    const dbLightsGroup = await getDataSource()
+      .getRepository(LightsGroup)
+      .findOne({
+        where: { id },
+        relations: { pars: true, movingHeadRgbs: true, movingHeadWheels: true },
+      });
     if (!dbLightsGroup) {
       return notFoundResponse(HttpStatusCode.NotFound, { message: 'Lights group not found' });
     }
@@ -458,7 +468,7 @@ export class RootLightsOperationsController extends Controller {
       return;
     }
 
-    LightsSwitchManager.getInstance().enableSwitch(lightsSwitch);
+    this.lightsSwitchManager.enableSwitch(lightsSwitch);
 
     logger.audit(req.user, `Turn on lights switch "${lightsSwitch.name}"`);
   }
@@ -472,7 +482,7 @@ export class RootLightsOperationsController extends Controller {
       return;
     }
 
-    LightsSwitchManager.getInstance().disableSwitch(lightsSwitch);
+    this.lightsSwitchManager.disableSwitch(lightsSwitch);
 
     logger.audit(req.user, `Turn off lights switch "${lightsSwitch.name}"`);
   }

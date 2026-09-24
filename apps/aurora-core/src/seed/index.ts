@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import '../env';
 import { Command, Option } from 'commander';
-import dataSource from '../database';
+import { getDataSource } from '../database';
 import seedDatabase, { seedBorrelLights, seedOpeningSequence, seedPosters } from './seedGewis';
 import logger from '../logger';
 import seedDatabaseHubble from './seedHubble';
@@ -52,8 +53,8 @@ program
  */
 
 async function createSeeder() {
-  await dataSource.initialize();
-  await dataSource.synchronize();
+  await getDataSource().initialize();
+  await getDataSource().synchronize();
 
   program.parse();
 
@@ -81,7 +82,7 @@ async function createSeeder() {
     }
   }
 
-  await dataSource.destroy();
+  await getDataSource().destroy();
 }
 
 if (require.main === module) {

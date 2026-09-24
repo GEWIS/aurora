@@ -3,7 +3,7 @@ import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
 import { LightsGroup } from '../../lights/entities';
 import { LightsTrackEffect } from '../../lights/entities/sequences/lights-track-effect';
 import LightsEffect from '../../lights/effects/lights-effect';
-import dataSource from '../../../database';
+import { getDataSource } from '../../../database';
 import { MusicEmitter } from '../../events';
 import logger from '../../../logger';
 import { databaseEffectToObject } from './database-effects-helper';
@@ -58,17 +58,15 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
     this.events = timestamps
       .map((timestamp): LightsGroupEffect[] => {
         const predefinedEffects = this.sequence.filter((s) => s.timestamp === timestamp);
-        return predefinedEffects.map(
-          (e): LightsGroupEffect => ({
-            startMs: e.timestamp,
-            durationMs: e.duration,
-            endMs: e.timestamp + e.duration,
-            effectName: e.effect,
-            effectProps: JSON.parse(e.effectProps),
-            lightsGroupIds: e.lightGroups.map((l) => l.id),
-            id: e.id,
-          }),
-        );
+        return predefinedEffects.map((e): LightsGroupEffect => ({
+          startMs: e.timestamp,
+          durationMs: e.duration,
+          endMs: e.timestamp + e.duration,
+          effectName: e.effect,
+          effectProps: JSON.parse(e.effectProps),
+          lightsGroupIds: e.lightGroups.map((l) => l.id),
+          id: e.id,
+        }));
       })
       .flat();
 
@@ -170,7 +168,7 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
 
     this.stopSequence(true);
 
-    dataSource
+    getDataSource()
       .getRepository(LightsTrackEffect)
       .find({
         where: { trackUri: event.trackURI },

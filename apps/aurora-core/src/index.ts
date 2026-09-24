@@ -1,11 +1,13 @@
+import 'reflect-metadata';
 import './env';
+import { registerServices } from './register-services';
 import { registerAllSettings } from './register-settings';
 import { createServer } from 'http';
 import * as fs from 'fs';
 import path from 'node:path';
 import logger from './logger';
 import createHttp from './http';
-import dataSource from './database';
+import { getDataSource } from './database';
 import HandlerManager from './modules/root/handler-manager';
 import { HandlerFactory } from './modules/handlers';
 import createWebsocket from './socketio';
@@ -47,7 +49,7 @@ async function createApp(): Promise<void> {
     fs.cpSync(audioFromPath, audioToPath, { recursive: true });
   }
 
-  await dataSource.initialize();
+  await getDataSource().initialize();
 
   registerAllSettings();
   await ServerSettingsStore.getInstance().initialize();
@@ -69,6 +71,7 @@ async function createApp(): Promise<void> {
     screen: handlerFactory.createScreenHandlers(),
   });
   await handlerManager.init();
+  registerServices();
   const socketConnectionManager = new SocketConnectionManager(
     handlerManager,
     lightsSwitchManager,

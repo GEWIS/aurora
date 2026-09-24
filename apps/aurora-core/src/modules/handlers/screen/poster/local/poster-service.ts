@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { File } from '../../../../files/entities';
 import Poster, { FooterSize, PosterType } from './poster';
 import { DiskStorage } from '../../../../files/storage';
-import dataSource from '../../../../../database';
+import { getDataSource } from '../../../../../database';
 import { HttpApiException } from '../../../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 import FileResponse from '../../../../files/entities/file-response';
@@ -49,7 +49,9 @@ export interface UpdatePosterRequest extends Partial<
     | 'borrelMode'
     | 'albums'
   >
-> {}
+> {
+  type?: PosterType.IMAGE | PosterType.VIDEO;
+}
 
 export interface PosterResponse {
   id: number;
@@ -77,12 +79,9 @@ export default class PosterService {
 
   private repo: Repository<Poster>;
 
-  private fileRepo: Repository<File>;
-
   constructor() {
     this.storage = new DiskStorage('posters');
-    this.repo = dataSource.getRepository(Poster);
-    this.fileRepo = dataSource.getRepository(File);
+    this.repo = getDataSource().getRepository(Poster);
   }
 
   /**
@@ -93,7 +92,7 @@ export default class PosterService {
     const files: FileResponse[] = (poster.files ?? []).reduce<FileResponse[]>((acc, file) => {
       const location = this.storage.getPublicFileUri(file);
       if (location) {
-        acc.push({ location, name: file.originalName });
+        acc.push({ id: file.id, location, name: file.originalName });
       }
       return acc;
     }, []);
@@ -169,7 +168,7 @@ export default class PosterService {
 
     const fileParams = await this.storage.saveFile(filename, filedata);
     try {
-      return await dataSource.transaction(async (manager) => {
+      return await getDataSource().transaction(async (manager) => {
         const file = await manager.getRepository(File).save(fileParams);
         poster.files = [...(poster.files ?? []), file];
         return manager.getRepository(Poster).save(poster);
@@ -178,6 +177,38 @@ export default class PosterService {
       await this.storage.deleteFile(fileParams);
       throw error;
     }
+  }
+
+  /**
+   * Removes the given file from the specified media poster and deletes it from storage.
+   * @param id Id of the poster to remove the media from.
+   * @param fileId Id of the file to remove.
+   */
+  public async removeMedia(id: number, fileId: number): Promise<Poster> {
+    const poster = await this.getSinglePoster(id);
+    if (poster.type != PosterType.IMAGE && poster.type != PosterType.VIDEO) {
+      throw new HttpApiException(
+        HttpStatusCode.BadRequest,
+        `Poster with ID "${id}" is not a media poster.`,
+      );
+    }
+
+    const file = (poster.files ?? []).find((f) => f.id === fileId);
+    if (!file) {
+      throw new HttpApiException(
+        HttpStatusCode.NotFound,
+        `File with ID "${fileId}" not found on poster with ID "${id}".`,
+      );
+    }
+
+    const updated = await getDataSource().transaction(async (manager) => {
+      poster.files = poster.files.filter((f) => f.id !== fileId);
+      const saved = await manager.getRepository(Poster).save(poster);
+      await manager.getRepository(File).remove(file);
+      return saved;
+    });
+    await this.storage.deleteFile(file);
+    return updated;
   }
 
   /**
@@ -201,11 +232,21 @@ export default class PosterService {
    * @param params The fields of the poster to be updated as specified in UpdatePosterParams.
    */
   public async updatePoster(id: number, params: UpdatePosterRequest): Promise<Poster> {
-    return dataSource.transaction(async (manager) => {
+    return getDataSource().transaction(async (manager) => {
       const repo = manager.getRepository(Poster);
       const poster = await repo.findOneBy({ id });
       if (poster === null) {
         throw new HttpApiException(HttpStatusCode.NotFound, `Poster with ID "${id}" not found.`);
+      }
+      if (
+        params.type !== undefined &&
+        poster.type !== PosterType.IMAGE &&
+        poster.type !== PosterType.VIDEO
+      ) {
+        throw new HttpApiException(
+          HttpStatusCode.BadRequest,
+          `Poster with ID "${id}" is not a media poster.`,
+        );
       }
       Object.assign(poster, params);
       return repo.save(poster);

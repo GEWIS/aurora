@@ -1,8 +1,9 @@
 import { Body, Delete, Get, Path, Post, Put, Query, Request, Route, Tags } from 'tsoa';
+import { injectable } from 'inversify';
 import { Controller } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
 import { Security } from '../../../auth';
-import { SecurityNames } from '../../../../helpers/security';
+import { SecurityGroup, SecurityNames } from '../../../../helpers/security';
 import { securityGroups } from '../../../../helpers/security-groups';
 import logger from '../../../../logger';
 import HandlerManager from '../../../root/handler-manager';
@@ -17,6 +18,7 @@ import NsTrainsService, { TrainResponse } from '../poster/ns-trains-service';
 import { applyTreinLimbo } from './trains-transform';
 import PcUsageService, { PcStatusResponse, SetPcUsageParams } from './pc-usage-service';
 import InfoStatusService, {
+  BeerTimeResponse,
   KeyholderParams,
   KeyholderResponse,
   RoomStatusParams,
@@ -43,10 +45,15 @@ import GewisKeyholderSyncService, {
 import RootScreenService from '../../../root/root-screen-service';
 import { HttpApiException } from '../../../../helpers/custom-error';
 
+@injectable()
 @Route('handler/screen/info')
 @Tags('Handlers')
 @FeatureEnabled('InfoScreen')
 export class InfoScreenController extends Controller {
+  constructor(private readonly handlerManager: HandlerManager) {
+    super();
+  }
+
   private infoStatusService = new InfoStatusService();
 
   private pcUsageService = new PcUsageService();
@@ -71,7 +78,7 @@ export class InfoScreenController extends Controller {
    * disabled.
    */
   private getHandler(): InfoScreenHandler | undefined {
-    return HandlerManager.getInstance()
+    return this.handlerManager
       .getHandlers(Screen)
       .find((h) => h.constructor.name === InfoScreenHandler.name) as InfoScreenHandler | undefined;
   }
@@ -159,6 +166,15 @@ export class InfoScreenController extends Controller {
     return this.infoStatusService.getRoomStatus();
   }
 
+  /**
+   * Today's beer time. Intended for external services that display or announce it.
+   */
+  @Security(SecurityNames.INTEGRATION, ['getInfoBeerTime'])
+  @Get('beer-time')
+  public async getInfoBeerTime(): Promise<BeerTimeResponse> {
+    return this.infoStatusService.getBeerTime();
+  }
+
   // ---------------------------------------------------------------------------
   // Keyholder registry (backoffice managed)
   // ---------------------------------------------------------------------------
@@ -177,7 +193,11 @@ export class InfoScreenController extends Controller {
     @Body() body: KeyholderParams,
   ): Promise<KeyholderResponse> {
     logger.audit(req.user, `Update info screen keyholder ${id}.`);
-    const keyholder = await this.infoStatusService.updateKeyholder(id, body);
+    const keyholder = await this.infoStatusService.updateKeyholder(
+      id,
+      body,
+      !!req.user?.roles.includes(SecurityGroup.ADMIN),
+    );
     if (!keyholder) {
       this.setStatus(404);
       return undefined as unknown as KeyholderResponse;

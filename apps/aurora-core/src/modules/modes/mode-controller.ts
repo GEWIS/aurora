@@ -1,4 +1,5 @@
 import { Body, Delete, Post, Request, Route, Security, SuccessResponse, Tags } from 'tsoa';
+import { injectable } from 'inversify';
 import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
 import { Request as ExpressRequest } from 'express';
@@ -8,7 +9,7 @@ import { LightsGroup } from '../lights/entities';
 import { Audio, Screen } from '../root/entities';
 import CenturionMode from './centurion/centurion-mode';
 import tapes from './centurion/tapes';
-import dataSource from '../../database';
+import { getDataSource } from '../../database';
 import { SecurityNames } from '../../helpers/security';
 import { HttpStatusCode } from '../../helpers/custom-error';
 import TimeTrailRaceMode from './time-trail-race/time-trail-race-mode';
@@ -31,21 +32,21 @@ interface TimeTrailRaceParams extends EnableModeParams {
   sessionName: string;
 }
 
+@injectable()
 @Route('modes')
 @Tags('Modes')
 export class ModeController extends Controller {
-  private modeManager: ModeManager;
-
-  constructor() {
+  constructor(private readonly modeManager: ModeManager) {
     super();
-    this.modeManager = ModeManager.getInstance();
   }
 
   private async findEntities(
     entity: typeof SubscribeEntity,
     ids: number[],
   ): Promise<SubscribeEntity[]> {
-    return dataSource.getRepository(entity).find({ where: { id: In(ids) } });
+    return getDataSource()
+      .getRepository(entity)
+      .find({ where: { id: In(ids) } });
   }
 
   private async mapBodyToEntities(params: EnableModeParams) {

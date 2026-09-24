@@ -1,5 +1,6 @@
 import { Controller, TsoaResponse } from '@tsoa/runtime';
-import { Body, Delete, Get, Post, Put, Query, Request, Res, Route, Security, Tags } from 'tsoa';
+import { injectable } from 'inversify';
+import { Body, Delete, Get, Post, Query, Request, Res, Route, Security, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import ScenesService, {
   ActiveSceneResponse,
@@ -14,9 +15,14 @@ import { SecurityNames } from '../../../helpers/security';
 import logger from '../../../logger';
 import { securityGroups } from '../../../helpers/security-groups';
 
+@injectable()
 @Route('handler/lights/scenes')
 @Tags('Handlers')
 export class ScenesController extends Controller {
+  constructor(private readonly handlerManager: HandlerManager) {
+    super();
+  }
+
   /**
    * Get a list of all scenes
    * @param favorite Whether to return only scenes that are (not) marked as favorite
@@ -152,7 +158,7 @@ export class ScenesController extends Controller {
       return;
     }
 
-    const handler: ScenesHandler | undefined = HandlerManager.getInstance()
+    const handler: ScenesHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
     if (!handler) throw new Error('ScenesHandler not found');
@@ -184,7 +190,7 @@ export class ScenesController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.scenes.base)
   @Delete('active')
   public async clearScene(@Request() req: ExpressRequest) {
-    const handler: ScenesHandler | undefined = HandlerManager.getInstance()
+    const handler: ScenesHandler | undefined = this.handlerManager
       .getHandlers(LightsGroup)
       .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
     if (!handler) throw new Error('ScenesHandler not found');

@@ -33,7 +33,7 @@
     "@tsoa/runtime": "7.0.0-alpha.0",
     "async-lock": "1.4.1",
     "axios": "1.17.0",
-    "body-parser": "2.2.2",
+    "body-parser": "2.3.0",
     "commander": "14.0.3",
     "connect-typeorm": "2.0.0",
     "cookie-parser": "1.4.7",

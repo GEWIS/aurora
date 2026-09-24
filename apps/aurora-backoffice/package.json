@@ -29,7 +29,7 @@
     "tailwindcss-primeui": "0.6.1",
     "uuid": "11.1.1",
     "vue": "3.5.43",
-    "vue-router": "4.5.1",
+    "vue-router": "4.6.4",
     "vue-timeago3": "2.3.2",
     "yup": "1.6.1"
   },

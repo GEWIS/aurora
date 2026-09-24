@@ -19,6 +19,16 @@ See the root [README](../README.md) for the full architecture overview and list 
 The database is automatically synchronised with the application models in development mode (`TYPEORM_SYNCHRONIZE=true`).
 To seed the database with test data, run `pnpm seed:gewis`.
 
+## Migrations
+
+On boot, the core checks for pending migrations and runs them when using MySQL/MariaDB with `TYPEORM_SYNCHRONIZE=false`.
+If a migration fails, the core exits with code 1.
+Set `TYPEORM_MIGRATIONS_RUN=false` to disable this.
+Note that MySQL commits DDL statements implicitly, so a failed migration may leave earlier statements applied.
+
+- Generate a migration with `pnpm migrate:generate` and register it in `src/migrations/index.ts`.
+- Run migrations manually with `pnpm migrate` (development) or `pnpm migrate:prod` / `node src/migrate.js` inside the Docker image.
+
 ## Deployment
 
 Deployment is handled by Docker Compose from the monorepo root.

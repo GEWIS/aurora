@@ -26,7 +26,6 @@ export interface StaticColorProps {
 
   /**
    * Brightness (1 by default)
-   * @isInt
    * @minimum 0
    * @maximum 1
    */

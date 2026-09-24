@@ -2,20 +2,23 @@
   <FloatLabel class="w-full mt-1" variant="on">
     <Select
       class="w-full"
-      input-id="pattern-select"
+      :input-id="inputId"
       :model-value="modelValue"
       option-label="name"
       option-value="value"
       :options="patterns"
       @update:model-value="(value: LightsEffectPattern) => $emit('update:modelValue', value)"
     />
-    <label for="pattern-select">Pattern</label>
+    <label :for="inputId">Pattern</label>
   </FloatLabel>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, useId } from 'vue';
 import { LightsEffectPattern } from '@gewis/aurora-api-client';
+
+// The same effect settings can be shown multiple times on a page (e.g. in a scene)
+const inputId = `pattern-${useId()}`;
 
 defineProps<{
   modelValue: LightsEffectPattern;

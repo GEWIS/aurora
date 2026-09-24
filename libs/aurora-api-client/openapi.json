@@ -5547,8 +5547,8 @@
 						"description": "Whether to toggle each fixture on/off on the beat of the music (false by default)"
 					},
 					"relativeBrightness": {
-						"type": "integer",
-						"format": "int32",
+						"type": "number",
+						"format": "double",
 						"description": "Brightness (1 by default)",
 						"minimum": 0,
 						"maximum": 1

@@ -127,6 +127,22 @@ describe('POST /api/handler/lights/scenes/scene', () => {
     });
   });
 
+  it('returns 200 with a fractional relative brightness', async () => {
+    // ARRANGE
+    const dimmedEffect = { type: 'StaticColor', props: { color: 'red', relativeBrightness: 0.5 } };
+
+    // ACT
+    const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene').send({
+      name: 'Dimmed Scene',
+      favorite: false,
+      effects: [{ ...dimmedEffect, lightsGroups: [groupId] }],
+    });
+
+    // ASSERT
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.effects).toMatchObject([dimmedEffect]);
+  });
+
   it('returns 400 listing the ids of nonexistent lights groups', async () => {
     // ACT
     const res = await testApp.authorizedAgent.post('/api/handler/lights/scenes/scene').send({

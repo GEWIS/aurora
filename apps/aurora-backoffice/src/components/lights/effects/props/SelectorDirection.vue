@@ -2,20 +2,23 @@
   <FloatLabel class="w-full mt-1" variant="on">
     <Select
       class="w-full"
-      input-id="direction-select"
+      :input-id="inputId"
       :model-value="modelValue"
       option-label="name"
       option-value="value"
       :options="directions"
       @update:model-value="(value: LightsEffectDirection) => $emit('update:modelValue', value)"
     />
-    <label for="direction-select">Direction</label>
+    <label :for="inputId">Direction</label>
   </FloatLabel>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, useId } from 'vue';
 import { LightsEffectDirection } from '@gewis/aurora-api-client';
+
+// The same effect settings can be shown multiple times on a page (e.g. in a scene)
+const inputId = `direction-${useId()}`;
 
 defineProps<{
   modelValue: LightsEffectDirection;

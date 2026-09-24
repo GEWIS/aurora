@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import {
   type LightsEffectsColorCreateParams,
   type LightsEffectsMovementCreateParams,
@@ -35,14 +36,11 @@ defineEmits<{
   remove: [];
 }>();
 
-let colors: Array<RgbColor>;
-if ('colors' in props.effect.props) {
-  colors = props.effect.props.colors;
-} else if ('color' in props.effect.props) {
-  colors = [props.effect.props.color] as unknown as RgbColor[];
-} else {
-  colors = [];
-}
+const colors = computed<RgbColor[]>(() => {
+  if ('colors' in props.effect.props) return props.effect.props.colors;
+  if ('color' in props.effect.props) return [props.effect.props.color] as unknown as RgbColor[];
+  return [];
+});
 </script>
 
 <style scoped></style>

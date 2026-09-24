@@ -1,18 +1,25 @@
 <template>
   <SelectorLightsColor v-if="showColors" v-model="colors" single-color />
-  <Select v-model="gobo" :options="gobos" placeholder="Select a gobo" show-clear />
-  <Select
-    v-model="goboRotate"
-    :options="goboRotates"
-    placeholder="Select a gobo rotate effect"
-    show-clear
-  />
-  <SelectorBoolean id="beat-toggle" v-model="beatToggle" name="Beat Toggle" />
+  <FloatLabel v-if="gobos.length > 0" variant="on">
+    <Select v-model="gobo" class="w-full" :input-id="`gobo-${uid}`" :options="gobos" show-clear />
+    <label :for="`gobo-${uid}`">Gobo</label>
+  </FloatLabel>
+  <FloatLabel v-if="goboRotates.length > 0" variant="on">
+    <Select
+      v-model="goboRotate"
+      class="w-full"
+      :input-id="`gobo-rotate-${uid}`"
+      :options="goboRotates"
+      show-clear
+    />
+    <label :for="`gobo-rotate-${uid}`">Gobo rotation</label>
+  </FloatLabel>
+  <SelectorBoolean id="beat-toggle" v-model="beatToggle" name="Beat toggle" />
   <SelectorRatioSlider
     id="relative-brightness"
     :max="1"
     :min="0"
-    name=""
+    name="Brightness (0 = off, 1 = full)"
     :step="0.05"
     :value="relativeBrightness"
     @update="(newVal) => (relativeBrightness = newVal)"
@@ -20,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type ComputedRef, onMounted, ref, watch } from 'vue';
+import { computed, type ComputedRef, onMounted, ref, useId, watch } from 'vue';
 import {
   ColorEffectsStaticColor,
   RgbColor,
@@ -31,26 +38,32 @@ import SelectorBoolean from '@/components/lights/effects/props/SelectorBoolean.v
 import SelectorRatioSlider from '@/components/lights/effects/props/SelectorRatioSlider.vue';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 
+const props = defineProps<{
+  showColors: boolean;
+  lightsGroupIds: number[];
+  defaultModelValue?: StaticColorCreateParams;
+}>();
+
+// Only offer the gobos of the moving heads in the lights groups this effect is applied to
 const subscriberStore = useSubscriberStore();
+const uid = useId();
+const selectedLightsGroups = computed(() =>
+  subscriberStore.lightsGroups.filter((g) => props.lightsGroupIds.includes(g.id)),
+);
 const gobos: ComputedRef<string[]> = computed(() => {
-  return subscriberStore.lightsGroups
+  return selectedLightsGroups.value
     .map((g) => g.movingHeadWheels.map((w) => w.fixture.gobos))
     .flat()
     .flat()
     .filter((n1, index, all) => index === all.findIndex((n2) => n1 === n2));
 });
 const goboRotates: ComputedRef<string[]> = computed(() => {
-  return subscriberStore.lightsGroups
+  return selectedLightsGroups.value
     .map((g) => g.movingHeadWheels.map((w) => w.fixture.goboRotates))
     .flat()
     .flat()
     .filter((n1, index, all) => index === all.findIndex((n2) => n1 === n2));
 });
-
-const props = defineProps<{
-  showColors: boolean;
-  defaultModelValue?: StaticColorCreateParams;
-}>();
 
 const emit = defineEmits<{
   'update:modelValue': [params: StaticColorCreateParams];
@@ -77,6 +90,14 @@ const handleChange = () => {
   };
   emit('update:modelValue', payload);
 };
+
+// Clear a gobo (rotation) that none of the selected lights groups support anymore, so no
+// hidden value is saved. Skip this while the lights groups are still loading.
+watch([gobos, goboRotates], () => {
+  if (subscriberStore.lightsGroups.length === 0) return;
+  if (gobo.value && !gobos.value.includes(gobo.value)) gobo.value = '';
+  if (goboRotate.value && !goboRotates.value.includes(goboRotate.value)) goboRotate.value = '';
+});
 
 watch([colors, gobo, goboRotate, beatToggle, relativeBrightness], handleChange);
 onMounted(handleChange);

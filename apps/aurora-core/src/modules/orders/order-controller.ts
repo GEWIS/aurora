@@ -1,4 +1,4 @@
-import { Controller, Header, Response, TsoaResponse } from '@tsoa/runtime';
+import { Controller, Header, Response, type TsoaResponse } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { createVerify } from 'crypto';
 import { FeatureEnabled, ServerSettingsStore } from '../server-settings';

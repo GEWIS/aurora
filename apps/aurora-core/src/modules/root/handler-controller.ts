@@ -1,6 +1,6 @@
 import { Controller, Path } from '@tsoa/runtime';
 import { Body, Get, Post, Request, Route, Security, Tags } from 'tsoa';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import { injectable } from 'inversify';
 import HandlerManager from './handler-manager';
 import { Audio, Screen } from './entities';

@@ -5,8 +5,5 @@
     "types": ["node"]
   },
   "include": ["src", "build", "build/swagger.json"],
-  "exclude": ["src/test", "src/**/*.spec.ts"],
-  "ts-node": {
-    "files": true
-  }
+  "exclude": ["src/test", "src/**/*.spec.ts"]
 }

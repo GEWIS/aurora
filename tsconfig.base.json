@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    /* Basic Options */
+    /* Module Options: everything is bundled and emitted as ESM */
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "customConditions": ["development"],
+    "isolatedModules": true,
+    "useDefineForClassFields": false,
     "composite": true,
     "incremental": true,
 
@@ -23,7 +27,6 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Module Resolution Options */
-    "moduleResolution": "node",
     "baseUrl": ".",
     "resolveJsonModule": true,
     "esModuleInterop": true,

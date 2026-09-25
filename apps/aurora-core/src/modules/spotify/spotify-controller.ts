@@ -1,7 +1,7 @@
 import { Delete, Get, Post, Query, Request, Res, Response, Route, Security, Tags } from 'tsoa';
 import { injectable } from 'inversify';
-import { Controller, TsoaResponse } from '@tsoa/runtime';
-import { Request as ExpressRequest } from 'express';
+import { Controller, type TsoaResponse } from '@tsoa/runtime';
+import { type Request as ExpressRequest } from 'express';
 import * as querystring from 'querystring';
 import * as crypto from 'crypto';
 import SpotifyApiHandler, { SpotifyUserProfile } from './spotify-api-handler';

@@ -6,9 +6,9 @@ import { Body, Get, Post, Put, Query, Request, Route, Security, Tags } from 'tso
 import { SecurityNames } from '../../../../helpers/security';
 import { securityGroups } from '../../../../helpers/security-groups';
 import logger from '../../../../logger';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import NsTrainsService, { TrainResponse } from './ns-trains-service';
-import GEWISPosterService, { GEWISPhotoAlbumParams } from './gewis-poster-service';
+import GEWISPosterService, { type GEWISPhotoAlbumParams } from './gewis-poster-service';
 import OlympicsService, { MedalTableRecord } from './olympics-service';
 import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
 import { Controller } from '@tsoa/runtime';

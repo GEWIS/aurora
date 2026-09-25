@@ -7,17 +7,17 @@ import { Audio, Screen } from '../../root/entities';
 import { TimeTrailRaceState } from '../../events/time-trail-race-state';
 import { BackofficeSyncEmitter } from '../../events/backoffice-sync-emitter';
 import {
-  PlayerParams,
-  RegisterPlayerParams,
-  ScoreboardItem,
+  type PlayerParams,
+  type RegisterPlayerParams,
+  type ScoreboardItem,
 } from '../../events/time-trail-race-entities';
 import {
-  RaceFinishedEvent,
-  RaceInitializedEvent,
-  RacePlayerReadyEvent,
-  RacePlayerRegisteredEvent,
-  RaceScoreboardEvent,
-  RaceStartedEvent,
+  type RaceFinishedEvent,
+  type RaceInitializedEvent,
+  type RacePlayerReadyEvent,
+  type RacePlayerRegisteredEvent,
+  type RaceScoreboardEvent,
+  type RaceStartedEvent,
 } from '../../events/time-trail-race-events';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
 import TimeTrailRaceLightsHandler from '../../handlers/lights/time-trail-race-lights-handler';

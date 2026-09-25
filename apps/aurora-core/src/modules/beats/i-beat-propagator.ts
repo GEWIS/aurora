@@ -1,4 +1,4 @@
-import { BeatEvent } from '../events/music-emitter-events';
+import { type BeatEvent } from '../events/music-emitter-events';
 import { BeatGenerator } from './beat-generator';
 
 export default interface IBeatPropagator {

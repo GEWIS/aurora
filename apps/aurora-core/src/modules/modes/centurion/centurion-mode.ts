@@ -8,7 +8,7 @@ import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
 import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
 import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
 import { MusicEmitter } from '../../events';
-import { TrackChangeEvent } from '../../events/music-emitter-events';
+import { type TrackChangeEvent } from '../../events/music-emitter-events';
 import { CenturionScreenHandler } from '../../handlers/screen';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import Wave from '../../lights/effects/color/wave';

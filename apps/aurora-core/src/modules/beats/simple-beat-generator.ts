@@ -1,4 +1,4 @@
-import { BeatEvent } from '../events';
+import { type BeatEvent } from '../events';
 import { BeatGenerator } from './beat-generator';
 
 export interface ArtificialBeatGeneratorParams {

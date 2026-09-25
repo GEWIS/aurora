@@ -3,7 +3,7 @@ import { Get, Route, Tags, Response, Request, SuccessResponse, Security } from '
 import * as express from 'express';
 import { HttpStatusCode } from 'axios';
 import { HttpApiException } from '../../helpers/custom-error';
-import { AuthUser } from './auth-user';
+import { type AuthUser } from './auth-user';
 import { SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';
 

@@ -1,8 +1,8 @@
-import { Controller, TsoaResponse } from '@tsoa/runtime';
+import { Controller, type TsoaResponse } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Query, Request, Res, Route, Security, Tags } from 'tsoa';
-import { Request as ExpressRequest } from 'express';
-import ScenesService, { CreateSceneParams, LightsSceneResponse } from './scenes-service';
+import { type Request as ExpressRequest } from 'express';
+import ScenesService, { type CreateSceneParams, type LightsSceneResponse } from './scenes-service';
 import RootLightsService from '../../lights/root-lights-service';
 import HandlerManager from '../../root/handler-manager';
 import { LightsGroup } from '../../lights/entities';

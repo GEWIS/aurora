@@ -1,6 +1,6 @@
 import logger from '../../logger';
 import AuditService from './audit-service';
-import { AuthUser } from '../auth';
+import { type AuthUser } from '../auth';
 import { isAuthUser } from '../auth/auth-user';
 
 /**

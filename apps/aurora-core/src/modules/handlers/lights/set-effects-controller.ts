@@ -1,7 +1,7 @@
-import { Controller, Patch, TsoaResponse } from '@tsoa/runtime';
+import { Controller, Patch, type TsoaResponse } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Request, Res, Route, Security, Tags } from 'tsoa';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import SetEffectsHandler from './set-effects-handler';
 import HandlerManager from '../../root/handler-manager';
 import { LightsGroup } from '../../lights/entities';
@@ -11,9 +11,9 @@ import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement
 import logger from '../../../logger';
 import { securityGroups } from '../../../helpers/security-groups';
 import SetEffectsService, {
-  LightsPredefinedEffectCreateParams,
+  type LightsPredefinedEffectCreateParams,
   LightsPredefinedEffectResponse,
-  LightsPredefinedEffectUpdateParams,
+  type LightsPredefinedEffectUpdateParams,
 } from './set-effects-service';
 import { RgbColor } from '../../lights/color-definitions';
 import { HttpStatusCode } from 'axios';

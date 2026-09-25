@@ -1,8 +1,8 @@
 import { Controller, Queries } from '@tsoa/runtime';
 import { Get, Route, Security, Tags } from 'tsoa';
 import AuditService, {
-  GetAuditLogEntryParams,
-  PaginatedAuditLogEntryResponse,
+  type GetAuditLogEntryParams,
+  type PaginatedAuditLogEntryResponse,
 } from './audit-service';
 import { SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';

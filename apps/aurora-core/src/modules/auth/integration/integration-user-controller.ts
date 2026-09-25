@@ -4,9 +4,9 @@ import { Security } from '../index';
 import { SecurityNames } from '../../../helpers/security';
 import { securityGroups } from '../../../helpers/security-groups';
 import IntegrationUserService, {
-  IntegrationUserCreateRequest,
-  IntegrationUserResponse,
-  IntegrationUserUpdateRequest,
+  type IntegrationUserCreateRequest,
+  type IntegrationUserResponse,
+  type IntegrationUserUpdateRequest,
 } from './integration-user-service';
 import AuthService from '../auth-service';
 

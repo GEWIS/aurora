@@ -1,7 +1,7 @@
 import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
 import { injectable } from 'inversify';
-import { Controller, TsoaResponse } from '@tsoa/runtime';
-import { Request as ExpressRequest } from 'express';
+import { Controller, type TsoaResponse } from '@tsoa/runtime';
+import { type Request as ExpressRequest } from 'express';
 import HandlerManager from '../root/handler-manager';
 import {
   LightsGroup,
@@ -10,7 +10,7 @@ import {
   LightsGroupPars,
   LightsSwitch,
 } from './entities';
-import { StrobeProps } from './effects/color/strobe';
+import { type StrobeProps } from './effects/color/strobe';
 import { SecurityNames } from '../../helpers/security';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';

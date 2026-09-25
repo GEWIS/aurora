@@ -1,29 +1,29 @@
 import { Body, Get, Post, Query, Request, Route, Tags } from 'tsoa';
 import { Controller } from '@tsoa/runtime';
 import RootLightsService, {
-  LightsControllerCreateParams,
-  LightsControllerResponse,
-  LightsGroupCreateParams,
-  LightsGroupResponse,
-  LightsMovingHeadRgbCreateParams,
-  LightsMovingHeadWheelCreateParams,
-  LightsParCreateParams,
-  LightsSwitchCreateParams,
-  LightsSwitchResponse,
-  MovingHeadRgbResponse,
-  MovingHeadWheelResponse,
-  ParResponse,
+  type LightsControllerCreateParams,
+  type LightsControllerResponse,
+  type LightsGroupCreateParams,
+  type LightsGroupResponse,
+  type LightsMovingHeadRgbCreateParams,
+  type LightsMovingHeadWheelCreateParams,
+  type LightsParCreateParams,
+  type LightsSwitchCreateParams,
+  type LightsSwitchResponse,
+  type MovingHeadRgbResponse,
+  type MovingHeadWheelResponse,
+  type ParResponse,
 } from './root-lights-service';
 import { LIGHTS_EFFECTS } from './effects';
 import {
   RgbColor,
   rgbColorDefinitions,
   rgbColors,
-  RgbColorSpecification,
+  type RgbColorSpecification,
 } from './color-definitions';
 import { SecurityGroup, SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import { Security } from '../auth';
 
 interface LightsColorResponse {

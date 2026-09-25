@@ -3,30 +3,31 @@
   "version": "1.0.0",
   "description": "",
   "license": "AGPL-3.0-only",
+  "type": "module",
   "scripts": {
-    "build": "tsc -b tsconfig.lib.json",
+    "build": "tsdown",
     "typecheck": "tsc -b --noEmit tsconfig.lib.json",
-    "prepublishOnly": "tsc -b tsconfig.lib.json",
+    "prepublishOnly": "tsdown",
     "sync": "openapi-ts"
   },
-  "main": "src/api-client/index.ts",
-  "types": "src/api-client/index.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     "./openapi.json": "./openapi.json",
     ".": {
       "development": "./src/api-client/index.ts",
-      "types": "./dist/api-client/index.d.ts",
-      "default": "./dist/api-client/index.js"
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
     },
     "./client": {
       "development": "./src/api-client/client.gen.ts",
-      "types": "./dist/api-client/client.gen.d.ts",
-      "default": "./dist/api-client/client.gen.js"
+      "types": "./dist/client.gen.d.mts",
+      "default": "./dist/client.gen.mjs"
     },
     "./schemas": {
       "development": "./src/api-client/schemas.gen.ts",
-      "types": "./dist/api-client/schemas.gen.d.ts",
-      "default": "./dist/api-client/schemas.gen.js"
+      "types": "./dist/schemas.gen.d.mts",
+      "default": "./dist/schemas.gen.mjs"
     }
   },
   "files": [
@@ -36,6 +37,7 @@
   ],
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
+    "tsdown": "0.23.0",
     "tsx": "^4.23.15",
     "typescript": "5.9.3"
   },

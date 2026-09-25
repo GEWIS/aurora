@@ -1,11 +1,11 @@
 import { Controller } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { Body, Get, Post, Request, Response, Route, Security, Tags } from 'tsoa';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import TimeTrailRaceMode from './time-trail-race-mode';
 import ModeManager from '../mode-manager';
 import { SecurityNames } from '../../../helpers/security';
-import { RegisterPlayerParams } from '../../events/time-trail-race-entities';
+import { type RegisterPlayerParams } from '../../events/time-trail-race-entities';
 import ModeDisabledError from '../mode-disabled-error';
 import { InvalidStateError } from './time-trail-race-invalid-state-error';
 import logger from '../../../logger';

@@ -1,6 +1,6 @@
 import { TimeTrailRaceState } from './time-trail-race-state';
 
-import { PlayerParams, ScoreboardItem } from './time-trail-race-entities';
+import { type PlayerParams, type ScoreboardItem } from './time-trail-race-entities';
 
 type RaceBaseEvent = {
   sessionName: string;

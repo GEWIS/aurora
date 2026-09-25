@@ -2,8 +2,9 @@ import { Server as SocketIoServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { NextFunction, Response } from 'express';
 import passport from 'passport';
-import { DefaultEventsMap, EventsMap } from 'socket.io/dist/typed-events';
-import { SessionMiddleware, AuthUser } from './modules/auth';
+import { type DefaultEventsMap } from 'socket.io';
+type EventsMap = Record<string, any>;
+import { SessionMiddleware, type AuthUser } from './modules/auth';
 import { customOrigin, enableCors } from './http';
 import { SECURE_NAMESPACES } from './socketio-namespaces';
 

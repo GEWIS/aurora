@@ -1,8 +1,8 @@
 import { Controller } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Request, Route, Tags } from 'tsoa';
-import { Request as ExpressRequest } from 'express';
-import { SimpleBeatGenerator, ArtificialBeatGeneratorParams } from './simple-beat-generator';
+import { type Request as ExpressRequest } from 'express';
+import { SimpleBeatGenerator, type ArtificialBeatGeneratorParams } from './simple-beat-generator';
 import { SecurityNames } from '../../helpers/security';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';

@@ -1,5 +1,5 @@
 import { LightsGroup } from '../../lights/entities';
-import { BeatEvent } from '../../events';
+import { type BeatEvent } from '../../events';
 import { BeatFadeOut, Sparkle, StaticColor, Wave } from '../../lights/effects/color';
 import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
 import EffectsHandler from './effects-handler';

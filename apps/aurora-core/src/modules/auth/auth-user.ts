@@ -28,4 +28,4 @@ function isAuthUser(obj: unknown): obj is AuthUser {
   );
 }
 
-export { AuthUser, isAuthUser };
+export { type AuthUser, isAuthUser };

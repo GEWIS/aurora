@@ -1,7 +1,10 @@
 import { Body, Get, Post, Route, Security, Tags, Request } from 'tsoa';
 import { Controller, Path } from '@tsoa/runtime';
-import { Request as ExpressRequest } from 'express';
-import RootScreenService, { ScreenCreateParams, ScreenResponse } from './root-screen-service';
+import { type Request as ExpressRequest } from 'express';
+import RootScreenService, {
+  type ScreenCreateParams,
+  type ScreenResponse,
+} from './root-screen-service';
 import { SecurityNames } from '../../helpers/security';
 import { securityGroups } from '../../helpers/security-groups';
 import { HttpApiException } from '../../helpers/custom-error';

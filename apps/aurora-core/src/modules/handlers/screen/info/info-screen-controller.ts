@@ -1,7 +1,7 @@
 import { Body, Delete, Get, Path, Post, Put, Query, Request, Route, Tags } from 'tsoa';
 import { injectable } from 'inversify';
 import { Controller } from '@tsoa/runtime';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import { Security } from '../../../auth';
 import { SecurityGroup, SecurityNames } from '../../../../helpers/security';
 import { securityGroups } from '../../../../helpers/security-groups';
@@ -11,31 +11,45 @@ import { Screen } from '../../../root/entities';
 import InfoScreenHandler from './info-screen-handler';
 import { FeatureEnabled } from '../../../server-settings';
 import WeatherService, { WeatherResponse } from './weather-service';
-import RainRadarService, { RainRadarResponse } from './rain-radar-service';
-import NewsService, { NewsHeadline, NewsSourceParams, NewsSourceResponse } from './news-service';
-import CalendarService, { AgendaEvent } from './calendar-service';
-import NsTrainsService, { TrainResponse } from '../poster/ns-trains-service';
+import RainRadarService, { type RainRadarResponse } from './rain-radar-service';
+import NewsService, {
+  NewsHeadline,
+  type NewsSourceParams,
+  type NewsSourceResponse,
+} from './news-service';
+import CalendarService, { type AgendaEvent } from './calendar-service';
+import NsTrainsService, { type TrainResponse } from '../poster/ns-trains-service';
 import { applyTreinLimbo } from './trains-transform';
-import PcUsageService, { PcStatusResponse, SetPcUsageParams } from './pc-usage-service';
+import PcUsageService, { type PcStatusResponse, type SetPcUsageParams } from './pc-usage-service';
 import InfoStatusService, {
-  BeerTimeResponse,
-  KeyholderParams,
-  KeyholderResponse,
-  RoomStatusParams,
-  RoomStatusResponse,
+  type BeerTimeResponse,
+  type KeyholderParams,
+  type KeyholderResponse,
+  type RoomStatusParams,
+  type RoomStatusResponse,
 } from './info-status-service';
-import LayoutService, { InfoScreenLayoutResponse, SetInfoLayoutParams } from './layout-service';
+import LayoutService, {
+  type InfoScreenLayoutResponse,
+  type SetInfoLayoutParams,
+} from './layout-service';
 import LayoutPresetService, {
-  LayoutPresetParams,
-  LayoutPresetResponse,
+  type LayoutPresetParams,
+  type LayoutPresetResponse,
 } from './layout-preset-service';
-import CallerService, { CallerParams, CallerResponse, CallerRingParams } from './caller-service';
-import ServicesHealthService, { ServicesHealthResponse } from './services-health-service';
-import ValidationService, { ValidationParams, ValidationResult } from './validation-service';
+import CallerService, {
+  type CallerParams,
+  type CallerResponse,
+  type CallerRingParams,
+} from './caller-service';
+import ServicesHealthService, { type ServicesHealthResponse } from './services-health-service';
+import ValidationService, {
+  type ValidationParams,
+  type ValidationResult,
+} from './validation-service';
 import ConferenceRoomsService, {
-  ConferenceRoomConfigResponse,
-  ConferenceRoomParams,
-  ConferenceRoomsResponse,
+  type ConferenceRoomConfigResponse,
+  type ConferenceRoomParams,
+  type ConferenceRoomsResponse,
 } from './conference-rooms-service';
 import { WidgetCatalogItem, enabledCatalog } from './widget-catalog';
 import GewisKeyholderSyncService, {

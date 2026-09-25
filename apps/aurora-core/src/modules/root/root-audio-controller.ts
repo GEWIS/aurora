@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Res, Route, Security, Tags, Request } from 'tsoa';
 import { injectable } from 'inversify';
-import { TsoaResponse } from '@tsoa/runtime';
-import { Request as ExpressRequest } from 'express';
-import RootAudioService, { AudioCreateParams, AudioResponse } from './root-audio-service';
+import { type TsoaResponse } from '@tsoa/runtime';
+import { type Request as ExpressRequest } from 'express';
+import RootAudioService, { type AudioCreateParams, type AudioResponse } from './root-audio-service';
 import { SecurityNames } from '../../helpers/security';
 import HandlerManager from './handler-manager';
 import { Audio } from './entities';

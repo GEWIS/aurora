@@ -62,4 +62,4 @@ export function validateTape(tape: MixTape) {
 
 export default tapes;
 
-export { default as MixTape } from '../../../lights/mix-tape';
+export { type default as MixTape } from '../../../lights/mix-tape';

@@ -1,5 +1,5 @@
 import { BeatGenerator } from './beat-generator';
-import { BeatEmitter, BeatEvent, GeneratorBeatEvent } from '../events';
+import { BeatEmitter, type BeatEvent, type GeneratorBeatEvent } from '../events';
 import BeatPropagator from './beat-propagator';
 import logger from '../../logger';
 

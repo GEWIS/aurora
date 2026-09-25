@@ -1,4 +1,4 @@
-import { BeatEvent } from '../events';
+import { type BeatEvent } from '../events';
 import IBeatPropagator from './i-beat-propagator';
 
 export abstract class BeatGenerator {

@@ -18,7 +18,8 @@ import { FeatureFlagManager, ServerSettingsStore } from './modules/server-settin
  * Bind the long-lived services that controllers depend on into the container.
  */
 export function registerServices(): void {
-  const services: [ServiceIdentifier<unknown>, unknown][] = [
+  // Classes with private constructors can't satisfy `Newable`, so cast the pairs as a whole.
+  const services = [
     [HandlerManager, HandlerManager.getInstance()],
     [ModeManager, ModeManager.getInstance()],
     [OrderManager, OrderManager.getInstance()],
@@ -29,11 +30,11 @@ export function registerServices(): void {
     [SpotifyTrackHandler, SpotifyTrackHandler.getInstance()],
     [FeatureFlagManager, FeatureFlagManager.getInstance()],
     [ServerSettingsStore, ServerSettingsStore.getInstance()],
-  ];
+  ] as [ServiceIdentifier<unknown>, unknown][];
 
   services.forEach(([service, instance]) => {
     if (container.isBound(service)) {
-      container.rebindSync(service).toConstantValue(instance);
+      container.rebind(service).toConstantValue(instance);
     } else {
       container.bind(service).toConstantValue(instance);
     }

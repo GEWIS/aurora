@@ -6,7 +6,7 @@ import HandlerManager from '../../../../root/handler-manager';
 import { Screen } from '../../../../root/entities';
 import { SecurityNames } from '../../../../../helpers/security';
 import { securityGroups } from '../../../../../helpers/security-groups';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import logger from '../../../../../logger';
 import { StaticPosterHandlerState } from '../static-poster-handler';
 import PosterService from '../local/poster-service';

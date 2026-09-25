@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import SubscribeEntity from './entities/subscribe-entity';
-import { BeatEvent } from '../events/music-emitter-events';
+import { type BeatEvent } from '../events/music-emitter-events';
 import logger from '../../logger';
 import { HANDLER_CLASS_BRAND } from '../server-settings/feature-enabled';
 

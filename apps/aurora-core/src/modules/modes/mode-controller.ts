@@ -2,7 +2,7 @@ import { Body, Delete, Post, Request, Route, Security, SuccessResponse, Tags } f
 import { injectable } from 'inversify';
 import { Controller, Response } from '@tsoa/runtime';
 import { In } from 'typeorm';
-import { Request as ExpressRequest } from 'express';
+import { type Request as ExpressRequest } from 'express';
 import ModeManager from './mode-manager';
 import SubscribeEntity from '../root/entities/subscribe-entity';
 import { LightsGroup } from '../lights/entities';

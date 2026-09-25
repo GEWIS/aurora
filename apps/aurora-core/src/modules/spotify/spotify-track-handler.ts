@@ -1,6 +1,6 @@
 import { PlaybackState, Track } from '@fostertheweb/spotify-web-sdk';
 import SpotifyApiHandler from './spotify-api-handler';
-import { MusicEmitter, TrackChangeEvent } from '../events';
+import { MusicEmitter, type TrackChangeEvent } from '../events';
 import logger from '../../logger';
 
 export default class SpotifyTrackHandler {

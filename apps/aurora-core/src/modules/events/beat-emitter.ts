@@ -1,7 +1,7 @@
 import { BaseEventEmitter } from './base-event-emitter';
 import { MusicEmitter } from './music-emitter';
-import { BeatEvent } from './music-emitter-events';
-import { GeneratorBeatEvent } from './beat-emitter-events';
+import { type BeatEvent } from './music-emitter-events';
+import { type GeneratorBeatEvent } from './beat-emitter-events';
 
 export class BeatEmitter extends BaseEventEmitter {
   constructor(private musicEmitter: MusicEmitter) {

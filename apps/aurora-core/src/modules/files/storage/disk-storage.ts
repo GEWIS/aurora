@@ -2,10 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import * as fs from 'fs';
 import { FileStorage } from './file-storage';
-import { IFile } from '../entities';
+import { type IFile } from '../entities';
 
 export default class DiskStorage extends FileStorage {
-  private readonly rootDir = path.join(__dirname, '../../../../');
+  private readonly rootDir = process.cwd();
 
   private readonly relativeWorkdir: string;
 

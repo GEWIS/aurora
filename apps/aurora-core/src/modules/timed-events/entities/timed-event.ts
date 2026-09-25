@@ -1,6 +1,6 @@
 import BaseEntity from '../../root/entities/base-entity';
 import { Column, Entity } from 'typeorm';
-import EventSpec from '../event-spec';
+import type EventSpec from '../event-spec';
 import { jsonTransformer } from '../../../helpers/transformers';
 
 @Entity()

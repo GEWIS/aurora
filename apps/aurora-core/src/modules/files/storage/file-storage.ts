@@ -1,4 +1,4 @@
-import { IFile } from '../entities';
+import { type IFile } from '../entities';
 
 export abstract class FileStorage {
   protected constructor(private filesArePublic: boolean) {}

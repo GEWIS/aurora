@@ -1,4 +1,4 @@
-import { IFile } from '../../../files/entities';
+import { type IFile } from '../../../files/entities';
 import { HexColor } from '../../../lights/color-definitions';
 import { registerSettingsDefaults } from '../../../server-settings/server-setting';
 

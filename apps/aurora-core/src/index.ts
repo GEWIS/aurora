@@ -5,6 +5,7 @@ import { registerAllSettings } from './register-settings';
 import { createServer } from 'http';
 import * as fs from 'fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import logger from './logger';
 import createHttp from './http';
 import { getDataSource } from './database';
@@ -35,7 +36,7 @@ import GewisKeyholderSyncService from './modules/handlers/screen/info/gewis-keyh
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
   if (process.env.STATIC_FILES_LOCATION) {
-    const audioFromPath = path.join(__dirname, '../public/audio');
+    const audioFromPath = path.join(process.cwd(), 'public/audio');
     const audioToPath = path.join(process.env.STATIC_FILES_LOCATION, '/audio');
 
     if (!fs.existsSync(audioToPath)) {
@@ -133,7 +134,7 @@ async function createApp(): Promise<void> {
   httpServer.listen(port, () => logger.info(`Listening at http://localhost:${port}`));
 }
 
-if (require.main === module) {
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   process.on('SIGINT', () => {
     // this is only called on ctrl+c, not restart
     process.kill(process.pid, 'SIGINT');

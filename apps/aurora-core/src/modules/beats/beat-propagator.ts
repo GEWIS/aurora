@@ -1,8 +1,8 @@
 import { BeatGenerator } from './beat-generator';
-import { BeatEvent } from '../events/music-emitter-events';
+import { type BeatEvent } from '../events/music-emitter-events';
 import IBeatPropagator from './i-beat-propagator';
 import logger from '../../logger';
-import { GeneratorBeatEvent } from '../events';
+import { type GeneratorBeatEvent } from '../events';
 
 export default class BeatPropagator implements IBeatPropagator {
   private priorities: Map<BeatGenerator, number> = new Map();

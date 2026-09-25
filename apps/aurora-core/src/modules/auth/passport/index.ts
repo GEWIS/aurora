@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { AuthUser } from '../auth-user';
+import { type AuthUser } from '../auth-user';
 import './oidc-strategy';
 import './api-key-strategy';
 import './mock-strategy';

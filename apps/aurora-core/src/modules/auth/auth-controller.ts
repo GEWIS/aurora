@@ -1,7 +1,7 @@
 import { Controller } from '@tsoa/runtime';
 import { Get, Route, Tags } from 'tsoa';
 import AuthService from './auth-service';
-import { ISecurityGroups, typedSecurityGroups } from '../../helpers/security-groups';
+import { type ISecurityGroups, typedSecurityGroups } from '../../helpers/security-groups';
 import { HttpApiException, HttpStatusCode } from '../../helpers/custom-error';
 
 /**

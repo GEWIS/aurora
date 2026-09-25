@@ -1,9 +1,9 @@
 import { Namespace } from 'socket.io';
-import { EventParams } from 'socket.io/dist/typed-events';
+type AnyEventParams = any[];
 import BaseHandler from './base-handler';
 import Screen from './entities/screen';
-import { TrackChangeEvent } from '../events/music-emitter-events';
-import { ShowOrdersEvent } from '../events/order-emitter';
+import { type TrackChangeEvent } from '../events/music-emitter-events';
+import { type ShowOrdersEvent } from '../events/order-emitter';
 import { SocketioNamespaces } from '../../socketio-namespaces';
 import { FeatureEnabled } from '../server-settings';
 
@@ -26,7 +26,7 @@ export default abstract class BaseScreenHandler extends BaseHandler<Screen> {
    * @param args
    * @protected
    */
-  protected sendEventToScreen(screen: Screen, eventName: string, ...args: EventParams<any, any>) {
+  protected sendEventToScreen(screen: Screen, eventName: string, ...args: AnyEventParams) {
     const socketId = screen.getSocketId(this.socket.name as SocketioNamespaces);
     this.socket.sockets.get(socketId || '')?.emit(eventName, args);
   }
@@ -38,7 +38,7 @@ export default abstract class BaseScreenHandler extends BaseHandler<Screen> {
    * @param args
    * @protected
    */
-  protected sendEvent(eventName: string, ...args: EventParams<any, any>) {
+  protected sendEvent(eventName: string, ...args: AnyEventParams) {
     this.entities.forEach((screen) => {
       this.sendEventToScreen(screen, eventName, ...args);
     });

@@ -1,5 +1,5 @@
 import BaseLightsHandler from '../../lights/base-lights-handler';
-import { BeatEvent, TrackChangeEvent } from '../../events/music-emitter-events';
+import { type BeatEvent, type TrackChangeEvent } from '../../events/music-emitter-events';
 import { LightsGroup } from '../../lights/entities';
 import { LightsTrackEffect } from '../../lights/entities/sequences/lights-track-effect';
 import LightsEffect from '../../lights/effects/lights-effect';

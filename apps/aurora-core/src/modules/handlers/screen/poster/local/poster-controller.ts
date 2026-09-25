@@ -1,12 +1,12 @@
-import { Controller, Patch, TsoaResponse, UploadedFile } from '@tsoa/runtime';
+import { Controller, Patch, type TsoaResponse, UploadedFile } from '@tsoa/runtime';
 import { Body, Delete, Get, Post, Put, Res, Route, Security, Tags } from 'tsoa';
 import { SecurityNames } from '../../../../../helpers/security';
 import { securityGroups } from '../../../../../helpers/security-groups';
 import { HttpStatusCode } from 'axios';
 import PosterService, {
-  CreatePosterRequest,
-  PosterResponse,
-  UpdatePosterRequest,
+  type CreatePosterRequest,
+  type PosterResponse,
+  type UpdatePosterRequest,
 } from './poster-service';
 import { PosterType } from './poster';
 import { fromBuffer } from 'file-type';

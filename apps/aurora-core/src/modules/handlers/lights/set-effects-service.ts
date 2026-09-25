@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import LightsPredefinedEffect, {
-  LightsPredefinedEffectProperties,
+  type LightsPredefinedEffectProperties,
 } from '../../lights/entities/scenes/lights-predefined-effect';
 import { getDataSource } from '../../../database';
 import { HttpApiException } from '../../../helpers/custom-error';

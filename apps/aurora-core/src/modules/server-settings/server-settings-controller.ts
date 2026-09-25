@@ -1,4 +1,4 @@
-import { Controller, FormField, TsoaResponse, UploadedFile } from '@tsoa/runtime';
+import { Controller, FormField, type TsoaResponse, UploadedFile } from '@tsoa/runtime';
 import { injectable } from 'inversify';
 import { Body, Delete, Get, Post, Res, Route, Security, Tags } from 'tsoa';
 import { SecurityGroup, SecurityNames } from '../../helpers/security';
@@ -7,7 +7,7 @@ import { ISettings } from './server-setting';
 import FeatureFlagManager from './feature-flag-manager';
 import { securityGroups } from '../../helpers/security-groups';
 import { DiskStorage } from '../files/storage';
-import { IFile } from '../files/entities';
+import { type IFile } from '../files/entities';
 
 type SetServerSettingRequest = {
   key: string;

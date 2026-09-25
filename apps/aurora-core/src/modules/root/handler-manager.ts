@@ -8,7 +8,7 @@ import { getDataSource } from '../../database';
 import { Audio, Screen } from './entities';
 import { LightsGroup } from '../lights/entities';
 import { BeatEvent, TrackChangeEvent } from '../events/music-emitter-events';
-import { ShowOrdersEvent } from '../events/order-emitter';
+import { type ShowOrdersEvent } from '../events/order-emitter';
 import { SocketioNamespaces } from '../../socketio-namespaces';
 import logger from '../../logger';
 import EmitterStore from '../events/emitter-store';

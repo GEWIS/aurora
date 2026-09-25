@@ -1,5 +1,5 @@
 import { BaseEventEmitter } from './base-event-emitter';
-import { TrackChangeEvent } from './music-emitter-events';
+import { type TrackChangeEvent } from './music-emitter-events';
 
 interface AudioHandlerLike {
   entities: { playing: boolean }[];

@@ -1,4 +1,4 @@
-import { AuditLogEntryResponse } from '../audit/audit-service';
+import { type AuditLogEntryResponse } from '../audit/audit-service';
 import { AuditService } from '../audit';
 
 export interface PersonalDataResponse {

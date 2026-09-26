@@ -28,7 +28,7 @@ export async function runPendingMigrations(dataSource: DataSource): Promise<void
   }
 
   logger.info('Pending migrations found, running migrations...');
-  const executed = await dataSource.runMigrations({ transaction: 'all' });
+  const executed = await dataSource.runMigrations({ transaction: 'each' });
   executed.forEach((m) => logger.info(`Executed migration ${m.name}`));
   logger.info(`Finished running ${executed.length} migration(s)`);
 }

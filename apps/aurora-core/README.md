@@ -24,10 +24,10 @@ To seed the database with test data, run `pnpm seed:gewis`.
 On boot, the core checks for pending migrations and runs them when using MySQL/MariaDB with `TYPEORM_SYNCHRONIZE=false`.
 If a migration fails, the core exits with code 1.
 Set `TYPEORM_MIGRATIONS_RUN=false` to disable this.
-Note that MySQL commits DDL statements implicitly, so a failed migration may leave earlier statements applied.
+Each migration runs in its own transaction, but MySQL commits DDL statements implicitly, so a failed migration may leave earlier statements applied.
 
 - Generate a migration with `pnpm migrate:generate` and register it in `src/migrations/index.ts`.
-- Run migrations manually with `pnpm migrate` (development) or `pnpm migrate:prod` / `node src/migrate.js` inside the Docker image.
+- Run migrations manually with `pnpm migrate` (development), `pnpm migrate:prod` (built output, runs `dist/src/migrate.js`), or `node src/migrate.js` inside the Docker image.
 
 ## Deployment
 

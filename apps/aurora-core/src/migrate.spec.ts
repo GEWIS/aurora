@@ -42,12 +42,12 @@ describe('runPendingMigrations', () => {
     expect(dataSource.runMigrations).not.toHaveBeenCalled();
   });
 
-  it('runs pending migrations in a single transaction', async () => {
+  it('runs each pending migration in its own transaction', async () => {
     const dataSource = stubDataSource({});
 
     await runPendingMigrations(dataSource as unknown as DataSource);
 
-    expect(dataSource.runMigrations).toHaveBeenCalledWith({ transaction: 'all' });
+    expect(dataSource.runMigrations).toHaveBeenCalledWith({ transaction: 'each' });
   });
 
   it('rethrows when a migration fails', async () => {

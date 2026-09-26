@@ -7,12 +7,15 @@ import { getDataSource } from './database';
  * Check for and execute any pending migrations. Skipped for SQLite and
  * synchronized databases, as the migrations are written for MySQL/MariaDB.
  */
-export async function runPendingMigrations(dataSource: DataSource): Promise<void> {
-  if (process.env.TYPEORM_MIGRATIONS_RUN === 'false') {
+export async function runPendingMigrations(
+  dataSource: DataSource,
+  { force = false }: { force?: boolean } = {},
+): Promise<void> {
+  if (!force && process.env.TYPEORM_MIGRATIONS_RUN === 'false') {
     logger.info('Skipping migrations (TYPEORM_MIGRATIONS_RUN=false)');
     return;
   }
-  if (dataSource.options.synchronize) {
+  if (!force && dataSource.options.synchronize) {
     logger.info('Skipping migrations (TYPEORM_SYNCHRONIZE=true)');
     return;
   }
@@ -37,7 +40,7 @@ if (require.main === module) {
   (async () => {
     const dataSource = await getDataSource().initialize();
     try {
-      await runPendingMigrations(dataSource);
+      await runPendingMigrations(dataSource, { force: true });
     } finally {
       await dataSource.destroy();
     }

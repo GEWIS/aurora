@@ -23,7 +23,7 @@ To seed the database with test data, run `pnpm seed:gewis`.
 
 On boot, the core checks for pending migrations and runs them when using MySQL/MariaDB with `TYPEORM_SYNCHRONIZE=false`.
 If a migration fails, the core exits with code 1.
-Set `TYPEORM_MIGRATIONS_RUN=false` to disable this.
+Set `TYPEORM_MIGRATIONS_RUN=false` to disable this; the manual commands below still run migrations.
 Each migration runs in its own transaction, but MySQL commits DDL statements implicitly, so a failed migration may leave earlier statements applied.
 
 - Generate a migration with `pnpm migrate:generate` and register it in `src/migrations/index.ts`.

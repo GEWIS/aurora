@@ -33,6 +33,18 @@ describe('runPendingMigrations', () => {
     expect(dataSource.runMigrations).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['synchronize is enabled', { synchronize: true }, undefined],
+    ['TYPEORM_MIGRATIONS_RUN is false', {}, 'false'],
+  ])('runs when forced even if %s', async (_, options, env) => {
+    if (env) process.env.TYPEORM_MIGRATIONS_RUN = env;
+    const dataSource = stubDataSource(options);
+
+    await runPendingMigrations(dataSource as unknown as DataSource, { force: true });
+
+    expect(dataSource.runMigrations).toHaveBeenCalledOnce();
+  });
+
   it('does not run migrations when none are pending', async () => {
     const dataSource = stubDataSource({}, false);
 

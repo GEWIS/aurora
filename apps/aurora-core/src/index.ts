@@ -8,6 +8,7 @@ import path from 'node:path';
 import logger from './logger';
 import createHttp from './http';
 import { getDataSource } from './database';
+import { runPendingMigrations } from './migrate';
 import HandlerManager from './modules/root/handler-manager';
 import { HandlerFactory } from './modules/handlers';
 import createWebsocket from './socketio';
@@ -50,6 +51,7 @@ async function createApp(): Promise<void> {
   }
 
   await getDataSource().initialize();
+  await runPendingMigrations(getDataSource());
 
   registerAllSettings();
   await ServerSettingsStore.getInstance().initialize();
@@ -142,5 +144,7 @@ if (require.main === module) {
   // Only execute the application directly if this is the main execution file.
   createApp().catch((e) => {
     logger.fatal(e);
+    process.exitCode = 1;
+    logger.flush(() => process.exit());
   });
 }

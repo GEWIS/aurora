@@ -53,7 +53,7 @@
     "jsdom": "^29.1.1",
     "openapi-typescript-codegen": "0.31.0",
     "postcss": "8.5.28",
-    "sass": "1.104.1",
+    "sass": "1.105.0",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "^4.1.11"

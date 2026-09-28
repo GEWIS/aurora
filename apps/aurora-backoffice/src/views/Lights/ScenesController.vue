@@ -15,7 +15,18 @@
       </div>
     </template>
     <DataTable :loading="store.loading" :value="store.scenes">
-      <Column field="name" header="Name" />
+      <Column field="name" header="Name">
+        <template #body="slotProps">
+          <div class="flex flex-row gap-2 items-center">
+            {{ slotProps.data.name }}
+            <Tag
+              v-if="slotProps.data.id === store.activeSceneId"
+              severity="success"
+              value="Active"
+            />
+          </div>
+        </template>
+      </Column>
       <Column field="favorite" header="Favorite">
         <template #body="slotProps">
           <i v-if="slotProps.data.favorite" class="pi pi-check" />
@@ -38,11 +49,6 @@
       <Column header="Actions">
         <template #body="slotProps">
           <div class="flex flex-row gap-1 items-center">
-            <Tag
-              v-if="slotProps.data.id === store.activeSceneId"
-              severity="success"
-              value="Active"
-            />
             <Button
               :severity="slotProps.data.id === store.activeSceneId ? 'secondary' : undefined"
               size="small"

@@ -1,8 +1,6 @@
 import { OrderEmitter } from '../events/order-emitter';
-import { FeatureEnabled } from '../server-settings';
 import OrderStore from './order-store';
 
-@FeatureEnabled('Orders')
 export default class OrderManager {
   private static instance: OrderManager;
 

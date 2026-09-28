@@ -19,6 +19,7 @@
     "migrate": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:run -d src/typeorm-cli.ts",
     "migrate:revert": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:revert -d src/typeorm-cli.ts",
     "migrate:show": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:show -d src/typeorm-cli.ts",
+    "migrate:prod": "node dist/src/migrate.js",
     "migrate:generate": "typeorm-ts-node-commonjs -P tsconfig.app.json migration:generate src/migrations/Migration -d src/typeorm-cli.ts",
     "seed": "ts-node -P tsconfig.app.json src/seed/index.ts",
     "seed:gewis": "ts-node -P tsconfig.app.json src/seed/index.ts --gewis",

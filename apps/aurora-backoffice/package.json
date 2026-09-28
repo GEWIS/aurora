@@ -24,7 +24,7 @@
     "pinia": "3.0.4",
     "primeicons": "7.0.0",
     "primevue": "4.3.6",
-    "socket.io-client": "4.8.3",
+    "socket.io-client": "4.8.4",
     "tailwind": "4.0.0",
     "tailwindcss-primeui": "0.6.1",
     "uuid": "11.1.1",

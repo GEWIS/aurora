@@ -69,8 +69,8 @@ importers:
         specifier: 7.0.0
         version: 7.0.0
       primevue:
-        specifier: 4.3.6
-        version: 4.3.6(vue@3.5.43(typescript@5.9.3))
+        specifier: 4.5.5
+        version: 4.5.5(vue@3.5.43(typescript@5.9.3))
       socket.io-client:
         specifier: 4.8.4
         version: 4.8.4(supports-color@5.5.0)
@@ -203,7 +203,7 @@ importers:
         version: 5.0.1(@babel/plugin-syntax-flow@7.29.7(@babel/core@7.29.7))(@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7))(@swc/core@1.16.2)(@types/babel__core@7.20.5)(eslint@9.39.2(jiti@1.21.7)(supports-color@5.5.0))(lightningcss@1.33.0)(react@19.3.0)(sass@1.104.1)(supports-color@5.5.0)(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@22.20.4)(typescript@5.9.3))(tsx@4.23.15)(type-fest@4.41.0)(typescript@5.9.3)(yaml@2.9.0)
       socket.io:
         specifier: 4.8.4
-        version: 4.8.4
+        version: 4.8.4(supports-color@5.5.0)
       socket.io-client:
         specifier: 4.8.4
         version: 4.8.4(supports-color@5.5.0)
@@ -378,7 +378,7 @@ importers:
         version: 0.2.2
       socket.io:
         specifier: 4.8.4
-        version: 4.8.4
+        version: 4.8.4(supports-color@5.5.0)
       sqlite3:
         specifier: 5.1.7
         version: 5.1.7(supports-color@5.5.0)
@@ -2392,8 +2392,8 @@ packages:
     resolution: {integrity: sha512-QSO/NpOQg8e9BONWRBx9y8VGMCMYz0J/uKfNJEya/RGEu7ARx0oYW0ugI1N3/KB1AAvyGxzKBzGImbwg0KUiOQ==}
     engines: {node: '>=12.11.0'}
 
-  '@primeuix/styles@1.2.5':
-    resolution: {integrity: sha512-nypFRct/oaaBZqP4jinT0puW8ZIfs4u+l/vqUFmJEPU332fl5ePj6DoOpQgTLzo3OfmvSmz5a5/5b4OJJmmi7Q==}
+  '@primeuix/styles@2.0.3':
+    resolution: {integrity: sha512-2ykAB6BaHzR/6TwF8ShpJTsZrid6cVIEBVlookSdvOdmlWuevGu5vWOScgIwqWwlZcvkFYAGR/SUV3OHCTBMdw==}
 
   '@primeuix/themes@1.2.5':
     resolution: {integrity: sha512-n3YkwJrHQaEESc/D/A/iD815sxp8cKnmzscA6a8Tm8YvMtYU32eCahwLLe6h5rywghVwxASWuG36XBgISYOIjQ==}
@@ -2408,8 +2408,14 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
-  '@primevue/icons@4.3.6':
-    resolution: {integrity: sha512-QVFmfikMpo4/DObMSbB5kS8MH1OoQrx8N9prEZaMvfFzD3hixxK24l2VrcS5x5/0NnP3szwZwTCmEAutCygX6A==}
+  '@primevue/core@4.5.5':
+    resolution: {integrity: sha512-JpkXhq1ddc70JdsC3CC4dM+UbeeWuCW/8DpS9dNBfrOk824TLSlRlMEGFyVKqRMn5WPQvYLiy3xXfLQeNdSqhQ==}
+    engines: {node: '>=12.11.0'}
+    peerDependencies:
+      vue: ^3.5.0
+
+  '@primevue/icons@4.5.5':
+    resolution: {integrity: sha512-eteOhTdAOXEYE9qW1AOrBBgDxQ2szHJxSkEK1XVdV2TKxGM5FQf03Ovms0VDyZTc16XBIgvwYjXJQS0BPbhPaA==}
     engines: {node: '>=12.11.0'}
 
   '@rolldown/binding-android-arm64@1.0.3':
@@ -8367,8 +8373,8 @@ packages:
   primeicons@7.0.0:
     resolution: {integrity: sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==}
 
-  primevue@4.3.6:
-    resolution: {integrity: sha512-Wwg2dH6pBmOdkj9L/OnrCQf9AKPHfY5CcfnDyWeh0tNlR+XjYKGl8qvMdJOvGO9jjg6UdsX5MSaU8vDDsSG+sg==}
+  primevue@4.5.5:
+    resolution: {integrity: sha512-Kv5REIewCdP806QaoU+4nBXfmpzOGFKkZ9qH4KsL6MjiAQVc4PUzypt8erl4r3Vzh3nr3aWZIxkxYRRsLGiX2A==}
     engines: {node: '>=12.11.0'}
 
   process-nextick-args@2.0.1:
@@ -12724,7 +12730,7 @@ snapshots:
     dependencies:
       '@primeuix/utils': 0.6.4
 
-  '@primeuix/styles@1.2.5':
+  '@primeuix/styles@2.0.3':
     dependencies:
       '@primeuix/styled': 0.7.4
 
@@ -12740,10 +12746,16 @@ snapshots:
       '@primeuix/utils': 0.6.4
       vue: 3.5.43(typescript@5.9.3)
 
-  '@primevue/icons@4.3.6(vue@3.5.43(typescript@5.9.3))':
+  '@primevue/core@4.5.5(vue@3.5.43(typescript@5.9.3))':
+    dependencies:
+      '@primeuix/styled': 0.7.4
+      '@primeuix/utils': 0.6.4
+      vue: 3.5.43(typescript@5.9.3)
+
+  '@primevue/icons@4.5.5(vue@3.5.43(typescript@5.9.3))':
     dependencies:
       '@primeuix/utils': 0.6.4
-      '@primevue/core': 4.3.6(vue@3.5.43(typescript@5.9.3))
+      '@primevue/core': 4.5.5(vue@3.5.43(typescript@5.9.3))
     transitivePeerDependencies:
       - vue
 
@@ -15809,7 +15821,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.11:
+  engine.io@6.6.11(supports-color@5.5.0):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 22.20.4
@@ -19713,13 +19725,13 @@ snapshots:
 
   primeicons@7.0.0: {}
 
-  primevue@4.3.6(vue@3.5.43(typescript@5.9.3)):
+  primevue@4.5.5(vue@3.5.43(typescript@5.9.3)):
     dependencies:
       '@primeuix/styled': 0.7.4
-      '@primeuix/styles': 1.2.5
+      '@primeuix/styles': 2.0.3
       '@primeuix/utils': 0.6.4
-      '@primevue/core': 4.3.6(vue@3.5.43(typescript@5.9.3))
-      '@primevue/icons': 4.3.6(vue@3.5.43(typescript@5.9.3))
+      '@primevue/core': 4.5.5(vue@3.5.43(typescript@5.9.3))
+      '@primevue/icons': 4.5.5(vue@3.5.43(typescript@5.9.3))
     transitivePeerDependencies:
       - vue
 
@@ -20656,7 +20668,7 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  socket.io-adapter@2.5.8:
+  socket.io-adapter@2.5.8(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       ws: 8.21.3
@@ -20683,13 +20695,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.4:
+  socket.io@4.8.4(supports-color@5.5.0):
     dependencies:
       accepts: 1.3.8
       cors: 2.8.6
       debug: 4.4.3(supports-color@5.5.0)
-      engine.io: 6.6.11
-      socket.io-adapter: 2.5.8
+      engine.io: 6.6.11(supports-color@5.5.0)
+      socket.io-adapter: 2.5.8(supports-color@5.5.0)
       socket.io-parser: 4.2.7(supports-color@5.5.0)
     transitivePeerDependencies:
       - bufferutil

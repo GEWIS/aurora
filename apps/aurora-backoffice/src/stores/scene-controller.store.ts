@@ -54,53 +54,71 @@ export const useSceneControllerStore = defineStore('scene-controller', {
     },
     async initPage() {
       this.loading = true;
-      await this.fetchScenes();
-      this.loading = false;
+      try {
+        await this.fetchScenes();
+      } finally {
+        this.loading = false;
+      }
     },
     async createScene(body: CreateSceneParams) {
       this.loading = true;
-      await createScene({
-        body: body,
-      });
-      await this.fetchScenes();
-      this.loading = false;
+      try {
+        await createScene({
+          body: body,
+        });
+        await this.fetchScenes();
+      } finally {
+        this.loading = false;
+      }
     },
     async updateScene(id: number, body: UpdateSceneParams) {
       this.loading = true;
-      const { data: scene } = await updateScene({
-        body: body,
-        path: { id },
-      });
-      // The server reapplies an active scene, but only to groups that already use the
-      // ScenesHandler, so move any newly added groups to it as well
-      if (scene && this.activeSceneId === id) {
-        await useHandlersStore().setLightsHandler(getSceneLightsGroupIds(scene), 'ScenesHandler');
+      try {
+        const { data: scene } = await updateScene({
+          body: body,
+          path: { id },
+        });
+        // The server reapplies an active scene, but only to groups that already use the
+        // ScenesHandler, so move any newly added groups to it as well
+        if (scene && this.activeSceneId === id) {
+          await useHandlersStore().setLightsHandler(getSceneLightsGroupIds(scene), 'ScenesHandler');
+        }
+        await this.fetchScenes();
+      } finally {
+        this.loading = false;
       }
-      await this.fetchScenes();
-      this.loading = false;
     },
     async deleteScene(id: number) {
       this.loading = true;
-      await deleteScene({
-        path: { id },
-      });
-      await this.fetchScenes();
-      this.loading = false;
+      try {
+        await deleteScene({
+          path: { id },
+        });
+        await this.fetchScenes();
+      } finally {
+        this.loading = false;
+      }
     },
     async applyScene(scene: LightsSceneResponse) {
       this.loading = true;
-      await useHandlersStore().setLightsHandler(getSceneLightsGroupIds(scene), 'ScenesHandler');
-      await applyScene({
-        path: { id: scene.id },
-      });
-      this.activeSceneId = scene.id;
-      this.loading = false;
+      try {
+        await useHandlersStore().setLightsHandler(getSceneLightsGroupIds(scene), 'ScenesHandler');
+        await applyScene({
+          path: { id: scene.id },
+        });
+        this.activeSceneId = scene.id;
+      } finally {
+        this.loading = false;
+      }
     },
     async clearScene() {
       this.loading = true;
-      await clearScene();
-      this.activeSceneId = null;
-      this.loading = false;
+      try {
+        await clearScene();
+        this.activeSceneId = null;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

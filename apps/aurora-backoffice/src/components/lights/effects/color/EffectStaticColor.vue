@@ -75,7 +75,7 @@ const colors = ref<RgbColor[]>(
 const gobo = ref<string>(props.defaultModelValue?.props.gobo || '');
 const goboRotate = ref<string>(props.defaultModelValue?.props.goboRotate || '');
 const beatToggle = ref<boolean>(props.defaultModelValue?.props.beatToggle || false);
-const relativeBrightness = ref<number>(props.defaultModelValue?.props.relativeBrightness || 1);
+const relativeBrightness = ref<number>(props.defaultModelValue?.props.relativeBrightness ?? 1);
 
 const handleChange = () => {
   const payload: StaticColorCreateParams = {

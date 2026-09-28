@@ -44,8 +44,6 @@ export default class ScenesService {
   }
 
   public static toSceneResponse(scene: LightsScene): LightsSceneResponse {
-    // Every database row is a single (effect, props, group) combination. Merge rows
-    // with the exact same effect and props, so the response mirrors CreateSceneParams
     const effectsMap: Map<string, LightsSceneEffectResponse> = new Map();
     scene.effects.forEach((e) => {
       const key = `${e.effectName}\0${e.effectProps}`;

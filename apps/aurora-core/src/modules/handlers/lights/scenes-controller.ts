@@ -91,13 +91,12 @@ export class ScenesController extends Controller {
   ): Promise<LightsSceneResponse | undefined> {
     const service = new ScenesService();
     const scene = await service.getSingleScene(id);
-
-    logger.audit(req.user, `Update lights scene "${scene?.name}" (id: ${id}).`);
-
     if (!scene) {
       this.setStatus(404);
       return undefined;
     }
+
+    logger.audit(req.user, `Update lights scene "${scene.name}" (id: ${id}).`);
 
     const missingGroupIds = await service.findMissingGroupIds(params.effects);
     if (missingGroupIds.length > 0) {

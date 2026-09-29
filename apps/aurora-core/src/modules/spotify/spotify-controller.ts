@@ -1,4 +1,4 @@
-import { Delete, Get, Post, Query, Request, Res, Response, Route, Security, Tags } from 'tsoa';
+import { Delete, Get, Post, Query, Request, Res, Response, Route, Tags } from 'tsoa';
 import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
@@ -10,6 +10,7 @@ import { SecurityNames } from '../../helpers/security';
 import SpotifyTrackHandler from './spotify-track-handler';
 import { securityGroups } from '../../helpers/security-groups';
 import { HttpStatusCode } from 'axios';
+import { Security } from '../auth';
 
 interface SpotifyUserResponse {
   id: number;
@@ -186,7 +187,8 @@ export class SpotifyController extends Controller {
   /**
    * Get the currently playing track (on Spotify or locally playing). Null if nothing is playing.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
+  @Security(SecurityNames.INTEGRATION, ['getSpotifyCurrentlyPlaying'])
   @Get('currently-playing')
   public getSpotifyCurrentlyPlaying() {
     return this.spotifyTrackHandler.musicEmitter.getCurrentlyPlayingTrack;

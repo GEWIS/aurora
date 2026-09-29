@@ -531,6 +531,72 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"IntegrationUserResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					},
+					"lastSeen": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"endpoints",
+					"lastSeen"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserCreateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
+				"required": [
+					"name",
+					"endpoints"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserUpdateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ExternalUrls": {
 				"properties": {
 					"spotify": {
@@ -983,6 +1049,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -990,9 +1059,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
@@ -1006,9 +1072,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"scaleFactor"
 				],
 				"type": "object",
@@ -1042,6 +1108,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1050,9 +1119,6 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"name": {
-						"type": "string"
-					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
 						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
@@ -1060,9 +1126,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
-					"updatedAt",
-					"name"
+					"updatedAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1136,6 +1202,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1144,9 +1213,6 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"name": {
-						"type": "string"
-					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
 						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
@@ -1154,9 +1220,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
-					"updatedAt",
-					"name"
+					"updatedAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1181,6 +1247,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1188,9 +1257,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1249,9 +1315,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1305,6 +1371,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1312,9 +1381,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1396,9 +1462,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1484,6 +1550,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1491,9 +1560,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1578,9 +1644,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1640,6 +1706,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1647,9 +1716,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"controller": {
 						"$ref": "#/components/schemas/LightsControllerResponse"
@@ -1683,9 +1749,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"controller",
 					"gridSizeX",
 					"gridSizeY",
@@ -1739,72 +1805,6 @@
 					"id",
 					"name"
 				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserResponse": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					},
-					"lastSeen": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"endpoints",
-					"lastSeen"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserCreateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
-				"required": [
-					"name",
-					"endpoints"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserUpdateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -2540,6 +2540,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -2547,9 +2550,6 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					},
 					"dmxChannel": {
 						"type": "number",
@@ -2564,9 +2564,9 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
 					"updatedAt",
-					"name",
 					"dmxChannel",
 					"onValue"
 				],
@@ -6404,6 +6404,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -6411,16 +6414,13 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"name": {
-						"type": "string"
 					}
 				},
 				"required": [
 					"id",
+					"name",
 					"createdAt",
-					"updatedAt",
-					"name"
+					"updatedAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -6776,6 +6776,13 @@
 							"$ref": "#/components/schemas/SecurityGroup"
 						},
 						"type": "array"
+					},
+					"baseNoIntegration": {
+						"items": {
+							"$ref": "#/components/schemas/SecurityGroup"
+						},
+						"type": "array",
+						"description": "Like base, but without INTEGRATION_USER: integration keys need the endpoint's own\nINTEGRATION scope instead of passing through their role."
 					}
 				},
 				"type": "object",
@@ -7249,6 +7256,256 @@
 				"parameters": []
 			}
 		},
+		"/user/integration/endpoints": {
+			"get": {
+				"operationId": "GetIntegrationEndpoints",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get a list of all endpoints that an integration user could access.",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/integration": {
+			"get": {
+				"operationId": "GetAllIntegrationUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IntegrationUserResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/integration/{id}": {
+			"get": {
+				"operationId": "GetSingleIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteIntegrationUser",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/user/integration/{id}/key": {
+			"get": {
+				"operationId": "GetIntegrationUserKey",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/spotify/login": {
 			"get": {
 				"operationId": "SpotifyLogin",
@@ -7582,8 +7839,12 @@
 							"key-holder",
 							"audio-subscriber",
 							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
+							"lights-subscriber"
+						]
+					},
+					{
+						"integration": [
+							"getSpotifyCurrentlyPlaying"
 						]
 					}
 				],
@@ -8393,256 +8654,6 @@
 					}
 				],
 				"parameters": []
-			}
-		},
-		"/user/integration/endpoints": {
-			"get": {
-				"operationId": "GetIntegrationEndpoints",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"type": "string"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get a list of all endpoints that an integration user could access.",
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/user/integration": {
-			"get": {
-				"operationId": "GetAllIntegrationUsers",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/IntegrationUserResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/user/integration/{id}": {
-			"get": {
-				"operationId": "GetSingleIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"patch": {
-				"operationId": "UpdateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteIntegrationUser",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/user/integration/{id}/key": {
-			"get": {
-				"operationId": "GetIntegrationUserKey",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
 			}
 		},
 		"/orders": {
@@ -12623,6 +12634,7 @@
 						}
 					}
 				},
+				"description": "Also readable with an integration key (used by the external info.gewis.nl page).",
 				"tags": [
 					"Handlers"
 				],
@@ -12636,8 +12648,12 @@
 							"key-holder",
 							"audio-subscriber",
 							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
+							"lights-subscriber"
+						]
+					},
+					{
+						"integration": [
+							"getInfoPcUsage"
 						]
 					}
 				],
@@ -12689,6 +12705,7 @@
 						}
 					}
 				},
+				"description": "Also readable with an integration key (used by the external info.gewis.nl page).",
 				"tags": [
 					"Handlers"
 				],
@@ -12702,8 +12719,12 @@
 							"key-holder",
 							"audio-subscriber",
 							"screen-subscriber",
-							"lights-subscriber",
-							"integration-user"
+							"lights-subscriber"
+						]
+					},
+					{
+						"integration": [
+							"getInfoRoomStatus"
 						]
 					}
 				],

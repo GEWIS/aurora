@@ -4,6 +4,11 @@ export interface ISecuritySections {
   base?: SecurityGroup[];
   privileged?: SecurityGroup[];
   subscriber?: SecurityGroup[];
+  /**
+   * Like base, but without INTEGRATION_USER: integration keys need the endpoint's own
+   * INTEGRATION scope instead of passing through their role.
+   */
+  baseNoIntegration?: SecurityGroup[];
 }
 
 export interface ISecurityGroups {
@@ -65,6 +70,17 @@ const allSecuritySubscriberGroups = [
   SecurityGroup.INTEGRATION_USER,
 ];
 
+const allSecuritySubscriberGroupsNoIntegration = [
+  SecurityGroup.ADMIN,
+  SecurityGroup.BOARD,
+  SecurityGroup.AVICO,
+  SecurityGroup.BAC,
+  SecurityGroup.KEY_HOLDER,
+  SecurityGroup.AUDIO_SUBSCRIBER,
+  SecurityGroup.SCREEN_SUBSCRIBER,
+  SecurityGroup.LIGHTS_SUBSCRIBER,
+];
+
 /**
  * Security groups that are available for each endpoint
  * Giving specific type will break tsoa; can only be done after the fact
@@ -109,6 +125,7 @@ export const securityGroups = {
     base: allSecuritySubscriberGroups,
     privileged: [...privilegedSecurityGroups, SecurityGroup.KEY_HOLDER],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
+    baseNoIntegration: allSecuritySubscriberGroupsNoIntegration,
   },
   roomresponsible: {
     base: [SecurityGroup.SCREEN_SUBSCRIBER],
@@ -149,6 +166,7 @@ export const securityGroups = {
   spotify: {
     base: allSecuritySubscriberGroups,
     privileged: [SecurityGroup.ADMIN],
+    baseNoIntegration: allSecuritySubscriberGroupsNoIntegration,
   },
   sudosos: {
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],

@@ -6,6 +6,7 @@ import {
   TimedEventSwitchHandlerScreen,
 } from './timed-event-switch-handler';
 import TimedEventSetStaticPoster from './timed-event-set-static-poster';
+import TimedEventSetScreenFilter from './timed-event-set-screen-filter';
 
 type EventSpec =
   | TimedEventReset
@@ -13,6 +14,7 @@ type EventSpec =
   | TimedEventSwitchHandlerAudio
   | TimedEventSwitchHandlerLights
   | TimedEventSwitchHandlerScreen
-  | TimedEventSetStaticPoster;
+  | TimedEventSetStaticPoster
+  | TimedEventSetScreenFilter;
 
 export default EventSpec;

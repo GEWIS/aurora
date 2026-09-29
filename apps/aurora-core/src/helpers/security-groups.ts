@@ -30,6 +30,7 @@ export interface ISecurityGroups {
   serverSettings: ISecuritySections;
   orders: ISecuritySections;
   timedEvents: ISecuritySections;
+  screenFilter: ISecuritySections;
   integrationUsers: ISecuritySections;
 }
 
@@ -179,6 +180,10 @@ export const securityGroups = {
   timedEvents: {
     base: allSecurityGroups,
     privileged: [SecurityGroup.ADMIN],
+  },
+  screenFilter: {
+    base: [...allSecurityGroups, SecurityGroup.SCREEN_SUBSCRIBER],
+    privileged: baseSecurityGroups,
   },
   integrationUsers: {
     privileged: [SecurityGroup.ADMIN],

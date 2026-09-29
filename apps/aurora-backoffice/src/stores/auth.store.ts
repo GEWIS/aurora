@@ -138,6 +138,7 @@ export const useAuthStore = defineStore('auth', {
     async initStores(): Promise<void> {
       await useServerSettingsStore().initFeatureFlags();
       await useSocketStore().connect();
+      useServerSettingsStore().listen();
       if (this.isInSecurityGroup('serverSettings', 'privileged')) {
         await useServerSettingsStore().initSettings();
       }

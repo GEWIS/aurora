@@ -20,7 +20,6 @@ export class ScenesHandler extends EffectsHandler {
     return this.activeScene?.id ?? null;
   }
 
-  // Also give newly registered groups their effects from the active scene
   public registerEntity(entity: LightsGroup) {
     super.registerEntity(entity);
     if (!this.activeScene) return;

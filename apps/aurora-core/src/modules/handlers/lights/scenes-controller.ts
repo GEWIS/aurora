@@ -23,6 +23,12 @@ export class ScenesController extends Controller {
     super();
   }
 
+  private getScenesHandler(): ScenesHandler | undefined {
+    return this.handlerManager
+      .getHandlers(LightsGroup)
+      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
+  }
+
   /**
    * Get a list of all scenes
    * @param favorite Whether to return only scenes that are (not) marked as favorite
@@ -107,9 +113,7 @@ export class ScenesController extends Controller {
 
     const updatedScene = await service.updateScene(id, params);
 
-    const handler: ScenesHandler | undefined = this.handlerManager
-      .getHandlers(LightsGroup)
-      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
+    const handler = this.getScenesHandler();
     if (handler?.getActiveSceneId() === id) {
       handler.applyScene(updatedScene);
     }
@@ -131,9 +135,7 @@ export class ScenesController extends Controller {
     }
     await service.deleteScene(id);
 
-    const handler: ScenesHandler | undefined = this.handlerManager
-      .getHandlers(LightsGroup)
-      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
+    const handler = this.getScenesHandler();
     if (handler?.getActiveSceneId() === id) {
       handler.clearScene();
     }
@@ -157,10 +159,11 @@ export class ScenesController extends Controller {
       return;
     }
 
-    const handler: ScenesHandler | undefined = this.handlerManager
-      .getHandlers(LightsGroup)
-      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
-    if (!handler) throw new Error('ScenesHandler not found');
+    const handler = this.getScenesHandler();
+    if (!handler) {
+      this.setStatus(404);
+      return;
+    }
 
     handler.applyScene(scene);
   }
@@ -171,10 +174,8 @@ export class ScenesController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.scenes.base)
   @Get('active')
   public async getActiveScene(): Promise<ActiveSceneResponse> {
-    const handler: ScenesHandler | undefined = this.handlerManager
-      .getHandlers(LightsGroup)
-      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
-    if (!handler) throw new Error('ScenesHandler not found');
+    const handler = this.getScenesHandler();
+    if (!handler) return { scene: null };
 
     const activeSceneId = handler.getActiveSceneId();
     if (activeSceneId == null) return { scene: null };
@@ -189,10 +190,8 @@ export class ScenesController extends Controller {
   @Security(SecurityNames.LOCAL, securityGroups.scenes.base)
   @Delete('active')
   public async clearScene(@Request() req: ExpressRequest) {
-    const handler: ScenesHandler | undefined = this.handlerManager
-      .getHandlers(LightsGroup)
-      .find((h) => h.constructor.name === ScenesHandler.name) as ScenesHandler | undefined;
-    if (!handler) throw new Error('ScenesHandler not found');
+    const handler = this.getScenesHandler();
+    if (!handler) return;
 
     logger.audit(req.user, 'Clear currently active lights scene.');
 

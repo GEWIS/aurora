@@ -7,7 +7,6 @@ export class ScenesMigration1789823036614 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE \`lights_scene_effect\` DROP FOREIGN KEY \`FK_b6f3eacffe9b32448e618ab569e\``,
     );
-    // MODIFY instead of the generated DROP/ADD COLUMN, so existing scene effects keep their props
     await queryRunner.query(
       `ALTER TABLE \`lights_scene_effect\` MODIFY \`effectProps\` text NOT NULL`,
     );

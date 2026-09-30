@@ -18,7 +18,6 @@
           <InputText id="scene-name" v-model="name" autocomplete="off" class="w-full" type="text" />
           <label for="scene-name">Name</label>
         </FloatLabel>
-        <!-- Same height as the name input, so the toggle lines up with it -->
         <div class="flex flex-row gap-2 items-center min-h-10">
           <ToggleSwitch v-model="favorite" input-id="scene-favorite" />
           <label for="scene-favorite">Favorite (shown on the dashboard)</label>
@@ -57,6 +56,7 @@ import type {
   LightsSceneResponse,
 } from '@gewis/aurora-api-client';
 import SceneEffectEditor from '@/components/lights/scenes/SceneEffectEditor.vue';
+import { toastError } from '@/utils/toastHandler';
 
 interface EditableEffect {
   key: number;
@@ -75,9 +75,6 @@ const emit = defineEmits<{
   'update:visible': [visible: boolean];
 }>();
 
-// Put the spacing above the footer in the footer itself, so it remains visible when the
-// content scrolls. The content gets a bit of top padding, because the scrolling content box
-// would otherwise clip the float label of the first input, which sticks out above it.
 const dialogTokens = {
   content: { padding: '0.5rem {overlay.modal.padding} 0' },
   footer: { padding: '{overlay.modal.padding}' },
@@ -93,7 +90,6 @@ const addEffect = (defaultEffect?: LightsSceneEffectResponse) => {
   effects.value.push({ key: nextKey++, defaultEffect, valid: false });
 };
 
-// Add an empty effect and scroll the dialog down to it
 const effectsList = ref<HTMLDivElement>();
 const addNewEffect = async () => {
   addEffect();
@@ -101,7 +97,6 @@ const addNewEffect = async () => {
   effectsList.value?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'end' });
 };
 
-// Reset the form every time the dialog opens
 const resetForm = () => {
   name.value = props.originalScene?.name ?? '';
   favorite.value = props.originalScene?.favorite ?? false;
@@ -135,6 +130,10 @@ const saveScene = async () => {
       effects: effects.value.map((e) => e.value!),
     });
     emit('update:visible', false);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      toastError({ title: 'Could not save scene', body: error.message });
+    }
   } finally {
     loading.value = false;
   }

@@ -6,6 +6,7 @@
           v-if="kind === 'movement' || subscriberStore.movingHeadLightsGroups.length > 0"
           v-model="kind"
           :allow-empty="false"
+          option-disabled="disabled"
           option-label="label"
           option-value="value"
           :options="kindOptions"
@@ -39,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   type LightsButtonEffectColor,
   type LightsButtonEffectMovement,
@@ -78,13 +79,16 @@ const emit = defineEmits<{
   remove: [];
 }>();
 
-// Movement effects only apply to moving heads, so only offer them when there are any
 const subscriberStore = useSubscriberStore();
 
-const kindOptions: { label: string; value: EffectKind }[] = [
-  { label: 'Color', value: 'color' },
-  { label: 'Movement', value: 'movement' },
-];
+const kindOptions = computed((): { label: string; value: EffectKind; disabled: boolean }[] => [
+  { label: 'Color', value: 'color', disabled: false },
+  {
+    label: 'Movement',
+    value: 'movement',
+    disabled: subscriberStore.movingHeadLightsGroups.length === 0,
+  },
+]);
 
 const initialKind: EffectKind =
   props.defaultEffect && movementEffectTypes.includes(props.defaultEffect.type)
@@ -92,7 +96,6 @@ const initialKind: EffectKind =
     : 'color';
 const kind = ref<EffectKind>(initialKind);
 
-// Convert the scene effect to the shape the (predefined effect) button editors expect
 const defaultLightsGroupIds = props.defaultEffect?.lightsGroups.map((g) => g.id) ?? [];
 const defaultColorProperties: LightsButtonEffectColor | undefined =
   props.defaultEffect && initialKind === 'color'
@@ -120,10 +123,6 @@ const defaultMovementProperties: LightsButtonEffectMovement | undefined =
 const properties = ref<LightsButtonEffectColor | LightsButtonEffectMovement | undefined>();
 const childValid = ref<boolean>(false);
 
-/**
- * Predefined effect buttons take their colors from the global palette, so the button
- * editors do not validate them. Scenes store their own colors, so check them here.
- */
 const hasColors = (effect: LightsSceneEffectParams): boolean => {
   if ('colors' in effect.props) return effect.props.colors.length > 0;
   if ('color' in effect.props) return !!effect.props.color;

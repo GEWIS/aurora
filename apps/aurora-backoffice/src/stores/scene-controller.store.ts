@@ -20,9 +20,6 @@ interface SceneControllerStore {
   loading: boolean;
 }
 
-/**
- * Get the unique IDs of all lights groups the given scene has effects for
- */
 function getSceneLightsGroupIds(scene: LightsSceneResponse): number[] {
   return scene.effects
     .map((e) => e.lightsGroups.map((g) => g.id))
@@ -65,6 +62,7 @@ export const useSceneControllerStore = defineStore('scene-controller', {
       try {
         await createScene({
           body: body,
+          throwOnError: true,
         });
         await this.fetchScenes();
       } finally {
@@ -77,9 +75,8 @@ export const useSceneControllerStore = defineStore('scene-controller', {
         const { data: scene } = await updateScene({
           body: body,
           path: { id },
+          throwOnError: true,
         });
-        // The server reapplies an active scene, but only to groups that already use the
-        // ScenesHandler, so move any newly added groups to it as well
         if (scene && this.activeSceneId === id) {
           await useHandlersStore().setLightsHandler(getSceneLightsGroupIds(scene), 'ScenesHandler');
         }

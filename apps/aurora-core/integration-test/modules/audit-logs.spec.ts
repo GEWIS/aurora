@@ -1,4 +1,6 @@
-import { describe, beforeAll, it, expect } from 'vitest';
+import { describe, beforeAll, it, expect, vi } from 'vitest';
+import { getDataSource } from '@aurora/database';
+import AuditService from '@aurora/modules/audit/audit-service';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
 
@@ -63,5 +65,34 @@ describe('GET /api/audit-logs', () => {
         count: 0,
       },
     });
+  });
+});
+
+describe('AuditService.addLog', () => {
+  it('does not start a transaction', async () => {
+    // ARRANGE
+    // SQLite shares a single query runner, so audit logs (which are not awaited) must not
+    // start and commit a transaction, or they can end a transaction of the running request
+    const queryRunner = getDataSource().createQueryRunner();
+    const startTransaction = vi.spyOn(queryRunner, 'startTransaction');
+
+    // ACT
+    let startTransactionCalls: number;
+    try {
+      await new AuditService().addLog({ userId: 'audit-test', userName: 'Audit', action: 'Test' });
+    } finally {
+      startTransactionCalls = startTransaction.mock.calls.length;
+      startTransaction.mockRestore();
+    }
+
+    // ASSERT
+    expect(startTransactionCalls).toBe(0);
+    const res = await testApp.authorizedAgent
+      .get('/api/audit-logs')
+      .query({ userId: 'audit-test' });
+    expect(res.status).toBe(200);
+    expect(res.body.records).toEqual([
+      expect.objectContaining({ userId: 'audit-test', userName: 'Audit', action: 'Test' }),
+    ]);
   });
 });

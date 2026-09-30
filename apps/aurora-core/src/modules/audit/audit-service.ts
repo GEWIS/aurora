@@ -123,7 +123,11 @@ export default class AuditService {
    * @param params
    */
   public async addLog(params: CreateAuditLogEntryParams) {
-    const log = await this.repo.save(params);
+    // Use insert() instead of save(), because save() wraps the write in its own transaction.
+    // Audit logs are written without being awaited, and SQLite shares a single connection,
+    // so that transaction could commit (and thereby end) a transaction the request is running.
+    const { identifiers } = await this.repo.insert(params);
+    const log = await this.repo.findOneByOrFail({ id: identifiers[0].id });
     this.backofficeEmitter.emit('audit_log_create', this.toAuditLogEntryResponse(log));
   }
 

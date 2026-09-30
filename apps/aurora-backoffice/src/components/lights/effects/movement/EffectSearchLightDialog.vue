@@ -2,6 +2,7 @@
   <EffectSettingsDialog
     can-save
     effect-name="SearchLight"
+    requires-moving-heads
     @save="
       () => {
         if (effect) $emit('save', effect);

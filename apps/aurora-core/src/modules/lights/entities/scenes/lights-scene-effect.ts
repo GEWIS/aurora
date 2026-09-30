@@ -10,7 +10,7 @@ export default class LightsSceneEffect extends BaseEntity {
   @Column()
   public sceneId: number;
 
-  @ManyToOne(() => LightsScene)
+  @ManyToOne(() => LightsScene, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'sceneId' })
   public scene: LightsScene;
 
@@ -23,7 +23,7 @@ export default class LightsSceneEffect extends BaseEntity {
   /**
    * Props of the given effect
    */
-  @Column()
+  @Column({ type: 'text' })
   public effectProps: string;
 
   @Column()

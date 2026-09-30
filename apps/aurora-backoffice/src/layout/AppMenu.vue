@@ -65,7 +65,7 @@ const model = computed<MenuItem[]>(() => {
         showScenes && {
           label: 'Scenes',
           icon: 'pi pi-fw pi-sliders-h',
-          to: '/lights/scenesController',
+          to: '/lights/scenes',
         },
         showFixtures && { label: 'Fixtures', icon: 'pi pi-fw pi-bolt', to: '/lights/fixtures' },
       ].filter(Boolean),

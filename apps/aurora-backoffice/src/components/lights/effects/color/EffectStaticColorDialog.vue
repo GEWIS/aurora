@@ -8,7 +8,11 @@
       }
     "
   >
-    <EffectStaticColor v-model="effect" show-colors />
+    <EffectStaticColor
+      v-model="effect"
+      :lights-group-ids="store.selectedLightsGroupIds"
+      show-colors
+    />
   </EffectSettingsDialog>
 </template>
 
@@ -17,10 +21,13 @@ import { ref } from 'vue';
 import type { StaticColorCreateParams } from '@gewis/aurora-api-client';
 import EffectSettingsDialog from '@/components/lights/effects/EffectSettingsDialog.vue';
 import EffectStaticColor from '@/components/lights/effects/color/EffectStaticColor.vue';
+import { useEffectsControllerStore } from '@/stores/effects-controller.store';
 
 defineEmits<{
   save: [params: StaticColorCreateParams];
 }>();
+
+const store = useEffectsControllerStore();
 
 const effect = ref<StaticColorCreateParams>();
 </script>

@@ -138,9 +138,9 @@ const router = createRouter({
               },
             },
             {
-              path: 'scenesController',
+              path: 'scenes',
               component: () => import('@/views/Lights/ScenesController.vue'),
-              name: 'lightsScenesController',
+              name: 'lightScenes',
               meta: {
                 security: {
                   securityGroup: 'scenes',

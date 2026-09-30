@@ -69,7 +69,7 @@ export default abstract class EffectsHandler extends BaseLightsHandler {
     this.groupColorEffects.forEach((effect, group) => {
       if (effect == null) {
         // Only blackout if the group also has no movement effects. Do nothing otherwise
-        if (!this.groupMovementEffects.has(group)) {
+        if (!this.groupMovementEffects.get(group)) {
           group.blackout();
         }
       } else if (Array.isArray(effect)) {

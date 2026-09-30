@@ -23,7 +23,13 @@ export const useSubscriberStore = defineStore('subscribers', {
     screens: [],
     lightsGroups: [],
   }),
-  getters: {},
+  getters: {
+    /**
+     * Lights groups with at least one moving head, the only fixtures movement effects apply to
+     */
+    movingHeadLightsGroups: (state): LightsGroupResponse[] =>
+      state.lightsGroups.filter((g) => g.movingHeadRgbs.length + g.movingHeadWheels.length > 0),
+  },
   actions: {
     async getAudios() {
       await getAudios().then((audios) => (this.audios = audios.data!));

@@ -1,28 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useEffectsControllerStore } from '@/stores/effects-controller.store';
+import { useSubscriberStore } from '@/stores/subscriber.store';
+import EffectPropsGrid from '@/components/lights/effects/props/EffectPropsGrid.vue';
 
-defineProps<{
+const props = defineProps<{
   effectName: string;
   canSave: boolean;
   disabled?: boolean;
+  /** Only allow adding this effect when a selected lights group contains moving heads */
+  requiresMovingHeads?: boolean;
 }>();
 defineEmits<{
   save: [];
 }>();
 
 const store = useEffectsControllerStore();
+const subscriberStore = useSubscriberStore();
 const visible = ref<boolean>(false);
+
+const disabledReason = computed((): string | undefined => {
+  if (store.selectedLightsGroupIds.length === 0) return 'Select one or more lights groups first';
+  if (
+    props.requiresMovingHeads &&
+    !subscriberStore.movingHeadLightsGroups.some((g) => store.selectedLightsGroupIds.includes(g.id))
+  ) {
+    return 'None of the selected lights groups contain moving heads';
+  }
+  return undefined;
+});
 </script>
 
 <template>
-  <Button
-    :disabled="store.selectedLightsGroupIds.length === 0"
-    icon="pi pi-plus"
-    :label="effectName"
-    severity="success"
-    @click="() => (visible = true)"
-  />
+  <!-- Disabled buttons do not show a title, so put it on a wrapper -->
+  <span :title="disabledReason">
+    <Button
+      :disabled="!!disabledReason"
+      icon="pi pi-plus"
+      :label="effectName"
+      severity="success"
+      @click="() => (visible = true)"
+    />
+  </span>
 
   <Dialog
     v-model:visible="visible"
@@ -32,9 +51,11 @@ const visible = ref<boolean>(false);
     modal
     :style="{ width: '50rem' }"
   >
-    <div class="flex flex-col w-100 gap-5">
+    <!-- Top padding, so the scrolling dialog content does not clip the float label of the
+         first setting, which sticks out above its input -->
+    <EffectPropsGrid class="pt-2">
       <slot />
-    </div>
+    </EffectPropsGrid>
     <template #footer>
       <Button
         :disabled="!canSave"

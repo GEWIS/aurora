@@ -67,21 +67,13 @@ if (authStore.isInSecurityGroup('timetrail', 'base')) {
 
 // TODO why does this reactivity not work as expected?
 const sceneMenuItems = computed<IShortcutItem[]>(() =>
-  sceneStore.favoriteScenes.map((s) => {
-    const lightGroupIds = s.effects
-      .map((e) => e.lightsGroups.map((g) => g.id))
-      .flat()
-      .flat()
-      .filter((n1, index, all) => index === all.findIndex((n2) => n1 === n2));
-    return {
-      label: s.name,
-      icon: 'pi-lightbulb',
-      command: async () => {
-        await handlersStore.setLightsHandler(lightGroupIds, 'ScenesHandler');
-        await sceneStore.applyScene(s.id);
-      },
-    };
-  }),
+  sceneStore.favoriteScenes.map((s) => ({
+    label: s.name,
+    icon: 'pi-lightbulb',
+    command: async () => {
+      await sceneStore.applyScene(s);
+    },
+  })),
 );
 
 // Add items based on the user's security groups

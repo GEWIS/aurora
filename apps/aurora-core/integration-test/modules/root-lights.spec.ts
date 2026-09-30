@@ -226,6 +226,36 @@ describe('POST /api/lights/controller/{id}/group', () => {
     // ASSERT
     expect(res.status).toBe(404);
   });
+
+  it('returns 200 with the created group with admin auth and a valid body', async () => {
+    // ARRANGE
+    const controller = await testApp.authorizedAgent
+      .post('/api/lights/controller')
+      .send({ name: 'Test Controller ' + Date.now() });
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .post(`/api/lights/controller/${controller.body.id}/group`)
+      .send({
+        name: 'Test Group',
+        defaultHandler: '',
+        groupInMiddle: true,
+        gridSizeX: 0,
+        pars: [],
+        movingHeadRgbs: [],
+        movingHeadWheels: [],
+      });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      name: 'Test Group',
+      controller: { id: controller.body.id },
+      pars: [],
+      movingHeadRgbs: [],
+      movingHeadWheels: [],
+    });
+  });
 });
 
 describe('GET /api/lights/controller/{id}/switches', () => {

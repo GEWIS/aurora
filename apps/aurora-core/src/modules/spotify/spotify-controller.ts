@@ -109,7 +109,7 @@ export class SpotifyController extends Controller {
   /**
    * Get the currently active Spotify user.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
   @Get('user/current')
   @Response('200', 'Active user')
   @Response('204', 'No user active')
@@ -176,7 +176,7 @@ export class SpotifyController extends Controller {
   /**
    * Get the Spotify profile from the currently active user
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
   @Get('profile')
   @Response('200', 'Active user')
   @Response('204', 'No user active')
@@ -197,7 +197,7 @@ export class SpotifyController extends Controller {
   /**
    * Skip the currently playing Spotify track.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
   @Post('skip')
   public async skipSpotifyTrack(): Promise<void> {
     return this.spotifyTrackHandler.skipToNext();

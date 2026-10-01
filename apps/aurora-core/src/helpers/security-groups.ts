@@ -4,11 +4,6 @@ export interface ISecuritySections {
   base?: SecurityGroup[];
   privileged?: SecurityGroup[];
   subscriber?: SecurityGroup[];
-  /**
-   * Like base, but without INTEGRATION_USER: integration keys need the endpoint's own
-   * INTEGRATION scope instead of passing through their role.
-   */
-  baseNoIntegration?: SecurityGroup[];
 }
 
 export interface ISecurityGroups {
@@ -70,6 +65,10 @@ const allSecuritySubscriberGroups = [
   SecurityGroup.INTEGRATION_USER,
 ];
 
+/**
+ * Subscriber groups without INTEGRATION_USER: integration keys only get in through an
+ * endpoint's own INTEGRATION scope, not through their role.
+ */
 const allSecuritySubscriberGroupsNoIntegration = [
   SecurityGroup.ADMIN,
   SecurityGroup.BOARD,
@@ -122,10 +121,9 @@ export const securityGroups = {
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
   infoscreen: {
-    base: allSecuritySubscriberGroups,
+    base: allSecuritySubscriberGroupsNoIntegration,
     privileged: [...privilegedSecurityGroups, SecurityGroup.KEY_HOLDER],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
-    baseNoIntegration: allSecuritySubscriberGroupsNoIntegration,
   },
   roomresponsible: {
     base: [SecurityGroup.SCREEN_SUBSCRIBER],
@@ -164,9 +162,8 @@ export const securityGroups = {
     base: baseSecurityGroups,
   },
   spotify: {
-    base: allSecuritySubscriberGroups,
+    base: allSecuritySubscriberGroupsNoIntegration,
     privileged: [SecurityGroup.ADMIN],
-    baseNoIntegration: allSecuritySubscriberGroupsNoIntegration,
   },
   sudosos: {
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],

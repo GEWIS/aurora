@@ -109,7 +109,7 @@ export class SpotifyController extends Controller {
   /**
    * Get the currently active Spotify user.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Get('user/current')
   @Response('200', 'Active user')
   @Response('204', 'No user active')
@@ -176,7 +176,7 @@ export class SpotifyController extends Controller {
   /**
    * Get the Spotify profile from the currently active user
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Get('profile')
   @Response('200', 'Active user')
   @Response('204', 'No user active')
@@ -187,7 +187,7 @@ export class SpotifyController extends Controller {
   /**
    * Get the currently playing track (on Spotify or locally playing). Null if nothing is playing.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Security(SecurityNames.INTEGRATION, ['getSpotifyCurrentlyPlaying'])
   @Get('currently-playing')
   public getSpotifyCurrentlyPlaying() {
@@ -197,7 +197,7 @@ export class SpotifyController extends Controller {
   /**
    * Skip the currently playing Spotify track.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.spotify.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.spotify.base)
   @Post('skip')
   public async skipSpotifyTrack(): Promise<void> {
     return this.spotifyTrackHandler.skipToNext();

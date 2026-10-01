@@ -87,7 +87,7 @@ export class InfoScreenController extends Controller {
   // Ambient widget data
   // ---------------------------------------------------------------------------
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('weather')
   public async getInfoWeather(
     @Query() lat?: number,
@@ -96,7 +96,7 @@ export class InfoScreenController extends Controller {
     return new WeatherService().getWeather(lat, lon);
   }
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('rain-radar')
   public async getInfoRainRadar(
     @Query() lat?: string,
@@ -105,19 +105,19 @@ export class InfoScreenController extends Controller {
     return new RainRadarService().getForecast(lat, lon);
   }
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('trains')
   public async getInfoTrains(@Query() station?: string): Promise<TrainResponse[]> {
     return applyTreinLimbo(await new NsTrainsService().getTrains(station));
   }
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('news')
   public async getInfoNews(): Promise<NewsHeadline[]> {
     return this.newsService.getHeadlines();
   }
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('agenda')
   public async getInfoAgenda(@Query() url?: string): Promise<AgendaEvent[]> {
     return new CalendarService().getTodaysEvents(url);
@@ -128,7 +128,7 @@ export class InfoScreenController extends Controller {
   // ---------------------------------------------------------------------------
 
   /** Also readable with an integration key (used by the external info.gewis.nl page). */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Security(SecurityNames.INTEGRATION, ['getInfoPcUsage'])
   @Get('pc-usage')
   public async getInfoPcUsage(): Promise<PcStatusResponse[]> {
@@ -151,7 +151,7 @@ export class InfoScreenController extends Controller {
   // ---------------------------------------------------------------------------
 
   /** Also readable with an integration key (used by the external info.gewis.nl page). */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Security(SecurityNames.INTEGRATION, ['getInfoRoomStatus'])
   @Get('room-status')
   public async getInfoRoomStatus(): Promise<RoomStatusResponse> {
@@ -183,7 +183,7 @@ export class InfoScreenController extends Controller {
   // Keyholder registry (backoffice managed)
   // ---------------------------------------------------------------------------
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('keyholders')
   public async getInfoKeyholders(): Promise<KeyholderResponse[]> {
     return this.infoStatusService.getKeyholderResponses();
@@ -267,7 +267,7 @@ export class InfoScreenController extends Controller {
   // Widget catalog + per-screen layout
   // ---------------------------------------------------------------------------
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('widget-catalog')
   public async getInfoWidgetCatalog(): Promise<WidgetCatalogItem[]> {
     // Disabled widgets (see DISABLED_WIDGETS) are never offered to the editor.
@@ -451,13 +451,13 @@ export class InfoScreenController extends Controller {
   /**
    * @param url Uptime Kuma or Gatus URL; defaults to STATUS_PAGE_URL.
    */
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('services')
   public async getInfoServices(@Query() url?: string): Promise<ServicesHealthResponse> {
     return this.servicesHealthService.getHealth(url);
   }
 
-  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.baseNoIntegration)
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
   @Get('conference-rooms')
   public async getInfoConferenceRooms(): Promise<ConferenceRoomsResponse> {
     return this.conferenceRoomsService.getRooms();

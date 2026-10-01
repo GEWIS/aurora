@@ -6776,13 +6776,6 @@
 							"$ref": "#/components/schemas/SecurityGroup"
 						},
 						"type": "array"
-					},
-					"baseNoIntegration": {
-						"items": {
-							"$ref": "#/components/schemas/SecurityGroup"
-						},
-						"type": "array",
-						"description": "Like base, but without INTEGRATION_USER: integration keys need the endpoint's own\nINTEGRATION scope instead of passing through their role."
 					}
 				},
 				"type": "object",

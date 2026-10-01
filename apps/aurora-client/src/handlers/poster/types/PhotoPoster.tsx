@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GewisPhotoAlbumParams, getPhoto, PosterResponse } from '@gewis/aurora-api-client';
+import useStableArray from '../useStableArray';
 import ImagePoster from './ImagePoster';
 
 interface Props {
@@ -16,15 +17,16 @@ export default function PhotoPoster({ poster, visible, setTitle }: Props) {
     if (visible) setTitle(label);
   }, [label, setTitle, visible]);
 
+  const albums = useStableArray(poster.albums ?? []);
   useEffect(() => {
-    if (!poster.albums || poster.albums.length === 0) {
+    if (albums.length === 0) {
       setUrl('');
       setLabel('');
       return;
     }
 
     const body: GewisPhotoAlbumParams = {
-      albumIds: poster.albums,
+      albumIds: albums,
     };
     // TODO what do display if photo is not fetched?
     getPhoto({ body })
@@ -33,7 +35,7 @@ export default function PhotoPoster({ poster, visible, setTitle }: Props) {
         setLabel(res.data!.label);
       })
       .catch((e) => console.error(e));
-  }, [poster.albums]);
+  }, [albums]);
 
   return <ImagePoster source={url} />;
 }

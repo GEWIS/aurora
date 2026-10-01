@@ -9,11 +9,16 @@ interface Props {
 
 export default function ExternalPoster({ url, visible }: Props) {
   const ref = useRef<HTMLIFrameElement | null>(null);
+  const wasVisible = useRef(visible);
 
+  // Reload the page when the poster goes off screen, so it is fresh (and already loaded)
+  // the next time it is shown. Reloading when it becomes visible would show a blank frame.
   useEffect(() => {
-    if (!ref || !ref.current) return;
-    ref.current.src = '';
-    ref.current.src = url;
+    if (wasVisible.current && !visible && ref.current) {
+      ref.current.src = '';
+      ref.current.src = url;
+    }
+    wasVisible.current = visible;
   }, [url, visible]);
 
   return (

@@ -21,12 +21,14 @@ export class PosterRequestController extends Controller {
   private service = new PosterRequestService();
 
   /**
-   * Submit a request for a new media poster, which has to be approved in the backoffice before
-   * it is shown. The file has to be a JPG, PNG or MP4 of at most 20 MB.
-   * @param file The image or video of the poster.
+   * Submit a request for a new poster, which has to be approved in the backoffice before it is
+   * shown. Send either a file for a media poster, or a uri for an external poster. The file has to
+   * be a JPG, PNG or MP4 of at most 20 MB.
    * @param requesterName Name of the person requesting the poster.
    * @param requesterEmail Email address of the person requesting the poster.
    * @param name Internal name of the poster.
+   * @param file The image or video of a media poster.
+   * @param uri Link to an external poster (http or https).
    * @param requesterAssociation Association the poster is requested for.
    * @param message Message to the reviewers.
    * @param label Visible title of the poster on the screens.
@@ -41,14 +43,16 @@ export class PosterRequestController extends Controller {
   @Security(SecurityNames.INTEGRATION, ['createPosterRequest'])
   @Post('')
   @Response<string>(409, 'Endpoint is disabled in the server settings')
+  @Response<string>(400, 'Invalid fields, or not exactly one of a file and a uri')
   @Response<string>(413, 'File is too large')
   @Response<string>(415, 'File is not a JPG, PNG or MP4')
   public async createPosterRequest(
-    @UploadedFile() file: Express.Multer.File,
     @FormField() requesterName: string,
     @FormField() requesterEmail: string,
     @FormField() name: string,
     @Request() req: ExpressRequest,
+    @UploadedFile() file?: Express.Multer.File,
+    @FormField() uri?: string,
     @FormField() requesterAssociation?: string,
     @FormField() message?: string,
     @FormField() label?: string,
@@ -73,9 +77,9 @@ export class PosterRequestController extends Controller {
         footerSize,
         defaultTimeout,
         borrelMode,
+        uri,
       },
-      file.originalname,
-      file.buffer,
+      file ? { name: file.originalname, data: file.buffer } : undefined,
       req.user?.integrationUserId,
     );
 
@@ -115,7 +119,8 @@ export class PosterRequestController extends Controller {
 
   /**
    * Approve a poster request, creating an enabled poster with the given fields at the end of the
-   * carousel. The request and the requester's details are deleted afterwards.
+   * carousel. External poster requests need a uri. The request and the requester's details are
+   * deleted afterwards.
    * @param id The id of the poster request.
    * @param body The final poster fields. Optional fields that are left out are not set.
    * @param req

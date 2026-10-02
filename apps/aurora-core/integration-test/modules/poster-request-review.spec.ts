@@ -79,7 +79,7 @@ afterAll(async () => {
   // Remove all stored files, so test runs do not fill the storage directories
   const storage = new DiskStorage('poster-requests', false);
   const requests = await getDataSource().getRepository(PosterRequest).find();
-  await Promise.all(requests.map((r) => storage.deleteFile(r.file)));
+  await Promise.all(requests.map((r) => r.file && storage.deleteFile(r.file)));
   await Promise.all(
     createdPosterIds.map((id) =>
       testApp.authorizedAgent.delete(`/api/handler/screen/poster/items/${id}`),
@@ -345,7 +345,7 @@ describe('POST /api/handler/screen/poster/requests/{id}/approve', () => {
   it('deletes the request, its personal details and the private file', async () => {
     // ARRANGE
     const id = await createRequest();
-    const { file } = (await findRequest(id))!;
+    const file = (await findRequest(id))!.file!;
     expect(existsOnDisk(file)).toBe(true);
 
     // ACT
@@ -460,7 +460,7 @@ describe('POST /api/handler/screen/poster/requests/{id}/deny', () => {
   it('deletes the request, its personal details and the file, without creating a poster', async () => {
     // ARRANGE
     const id = await createRequest({ name: 'Denied poster' });
-    const { file } = (await findRequest(id))!;
+    const file = (await findRequest(id))!.file!;
 
     // ACT
     const res = await testApp.authorizedAgent.post(`${URL}/${id}/deny`);

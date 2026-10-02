@@ -3716,6 +3716,12 @@
 				],
 				"type": "string"
 			},
+			"PosterType.EXTERNAL": {
+				"enum": [
+					"extern"
+				],
+				"type": "string"
+			},
 			"PosterRequestResponse": {
 				"properties": {
 					"id": {
@@ -3751,8 +3757,15 @@
 							},
 							{
 								"$ref": "#/components/schemas/PosterType.VIDEO"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.EXTERNAL"
 							}
 						]
+					},
+					"uri": {
+						"type": "string",
+						"description": "Link to the requested external poster. Only set for external posters."
 					},
 					"label": {
 						"type": "string"
@@ -3780,7 +3793,7 @@
 					},
 					"fileName": {
 						"type": "string",
-						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint."
+						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint. Not set\nfor external posters."
 					}
 				},
 				"required": [
@@ -3792,8 +3805,7 @@
 					"type",
 					"footerSize",
 					"defaultTimeout",
-					"borrelMode",
-					"fileName"
+					"borrelMode"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3835,6 +3847,10 @@
 					"borrelMode": {
 						"type": "boolean",
 						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"uri": {
+						"type": "string",
+						"description": "Link of the external poster. Required when approving an external poster request, and not\nallowed for other requests."
 					}
 				},
 				"required": [
@@ -3906,12 +3922,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"PosterType.EXTERNAL": {
-				"enum": [
-					"extern"
-				],
-				"type": "string"
 			},
 			"ExternalPosterRequest": {
 				"properties": {
@@ -12354,6 +12364,16 @@
 							}
 						}
 					},
+					"400": {
+						"description": "Invalid fields, or not exactly one of a file and a uri",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
 					"409": {
 						"description": "Endpoint is disabled in the server settings",
 						"content": {
@@ -12385,7 +12405,7 @@
 						}
 					}
 				},
-				"description": "Submit a request for a new media poster, which has to be approved in the backoffice before\nit is shown. The file has to be a JPG, PNG or MP4 of at most 20 MB.",
+				"description": "Submit a request for a new poster, which has to be approved in the backoffice before it is\nshown. Send either a file for a media poster, or a uri for an external poster. The file has to\nbe a JPG, PNG or MP4 of at most 20 MB.",
 				"tags": [
 					"Handlers"
 				],
@@ -12404,11 +12424,6 @@
 							"schema": {
 								"type": "object",
 								"properties": {
-									"file": {
-										"type": "string",
-										"format": "binary",
-										"description": "The image or video of the poster."
-									},
 									"requesterName": {
 										"type": "string",
 										"description": "Name of the person requesting the poster."
@@ -12420,6 +12435,15 @@
 									"name": {
 										"type": "string",
 										"description": "Internal name of the poster."
+									},
+									"file": {
+										"type": "string",
+										"format": "binary",
+										"description": "The image or video of a media poster."
+									},
+									"uri": {
+										"type": "string",
+										"description": "Link to an external poster (http or https)."
 									},
 									"requesterAssociation": {
 										"type": "string",
@@ -12462,7 +12486,6 @@
 									}
 								},
 								"required": [
-									"file",
 									"requesterName",
 									"requesterEmail",
 									"name"
@@ -12585,7 +12608,7 @@
 						}
 					}
 				},
-				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\ncarousel. The request and the requester's details are deleted afterwards.",
+				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\ncarousel. External poster requests need a uri. The request and the requester's details are\ndeleted afterwards.",
 				"tags": [
 					"Handlers"
 				],

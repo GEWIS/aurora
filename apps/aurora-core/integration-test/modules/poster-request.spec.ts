@@ -57,7 +57,7 @@ afterAll(async () => {
   // Remove the uploaded files, so test runs do not fill the private storage directory
   const storage = new DiskStorage('poster-requests', false);
   const requests = await getDataSource().getRepository(PosterRequest).find();
-  await Promise.all(requests.map((r) => storage.deleteFile(r.file)));
+  await Promise.all(requests.map((r) => r.file && storage.deleteFile(r.file)));
 });
 
 /**
@@ -185,8 +185,8 @@ describe('POST /api/handler/screen/poster/requests', () => {
 
     // ASSERT
     const request = await findRequest(res.body.id);
-    expect(request!.file.relativeDirectory).toMatch(/^private[\\/]poster-requests$/);
-    expect(request!.file.originalName).toBe('poster.png');
+    expect(request!.file!.relativeDirectory).toMatch(/^private[\\/]poster-requests$/);
+    expect(request!.file!.originalName).toBe('poster.png');
   });
 
   it.each([
@@ -265,12 +265,12 @@ describe('POST /api/handler/screen/poster/requests', () => {
     expectApiError(res, 413);
   });
 
-  it('returns 400 without a file', async () => {
+  it('returns 400 without a file or uri', async () => {
     // ACT
     const res = await submit({}, null);
 
     // ASSERT
-    expect(res.status).toBe(400);
+    expectApiError(res, 400);
   });
 
   it.each(['requesterName', 'requesterEmail', 'name'])(

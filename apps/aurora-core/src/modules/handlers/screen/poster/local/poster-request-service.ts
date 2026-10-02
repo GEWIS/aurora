@@ -21,6 +21,7 @@ const POSTER_REQUEST_FILE_TYPES: Record<string, PosterType.IMAGE | PosterType.VI
 };
 
 const MAX_STRING_LENGTH = 255;
+const ALLOWED_URI_PROTOCOLS = ['http:', 'https:'];
 const MAX_MESSAGE_LENGTH = 5000;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const HEX_COLOR_REGEX = /^#?[0-9a-fA-F]{6}$/;
@@ -46,13 +47,28 @@ export interface CreatePosterRequestParams extends Partial<
   requesterAssociation?: string;
   message?: string;
   name: string;
+  /**
+   * Link to an external poster. Requests have either a file or a uri.
+   */
+  uri?: string;
+}
+
+export interface PosterRequestFile {
+  name: string;
+  data: Buffer;
 }
 
 /**
  * The final poster as approved by the reviewer. Optional fields that are left out are not set on
  * the poster, even if the requester provided them.
  */
-export interface ApprovePosterRequestParams extends Pick<Poster, PosterRequestFields> {}
+export interface ApprovePosterRequestParams extends Pick<Poster, PosterRequestFields> {
+  /**
+   * Link of the external poster. Required when approving an external poster request, and not
+   * allowed for other requests.
+   */
+  uri?: string;
+}
 
 export interface CreatePosterRequestResponse {
   id: number;
@@ -71,7 +87,11 @@ export interface PosterRequestResponse {
    */
   integrationName?: string;
   name: string;
-  type: PosterType.IMAGE | PosterType.VIDEO;
+  type: PosterType.IMAGE | PosterType.VIDEO | PosterType.EXTERNAL;
+  /**
+   * Link to the requested external poster. Only set for external posters.
+   */
+  uri?: string;
   label?: string;
   startDate?: Date;
   expirationDate?: Date;
@@ -80,9 +100,10 @@ export interface PosterRequestResponse {
   defaultTimeout: number;
   borrelMode: boolean;
   /**
-   * Original name of the uploaded file. The file itself is served by a separate endpoint.
+   * Original name of the uploaded file. The file itself is served by a separate endpoint. Not set
+   * for external posters.
    */
-  fileName: string;
+  fileName?: string;
 }
 
 export interface PosterRequestMedia {
@@ -185,6 +206,23 @@ export default class PosterRequestService {
   }
 
   /**
+   * Validate the link of an external poster, throwing a 400 if it is not a http(s) URL.
+   * @param uri
+   */
+  private static validateUri(uri: string): void {
+    PosterRequestService.validateLength('uri', uri, MAX_STRING_LENGTH);
+    let url: URL;
+    try {
+      url = new URL(uri);
+    } catch {
+      throw badRequest('Field "uri" must be a valid URL.');
+    }
+    if (!ALLOWED_URI_PROTOCOLS.includes(url.protocol)) {
+      throw badRequest('Field "uri" must be a http or https URL.');
+    }
+  }
+
+  /**
    * Determine the mime type of the given file.
    * @param fileData
    */
@@ -212,27 +250,31 @@ export default class PosterRequestService {
   }
 
   /**
-   * Store a new poster request with its file, and notify the backoffice.
+   * Store a new poster request, with either a file or a link to an external poster, and notify
+   * the backoffice.
    * @param params Metadata of the requested poster.
-   * @param filename Original filename of the media file.
-   * @param fileData Buffer containing the file.
+   * @param file The image or video of a media poster.
    * @param integrationUserId Integration that submitted the request, if any.
    */
   public async createPosterRequest(
     params: CreatePosterRequestParams,
-    filename: string,
-    fileData: Buffer,
+    file: PosterRequestFile | undefined,
     integrationUserId?: number,
   ): Promise<PosterRequest> {
     PosterRequestService.validateRequester(params);
     PosterRequestService.validatePosterFields(params);
-    const type = await PosterRequestService.getPosterType(fileData);
 
-    const fileParams = await this.storage.saveFile(filename, fileData);
+    const uri = PosterRequestService.optional(params.uri);
+    if (file && uri) throw badRequest('Provide either a file or a "uri", not both.');
+    if (!file && !uri) throw badRequest('Provide either a file or a "uri".');
+    if (uri) PosterRequestService.validateUri(uri);
+    const type = file ? await PosterRequestService.getPosterType(file.data) : PosterType.EXTERNAL;
+
+    const fileParams = file ? await this.storage.saveFile(file.name, file.data) : undefined;
     let request: PosterRequest;
     try {
       request = await getDataSource().transaction(async (manager) => {
-        const file = await manager.getRepository(File).save(fileParams);
+        const savedFile = fileParams ? await manager.getRepository(File).save(fileParams) : null;
         return manager.getRepository(PosterRequest).save({
           requesterName: params.requesterName.trim(),
           requesterEmail: params.requesterEmail.trim(),
@@ -241,6 +283,7 @@ export default class PosterRequestService {
           integrationUser: integrationUserId !== undefined ? { id: integrationUserId } : null,
           name: params.name.trim(),
           type,
+          uri,
           label: PosterRequestService.optional(params.label),
           startDate: params.startDate,
           expirationDate: params.expirationDate,
@@ -248,11 +291,11 @@ export default class PosterRequestService {
           footerSize: params.footerSize ?? FooterSize.FULL,
           defaultTimeout: params.defaultTimeout ?? 15,
           borrelMode: params.borrelMode ?? false,
-          file,
+          file: savedFile,
         });
       });
     } catch (error) {
-      await this.storage.deleteFile(fileParams);
+      if (fileParams) await this.storage.deleteFile(fileParams);
       throw error;
     }
 
@@ -288,6 +331,12 @@ export default class PosterRequestService {
    */
   public async getPosterRequestMedia(id: number): Promise<PosterRequestMedia> {
     const request = await this.getSinglePosterRequest(id);
+    if (!request.file) {
+      throw new HttpApiException(
+        HttpStatusCode.NotFound,
+        `Poster request with ID "${id}" has no file, as it is an external poster.`,
+      );
+    }
     const data = await this.storage.getFile(request.file);
     const mimeType = (await PosterRequestService.getMimeType(data)) ?? 'application/octet-stream';
     return { data, mimeType };
@@ -307,18 +356,31 @@ export default class PosterRequestService {
     const request = await this.getSinglePosterRequest(id);
     const requestFile = request.file;
 
+    const uri = PosterRequestService.optional(params.uri);
+    if (request.type === PosterType.EXTERNAL) {
+      if (!uri) throw badRequest('Field "uri" is required for an external poster.');
+      PosterRequestService.validateUri(uri);
+    } else if (uri) {
+      throw badRequest('Field "uri" can only be set for an external poster.');
+    }
+
     // Copy the file to the public poster storage, as it is now allowed on the screens
     const posterStorage = new DiskStorage(POSTER_STORAGE_DIRECTORY);
-    const data = await this.storage.getFile(requestFile);
-    const fileParams = await posterStorage.saveFile(requestFile.originalName, data);
+    const fileParams = requestFile
+      ? await posterStorage.saveFile(
+          requestFile.originalName,
+          await this.storage.getFile(requestFile),
+        )
+      : undefined;
 
     let poster: Poster;
     try {
       poster = await getDataSource().transaction(async (manager) => {
-        const file = await manager.getRepository(File).save(fileParams);
+        const file = fileParams ? await manager.getRepository(File).save(fileParams) : undefined;
         const created = await manager.getRepository(Poster).save({
           name: params.name.trim(),
           type: request.type,
+          uri,
           enabled: true,
           label: PosterRequestService.optional(params.label),
           startDate: params.startDate,
@@ -327,24 +389,24 @@ export default class PosterRequestService {
           footerSize: params.footerSize,
           defaultTimeout: params.defaultTimeout,
           borrelMode: params.borrelMode,
-          files: [file],
+          files: file ? [file] : [],
         });
         await manager.getRepository(PosterRequest).delete({ id: request.id });
-        await manager.getRepository(File).delete({ id: requestFile.id });
+        if (requestFile) await manager.getRepository(File).delete({ id: requestFile.id });
         return created;
       });
     } catch (error) {
-      await posterStorage.deleteFile(fileParams);
+      if (fileParams) await posterStorage.deleteFile(fileParams);
       throw error;
     }
 
-    await this.storage.deleteFile(requestFile);
+    if (requestFile) await this.storage.deleteFile(requestFile);
     this.notifyBackoffice();
     return poster;
   }
 
   /**
-   * Deletes the given poster request, including the requester's details and the file.
+   * Deletes the given poster request, including the requester's details and the file, if any.
    * @param id The id of the poster request to deny.
    */
   public async denyPosterRequest(id: number): Promise<void> {
@@ -353,10 +415,10 @@ export default class PosterRequestService {
 
     await getDataSource().transaction(async (manager) => {
       await manager.getRepository(PosterRequest).delete({ id: request.id });
-      await manager.getRepository(File).delete({ id: requestFile.id });
+      if (requestFile) await manager.getRepository(File).delete({ id: requestFile.id });
     });
 
-    await this.storage.deleteFile(requestFile);
+    if (requestFile) await this.storage.deleteFile(requestFile);
     this.notifyBackoffice();
   }
 
@@ -391,6 +453,7 @@ export default class PosterRequestService {
       integrationName: request.integrationUser?.name ?? undefined,
       name: request.name,
       type: request.type,
+      uri: request.uri ?? undefined,
       label: request.label ?? undefined,
       startDate: request.startDate ?? undefined,
       expirationDate: request.expirationDate ?? undefined,
@@ -398,7 +461,7 @@ export default class PosterRequestService {
       footerSize: request.footerSize,
       defaultTimeout: request.defaultTimeout,
       borrelMode: request.borrelMode,
-      fileName: request.file.originalName,
+      fileName: request.file?.originalName,
     };
   }
 }

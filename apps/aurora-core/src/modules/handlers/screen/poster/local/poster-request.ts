@@ -5,9 +5,9 @@ import { IntegrationUser } from '../../../../auth/integration/entities';
 import { FooterSize, PosterType } from './poster';
 
 /**
- * Request for a new media poster, submitted by an integration and waiting for review in the
- * backoffice. Approving it creates a regular poster; approving or denying it deletes the request,
- * including the requester's personal details and the uploaded file.
+ * Request for a new media or external poster, submitted by an integration and waiting for review
+ * in the backoffice. Approving it creates a regular poster; approving or denying it deletes the
+ * request, including the requester's personal details and the uploaded file.
  */
 @Entity()
 export default class PosterRequest extends BaseEntity {
@@ -49,10 +49,16 @@ export default class PosterRequest extends BaseEntity {
   name: string;
 
   /**
-   * Type of the requested poster, derived from the uploaded file.
+   * Type of the requested poster, derived from the uploaded file or the given uri.
    */
   @Column({ type: 'varchar' })
-  type: PosterType.IMAGE | PosterType.VIDEO;
+  type: PosterType.IMAGE | PosterType.VIDEO | PosterType.EXTERNAL;
+
+  /**
+   * Link to the requested external poster. Only set for external posters.
+   */
+  @Column({ nullable: true })
+  uri?: string;
 
   /**
    * Requested visible title of the poster.
@@ -97,9 +103,10 @@ export default class PosterRequest extends BaseEntity {
   borrelMode: boolean;
 
   /**
-   * The uploaded image or video, stored privately until the request is approved.
+   * The uploaded image or video, stored privately until the request is approved. Not set for
+   * external posters.
    */
-  @ManyToOne(() => File, { nullable: false, eager: true })
+  @ManyToOne(() => File, { nullable: true, eager: true })
   @JoinColumn({ name: 'fileId' })
-  file: File;
+  file?: File | null;
 }

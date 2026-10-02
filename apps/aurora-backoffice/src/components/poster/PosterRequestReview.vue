@@ -67,6 +67,20 @@
           </Message>
         </div>
 
+        <div v-if="isExternal" class="flex flex-col gap-2">
+          <label for="poster-request-uri">URL</label>
+          <InputText
+            id="poster-request-uri"
+            v-model="uri"
+            :invalid="submitted && !uriValid"
+            placeholder="https://..."
+            type="url"
+          />
+          <Message v-if="submitted && !uriValid" severity="error" size="small" variant="simple">
+            Please enter a valid http or https URL
+          </Message>
+        </div>
+
         <div class="flex flex-col gap-2">
           <label for="poster-request-label">Label (optional)</label>
           <InputText id="poster-request-label" v-model="label" placeholder="Poster Title" />
@@ -188,6 +202,7 @@ import {
   type ApprovePosterRequestParams,
   FooterSize,
   type PosterRequestResponse,
+  PosterTypeExternal,
 } from '@gewis/aurora-api-client';
 import { usePosterRequestStore } from '@/stores/poster/poster-request.store';
 import { usePosterStore } from '@/stores/poster/poster.store';
@@ -211,6 +226,7 @@ const submitted = ref<boolean>(false);
 const confirmRef = ref();
 
 const name = ref<string>('');
+const uri = ref<string>('');
 const label = ref<string>('');
 const defaultTimeout = ref<number>(15);
 const footerSize = ref<FooterSize>(FooterSize.FULL);
@@ -238,6 +254,17 @@ const footerSizeOptions = [
   { label: 'Hidden', value: FooterSize.HIDDEN },
 ];
 
+const isExternal = computed(() => props.request.type === PosterTypeExternal.EXTERN);
+
+const uriValid = computed(() => {
+  if (!isExternal.value) return true;
+  try {
+    return ['http:', 'https:'].includes(new URL(uri.value.trim()).protocol);
+  } catch {
+    return false;
+  }
+});
+
 const datesValid = computed(
   () =>
     !startDate.value ||
@@ -248,6 +275,7 @@ const datesValid = computed(
 const open = () => {
   submitted.value = false;
   name.value = props.request.name;
+  uri.value = props.request.uri ?? '';
   label.value = props.request.label ?? '';
   defaultTimeout.value = props.request.defaultTimeout;
   footerSize.value = props.request.footerSize;
@@ -265,6 +293,7 @@ const buildParams = (): ApprovePosterRequestParams => ({
   footerSize: footerSize.value,
   defaultTimeout: defaultTimeout.value,
   borrelMode: borrelMode.value,
+  ...(isExternal.value && { uri: uri.value.trim() }),
   ...(label.value.trim() && { label: label.value.trim() }),
   ...(accentColor.value && { accentColor: accentColor.value }),
   ...(startDate.value && { startDate: startDate.value.toISOString() }),
@@ -273,7 +302,7 @@ const buildParams = (): ApprovePosterRequestParams => ({
 
 const onApprove = async () => {
   submitted.value = true;
-  if (!name.value.trim() || !datesValid.value) return;
+  if (!name.value.trim() || !uriValid.value || !datesValid.value) return;
 
   loading.value = true;
   const approved = await store.approve(props.request.id, buildParams());

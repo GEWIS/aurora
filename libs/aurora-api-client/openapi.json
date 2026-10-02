@@ -3716,6 +3716,136 @@
 				],
 				"type": "string"
 			},
+			"PosterRequestResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"requesterName": {
+						"type": "string"
+					},
+					"requesterEmail": {
+						"type": "string"
+					},
+					"requesterAssociation": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"integrationName": {
+						"type": "string",
+						"description": "Name of the integration that submitted the request, if it still exists."
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/PosterType.IMAGE"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.VIDEO"
+							}
+						]
+					},
+					"label": {
+						"type": "string"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"accentColor": {
+						"type": "string"
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize"
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double"
+					},
+					"borrelMode": {
+						"type": "boolean"
+					},
+					"fileName": {
+						"type": "string",
+						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint."
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"requesterName",
+					"requesterEmail",
+					"name",
+					"type",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode",
+					"fileName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApprovePosterRequestParams": {
+				"description": "The final poster as approved by the reviewer. Optional fields that are left out are not set on\nthe poster, even if the requester provided them.",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					}
+				},
+				"required": [
+					"name",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"MediaPosterRequest": {
 				"properties": {
 					"name": {
@@ -12341,6 +12471,202 @@
 						}
 					}
 				}
+			},
+			"get": {
+				"operationId": "GetAllPosterRequests",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/PosterRequestResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all pending poster requests, oldest first.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/poster/requests/{id}/media": {
+			"get": {
+				"operationId": "GetPosterRequestMedia",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the uploaded image or video of a pending poster request.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/poster/requests/{id}/approve": {
+			"post": {
+				"operationId": "ApprovePosterRequest",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\ncarousel. The request and the requester's details are deleted afterwards.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The final poster fields. Optional fields that are left out are not set.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ApprovePosterRequestParams",
+								"description": "The final poster fields. Optional fields that are left out are not set."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/poster/requests/{id}/deny": {
+			"post": {
+				"operationId": "DenyPosterRequest",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deny a poster request. The request, the requester's details and the file are deleted.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/handler/screen/poster/items": {

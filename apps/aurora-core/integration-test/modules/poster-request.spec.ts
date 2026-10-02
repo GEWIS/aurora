@@ -5,6 +5,7 @@ import EmitterStore from '@aurora/modules/events/emitter-store';
 import { DiskStorage } from '@aurora/modules/files/storage';
 import PosterRequest from '@aurora/modules/handlers/screen/poster/local/poster-request';
 import { MAX_UPLOAD_FILE_SIZE } from '@aurora/http';
+import logger from '@aurora/logger';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 import { createIntegrationKey } from '../shared/api-key';
@@ -211,6 +212,26 @@ describe('POST /api/handler/screen/poster/requests', () => {
     // ASSERT
     expect(res.status).toBe(200);
     expect(emit).toHaveBeenCalledWith('poster_request_update');
+  });
+
+  it('writes an audit log entry without personal details', async () => {
+    // ARRANGE
+    const audit = vi.spyOn(logger, 'audit');
+
+    // ACT
+    const res = await submit({ requesterAssociation: 'GEWIS' });
+
+    // ASSERT
+    expect(audit).toHaveBeenCalledWith(
+      expect.anything(),
+      `Create poster request (id: ${res.body.id}).`,
+    );
+    const messages = audit.mock.calls.map((call) => String(call[1]));
+    messages.forEach((message) => {
+      expect(message).not.toContain('Jane');
+      expect(message).not.toContain('jane@example.com');
+      expect(message).not.toContain('GEWIS');
+    });
   });
 
   it('returns 415 for a file type other than JPG, PNG or MP4', async () => {

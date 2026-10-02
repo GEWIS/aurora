@@ -1,6 +1,7 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
+import { MAX_UPLOAD_FILE_SIZE } from '@aurora/http';
 
 let testApp: TestApp;
 
@@ -244,6 +245,38 @@ describe('PUT /api/handler/screen/poster/items/{id}/media', () => {
     expect(res.body.id).toBe(id);
     expect(res.body.files.length).toBe(1);
     expect(typeof res.body.files[0].id).toBe('number');
+  });
+
+  it('returns 200 for a file above the former 8 MB upload limit', async () => {
+    // ARRANGE
+    const id = await createPoster({ type: 'img' });
+    const data = Buffer.concat([PNG_BUFFER, Buffer.alloc(10 * 1024 * 1024)]);
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .put(`/api/handler/screen/poster/items/${id}/media`)
+      .attach('file', data, { filename: 'large.png', contentType: 'image/png' });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.files.length).toBe(1);
+
+    // Remove the large file from storage again
+    await testApp.authorizedAgent.delete(`/api/handler/screen/poster/items/${id}`);
+  });
+
+  it('returns 413 for a file larger than the upload limit', async () => {
+    // ARRANGE
+    const id = await createPoster({ type: 'img' });
+    const data = Buffer.concat([PNG_BUFFER, Buffer.alloc(MAX_UPLOAD_FILE_SIZE)]);
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .put(`/api/handler/screen/poster/items/${id}/media`)
+      .attach('file', data, { filename: 'huge.png', contentType: 'image/png' });
+
+    // ASSERT
+    expectApiError(res, 413);
   });
 });
 

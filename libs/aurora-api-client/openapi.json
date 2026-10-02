@@ -953,6 +953,10 @@
 						"type": "boolean",
 						"description": "Whether the Trello poster sync is enabled."
 					},
+					"Poster.Requests": {
+						"type": "boolean",
+						"description": "Whether integrations can submit poster requests that are reviewed in the backoffice."
+					},
 					"InfoScreen": {
 						"type": "boolean",
 						"description": "Whether the info screen handler should be enabled."
@@ -1002,6 +1006,7 @@
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
 					"Poster.Trello",
+					"Poster.Requests",
 					"InfoScreen",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
@@ -1035,6 +1040,7 @@
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
 							"Poster.Trello",
+							"Poster.Requests",
 							"InfoScreen",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
@@ -8102,6 +8108,7 @@
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
 											"Poster.Trello",
+											"Poster.Requests",
 											"InfoScreen",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",

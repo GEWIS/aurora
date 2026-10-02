@@ -3687,6 +3687,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreatePosterRequestResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PosterType.IMAGE": {
 				"enum": [
 					"img"
@@ -12191,6 +12208,139 @@
 						}
 					}
 				]
+			}
+		},
+		"/handler/screen/poster/requests": {
+			"post": {
+				"operationId": "CreatePosterRequest",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreatePosterRequestResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File is too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "File is not a JPG, PNG or MP4",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Submit a request for a new media poster, which has to be approved in the backoffice before\nit is shown. The file has to be a JPG, PNG or MP4 of at most 20 MB.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"createPosterRequest"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"file": {
+										"type": "string",
+										"format": "binary",
+										"description": "The image or video of the poster."
+									},
+									"requesterName": {
+										"type": "string",
+										"description": "Name of the person requesting the poster."
+									},
+									"requesterEmail": {
+										"type": "string",
+										"description": "Email address of the person requesting the poster."
+									},
+									"name": {
+										"type": "string",
+										"description": "Internal name of the poster."
+									},
+									"requesterAssociation": {
+										"type": "string",
+										"description": "Association the poster is requested for."
+									},
+									"message": {
+										"type": "string",
+										"description": "Message to the reviewers."
+									},
+									"label": {
+										"type": "string",
+										"description": "Visible title of the poster on the screens."
+									},
+									"startDate": {
+										"type": "string",
+										"format": "date-time",
+										"description": "Moment from when the poster should be in rotation (ISO 8601)."
+									},
+									"expirationDate": {
+										"type": "string",
+										"format": "date-time",
+										"description": "Moment from when the poster should be out of rotation (ISO 8601)."
+									},
+									"accentColor": {
+										"type": "string",
+										"description": "Color of the progress bar as 6-digit hex, with or without \"#\"."
+									},
+									"footerSize": {
+										"$ref": "#/components/schemas/FooterSize",
+										"description": "Size of the footer."
+									},
+									"defaultTimeout": {
+										"type": "number",
+										"format": "double",
+										"description": "Time in seconds the poster should be on the screens for."
+									},
+									"borrelMode": {
+										"type": "boolean",
+										"description": "Whether the poster should only be shown in borrel mode."
+									}
+								},
+								"required": [
+									"file",
+									"requesterName",
+									"requesterEmail",
+									"name"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/handler/screen/poster/items": {

@@ -1,5 +1,6 @@
-import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { PosterLayer, PosterStack } from '../components/PosterLayers';
+import useRandomPick from '../useRandomPick';
 
 interface Props {
   source: string | string[];
@@ -9,15 +10,8 @@ export default function ImagePoster({ source }: Props) {
   const [failed, setFailed] = useState(false);
   const [natural, setNatural] = useState<{ url: string; width: number; height: number }>();
 
-  const sourceUrl = useMemo(() => {
-    if ((Array.isArray(source) && source.length === 0) || source === '') {
-      return '/base/avico-stuk.png';
-    } else if (Array.isArray(source)) {
-      const index = Math.floor(Math.random() * source.length);
-      return source[index];
-    }
-    return source;
-  }, [source]);
+  const sourceUrl =
+    useRandomPick(Array.isArray(source) ? source : [source]) || '/base/avico-stuk.png';
 
   useEffect(() => {
     setFailed(false);

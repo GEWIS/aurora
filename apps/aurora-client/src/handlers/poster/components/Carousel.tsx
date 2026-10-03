@@ -34,38 +34,32 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
 
     switch (poster.type as string) {
       case 'logo':
-        return <LogoPoster key={poster.name} />;
+        return <LogoPoster />;
       case 'img':
-        return <ImagePoster key={poster.name} source={poster.files.map((f) => f.location)} />;
+        return <ImagePoster source={poster.files.map((f) => f.location)} />;
       case 'extern':
-        return <ExternalPoster key={poster.name} url={poster.uri!} visible={visible} />;
+        return <ExternalPoster url={poster.uri!} visible={visible} />;
       case 'video':
         return (
           <VideoPoster
-            key={poster.name}
             source={poster.files.map((f) => f.location)}
             visible={index === currentPoster}
           />
         );
       case 'photo':
         return (
-          <PhotoPoster
-            key={poster.name}
-            poster={poster}
-            visible={index === currentPoster}
-            setTitle={setTitle}
-          />
+          <PhotoPoster poster={poster} visible={index === currentPoster} setTitle={setTitle} />
         );
       case 'borrel-logo':
-        return <BorrelLogoPoster key={poster.name} />;
+        return <BorrelLogoPoster />;
       case 'borrel-wall-of-shame':
-        return <BorrelWallOfShamePoster key={poster.name} visible={visible} />;
+        return <BorrelWallOfShamePoster visible={visible} />;
       case 'borrel-price-list':
-        return <BorrelPriceListPoster key={poster.name} visible={visible} />;
+        return <BorrelPriceListPoster visible={visible} />;
       case 'train':
-        return <TrainPoster key={poster.name} visible={visible} timeout={poster.defaultTimeout} />;
+        return <TrainPoster visible={visible} timeout={poster.defaultTimeout} />;
       case 'olympics':
-        return <OlympicsPoster key={poster.name} visible={visible} />;
+        return <OlympicsPoster visible={visible} />;
       default:
         return <div>{poster.type}</div>;
     }
@@ -82,7 +76,7 @@ export default function PosterCarousel({ posters, currentPoster, setTitle }: Pro
     <div className="w-full h-full top-0 left-0">
       {posters.map((p, i) => (
         <div
-          key={i}
+          key={p.id}
           className={`
             absolute w-full h-full top-0 left-0
             transition-opacity duration-500

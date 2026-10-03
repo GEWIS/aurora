@@ -165,6 +165,7 @@ export const useAuthStore = defineStore('auth', {
       }
       if (
         this.isInSecurityGroup('poster', 'privileged') &&
+        useServerSettingsStore().featureEnabled('Poster') &&
         useServerSettingsStore().featureEnabled('Poster.Requests')
       ) {
         await usePosterRequestStore().init();

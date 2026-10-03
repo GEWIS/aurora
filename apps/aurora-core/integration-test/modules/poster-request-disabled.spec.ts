@@ -1,14 +1,9 @@
 import { describe, beforeAll, it, expect } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { createIntegrationKey } from '../shared/api-key';
+import { PNG_BUFFER } from '../shared/poster-files';
 
 let testApp: TestApp;
-
-// Smallest valid 1x1 PNG, so file-type detection recognises it as image/png.
-const PNG_BUFFER = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-  'base64',
-);
 
 beforeAll(async () => {
   // Poster.Requests is off by default, so no setting has to be persisted

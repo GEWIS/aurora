@@ -16,6 +16,7 @@ import { FooterSize } from './poster';
 
 @Route('handler/screen/poster/requests')
 @Tags('Handlers')
+@FeatureEnabled('Poster')
 @FeatureEnabled('Poster.Requests')
 export class PosterRequestController extends Controller {
   private service = new PosterRequestService();

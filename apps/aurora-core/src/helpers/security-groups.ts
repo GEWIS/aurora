@@ -66,6 +66,21 @@ const allSecuritySubscriberGroups = [
 ];
 
 /**
+ * Subscriber groups without INTEGRATION_USER: integration keys only get in through an
+ * endpoint's own INTEGRATION scope, not through their role.
+ */
+const allSecuritySubscriberGroupsNoIntegration = [
+  SecurityGroup.ADMIN,
+  SecurityGroup.BOARD,
+  SecurityGroup.AVICO,
+  SecurityGroup.BAC,
+  SecurityGroup.KEY_HOLDER,
+  SecurityGroup.AUDIO_SUBSCRIBER,
+  SecurityGroup.SCREEN_SUBSCRIBER,
+  SecurityGroup.LIGHTS_SUBSCRIBER,
+];
+
+/**
  * Security groups that are available for each endpoint
  * Giving specific type will break tsoa; can only be done after the fact
  */
@@ -106,7 +121,7 @@ export const securityGroups = {
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
   infoscreen: {
-    base: allSecuritySubscriberGroups,
+    base: allSecuritySubscriberGroupsNoIntegration,
     privileged: [...privilegedSecurityGroups, SecurityGroup.KEY_HOLDER],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
@@ -147,7 +162,7 @@ export const securityGroups = {
     base: baseSecurityGroups,
   },
   spotify: {
-    base: allSecuritySubscriberGroups,
+    base: allSecuritySubscriberGroupsNoIntegration,
     privileged: [SecurityGroup.ADMIN],
   },
   sudosos: {

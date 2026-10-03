@@ -46,6 +46,9 @@ describe('GET /api/user/integration/endpoints', () => {
       'startArtificialBeatGenerator',
       'stopArtificialBeatGenerator',
       'getAllLightsColors',
+      'getInfoPcUsage',
+      'getInfoRoomStatus',
+      'getSpotifyCurrentlyPlaying',
     ];
 
     // ACT

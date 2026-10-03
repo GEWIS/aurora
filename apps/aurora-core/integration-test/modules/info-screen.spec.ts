@@ -83,3 +83,61 @@ describe('GET /api/handler/screen/info/beer-time', () => {
     expect(res.body).toEqual({ beerTime: '16:30' });
   });
 });
+
+describe('GET /api/handler/screen/info/pc-usage', () => {
+  it('returns 403 with an integration key scoped to a different endpoint', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['someOtherEndpoint']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/handler/screen/info/pc-usage')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expectApiError(res, 403);
+  });
+
+  it('returns 200 with an integration key scoped to getInfoPcUsage', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['getInfoPcUsage']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/handler/screen/info/pc-usage')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+});
+
+describe('GET /api/handler/screen/info/room-status', () => {
+  it('returns 403 with an integration key scoped to a different endpoint', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['someOtherEndpoint']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/handler/screen/info/room-status')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expectApiError(res, 403);
+  });
+
+  it('returns 200 with an integration key scoped to getInfoRoomStatus', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['getInfoRoomStatus']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/handler/screen/info/room-status')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(typeof res.body.open).toBe('boolean');
+  });
+});

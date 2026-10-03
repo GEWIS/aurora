@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
+import { createIntegrationKey } from '../shared/api-key';
 
 let testApp: TestApp;
 
@@ -147,6 +148,32 @@ describe('GET /api/spotify/currently-playing', () => {
   it('returns 500 with auth (musicEmitter not initialized)', async () => {
     // ACT
     const res = await testApp.authorizedAgent.get('/api/spotify/currently-playing');
+
+    // ASSERT
+    expect(res.status).toBe(500);
+  });
+
+  it('returns 403 with an integration key scoped to a different endpoint', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['someOtherEndpoint']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/spotify/currently-playing')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expectApiError(res, 403);
+  });
+
+  it('passes auth with an integration key scoped to getSpotifyCurrentlyPlaying (500: musicEmitter not initialized)', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['getSpotifyCurrentlyPlaying']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .get('/api/spotify/currently-playing')
+      .set('X-API-Key', key);
 
     // ASSERT
     expect(res.status).toBe(500);

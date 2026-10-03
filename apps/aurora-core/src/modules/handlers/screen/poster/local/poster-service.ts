@@ -8,6 +8,11 @@ import { HttpApiException } from '../../../../../helpers/custom-error';
 import { HttpStatusCode } from 'axios';
 import FileResponse from '../../../../files/entities/file-response';
 
+/**
+ * Directory in the public storage where the files of posters are stored.
+ */
+export const POSTER_STORAGE_DIRECTORY = 'posters';
+
 type BasePosterFields =
   | 'name'
   | 'label'
@@ -80,7 +85,7 @@ export default class PosterService {
   private repo: Repository<Poster>;
 
   constructor() {
-    this.storage = new DiskStorage('posters');
+    this.storage = new DiskStorage(POSTER_STORAGE_DIRECTORY);
     this.repo = getDataSource().getRepository(Poster);
   }
 

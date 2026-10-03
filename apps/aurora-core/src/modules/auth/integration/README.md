@@ -29,8 +29,8 @@ External services, such as a website form, can submit posters for review with th
 (`POST /api/handler/screen/poster/requests`). The request is a multipart form with either a `file` (JPG, PNG or MP4, at
 most 20 MB) for a media poster or a `uri` (http or https) for an external poster, the requester's `requesterName` and
 `requesterEmail`, the poster `name`, and optionally the `requesterAssociation`, a `message` for the reviewers and the
-regular poster fields (`label`, `startDate`, `expirationDate`, `accentColor`, `footerSize`, `defaultTimeout` and
-`borrelMode`).
+poster fields `label`, `startDate`, `expirationDate`, `accentColor`, `footerSize` and `defaultTimeout`. Whether a poster
+is only shown in borrel mode is decided by the reviewer.
 
 Requests are not shown on any screen. They appear under "Poster requests" in the backoffice, where users with
 privileged poster rights can edit them and approve them into the carousel, or deny them. Approving or denying a request

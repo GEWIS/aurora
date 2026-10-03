@@ -126,7 +126,6 @@ describe('POST /api/handler/screen/poster/requests', () => {
       type: 'img',
       footerSize: 'full',
       defaultTimeout: 15,
-      borrelMode: false,
     });
   });
 
@@ -141,7 +140,6 @@ describe('POST /api/handler/screen/poster/requests', () => {
       accentColor: '#FFF200',
       footerSize: 'minimal',
       defaultTimeout: '20',
-      borrelMode: 'true',
     });
 
     // ASSERT
@@ -154,10 +152,21 @@ describe('POST /api/handler/screen/poster/requests', () => {
       accentColor: 'fff200',
       footerSize: 'minimal',
       defaultTimeout: 20,
-      borrelMode: true,
     });
     expect(request!.startDate!.toISOString()).toBe('2026-10-05T10:00:00.000Z');
     expect(request!.expirationDate!.toISOString()).toBe('2026-10-12T22:00:00.000Z');
+  });
+
+  it('ignores a requested borrel mode, as the reviewer decides on that', async () => {
+    // ACT
+    const res = await submit({ borrelMode: 'true' });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    const list = await testApp.authorizedAgent.get(URL);
+    const request = list.body.find((r: { id: number }) => r.id === res.body.id);
+    expect(request).toBeDefined();
+    expect(request).not.toHaveProperty('borrelMode');
   });
 
   it('links the request to the submitting integration', async () => {

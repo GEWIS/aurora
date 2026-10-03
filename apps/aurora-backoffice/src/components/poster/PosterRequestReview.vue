@@ -284,7 +284,8 @@ const open = () => {
   expirationDate.value = props.request.expirationDate
     ? new Date(props.request.expirationDate)
     : null;
-  borrelMode.value = props.request.borrelMode;
+  // Borrel mode is not requested, the reviewer decides
+  borrelMode.value = false;
   visible.value = true;
 };
 

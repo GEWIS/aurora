@@ -30,8 +30,11 @@ type PosterRequestFields =
   | 'defaultTimeout'
   | 'borrelMode';
 
+/**
+ * Whether a poster is only shown in borrel mode is up to the reviewer, so it cannot be requested.
+ */
 export interface CreatePosterRequestParams extends Partial<
-  Pick<Poster, Exclude<PosterRequestFields, 'name'>>
+  Pick<Poster, Exclude<PosterRequestFields, 'name' | 'borrelMode'>>
 > {
   requesterName: string;
   requesterEmail: string;
@@ -89,7 +92,6 @@ export interface PosterRequestResponse {
   accentColor?: string;
   footerSize: FooterSize;
   defaultTimeout: number;
-  borrelMode: boolean;
   /**
    * Original name of the uploaded file. The file itself is served by a separate endpoint. Not set
    * for external posters.
@@ -258,7 +260,6 @@ export default class PosterRequestService {
           accentColor: PosterRequestService.normalizeColor(params.accentColor),
           footerSize: params.footerSize ?? FooterSize.FULL,
           defaultTimeout: params.defaultTimeout ?? 15,
-          borrelMode: params.borrelMode ?? false,
           file: savedFile,
         });
       });
@@ -428,7 +429,6 @@ export default class PosterRequestService {
       accentColor: request.accentColor ?? undefined,
       footerSize: request.footerSize,
       defaultTimeout: request.defaultTimeout,
-      borrelMode: request.borrelMode,
       fileName: request.file?.originalName,
     };
   }

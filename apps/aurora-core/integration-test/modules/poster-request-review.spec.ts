@@ -160,7 +160,6 @@ describe('GET /api/handler/screen/poster/requests', () => {
       accentColor: 'fff200',
       footerSize: 'minimal',
       defaultTimeout: 20,
-      borrelMode: false,
       fileName: 'poster.png',
     });
   });

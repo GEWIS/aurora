@@ -97,12 +97,6 @@ export default class PosterRequest extends BaseEntity {
   defaultTimeout: number;
 
   /**
-   * Whether the poster should only be displayed in borrelMode.
-   */
-  @Column({ default: false })
-  borrelMode: boolean;
-
-  /**
    * The uploaded image or video, stored privately until the request is approved. Not set for
    * external posters.
    */

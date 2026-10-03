@@ -38,7 +38,6 @@ export class PosterRequestController extends Controller {
    * @param accentColor Color of the progress bar as 6-digit hex, with or without "#".
    * @param footerSize Size of the footer.
    * @param defaultTimeout Time in seconds the poster should be on the screens for.
-   * @param borrelMode Whether the poster should only be shown in borrel mode.
    * @param req
    */
   @Security(SecurityNames.INTEGRATION, ['createPosterRequest'])
@@ -62,7 +61,6 @@ export class PosterRequestController extends Controller {
     @FormField() accentColor?: string,
     @FormField() footerSize?: FooterSize,
     @FormField() defaultTimeout?: number,
-    @FormField() borrelMode?: boolean,
   ): Promise<CreatePosterRequestResponse> {
     const request = await this.service.createPosterRequest(
       {
@@ -77,7 +75,6 @@ export class PosterRequestController extends Controller {
         accentColor,
         footerSize,
         defaultTimeout,
-        borrelMode,
         uri,
       },
       file ? { name: file.originalname, data: file.buffer } : undefined,

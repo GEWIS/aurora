@@ -3788,9 +3788,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"borrelMode": {
-						"type": "boolean"
-					},
 					"fileName": {
 						"type": "string",
 						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint. Not set\nfor external posters."
@@ -3804,8 +3801,7 @@
 					"name",
 					"type",
 					"footerSize",
-					"defaultTimeout",
-					"borrelMode"
+					"defaultTimeout"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -12479,10 +12475,6 @@
 										"type": "number",
 										"format": "double",
 										"description": "Time in seconds the poster should be on the screens for."
-									},
-									"borrelMode": {
-										"type": "boolean",
-										"description": "Whether the poster should only be shown in borrel mode."
 									}
 								},
 								"required": [

@@ -7,6 +7,14 @@ import {
   setSettingFile,
 } from '@gewis/aurora-api-client';
 import { getFeatureFlags, getSettings } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
+
+/**
+ * Time to wait for more changes before refreshing, such that a burst of
+ * changes (e.g. typing in a text setting) results in a single refresh
+ */
+const REFRESH_DEBOUNCE_MS = 500;
+let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 
 interface ServerSettingsStore {
   serverSettings?: ISettings;
@@ -37,6 +45,25 @@ export const useServerSettingsStore = defineStore('server-settings', {
       const res = await getSettings();
       if (res && res.data) this.serverSettings = res.data;
       this.loading = false;
+    },
+    /**
+     * Keep the settings in sync with changes made elsewhere (other users, shortcuts, timed events)
+     */
+    listen(): void {
+      const socketStore = useSocketStore();
+      socketStore.backofficeSocket?.on('server_settings_update', () => {
+        clearTimeout(refreshTimeout);
+        refreshTimeout = setTimeout(() => void this.refresh(), REFRESH_DEBOUNCE_MS);
+      });
+    },
+    async refresh(): Promise<void> {
+      const flags = await getFeatureFlags();
+      if (flags.data) this.featureFlags = flags.data;
+
+      // Only users that are allowed to see the settings have loaded them
+      if (!this.serverSettings) return;
+      const settings = await getSettings();
+      if (settings.data) this.serverSettings = settings.data;
     },
     isFeatureFlag(setting: keyof ISettings): boolean {
       return this.featureFlags.some((f) => f.key === setting);

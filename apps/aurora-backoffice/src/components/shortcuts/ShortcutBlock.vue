@@ -33,11 +33,15 @@
       </div>
     </div>
     <div v-else>No shortcuts available.</div>
+    <ScreenFilterDialog
+      v-if="showScreenFilter && settingsStore.featureEnabled('ScreenFilter')"
+      v-model:visible="screenFilterOpen"
+    />
   </AppContainer>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { disableAllModes } from '@gewis/aurora-api-client';
 import { useHandlersStore } from '@/stores/handlers.store';
 import { useSubscriberStore } from '@/stores/subscriber.store';
@@ -49,6 +53,8 @@ import { type IShortcutItem } from '@/components/shortcuts/IShortcutItem';
 import AppContainer from '@/layout/AppContainer.vue';
 import { useAuthStore } from '@/stores/auth.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
+import { useScreenFilterStore } from '@/stores/screen-filter.store';
+import ScreenFilterDialog from '@/components/screen-filter/ScreenFilterDialog.vue';
 
 const handlersStore = useHandlersStore();
 const subscriberStore = useSubscriberStore();
@@ -64,6 +70,18 @@ const timeTrailRaceModeStore = useTimeTrailRaceStore();
 if (authStore.isInSecurityGroup('timetrail', 'base')) {
   void timeTrailRaceModeStore.getTimeTrailMode();
 }
+
+const screenFilterStore = useScreenFilterStore();
+const showScreenFilter = authStore.isInSecurityGroup('screenFilter', 'privileged');
+// The feature can be enabled while the dashboard is open, so (re)load the filter when it is
+watch(
+  () => showScreenFilter && settingsStore.featureEnabled('ScreenFilter'),
+  (enabled) => {
+    if (enabled) screenFilterStore.init().catch(() => {});
+  },
+  { immediate: true },
+);
+const screenFilterOpen = ref<boolean>(false);
 
 // TODO why does this reactivity not work as expected?
 const sceneMenuItems = computed<IShortcutItem[]>(() =>
@@ -184,8 +202,34 @@ const modes = computed<IShortcutItem[] | boolean>(() => {
   ].filter(Boolean) as IShortcutItem[];
 });
 
+// Add items based on the user's security groups
+const screens = computed<IShortcutItem[] | boolean>(() => {
+  if (!showScreenFilter || !settingsStore.featureEnabled('ScreenFilter')) {
+    return false;
+  }
+
+  return [
+    {
+      label: 'Screens',
+      items: [
+        {
+          label: 'Screen filter',
+          icon: screenFilterStore.active ? 'pi-moon' : 'pi-sun',
+          loading: screenFilterStore.loading,
+          command: () => {
+            screenFilterOpen.value = true;
+          },
+        },
+      ],
+    },
+  ];
+});
+
 const menus = computed<Array<Array<IShortcutItem>>>(
-  () => [defaults.value, lights.value, modes.value].filter(Boolean) as Array<Array<IShortcutItem>>,
+  () =>
+    [defaults.value, lights.value, modes.value, screens.value].filter(Boolean) as Array<
+      Array<IShortcutItem>
+    >,
 );
 </script>
 

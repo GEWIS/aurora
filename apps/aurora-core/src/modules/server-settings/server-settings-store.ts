@@ -22,6 +22,8 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
 
   private settings: ISettings;
 
+  private changeListeners: ((key: keyof ISettings) => void)[] = [];
+
   private get repo(): Repository<ServerSetting> {
     return getDataSource().getRepository(ServerSetting);
   }
@@ -126,7 +128,16 @@ export default class ServerSettingsStore<T extends keyof ISettings = keyof ISett
     setting!.value = value;
     const result = await this.repo.save(setting!);
     this.settings[key] = value;
+    this.changeListeners.forEach((listener) => listener(key));
     return result;
+  }
+
+  /**
+   * Register a callback that is called whenever a server setting has been updated
+   * @param listener
+   */
+  public onSettingChange(listener: (key: keyof ISettings) => void) {
+    this.changeListeners.push(listener);
   }
 
   /**

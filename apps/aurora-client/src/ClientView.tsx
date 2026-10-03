@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import OrdersOverlay from './overlays/OrdersOverlay';
+import ScreenFilterOverlay from './overlays/ScreenFilterOverlay';
 import HandlerSwitcher from './HandlerSwitcher';
 import { AuthContext } from './contexts/AuthContext';
 import registerScreenHandler from './events/screenHandler';
@@ -51,6 +52,7 @@ export default function ClientView() {
     <>
       <OrdersOverlay socket={screenSocket} />
       <HandlerSwitcher socket={screenSocket} />
+      <ScreenFilterOverlay socket={screenSocket} />
     </>
   );
 }

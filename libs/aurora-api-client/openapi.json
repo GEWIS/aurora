@@ -176,6 +176,56 @@
 				],
 				"type": "object"
 			},
+			"ScreenFilterParams": {
+				"properties": {
+					"brightness": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Brightness of all screens as a percentage (100 is no dimming)",
+						"minimum": 0,
+						"maximum": 100
+					},
+					"warmth": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Strength of the blue light filter as a percentage (0 is no filter)",
+						"minimum": 0,
+						"maximum": 100
+					},
+					"transitionSeconds": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Duration in seconds over which screens gradually fade to the new filter",
+						"minimum": 0,
+						"maximum": 3600
+					}
+				},
+				"required": [
+					"brightness",
+					"warmth"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TimedEventSetScreenFilter": {
+				"properties": {
+					"params": {
+						"$ref": "#/components/schemas/ScreenFilterParams"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"timed-event-set-screen-filter"
+						],
+						"nullable": false
+					}
+				},
+				"required": [
+					"params",
+					"type"
+				],
+				"type": "object"
+			},
 			"EventSpec": {
 				"anyOf": [
 					{
@@ -195,6 +245,9 @@
 					},
 					{
 						"$ref": "#/components/schemas/TimedEventSetStaticPoster"
+					},
+					{
+						"$ref": "#/components/schemas/TimedEventSetScreenFilter"
 					}
 				]
 			},
@@ -919,6 +972,17 @@
 						"type": "number",
 						"format": "double",
 						"deprecated": true
+					},
+					"ScreenFilter": {
+						"type": "boolean"
+					},
+					"ScreenFilter.Brightness": {
+						"type": "number",
+						"format": "double"
+					},
+					"ScreenFilter.Warmth": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -942,7 +1006,10 @@
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
-					"Orders.WebhookPublicKeyExpirySeconds"
+					"Orders.WebhookPublicKeyExpirySeconds",
+					"ScreenFilter",
+					"ScreenFilter.Brightness",
+					"ScreenFilter.Warmth"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -972,7 +1039,10 @@
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
-							"Orders.WebhookPublicKeyExpirySeconds"
+							"Orders.WebhookPublicKeyExpirySeconds",
+							"ScreenFilter",
+							"ScreenFilter.Brightness",
+							"ScreenFilter.Warmth"
 						],
 						"nullable": false
 					},
@@ -1015,6 +1085,30 @@
 					"type": "object"
 				},
 				"type": "array"
+			},
+			"ScreenFilterState": {
+				"properties": {
+					"brightness": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Brightness of all screens as a percentage (100 is no dimming)",
+						"minimum": 0,
+						"maximum": 100
+					},
+					"warmth": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Strength of the blue light filter as a percentage (0 is no filter)",
+						"minimum": 0,
+						"maximum": 100
+					}
+				},
+				"required": [
+					"brightness",
+					"warmth"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"Partial_Record_SocketioNamespaces.string__": {
 				"properties": {
@@ -6852,6 +6946,9 @@
 					"timedEvents": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
+					"screenFilter": {
+						"$ref": "#/components/schemas/ISecuritySections"
+					},
 					"integrationUsers": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					}
@@ -6880,6 +6977,7 @@
 					"serverSettings",
 					"orders",
 					"timedEvents",
+					"screenFilter",
 					"integrationUsers"
 				],
 				"type": "object",
@@ -8008,7 +8106,10 @@
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",
-											"Orders.WebhookPublicKeyExpirySeconds"
+											"Orders.WebhookPublicKeyExpirySeconds",
+											"ScreenFilter",
+											"ScreenFilter.Brightness",
+											"ScreenFilter.Warmth"
 										],
 										"nullable": false
 									}
@@ -8109,6 +8210,80 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/screen-filter": {
+			"get": {
+				"operationId": "GetScreenFilter",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ScreenFilterState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the dimming and blue light filter currently applied to all screens",
+				"tags": [
+					"ScreenFilter"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"screen-subscriber"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "SetScreenFilter",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ScreenFilterState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Change the dimming and blue light filter applied to all screens,\noptionally fading gradually to the new values",
+				"tags": [
+					"ScreenFilter"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ScreenFilterParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/screen": {

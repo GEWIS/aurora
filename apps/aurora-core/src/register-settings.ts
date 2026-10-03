@@ -6,6 +6,7 @@ import './modules/handlers/screen/screen-handler-settings';
 import './modules/handlers/screen/poster/poster-screen-handler-settings';
 import './modules/handlers/screen/info/info-screen-settings';
 import './modules/orders/order-settings';
+import './modules/screen-filter/screen-filter-settings';
 
 /**
  * Every host/bootstrap (see index.ts and integration-test/shared/test-app.ts)

@@ -189,6 +189,35 @@ describe('POST /api/handler/screen/poster/requests', () => {
     expect(request!.file!.originalName).toBe('poster.png');
   });
 
+  it('stores a file with the extension of its detected type, not the given name', async () => {
+    // ACT
+    const res = await submit({}, { data: PNG_BUFFER, filename: '../poster.html' });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    const request = await findRequest(res.body.id);
+    expect(request!.file!.name).toMatch(/\.png$/);
+    expect(request!.file!.originalName).toBe('poster.png');
+  });
+
+  it('keeps the safe extension when an approved file is published', async () => {
+    // ARRANGE
+    const created = await submit({}, { data: PNG_BUFFER, filename: 'poster.html' });
+
+    // ACT
+    const res = await testApp.authorizedAgent
+      .post(`${URL}/${created.body.id}/approve`)
+      .send({ name: 'Disguised', footerSize: 'full', defaultTimeout: 15, borrelMode: false });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.files[0].location).toMatch(/^\/static\/posters\/[^/]+\.png$/);
+    expect(res.body.files[0].name).toBe('poster.png');
+
+    // Remove the published file again
+    await testApp.authorizedAgent.delete(`/api/handler/screen/poster/items/${res.body.id}`);
+  });
+
   it.each([
     ['a JPG', JPG_BUFFER, 'poster.jpg', 'img'],
     ['a PNG', PNG_BUFFER, 'poster.png', 'img'],

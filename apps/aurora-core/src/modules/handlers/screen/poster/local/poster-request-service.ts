@@ -1,4 +1,3 @@
-import { fromBuffer } from 'file-type';
 import { HttpStatusCode } from 'axios';
 import { Repository } from 'typeorm';
 import { FileStorage } from '../../../../files/storage/file-storage';
@@ -10,15 +9,7 @@ import EmitterStore from '../../../../events/emitter-store';
 import PosterRequest from './poster-request';
 import Poster, { FooterSize, PosterType } from './poster';
 import { POSTER_STORAGE_DIRECTORY } from './poster-service';
-
-/**
- * File types that can be attached to a poster request, mapped to the resulting poster type.
- */
-const POSTER_REQUEST_FILE_TYPES: Record<string, PosterType.IMAGE | PosterType.VIDEO> = {
-  'image/jpeg': PosterType.IMAGE,
-  'image/png': PosterType.IMAGE,
-  'video/mp4': PosterType.VIDEO,
-};
+import { getMimeType, validatePosterRequestFile } from './poster-request-file';
 
 const MAX_STRING_LENGTH = 255;
 const ALLOWED_URI_PROTOCOLS = ['http:', 'https:'];
@@ -223,33 +214,6 @@ export default class PosterRequestService {
   }
 
   /**
-   * Determine the mime type of the given file.
-   * @param fileData
-   */
-  private static async getMimeType(fileData: Buffer): Promise<string | undefined> {
-    return (await fromBuffer(fileData))?.mime;
-  }
-
-  /**
-   * Determine the poster type of the given file, rejecting files that are not a JPG, PNG or MP4.
-   * The file size is already limited by the upload handler.
-   * @param fileData
-   */
-  private static async getPosterType(
-    fileData: Buffer,
-  ): Promise<PosterType.IMAGE | PosterType.VIDEO> {
-    const mimeType = await PosterRequestService.getMimeType(fileData);
-    const posterType = mimeType ? POSTER_REQUEST_FILE_TYPES[mimeType] : undefined;
-    if (!posterType) {
-      throw new HttpApiException(
-        HttpStatusCode.UnsupportedMediaType,
-        'Invalid file type, expected a JPG, PNG or MP4 file.',
-      );
-    }
-    return posterType;
-  }
-
-  /**
    * Store a new poster request, with either a file or a link to an external poster, and notify
    * the backoffice.
    * @param params Metadata of the requested poster.
@@ -268,9 +232,13 @@ export default class PosterRequestService {
     if (file && uri) throw badRequest('Provide either a file or a "uri", not both.');
     if (!file && !uri) throw badRequest('Provide either a file or a "uri".');
     if (uri) PosterRequestService.validateUri(uri);
-    const type = file ? await PosterRequestService.getPosterType(file.data) : PosterType.EXTERNAL;
+    const validatedFile = file ? await validatePosterRequestFile(file.name, file.data) : undefined;
+    const type = validatedFile?.type ?? PosterType.EXTERNAL;
 
-    const fileParams = file ? await this.storage.saveFile(file.name, file.data) : undefined;
+    // The stored name has a safe extension, which the public copy keeps after approval
+    const fileParams = validatedFile
+      ? await this.storage.saveFile(validatedFile.name, validatedFile.data)
+      : undefined;
     let request: PosterRequest;
     try {
       request = await getDataSource().transaction(async (manager) => {
@@ -338,7 +306,7 @@ export default class PosterRequestService {
       );
     }
     const data = await this.storage.getFile(request.file);
-    const mimeType = (await PosterRequestService.getMimeType(data)) ?? 'application/octet-stream';
+    const mimeType = (await getMimeType(data)) ?? 'application/octet-stream';
     return { data, mimeType };
   }
 

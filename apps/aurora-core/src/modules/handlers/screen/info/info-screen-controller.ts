@@ -127,7 +127,9 @@ export class InfoScreenController extends Controller {
   // PC usage
   // ---------------------------------------------------------------------------
 
+  /** Also readable with an integration key (used by the external info.gewis.nl page). */
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
+  @Security(SecurityNames.INTEGRATION, ['getInfoPcUsage'])
   @Get('pc-usage')
   public async getInfoPcUsage(): Promise<PcStatusResponse[]> {
     return this.pcUsageService.getAll();
@@ -148,7 +150,9 @@ export class InfoScreenController extends Controller {
   // Room status (backoffice managed)
   // ---------------------------------------------------------------------------
 
+  /** Also readable with an integration key (used by the external info.gewis.nl page). */
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
+  @Security(SecurityNames.INTEGRATION, ['getInfoRoomStatus'])
   @Get('room-status')
   public async getInfoRoomStatus(): Promise<RoomStatusResponse> {
     return this.infoStatusService.getRoomStatus();

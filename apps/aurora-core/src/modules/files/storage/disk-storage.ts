@@ -24,15 +24,9 @@ export default class DiskStorage extends FileStorage {
       this.relativeWorkdir = path.join('private', relativeDirectory);
     }
 
-    const dirsToCreate: string[] = [];
-    let currentDir = this.workdir;
-    // In the given path, find all directories in the path that do not exist
-    while (!fs.existsSync(currentDir)) {
-      dirsToCreate.push(currentDir);
-      currentDir = path.join(currentDir, '../');
-    }
-    // Create all directories from lowest to highest level (one directory at a time)
-    dirsToCreate.reverse().forEach((dir) => fs.mkdirSync(dir));
+    // Recursive mkdir is a no-op for existing directories, so concurrent constructors
+    // (e.g. parallel test workers on a fresh checkout) cannot race each other.
+    fs.mkdirSync(this.workdir, { recursive: true });
   }
 
   private get workdir(): string {

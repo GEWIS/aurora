@@ -6,6 +6,7 @@ import PosterRequest from '@aurora/modules/handlers/screen/poster/local/poster-r
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
 import { createIntegrationKey } from '../shared/api-key';
+import { PNG_BUFFER } from '../shared/poster-files';
 
 let testApp: TestApp;
 let integrationKey: string;
@@ -13,12 +14,6 @@ const createdPosterIds: number[] = [];
 
 const URL = '/api/handler/screen/poster/requests';
 const POSTER_URI = 'https://example.com/poster';
-
-// Smallest valid 1x1 PNG, so file-type detection recognises it as image/png.
-const PNG_BUFFER = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-  'base64',
-);
 
 const baseFields: Record<string, string> = {
   requesterName: 'Jane Doe',

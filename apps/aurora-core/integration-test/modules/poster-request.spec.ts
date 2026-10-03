@@ -1,4 +1,7 @@
 import { describe, beforeAll, afterAll, afterEach, it, expect, vi } from 'vitest';
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
 import { getDataSource } from '@aurora/database';
 import ServerSetting from '@aurora/modules/server-settings/server-setting';
 import EmitterStore from '@aurora/modules/events/emitter-store';
@@ -9,26 +12,13 @@ import logger from '@aurora/logger';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 import { createIntegrationKey } from '../shared/api-key';
+import { PNG_BUFFER, JPG_BUFFER, MP4_BUFFER } from '../shared/poster-files';
 
 let testApp: TestApp;
 let integrationKey: string;
 
 const URL = '/api/handler/screen/poster/requests';
 
-// Smallest valid 1x1 PNG, so file-type detection recognises it as image/png.
-const PNG_BUFFER = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-  'base64',
-);
-// JPEG signature, enough for file-type to recognise it as image/jpeg.
-const JPG_BUFFER = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00]);
-// MP4 "ftyp" box, enough for file-type to recognise it as video/mp4.
-const MP4_BUFFER = Buffer.concat([
-  Buffer.from([0x00, 0x00, 0x00, 0x18]),
-  Buffer.from('ftypmp42', 'ascii'),
-  Buffer.from([0x00, 0x00, 0x00, 0x00]),
-  Buffer.from('mp42isom', 'ascii'),
-]);
 // GIF signature: a valid image, but not one of the accepted types.
 const GIF_BUFFER = Buffer.from('GIF89a\x01\x00\x01\x00\x00\x00\x00;', 'binary');
 
@@ -198,6 +188,32 @@ describe('POST /api/handler/screen/poster/requests', () => {
     const request = await findRequest(res.body.id);
     expect(request!.file!.name).toMatch(/\.png$/);
     expect(request!.file!.originalName).toBe('poster.png');
+  });
+
+  it('stores images re-encoded, without content appended to the image', async () => {
+    // ARRANGE
+    const disguised = Buffer.concat([PNG_BUFFER, Buffer.from('<script>alert(1)</script>')]);
+
+    // ACT
+    const res = await submit({}, { data: disguised, filename: 'poster.png' });
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    const { file } = (await findRequest(res.body.id))!;
+    const stored = fs.readFileSync(path.join(file!.relativeDirectory, file!.name));
+    expect(stored.includes('<script>')).toBe(false);
+    expect((await sharp(stored).metadata()).format).toBe('png');
+  });
+
+  it.each([
+    ['a damaged image', PNG_BUFFER.subarray(0, 40), 'poster.png'],
+    ['an MP4 without movie data', MP4_BUFFER.subarray(0, 24), 'poster.mp4'],
+  ])('returns 415 for %s', async (_, data, filename) => {
+    // ACT
+    const res = await submit({}, { data, filename });
+
+    // ASSERT
+    expectApiError(res, 415);
   });
 
   it('keeps the safe extension when an approved file is published', async () => {

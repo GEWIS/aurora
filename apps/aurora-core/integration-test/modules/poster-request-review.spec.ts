@@ -2,6 +2,7 @@ import { describe, beforeAll, afterAll, afterEach, it, expect, vi } from 'vitest
 import fs from 'fs';
 import path from 'path';
 import supertest, { type Agent as TestAgent } from 'supertest';
+import sharp from 'sharp';
 import { getDataSource } from '@aurora/database';
 import ServerSetting from '@aurora/modules/server-settings/server-setting';
 import EmitterStore from '@aurora/modules/events/emitter-store';
@@ -12,6 +13,7 @@ import PosterRequest from '@aurora/modules/handlers/screen/poster/local/poster-r
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 import { createIntegrationKey } from '../shared/api-key';
+import { PNG_BUFFER, MP4_BUFFER } from '../shared/poster-files';
 
 let testApp: TestApp;
 let bacAgent: TestAgent;
@@ -20,19 +22,6 @@ const createdPosterIds: number[] = [];
 
 const URL = '/api/handler/screen/poster/requests';
 const CAROUSEL_URL = '/api/handler/screen/poster/carousel';
-
-// Smallest valid 1x1 PNG, so file-type detection recognises it as image/png.
-const PNG_BUFFER = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-  'base64',
-);
-// MP4 "ftyp" box, enough for file-type to recognise it as video/mp4.
-const MP4_BUFFER = Buffer.concat([
-  Buffer.from([0x00, 0x00, 0x00, 0x18]),
-  Buffer.from('ftypmp42', 'ascii'),
-  Buffer.from([0x00, 0x00, 0x00, 0x00]),
-  Buffer.from('mp42isom', 'ascii'),
-]);
 
 const requestFields: Record<string, string> = {
   requesterName: 'Jane Doe',
@@ -216,7 +205,7 @@ describe('GET /api/handler/screen/poster/requests/{id}/media', () => {
     expect(res.headers['content-type']).toMatch(/^image\/png/);
     expect(res.headers['x-content-type-options']).toBe('nosniff');
     expect(res.headers['content-disposition']).toBe('inline');
-    expect(Buffer.compare(res.body as Buffer, PNG_BUFFER)).toBe(0);
+    expect((await sharp(res.body as Buffer).metadata()).format).toBe('png');
   });
 });
 

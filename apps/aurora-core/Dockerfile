@@ -17,7 +17,8 @@ RUN pnpm install --no-frozen-lockfile
 RUN pnpm --filter @gewis/aurora-api-client run sync
 RUN pnpm --filter @gewis/aurora-api-client run build
 RUN pnpm --filter @gewis/aurora-core run build
-RUN pnpm --filter @gewis/aurora-core --prod deploy --legacy /prod
+# Install the musl variants of native packages (such as sharp), as the final image is Alpine
+RUN pnpm --filter @gewis/aurora-core --prod deploy --legacy --libc musl /prod
 
 FROM node:22-alpine
 ENV NODE_ENV=production

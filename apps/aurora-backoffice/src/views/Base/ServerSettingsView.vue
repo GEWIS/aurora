@@ -169,6 +169,25 @@ const entries = computed(() => {
         const setting = currentKey + remainder;
         const children: TreeNode[] = createTreeNodes(nextKey);
 
+        // Let settings be grouped under a prefix that is not a setting itself,
+        // so render that prefix as a plain group node
+        const groupKey = nextKey.substring(0, nextKey.length - 1);
+        if (!keys.includes(groupKey) && children.length > 0) {
+          const groupName = remainder.split('.')[0];
+          return {
+            key: groupKey,
+            label: groupName,
+            data: {
+              name: groupName,
+              type: '',
+              value: undefined,
+              isFeatureFlag: false,
+              canEdit: false,
+            },
+            children,
+          };
+        }
+
         const refToType = (ref: string) => {
           switch (ref) {
             case '#/components/schemas/IFile':

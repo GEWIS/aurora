@@ -50,6 +50,11 @@
     description="Change the poster on screen for all screens using the StaticPosterHandler"
     label="Set static poster"
   />
+  <TimedEventTag
+    v-else-if="props.eventSpec.type === 'timed-event-set-screen-filter'"
+    description="Dim and/or apply a blue light filter on all screens"
+    :label="`Set screen filter to ${props.eventSpec.params.brightness}% brightness and ${props.eventSpec.params.warmth}% blue light filter${props.eventSpec.params.transitionSeconds ? ` over ${Math.round(props.eventSpec.params.transitionSeconds / 60)} min` : ''}`"
+  />
 </template>
 
 <script setup lang="ts">

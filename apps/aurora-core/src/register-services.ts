@@ -13,6 +13,7 @@ import TimedEventsService from './modules/timed-events/timed-events-service';
 import SpotifyApiHandler from './modules/spotify/spotify-api-handler';
 import SpotifyTrackHandler from './modules/spotify/spotify-track-handler';
 import { FeatureFlagManager, ServerSettingsStore } from './modules/server-settings';
+import ScreenFilterManager from './modules/screen-filter/screen-filter-manager';
 
 /**
  * Bind the long-lived services that controllers depend on into the container.
@@ -29,6 +30,7 @@ export function registerServices(): void {
     [SpotifyTrackHandler, SpotifyTrackHandler.getInstance()],
     [FeatureFlagManager, FeatureFlagManager.getInstance()],
     [ServerSettingsStore, ServerSettingsStore.getInstance()],
+    [ScreenFilterManager, ScreenFilterManager.getInstance()],
   ];
 
   services.forEach(([service, instance]) => {

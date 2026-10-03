@@ -32,6 +32,7 @@ import TimedEventsService from './modules/timed-events/timed-events-service';
 import LightsSwitchManager from './modules/lights/lights-switch-manager';
 import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
 import GewisKeyholderSyncService from './modules/handlers/screen/info/gewis-keyholder-sync-service';
+import ScreenFilterManager from './modules/screen-filter/screen-filter-manager';
 
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
@@ -63,6 +64,10 @@ async function createApp(): Promise<void> {
   const io = createWebsocket(httpServer);
 
   const emitterStore = EmitterStore.getInstance();
+  // Only send the key, because not every backoffice user is allowed to read the setting values
+  ServerSettingsStore.getInstance().onSettingChange((key) => {
+    emitterStore.backofficeSyncEmitter.emit('server_settings_update', key);
+  });
   BeatManager.getInstance().init(emitterStore.beatEmitter);
 
   const lightsSwitchManager = LightsSwitchManager.getInstance();
@@ -91,6 +96,7 @@ async function createApp(): Promise<void> {
   );
 
   ModeManager.getInstance().init(emitterStore);
+  ScreenFilterManager.getInstance().init(io, emitterStore.backofficeSyncEmitter);
 
   if (
     process.env.SPOTIFY_ENABLE === 'true' &&

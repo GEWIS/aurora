@@ -10,6 +10,8 @@ import RootScreenService from '../root/root-screen-service';
 import { Screen } from '../root/entities';
 import { StaticPosterHandler } from '../handlers/screen';
 import PosterService from '../handlers/screen/poster/local/poster-service';
+import ScreenFilterManager from '../screen-filter/screen-filter-manager';
+import { FeatureFlagManager } from '../server-settings';
 
 export class CronExpressionError extends Error {}
 
@@ -173,6 +175,22 @@ export default class CronManager {
             );
           }
 
+          return;
+        }
+
+        case 'timed-event-set-screen-filter': {
+          if (!FeatureFlagManager.getInstance().flagIsEnabled('ScreenFilter')) {
+            logger.warn(`Timed event "${event.id}": screen filter is disabled.`);
+            return;
+          }
+          const state = await ScreenFilterManager.getInstance().setState(spec.params);
+          logger.audit(
+            { id: 'cron', name: 'Scheduled Task', roles: [] },
+            `Set screen filter to brightness ${state.brightness}% and warmth ${state.warmth}%` +
+              (spec.params.transitionSeconds
+                ? ` over ${spec.params.transitionSeconds} seconds.`
+                : '.'),
+          );
           return;
         }
 

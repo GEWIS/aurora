@@ -4,6 +4,8 @@ import { getScreenFilter, ScreenFilterState } from '@gewis/aurora-api-client';
 
 const MAX_WARMTH_OPACITY = 0.5;
 
+const NO_FILTER: ScreenFilterState = { brightness: 100, warmth: 0 };
+
 export interface ScreenFilterEvent extends ScreenFilterState {
   transitionSeconds: number;
 }
@@ -18,11 +20,7 @@ interface Props {
  * fixed positioning of children and is expensive on videos.
  */
 export default function ScreenFilterOverlay({ socket }: Props) {
-  const [filter, setFilter] = useState<ScreenFilterEvent>({
-    brightness: 100,
-    warmth: 0,
-    transitionSeconds: 0,
-  });
+  const [filter, setFilter] = useState<ScreenFilterEvent>({ ...NO_FILTER, transitionSeconds: 0 });
 
   useEffect(() => {
     let active = true;
@@ -30,13 +28,16 @@ export default function ScreenFilterOverlay({ socket }: Props) {
 
     const fetchFilter = () => {
       const eventCountAtFetch = eventCount;
-      getScreenFilter()
-        .then((res) => {
-          if (!active || !res.data || eventCount !== eventCountAtFetch) return;
-          setFilter({ ...res.data, transitionSeconds: 0 });
-        })
+      void getScreenFilter()
+        .then((res) => res.data)
         .catch((err) => {
           console.error(err);
+          return undefined;
+        })
+        .then((data) => {
+          if (!active || eventCount !== eventCountAtFetch) return;
+          // Feature disabled (409) or request failed: drop the filter instead of keeping a stale one
+          setFilter({ ...(data ?? NO_FILTER), transitionSeconds: 0 });
         });
     };
 

@@ -102,4 +102,23 @@ describe('ScreenFilterOverlay', () => {
     unmount();
     expect(listeners.has('connect')).toBe(false);
   });
+
+  it('removes the filter when the refetch fails, e.g. because the feature was disabled', async () => {
+    vi.mocked(getScreenFilter).mockResolvedValue({
+      data: { brightness: 20, warmth: 0 },
+    } as Awaited<ReturnType<typeof getScreenFilter>>);
+    const { socket, listeners } = fakeSocket();
+
+    const { container } = render(<ScreenFilterOverlay socket={socket} />);
+    await act(async () => {});
+    expect(Number(layers(container).dim.style.opacity)).toBeCloseTo(0.8);
+
+    vi.mocked(getScreenFilter).mockResolvedValue({
+      error: 'Feature is disabled',
+    } as unknown as Awaited<ReturnType<typeof getScreenFilter>>);
+    listeners.get('connect')!();
+    await act(async () => {});
+
+    expect(Number(layers(container).dim.style.opacity)).toBe(0);
+  });
 });

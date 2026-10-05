@@ -10,8 +10,7 @@ export default function ImagePoster({ source }: Props) {
   const [failed, setFailed] = useState(false);
   const [natural, setNatural] = useState<{ url: string; width: number; height: number }>();
 
-  const sourceUrl =
-    useRandomPick(Array.isArray(source) ? source : [source]) || '/base/avico-stuk.png';
+  const sourceUrl = useRandomPick(source) || '/base/avico-stuk.png';
 
   useEffect(() => {
     setFailed(false);

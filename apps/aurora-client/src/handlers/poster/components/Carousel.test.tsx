@@ -1,10 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import { PosterType } from '@gewis/aurora-api-client';
 import makePoster from '../../../test/makePoster';
 import PosterCarousel from './Carousel';
 
-// Render each poster as its file location, so posters can be told apart by text
 vi.mock('../types/ImagePoster', () => ({
   default: ({ source }: { source: string[] }) => <span>{source[0]}</span>,
 }));
@@ -19,34 +18,82 @@ const imagePoster = (id: number) =>
 
 const posters = [1, 2, 3, 4].map(imagePoster);
 
+const poster = (id: number) => screen.queryByText(`/poster-${id}.jpg`);
+const slot = (id: number) => poster(id)?.parentElement;
+
 describe('PosterCarousel', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders the previous, current and next poster, keeping distant posters unmounted', () => {
-    render(<PosterCarousel posters={posters} currentPoster={1} setTitle={vi.fn()} />);
+    const { rerender } = render(
+      <PosterCarousel posters={posters} currentPoster={0} setTitle={vi.fn()} />,
+    );
+    rerender(<PosterCarousel posters={posters} currentPoster={1} setTitle={vi.fn()} />);
 
-    const previous = screen.getByText('/poster-1.jpg').parentElement;
-    expect(previous).toHaveClass('opacity-100', 'z-10');
+    expect(slot(1)).toHaveAttribute('aria-hidden', 'true');
+    expect(slot(2)).toHaveAttribute('aria-hidden', 'false');
+    expect(slot(3)).toHaveAttribute('aria-hidden', 'true');
+    expect(poster(4)).not.toBeInTheDocument();
+  });
 
-    const current = screen.getByText('/poster-2.jpg').parentElement;
-    expect(current).toHaveClass('opacity-100', 'z-20');
+  it.each([2, 3])('remounts the poster that left the screen with %i posters', (count) => {
+    const few = posters.slice(0, count);
+    const { rerender } = render(
+      <PosterCarousel posters={few} currentPoster={0} setTitle={vi.fn()} />,
+    );
+    rerender(<PosterCarousel posters={few} currentPoster={1} setTitle={vi.fn()} />);
+    const left = poster(1);
+    const shown = poster(2);
 
-    // The next poster is mounted but hidden, so it has loaded by the time it is shown
-    const next = screen.getByText('/poster-3.jpg').parentElement;
-    expect(next).toHaveClass('opacity-0', 'z-0');
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
 
-    expect(screen.queryByText('/poster-4.jpg')).not.toBeInTheDocument();
+    expect(poster(1)).toBeInTheDocument();
+    expect(poster(1)).not.toBe(left);
+    expect(poster(2)).toBe(shown);
+  });
+
+  it('does not remount the previous poster with 4 posters', () => {
+    const { rerender } = render(
+      <PosterCarousel posters={posters} currentPoster={0} setTitle={vi.fn()} />,
+    );
+    rerender(<PosterCarousel posters={posters} currentPoster={1} setTitle={vi.fn()} />);
+    const left = poster(1);
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    expect(poster(1)).toBe(left);
+  });
+
+  it('does not mount a newly added poster as the previous poster', () => {
+    const three = posters.slice(0, 3);
+    const { rerender } = render(
+      <PosterCarousel posters={three} currentPoster={2} setTitle={vi.fn()} />,
+    );
+    rerender(<PosterCarousel posters={three} currentPoster={0} setTitle={vi.fn()} />);
+    rerender(<PosterCarousel posters={posters} currentPoster={0} setTitle={vi.fn()} />);
+
+    expect(poster(3)).toBeInTheDocument();
+    expect(poster(4)).not.toBeInTheDocument();
   });
 
   it('keeps a poster mounted when posters before it are removed', () => {
-    const setTitle = vi.fn();
     const { rerender } = render(
-      <PosterCarousel posters={posters} currentPoster={1} setTitle={setTitle} />,
+      <PosterCarousel posters={posters} currentPoster={1} setTitle={vi.fn()} />,
     );
-    const shown = screen.getByText('/poster-2.jpg');
+    const shown = poster(2);
 
-    // A poster refresh that drops an earlier poster shifts every index. If slots were keyed
-    // by index, the poster on screen would be remounted (and flicker) or swapped for another.
-    rerender(<PosterCarousel posters={posters.slice(1)} currentPoster={0} setTitle={setTitle} />);
+    rerender(<PosterCarousel posters={posters.slice(1)} currentPoster={0} setTitle={vi.fn()} />);
 
-    expect(screen.getByText('/poster-2.jpg')).toBe(shown);
+    expect(poster(2)).toBe(shown);
   });
 });

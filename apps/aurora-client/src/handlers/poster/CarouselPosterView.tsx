@@ -35,7 +35,14 @@ export default function CarouselPosterView({ socket }: Props) {
     // TODO what to do if poster cannot be fetched?
     const newPosters = await getPosters();
     if (newPosters.response?.ok && newPosters.data) {
-      setPosters(newPosters.data.posters);
+      const oldPosters = postersRef.current;
+      const fetched = newPosters.data.posters;
+      setPosterIndex((i) => {
+        const id = i === undefined ? undefined : oldPosters?.[i]?.id;
+        const kept = fetched.findIndex((p) => p.id === id);
+        return kept >= 0 ? kept : i;
+      });
+      setPosters(fetched);
       setBorrelMode(newPosters.data.borrelMode);
     }
     setLoading(false);

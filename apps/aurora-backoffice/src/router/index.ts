@@ -66,6 +66,17 @@ const router = createRouter({
               component: () => import('@/views/Poster/PosterView.vue'),
               name: 'posters',
             },
+            {
+              path: 'requests',
+              component: () => import('@/views/Poster/PosterRequestView.vue'),
+              name: 'posterRequests',
+              meta: {
+                security: {
+                  securityGroup: 'poster',
+                  securitySection: 'privileged',
+                },
+              },
+            },
           ],
           meta: {
             security: {

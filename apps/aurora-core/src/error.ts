@@ -1,6 +1,7 @@
 import { Response as ExResponse, Request as ExRequest, NextFunction, Express } from 'express';
 import { ValidateError } from 'tsoa';
 import { AxiosError } from 'axios';
+import { MulterError } from 'multer';
 import { HttpApiException, HttpStatusCode } from './helpers/custom-error';
 import logger from './logger';
 import { ApiError as TrelloAPIError } from './modules/handlers/screen/poster/trello/client';
@@ -27,6 +28,11 @@ export function setupErrorHandler(app: Express) {
         logger.warn(`Caught '${err.status} - ${err.name}' for ${req.path}.`);
       }
       res.status(err.status).json(err);
+    } else if (err instanceof MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      logger.warn(`Caught '${HttpStatusCode.PayloadTooLarge} - ${err.message}' for ${req.path}.`);
+      res
+        .status(HttpStatusCode.PayloadTooLarge)
+        .json(new HttpApiException(HttpStatusCode.PayloadTooLarge, 'Uploaded file is too large.'));
     } else if (err instanceof TrelloAPIError || err instanceof AxiosError) {
       logger.error(`Caught '${err.message} - ${err.name}' for ${req.path}.`);
       res.status(500).json('Internal server error.');

@@ -22,3 +22,17 @@ To use an endpoint, the endpoint needs to be marked in Aurora Core first. By add
 both being accessible for integrations with access to that endpoint, and as an endpoint that integrations can use
 (so both sides of the arrow). **Make sure that you use the custom @Security() decorator from the `auth` module and NOT
 the TSOA version!** In the backoffice, admins can assign endpoints to integrations.
+
+## Example: poster requests
+
+External services, such as a website form, can submit posters for review with the `createPosterRequest` endpoint
+(`POST /api/handler/screen/poster/requests`). The request is a multipart form with either a `file` (JPG, PNG or MP4, at
+most 20 MB) for a media poster or a `uri` (http or https) for an external poster, the requester's `requesterName` and
+`requesterEmail`, the poster `name`, and optionally the `requesterAssociation`, a `message` for the reviewers and the
+poster fields `label`, `startDate`, `expirationDate`, `accentColor`, `footerSize` and `defaultTimeout`. Whether a poster
+is only shown in borrel mode is decided by the reviewer.
+
+Requests are not shown on any screen. They appear under "Poster requests" in the backoffice, where users with
+privileged poster rights can edit them and approve them into the carousel, or deny them. Approving or denying a request
+deletes it, including the requester's details. The endpoint is only available when the `Poster.Requests` server setting
+is enabled, which it is not by default.

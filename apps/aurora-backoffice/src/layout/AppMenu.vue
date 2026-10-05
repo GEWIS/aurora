@@ -11,14 +11,20 @@ import { computed } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useAuthStore } from '@/stores/auth.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
+import { usePosterRequestStore } from '@/stores/poster/poster-request.store';
 
 const authStore = useAuthStore();
 const settingsStore = useServerSettingsStore();
+const posterRequestStore = usePosterRequestStore();
 
 // Calculate all items in the menu based on the user's security groups
 const model = computed<MenuItem[]>(() => {
   const showPosters =
     authStore.isInSecurityGroup('poster', 'base') && settingsStore.featureEnabled('Poster');
+  const showPosterRequests =
+    authStore.isInSecurityGroup('poster', 'privileged') &&
+    settingsStore.featureEnabled('Poster') &&
+    settingsStore.featureEnabled('Poster.Requests');
   const showInfoScreen =
     authStore.isInSecurityGroup('infoscreen', 'base') && settingsStore.featureEnabled('InfoScreen');
   const showAudit = authStore.isInSecurityGroup('audit', 'base');
@@ -51,6 +57,12 @@ const model = computed<MenuItem[]>(() => {
       label: 'Screens',
       items: [
         showPosters && { label: 'Posters', icon: 'pi pi-fw pi-image', to: '/poster/posters' },
+        showPosterRequests && {
+          label: 'Poster requests',
+          icon: 'pi pi-fw pi-inbox',
+          to: '/poster/requests',
+          badge: posterRequestStore.count,
+        },
         showInfoScreen && {
           label: 'Info Screen',
           icon: 'pi pi-fw pi-desktop',

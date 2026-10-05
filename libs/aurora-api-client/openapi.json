@@ -953,6 +953,10 @@
 						"type": "boolean",
 						"description": "Whether the Trello poster sync is enabled."
 					},
+					"Poster.Requests": {
+						"type": "boolean",
+						"description": "Whether integrations can submit poster requests that are reviewed in the backoffice."
+					},
 					"InfoScreen": {
 						"type": "boolean",
 						"description": "Whether the info screen handler should be enabled."
@@ -1002,6 +1006,7 @@
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
 					"Poster.Trello",
+					"Poster.Requests",
 					"InfoScreen",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
@@ -1035,6 +1040,7 @@
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
 							"Poster.Trello",
+							"Poster.Requests",
 							"InfoScreen",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
@@ -3681,6 +3687,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreatePosterRequestResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PosterType.IMAGE": {
 				"enum": [
 					"img"
@@ -3692,6 +3715,148 @@
 					"video"
 				],
 				"type": "string"
+			},
+			"PosterType.EXTERNAL": {
+				"enum": [
+					"extern"
+				],
+				"type": "string"
+			},
+			"PosterRequestResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"requesterName": {
+						"type": "string"
+					},
+					"requesterEmail": {
+						"type": "string"
+					},
+					"requesterAssociation": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"integrationName": {
+						"type": "string",
+						"description": "Name of the integration that submitted the request, if it still exists."
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/PosterType.IMAGE"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.VIDEO"
+							},
+							{
+								"$ref": "#/components/schemas/PosterType.EXTERNAL"
+							}
+						]
+					},
+					"uri": {
+						"type": "string",
+						"description": "Link to the requested external poster. Only set for external posters."
+					},
+					"label": {
+						"type": "string"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"accentColor": {
+						"type": "string"
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize"
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double"
+					},
+					"fileName": {
+						"type": "string",
+						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint. Not set\nfor external posters."
+					}
+				},
+				"required": [
+					"id",
+					"createdAt",
+					"requesterName",
+					"requesterEmail",
+					"name",
+					"type",
+					"footerSize",
+					"defaultTimeout"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApprovePosterRequestParams": {
+				"description": "The final poster as approved by the reviewer. Optional fields that are left out are not set on\nthe poster, even if the requester provided them.",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Internal name of the poster. Visible in backoffice and database."
+					},
+					"label": {
+						"type": "string",
+						"description": "The visible title of the poster on the screens."
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be in rotation."
+					},
+					"expirationDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Moment from when the poster should be out of rotation."
+					},
+					"accentColor": {
+						"type": "string",
+						"description": "Color of the progressbar mostly."
+					},
+					"footerSize": {
+						"$ref": "#/components/schemas/FooterSize",
+						"description": "The size of the footer. Should be a valid FooterSize."
+					},
+					"defaultTimeout": {
+						"type": "number",
+						"format": "double",
+						"description": "The time the poster should be on the screens for."
+					},
+					"borrelMode": {
+						"type": "boolean",
+						"description": "Whether the poster should only be displayed in borrelMode."
+					},
+					"uri": {
+						"type": "string",
+						"description": "Link of the external poster. Required when approving an external poster request, and not\nallowed for other requests."
+					}
+				},
+				"required": [
+					"name",
+					"footerSize",
+					"defaultTimeout",
+					"borrelMode"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"MediaPosterRequest": {
 				"properties": {
@@ -3753,12 +3918,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"PosterType.EXTERNAL": {
-				"enum": [
-					"extern"
-				],
-				"type": "string"
 			},
 			"ExternalPosterRequest": {
 				"properties": {
@@ -8102,6 +8261,7 @@
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
 											"Poster.Trello",
+											"Poster.Requests",
 											"InfoScreen",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
@@ -12175,6 +12335,344 @@
 				],
 				"parameters": [
 					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/poster/requests": {
+			"post": {
+				"operationId": "CreatePosterRequest",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreatePosterRequestResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid fields, or not exactly one of a file and a uri",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"413": {
+						"description": "File is too large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "File is not a JPG, PNG or MP4",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Submit a request for a new poster, which has to be approved in the backoffice before it is\nshown. Send either a file for a media poster, or a uri for an external poster. The file has to\nbe a JPG, PNG or MP4 of at most 20 MB.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"createPosterRequest"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"requesterName": {
+										"type": "string",
+										"description": "Name of the person requesting the poster."
+									},
+									"requesterEmail": {
+										"type": "string",
+										"description": "Email address of the person requesting the poster."
+									},
+									"name": {
+										"type": "string",
+										"description": "Internal name of the poster."
+									},
+									"file": {
+										"type": "string",
+										"format": "binary",
+										"description": "The image or video of a media poster."
+									},
+									"uri": {
+										"type": "string",
+										"description": "Link to an external poster (http or https)."
+									},
+									"requesterAssociation": {
+										"type": "string",
+										"description": "Association the poster is requested for."
+									},
+									"message": {
+										"type": "string",
+										"description": "Message to the reviewers."
+									},
+									"label": {
+										"type": "string",
+										"description": "Visible title of the poster on the screens."
+									},
+									"startDate": {
+										"type": "string",
+										"format": "date-time",
+										"description": "Moment from when the poster should be in rotation (ISO 8601)."
+									},
+									"expirationDate": {
+										"type": "string",
+										"format": "date-time",
+										"description": "Moment from when the poster should be out of rotation (ISO 8601)."
+									},
+									"accentColor": {
+										"type": "string",
+										"description": "Color of the progress bar as 6-digit hex, with or without \"#\"."
+									},
+									"footerSize": {
+										"$ref": "#/components/schemas/FooterSize",
+										"description": "Size of the footer."
+									},
+									"defaultTimeout": {
+										"type": "number",
+										"format": "double",
+										"description": "Time in seconds the poster should be on the screens for."
+									}
+								},
+								"required": [
+									"requesterName",
+									"requesterEmail",
+									"name"
+								]
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllPosterRequests",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/PosterRequestResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all pending poster requests, oldest first.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/handler/screen/poster/requests/{id}/media": {
+			"get": {
+				"operationId": "GetPosterRequestMedia",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get the uploaded image or video of a pending poster request.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/handler/screen/poster/requests/{id}/approve": {
+			"post": {
+				"operationId": "ApprovePosterRequest",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PosterResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\ncarousel. External poster requests need a uri. The request and the requester's details are\ndeleted afterwards.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The final poster fields. Optional fields that are left out are not set.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ApprovePosterRequestParams",
+								"description": "The final poster fields. Optional fields that are left out are not set."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/handler/screen/poster/requests/{id}/deny": {
+			"post": {
+				"operationId": "DenyPosterRequest",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"409": {
+						"description": "Endpoint is disabled in the server settings",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deny a poster request. The request, the requester's details and the file are deleted.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The id of the poster request.",
 						"in": "path",
 						"name": "id",
 						"required": true,

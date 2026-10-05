@@ -5,12 +5,18 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import { pinoHttp } from 'pino-http';
+import multer from 'multer';
 import { RegisterRoutes } from '../build/routes';
 import apiDocs from '@gewis/aurora-api-client/openapi.json';
 import { SessionMiddleware, apiKeyMiddleware } from './modules/auth';
 import { setupErrorHandler } from './error';
 import { authResponse } from './modules/auth/passport';
 import { IntegrationUserActivityMiddleware } from './modules/auth/integration';
+
+/**
+ * Maximum size of a single uploaded file, in bytes (20 MB).
+ */
+export const MAX_UPLOAD_FILE_SIZE = 20 * 1024 * 1024;
 
 const origins = process.env.CORS_ORIGINS?.split(', ');
 export const enableCors = origins !== undefined && origins.length > 0;
@@ -67,7 +73,8 @@ export default async function createHttp() {
   app.use(apiKeyMiddleware);
   app.use(IntegrationUserActivityMiddleware);
 
-  RegisterRoutes(app);
+  // Replaces TSOA's default upload handler, which limits files to 8 MB
+  RegisterRoutes(app, { multer: multer({ limits: { fileSize: MAX_UPLOAD_FILE_SIZE } }) });
 
   app.post('/api/auth/oidc', passport.authenticate('oidc'), authResponse);
   app.post('/api/auth/key', passport.authenticate('apikey'), authResponse);

@@ -13,6 +13,7 @@
     >
       <i class="layout-menuitem-icon" :class="item.icon" />
       <span class="layout-menuitem-text">{{ item.label }}</span>
+      <Badge v-if="item.badge" class="ml-auto" :value="item.badge" />
     </RouterLink>
 
     <Transition v-if="item.items" name="layout-submenu">
@@ -27,12 +28,17 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
+import Badge from 'primevue/badge';
 import { useLayoutStore } from '@/stores/layout.store';
 
 export interface MenuItem {
   label: string;
   icon?: string;
   to?: string;
+  /**
+   * Number shown next to the label, hidden when zero
+   */
+  badge?: number;
   items?: MenuItem[];
 }
 

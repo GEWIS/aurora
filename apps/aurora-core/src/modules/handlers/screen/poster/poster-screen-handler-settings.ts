@@ -49,6 +49,11 @@ export interface PosterScreenHandlerSettings {
    * Whether the Trello poster sync is enabled.
    */
   'Poster.Trello': boolean;
+
+  /**
+   * Whether integrations can submit poster requests that are reviewed in the backoffice.
+   */
+  'Poster.Requests': boolean;
 }
 
 declare module '../../../server-settings/server-setting' {
@@ -65,6 +70,7 @@ export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = 
   'Poster.CustomStylesheet': '',
   'Poster.ClockShouldTick': true,
   'Poster.Trello': true,
+  'Poster.Requests': false,
 };
 
 registerSettingsDefaults(PosterScreenHandlerSettingsDefaults);

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import useRandomPick from '../useRandomPick';
 
 interface Props {
   source: string | string[];
@@ -6,13 +7,7 @@ interface Props {
 }
 
 export default function VideoPoster({ source, visible }: Props) {
-  let sourceUrl: string | undefined;
-  if (Array.isArray(source)) {
-    const index = Math.floor(Math.random() * source.length);
-    sourceUrl = source[index];
-  } else {
-    sourceUrl = source;
-  }
+  const sourceUrl = useRandomPick(source);
 
   const ref = useRef<HTMLVideoElement | null>(null);
 
@@ -24,12 +19,12 @@ export default function VideoPoster({ source, visible }: Props) {
     } else {
       ref.current.pause();
     }
-  }, [visible]);
+  }, [visible, sourceUrl]);
 
   if (!sourceUrl) return <div className="w-full h-full bg-black" />;
 
   return (
-    <video className="w-full h-full" muted loop ref={ref} controls={false}>
+    <video key={sourceUrl} className="w-full h-full bg-black" muted loop ref={ref} controls={false}>
       <source src={sourceUrl} type="video/mp4" />
     </video>
   );

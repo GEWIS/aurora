@@ -16,24 +16,32 @@ export default function PhotoPoster({ poster, visible, setTitle }: Props) {
     if (visible) setTitle(label);
   }, [label, setTitle, visible]);
 
+  const albumKey = (poster.albums ?? []).join(',');
   useEffect(() => {
-    if (!poster.albums || poster.albums.length === 0) {
+    if (!albumKey) {
       setUrl('');
       setLabel('');
       return;
     }
 
+    let ignore = false;
     const body: GewisPhotoAlbumParams = {
-      albumIds: poster.albums,
+      albumIds: albumKey.split(',').map(Number),
     };
     // TODO what do display if photo is not fetched?
     getPhoto({ body })
       .then((res) => {
-        setUrl(res.data!.url);
-        setLabel(res.data!.label);
+        if (res.error) console.error(res.error);
+        if (ignore || !res.data) return;
+        setUrl(res.data.url);
+        setLabel(res.data.label);
       })
       .catch((e) => console.error(e));
-  }, [poster.albums]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [albumKey]);
 
   return <ImagePoster source={url} />;
 }

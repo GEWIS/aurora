@@ -14,6 +14,7 @@ import {
 import { useHandlersStore } from '@/stores/handlers.store';
 import { useColorStore } from '@/stores/color.store';
 import { useSocketStore } from '@/stores/socket.store';
+import { usePosterRequestStore } from '@/stores/poster/poster-request.store';
 import { useSubscriberStore } from '@/stores/subscriber.store';
 import { useStatusStore } from '@/stores/status.store';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
@@ -161,6 +162,13 @@ export const useAuthStore = defineStore('auth', {
       }
       if (this.isInSecurityGroup('audit', 'base')) {
         await useAuditStore().init();
+      }
+      if (
+        this.isInSecurityGroup('poster', 'privileged') &&
+        useServerSettingsStore().featureEnabled('Poster') &&
+        useServerSettingsStore().featureEnabled('Poster.Requests')
+      ) {
+        await usePosterRequestStore().init();
       }
     },
     /**

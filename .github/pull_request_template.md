@@ -25,7 +25,8 @@ Format issues on GitHub as `#XXX`. Tickets from support.gewis.nl can also be aut
 - Documentation improvement
 - Style _(Change that do not affect the functionality of the code)_
 - CI/CD _(Changes to the CI/CD configuration)_
-- 
+-
+
 ## AI Policy
 
 - [ ] **AI Contribution Policy**: Comments and the PR description are written in my own voide, and I understand every change. This PR conforms to Aurora's [AI Contribution Policy](https://github.com/GEWIS/aurora/blob/develop/AI_POLICY.md).

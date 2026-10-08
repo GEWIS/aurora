@@ -147,6 +147,8 @@ If you want to integrate your own service with Aurora — to fetch data, send co
 7. Push: `git push origin feat/your-feature-name`.
 8. Open a Pull Request.
 
+Issues and contributions go through the [GEWIS/aurora issue tracker](https://github.com/GEWIS/aurora/issues) and follow the [AI Contribution Policy](https://github.com/GEWIS/aurora/blob/develop/AI_POLICY.md).
+
 ## License
 
 Copyright © 2023-2025 Study Association GEWIS — Some rights reserved.

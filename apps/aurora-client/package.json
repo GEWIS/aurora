@@ -42,7 +42,7 @@
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
-    "@types/node": "22.20.4",
+    "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/react-helmet": "6.1.11",
@@ -53,7 +53,7 @@
     "jsdom": "^29.1.1",
     "openapi-typescript-codegen": "0.31.0",
     "postcss": "8.5.28",
-    "sass": "1.105.0",
+    "sass": "1.105.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "^4.1.11"

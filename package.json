@@ -20,13 +20,13 @@
     "prepare-husky": "husky"
   },
   "devDependencies": {
-    "@types/node": "22.20.4",
+    "@types/node": "22.20.5",
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "open": "11.0.4",
     "prettier": "3.9.9",
     "tsx": "4.23.15",
-    "turbo": "2.11.5"
+    "turbo": "2.11.7"
   },
   "engines": {
     "node": ">=22.0.0"

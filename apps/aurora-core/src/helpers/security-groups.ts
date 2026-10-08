@@ -54,23 +54,11 @@ const allSecurityGroups = [
   SecurityGroup.KEY_HOLDER,
 ];
 
-const allSecuritySubscriberGroups = [
-  SecurityGroup.ADMIN,
-  SecurityGroup.BOARD,
-  SecurityGroup.AVICO,
-  SecurityGroup.BAC,
-  SecurityGroup.KEY_HOLDER,
-  SecurityGroup.AUDIO_SUBSCRIBER,
-  SecurityGroup.SCREEN_SUBSCRIBER,
-  SecurityGroup.LIGHTS_SUBSCRIBER,
-  SecurityGroup.INTEGRATION_USER,
-];
-
 /**
- * Subscriber groups without INTEGRATION_USER: integration keys only get in through an
+ * Excludes INTEGRATION_USER on purpose: integration keys only get in through an
  * endpoint's own INTEGRATION scope, not through their role.
  */
-const allSecuritySubscriberGroupsNoIntegration = [
+const allSecuritySubscriberGroups = [
   SecurityGroup.ADMIN,
   SecurityGroup.BOARD,
   SecurityGroup.AVICO,
@@ -122,7 +110,7 @@ export const securityGroups = {
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
   infoscreen: {
-    base: allSecuritySubscriberGroupsNoIntegration,
+    base: allSecuritySubscriberGroups,
     privileged: [...privilegedSecurityGroups, SecurityGroup.KEY_HOLDER],
     subscriber: [SecurityGroup.SCREEN_SUBSCRIBER],
   },
@@ -163,7 +151,7 @@ export const securityGroups = {
     base: baseSecurityGroups,
   },
   spotify: {
-    base: allSecuritySubscriberGroupsNoIntegration,
+    base: allSecuritySubscriberGroups,
     privileged: [SecurityGroup.ADMIN],
   },
   sudosos: {

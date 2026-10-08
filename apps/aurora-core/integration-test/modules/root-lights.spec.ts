@@ -531,7 +531,7 @@ describe('GET /api/lights/colors', () => {
     expect(res.body).toBeInstanceOf(Array);
   });
 
-  it('returns 200 with an integration key scoped to a different endpoint', async () => {
+  it('returns 403 with an integration key scoped to a different endpoint', async () => {
     // ARRANGE
     const key = await createIntegrationKey(['someOtherEndpoint']);
 
@@ -539,6 +539,6 @@ describe('GET /api/lights/colors', () => {
     const res = await testApp.unauthorizedAgent.get('/api/lights/colors').set('X-API-Key', key);
 
     // ASSERT
-    expect(res.status).toBe(200);
+    expectApiError(res, 403);
   });
 });

@@ -107,6 +107,7 @@ export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
   const showVdesktops = sBool(settings, 'showVdesktops', true);
 
   const byId = new Map(pcs.map((pc) => [pc.pcId, pc]));
+  const responsibleIds = new Set(responsibles?.flatMap((r) => r.memberId ?? []) ?? []);
   // The virtual desktop is a single PC that many people share, so its users are
   // listed rather than drawn as seats in the room.
   const vdesktopUsers = pcs
@@ -152,6 +153,7 @@ export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
         const showNumber = text === id;
         const name = user?.name ?? '';
         const labelY = node.labelAbove ? node.y - R - 12 : node.y + R + 28;
+        const isResponsible = user?.memberId != null && responsibleIds.has(user.memberId);
 
         return (
           <g key={id}>
@@ -200,7 +202,7 @@ export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
                 cx={node.x}
                 cy={pcStyle === 'icon' ? node.y - 1 : node.y}
                 size={20}
-                fill="#1a1a1a"
+                fill={isResponsible ? RESPONSIBLE_COLOR : '#1a1a1a'}
               />
             ) : (
               <text
@@ -221,7 +223,7 @@ export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
                 y={labelY}
                 textAnchor="middle"
                 fontSize={name.length > 9 ? 16 : 20}
-                fill="white"
+                fill={isResponsible ? RESPONSIBLE_COLOR : 'white'}
               >
                 {name.length > 12 ? `${name.slice(0, 12)}…` : name}
               </text>

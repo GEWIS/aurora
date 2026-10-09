@@ -23,6 +23,9 @@ const STATUS_FILL: Record<PcStatusType, string> = {
   [PcStatusType.MAINTENANCE]: '#5b5b5b',
 };
 
+/** Accent color for a room responsible. */
+const RESPONSIBLE_COLOR = '#f5c518';
+
 /**
  * PC node centres in the 830×350 room coordinate space, matching the legacy
  * infoscherm floor plan (images/map_room.svg + the coordinates in pcuse.php).

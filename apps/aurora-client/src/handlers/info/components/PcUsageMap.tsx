@@ -1,4 +1,4 @@
-import { PcStatusResponse, PcStatusType } from '@gewis/aurora-api-client';
+import { PcStatusResponse, PcStatusType, ResponsibleResponse } from '@gewis/aurora-api-client';
 import {
   faKey,
   faStar,
@@ -10,6 +10,7 @@ import { sBool, sStr, WidgetSettings } from '../settings';
 
 interface Props {
   pcs: PcStatusResponse[];
+  responsibles: ResponsibleResponse[] | undefined;
   settings?: WidgetSettings;
 }
 
@@ -97,7 +98,7 @@ function SvgIcon({
   );
 }
 
-export default function PcUsageMap({ pcs, settings }: Props) {
+export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
   const pcStyle = sStr(settings, 'pcStyle', 'circle');
   const showNames = sBool(settings, 'showUsernames', true);
   const showVdesktops = sBool(settings, 'showVdesktops', true);

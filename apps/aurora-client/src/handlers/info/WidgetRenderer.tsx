@@ -131,7 +131,13 @@ export function renderWidget(
     case 'news':
       return <NewsTicker headlines={data.news} settings={settings} />;
     case 'workstations':
-      return <PcUsageMap pcs={data.pcs} settings={settings} />;
+      return (
+        <PcUsageMap
+          pcs={data.pcs}
+          responsibles={data.roomStatus?.responsible}
+          settings={settings}
+        />
+      );
     case 'services':
       return <ServicesWidget services={data.services} settings={settings} />;
     case 'conference-rooms':

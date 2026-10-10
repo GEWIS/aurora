@@ -1,4 +1,4 @@
-import { PcStatusResponse, PcStatusType } from '@gewis/aurora-api-client';
+import { PcStatusResponse, PcStatusType, ResponsibleResponse } from '@gewis/aurora-api-client';
 import {
   faKey,
   faStar,
@@ -10,6 +10,7 @@ import { sBool, sStr, WidgetSettings } from '../settings';
 
 interface Props {
   pcs: PcStatusResponse[];
+  responsibles: ResponsibleResponse[] | undefined;
   settings?: WidgetSettings;
 }
 
@@ -21,6 +22,9 @@ const STATUS_FILL: Record<PcStatusType, string> = {
   [PcStatusType.OFFLINE]: '#787878',
   [PcStatusType.MAINTENANCE]: '#5b5b5b',
 };
+
+/** Accent color for a room responsible. */
+const RESPONSIBLE_COLOR = '#f5c518';
 
 /**
  * PC node centres in the 830×350 room coordinate space, matching the legacy
@@ -97,12 +101,13 @@ function SvgIcon({
   );
 }
 
-export default function PcUsageMap({ pcs, settings }: Props) {
+export default function PcUsageMap({ pcs, responsibles, settings }: Props) {
   const pcStyle = sStr(settings, 'pcStyle', 'circle');
   const showNames = sBool(settings, 'showUsernames', true);
   const showVdesktops = sBool(settings, 'showVdesktops', true);
 
   const byId = new Map(pcs.map((pc) => [pc.pcId, pc]));
+  const responsibleIds = new Set(responsibles?.flatMap((r) => r.memberId ?? []) ?? []);
   // The virtual desktop is a single PC that many people share, so its users are
   // listed rather than drawn as seats in the room.
   const vdesktopUsers = pcs
@@ -148,6 +153,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
         const showNumber = text === id;
         const name = user?.name ?? '';
         const labelY = node.labelAbove ? node.y - R - 12 : node.y + R + 28;
+        const isResponsible = user?.memberId != null && responsibleIds.has(user.memberId);
 
         return (
           <g key={id}>
@@ -196,7 +202,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
                 cx={node.x}
                 cy={pcStyle === 'icon' ? node.y - 1 : node.y}
                 size={20}
-                fill="#1a1a1a"
+                fill={isResponsible ? RESPONSIBLE_COLOR : '#1a1a1a'}
               />
             ) : (
               <text
@@ -217,7 +223,7 @@ export default function PcUsageMap({ pcs, settings }: Props) {
                 y={labelY}
                 textAnchor="middle"
                 fontSize={name.length > 9 ? 16 : 20}
-                fill="white"
+                fill={isResponsible ? RESPONSIBLE_COLOR : 'white'}
               >
                 {name.length > 12 ? `${name.slice(0, 12)}…` : name}
               </text>

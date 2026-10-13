@@ -193,8 +193,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import DatePicker from 'primevue/datepicker';
-import InputChips from 'primevue/inputchips';
+import DatePicker from 'openvue/datepicker';
+import InputChips from 'openvue/inputchips';
 import {
   FooterSize,
   type PosterResponse,

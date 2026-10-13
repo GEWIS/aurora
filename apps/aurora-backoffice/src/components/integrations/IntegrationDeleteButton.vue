@@ -24,7 +24,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { type IntegrationUser, useIntegrationsStore } from '@/stores/integrations.store';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
+import ConfirmWrapper from '@/components/wrapped/ConfirmWrapper.vue';
 
 const store = useIntegrationsStore();
 

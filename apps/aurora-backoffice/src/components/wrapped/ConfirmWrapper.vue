@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useConfirm } from 'primevue/useconfirm';
+import { useConfirm } from 'openvue/useconfirm';
 
 const props = defineProps<{
   message: string;

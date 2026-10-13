@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useConfirm } from 'primevue/useconfirm';
+import { useConfirm } from 'openvue/useconfirm';
 import { useCallerStore } from '@/stores/caller.store';
 import { useConferenceRoomStore } from '@/stores/conference-room.store';
 import { useNewsSourceStore } from '@/stores/news-source.store';

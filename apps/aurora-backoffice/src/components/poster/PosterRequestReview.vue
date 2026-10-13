@@ -197,7 +197,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import DatePicker from 'primevue/datepicker';
+import DatePicker from 'openvue/datepicker';
 import {
   type ApprovePosterRequestParams,
   FooterSize,
@@ -209,7 +209,7 @@ import { usePosterStore } from '@/stores/poster/poster.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 import { formatPosterDate, formatPosterPeriod } from '@/utils/posterUtils';
 import { toastSuccess } from '@/utils/toastHandler';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
+import ConfirmWrapper from '@/components/wrapped/ConfirmWrapper.vue';
 import PosterRequestMedia from '@/components/poster/PosterRequestMedia.vue';
 
 const props = defineProps<{

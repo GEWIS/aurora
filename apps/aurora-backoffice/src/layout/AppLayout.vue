@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import Toast from 'primevue/toast';
+import Toast from 'openvue/toast';
 import { RouterView } from 'vue-router';
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';

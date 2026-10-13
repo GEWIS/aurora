@@ -8,43 +8,43 @@ import { createPinia } from 'pinia';
 import '@gewis/splash';
 // @ts-expect-error -- package does exist
 import timeago from 'vue-timeago3';
-import PrimeVue from 'primevue/config';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Menubar from 'primevue/menubar';
-import Panel from 'primevue/panel';
-import DataTable from 'primevue/datatable';
-import InputNumber from 'primevue/inputnumber';
-import Dialog from 'primevue/dialog';
-import Select from 'primevue/select';
-import Checkbox from 'primevue/checkbox';
-import Tabs from 'primevue/tabs';
-import ScrollPanel from 'primevue/scrollpanel';
-import FileUpload from 'primevue/fileupload';
-import ProgressSpinner from 'primevue/progressspinner';
-import ProgressBar from 'primevue/progressbar';
-import SelectButton from 'primevue/selectbutton';
-import ToggleButton from 'primevue/togglebutton';
-import Card from 'primevue/card';
-import Chip from 'primevue/chip';
-import Slider from 'primevue/slider';
-import ToastService from 'primevue/toastservice';
-import ConfirmationService from 'primevue/confirmationservice';
-import Toast from 'primevue/toast';
-import Menu from 'primevue/menu';
-import MultiSelect from 'primevue/multiselect';
-import Divider from 'primevue/divider';
-import Skeleton from 'primevue/skeleton';
-import ConfirmDialog from 'primevue/confirmdialog';
-import Image from 'primevue/image';
-import Carousel from 'primevue/carousel';
-import Stepper from 'primevue/stepper';
-import StepPanel from 'primevue/steppanel';
-import ToggleSwitch from 'primevue/toggleswitch';
-import Column from 'primevue/column';
-import Paginator from 'primevue/paginator';
-import Message from 'primevue/message';
-import Tag from 'primevue/tag';
+import OpenVue from 'openvue/config';
+import Button from 'openvue/button';
+import InputText from 'openvue/inputtext';
+import Menubar from 'openvue/menubar';
+import Panel from 'openvue/panel';
+import DataTable from 'openvue/datatable';
+import InputNumber from 'openvue/inputnumber';
+import Dialog from 'openvue/dialog';
+import Select from 'openvue/select';
+import Checkbox from 'openvue/checkbox';
+import Tabs from 'openvue/tabs';
+import ScrollPanel from 'openvue/scrollpanel';
+import FileUpload from 'openvue/fileupload';
+import ProgressSpinner from 'openvue/progressspinner';
+import ProgressBar from 'openvue/progressbar';
+import SelectButton from 'openvue/selectbutton';
+import ToggleButton from 'openvue/togglebutton';
+import Card from 'openvue/card';
+import Chip from 'openvue/chip';
+import Slider from 'openvue/slider';
+import ToastService from 'openvue/toastservice';
+import ConfirmationService from 'openvue/confirmationservice';
+import Toast from 'openvue/toast';
+import Menu from 'openvue/menu';
+import MultiSelect from 'openvue/multiselect';
+import Divider from 'openvue/divider';
+import Skeleton from 'openvue/skeleton';
+import ConfirmDialog from 'openvue/confirmdialog';
+import Image from 'openvue/image';
+import Carousel from 'openvue/carousel';
+import Stepper from 'openvue/stepper';
+import StepPanel from 'openvue/steppanel';
+import ToggleSwitch from 'openvue/toggleswitch';
+import Column from 'openvue/column';
+import Paginator from 'openvue/paginator';
+import Message from 'openvue/message';
+import Tag from 'openvue/tag';
 import {
   ColorPicker,
   FloatLabel,
@@ -56,10 +56,10 @@ import {
   TabPanels,
   Tooltip,
   TreeTable,
-} from 'primevue';
-import InputGroup from 'primevue/inputgroup';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
+} from 'openvue';
+import InputGroup from 'openvue/inputgroup';
+import IconField from 'openvue/iconfield';
+import InputIcon from 'openvue/inputicon';
 import { client } from '@gewis/aurora-api-client/client';
 import router from './router';
 import App from './App.vue';
@@ -76,7 +76,7 @@ const timeagoOptions = {
 };
 
 app.use(router);
-app.use(PrimeVue, {
+app.use(OpenVue, {
   theme: {
     preset: AuraPreset,
     options: {

@@ -41,12 +41,12 @@ importers:
       '@gewis/splash':
         specifier: 2.4.0
         version: 2.4.0
-      '@primeuix/themes':
-        specifier: 1.2.5
-        version: 1.2.5
-      '@primevue/core':
-        specifier: 4.3.6
-        version: 4.3.6(vue@3.5.43(typescript@5.9.3))
+      '@openvue/core':
+        specifier: 1.0.0
+        version: 1.0.0(vue@3.5.43(typescript@5.9.3))
+      '@openvue/themes':
+        specifier: 1.0.0
+        version: 1.0.0
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -62,15 +62,15 @@ importers:
       grid-layout-plus:
         specifier: ^1.1.1
         version: 1.1.1(vue@3.5.43(typescript@5.9.3))
+      openvue:
+        specifier: 1.0.0
+        version: 1.0.0(vue@3.5.43(typescript@5.9.3))
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.43(typescript@5.9.3))
       primeicons:
         specifier: 7.0.0
         version: 7.0.0
-      primevue:
-        specifier: 4.3.6
-        version: 4.3.6(vue@3.5.43(typescript@5.9.3))
       socket.io-client:
         specifier: 4.8.4
         version: 4.8.4(supports-color@5.5.0)
@@ -2431,6 +2431,34 @@ packages:
     engines: {node: '>=10'}
     deprecated: This functionality has been moved to @npmcli/fs
 
+  '@openuxkit/styled@1.0.0':
+    resolution: {integrity: sha512-tXPv00g3qlhZJkDMMK2vxYFQldO5T6Y5HRISU+dfJ3/I1bV8JNx93N1aJb2SQN1xlrO/2UhsISDFYPTVMwXUFQ==}
+    engines: {node: '>=12.11.0'}
+
+  '@openuxkit/styles@1.1.0':
+    resolution: {integrity: sha512-DohE7jvtnTeapfFjqL0RmX63JmKfv1YbL4V2LFTruNXkdK+GfhtvkyUM/1pCrcmjWyflGfZhW5z8LJzUkzwLDQ==}
+
+  '@openuxkit/themes@1.1.0':
+    resolution: {integrity: sha512-0OuDQLFuhUGKWujAs8ejbhrRac9u0h03T349JqKyuGTQWCVaRyNJiShX9OcqCsVi9tbvFHuMkCxppCL/w1Hslw==}
+
+  '@openuxkit/utils@1.0.1':
+    resolution: {integrity: sha512-AwHDW1UIQ9tBE/liNELlg3m3aGZSCKxL848XbgICbLV9UQ+Nv/uv+E0amQ8H/gyoOYTTNKF7qFhxtKZTlOub1A==}
+    engines: {node: '>=12.11.0'}
+
+  '@openvue/core@1.0.0':
+    resolution: {integrity: sha512-cVgUD4gSTboMi+zM55fSNxeqrmGlECdrh5oYfZDFx7BwPgvgdZgDKTrIp2/pjiUoxracD+zlS2KYTyw96aai3Q==}
+    engines: {node: '>=12.11.0'}
+    peerDependencies:
+      vue: ^3.5.0
+
+  '@openvue/icons@1.0.0':
+    resolution: {integrity: sha512-xCBcHvs0SjEqrDkL54cwcSKUYkjbAPPbfISfygoxjkE/yibUGk3STyutVsGTAEeV5BIYmK/Hd4eUMN/FOTcsfw==}
+    engines: {node: '>=12.11.0'}
+
+  '@openvue/themes@1.0.0':
+    resolution: {integrity: sha512-YiLHzoa+0ic5yz/+vljDaH3UWNofgu5JLENq2FPMY+rPJD9L2F+/QumvUj7vUHvPIFexnb35FwM6fpetw6BfiA==}
+    engines: {node: '>=12.11.0'}
+
   '@oxc-project/types@0.133.0':
     resolution: {integrity: sha512-KzkdCd6Uxqnf6l3HOw1xfatAlUURA0g14cvBYFyJ5SaNOQbOUvBr9PKArcPcrNIeRsBdgcUzOGrhKveVpvOIGA==}
 
@@ -2555,30 +2583,6 @@ packages:
         optional: true
       webpack-plugin-serve:
         optional: true
-
-  '@primeuix/styled@0.7.4':
-    resolution: {integrity: sha512-QSO/NpOQg8e9BONWRBx9y8VGMCMYz0J/uKfNJEya/RGEu7ARx0oYW0ugI1N3/KB1AAvyGxzKBzGImbwg0KUiOQ==}
-    engines: {node: '>=12.11.0'}
-
-  '@primeuix/styles@1.2.5':
-    resolution: {integrity: sha512-nypFRct/oaaBZqP4jinT0puW8ZIfs4u+l/vqUFmJEPU332fl5ePj6DoOpQgTLzo3OfmvSmz5a5/5b4OJJmmi7Q==}
-
-  '@primeuix/themes@1.2.5':
-    resolution: {integrity: sha512-n3YkwJrHQaEESc/D/A/iD815sxp8cKnmzscA6a8Tm8YvMtYU32eCahwLLe6h5rywghVwxASWuG36XBgISYOIjQ==}
-
-  '@primeuix/utils@0.6.4':
-    resolution: {integrity: sha512-pZ5f+vj7wSzRhC7KoEQRU5fvYAe+RP9+m39CTscZ3UywCD1Y2o6Fe1rRgklMPSkzUcty2jzkA0zMYkiJBD1hgg==}
-    engines: {node: '>=12.11.0'}
-
-  '@primevue/core@4.3.6':
-    resolution: {integrity: sha512-ZuP0gqpEbIkpz9Em/O4Du+fRj0qyOl2YYuxhlELAtRg8+YkMsSJDd2ai2GM623sYRWOIwMr5rWevZGB1WqukzQ==}
-    engines: {node: '>=12.11.0'}
-    peerDependencies:
-      vue: ^3.5.0
-
-  '@primevue/icons@4.3.6':
-    resolution: {integrity: sha512-QVFmfikMpo4/DObMSbB5kS8MH1OoQrx8N9prEZaMvfFzD3hixxK24l2VrcS5x5/0NnP3szwZwTCmEAutCygX6A==}
-    engines: {node: '>=12.11.0'}
 
   '@rolldown/binding-android-arm64@1.0.3':
     resolution: {integrity: sha512-454rs7jHngixp/NMxd5srYD57OnzSlZ/eFTETjORQHLwJG1lRtmNOJcBerZlfu4GjKqeq8aCCIQrMdHyhI51Hw==}
@@ -7825,6 +7829,18 @@ packages:
     resolution: {integrity: sha512-ph3njJ7veDXy6QKLKHqNiyIqWMMu+rcdtU87XuwBo+QfBOpE1PvqzIWY3KMZBnLaoACxhtrEPf5re7Y/Ty9Bnw==}
     hasBin: true
 
+  openvue@1.0.0:
+    resolution: {integrity: sha512-mbc1p+P5TMI2wT9W1Q9eUuK5xG4RJvsxDnfEJ53gBGCoYcr+jwZmsnds673YruEHAko49c958Mn/lzT/G31ZsA==}
+    engines: {node: '>=12.11.0'}
+    peerDependencies:
+      chart.js: ^4.0.0
+      quill: ^2.0.0
+    peerDependenciesMeta:
+      chart.js:
+        optional: true
+      quill:
+        optional: true
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -8530,10 +8546,6 @@ packages:
 
   primeicons@7.0.0:
     resolution: {integrity: sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==}
-
-  primevue@4.3.6:
-    resolution: {integrity: sha512-Wwg2dH6pBmOdkj9L/OnrCQf9AKPHfY5CcfnDyWeh0tNlR+XjYKGl8qvMdJOvGO9jjg6UdsX5MSaU8vDDsSG+sg==}
-    engines: {node: '>=12.11.0'}
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -12925,6 +12937,39 @@ snapshots:
       rimraf: 3.0.2
     optional: true
 
+  '@openuxkit/styled@1.0.0':
+    dependencies:
+      '@openuxkit/utils': 1.0.1
+
+  '@openuxkit/styles@1.1.0':
+    dependencies:
+      '@openuxkit/styled': 1.0.0
+
+  '@openuxkit/themes@1.1.0':
+    dependencies:
+      '@openuxkit/styled': 1.0.0
+
+  '@openuxkit/utils@1.0.1': {}
+
+  '@openvue/core@1.0.0(vue@3.5.43(typescript@5.9.3))':
+    dependencies:
+      '@openuxkit/styled': 1.0.0
+      '@openuxkit/styles': 1.1.0
+      '@openuxkit/utils': 1.0.1
+      vue: 3.5.43(typescript@5.9.3)
+
+  '@openvue/icons@1.0.0(vue@3.5.43(typescript@5.9.3))':
+    dependencies:
+      '@openuxkit/utils': 1.0.1
+      '@openvue/core': 1.0.0(vue@3.5.43(typescript@5.9.3))
+    transitivePeerDependencies:
+      - vue
+
+  '@openvue/themes@1.0.0':
+    dependencies:
+      '@openuxkit/styled': 1.0.0
+      '@openuxkit/themes': 1.1.0
+
   '@oxc-project/types@0.133.0': {}
 
   '@paralleldrive/cuid2@2.3.1':
@@ -13009,33 +13054,6 @@ snapshots:
     optionalDependencies:
       type-fest: 4.41.0
       webpack-dev-server: 4.15.2(supports-color@5.5.0)(webpack@5.107.2(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
-
-  '@primeuix/styled@0.7.4':
-    dependencies:
-      '@primeuix/utils': 0.6.4
-
-  '@primeuix/styles@1.2.5':
-    dependencies:
-      '@primeuix/styled': 0.7.4
-
-  '@primeuix/themes@1.2.5':
-    dependencies:
-      '@primeuix/styled': 0.7.4
-
-  '@primeuix/utils@0.6.4': {}
-
-  '@primevue/core@4.3.6(vue@3.5.43(typescript@5.9.3))':
-    dependencies:
-      '@primeuix/styled': 0.7.4
-      '@primeuix/utils': 0.6.4
-      vue: 3.5.43(typescript@5.9.3)
-
-  '@primevue/icons@4.3.6(vue@3.5.43(typescript@5.9.3))':
-    dependencies:
-      '@primeuix/utils': 0.6.4
-      '@primevue/core': 4.3.6(vue@3.5.43(typescript@5.9.3))
-    transitivePeerDependencies:
-      - vue
 
   '@rolldown/binding-android-arm64@1.0.3':
     optional: true
@@ -19286,6 +19304,16 @@ snapshots:
     transitivePeerDependencies:
       - '@types/json-schema'
 
+  openvue@1.0.0(vue@3.5.43(typescript@5.9.3)):
+    dependencies:
+      '@openuxkit/styled': 1.0.0
+      '@openuxkit/styles': 1.1.0
+      '@openuxkit/utils': 1.0.1
+      '@openvue/core': 1.0.0(vue@3.5.43(typescript@5.9.3))
+      '@openvue/icons': 1.0.0(vue@3.5.43(typescript@5.9.3))
+    transitivePeerDependencies:
+      - vue
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -19989,16 +20017,6 @@ snapshots:
       react-is: 18.3.1
 
   primeicons@7.0.0: {}
-
-  primevue@4.3.6(vue@3.5.43(typescript@5.9.3)):
-    dependencies:
-      '@primeuix/styled': 0.7.4
-      '@primeuix/styles': 1.2.5
-      '@primeuix/utils': 0.6.4
-      '@primevue/core': 4.3.6(vue@3.5.43(typescript@5.9.3))
-      '@primevue/icons': 4.3.6(vue@3.5.43(typescript@5.9.3))
-    transitivePeerDependencies:
-      - vue
 
   process-nextick-args@2.0.1: {}
 

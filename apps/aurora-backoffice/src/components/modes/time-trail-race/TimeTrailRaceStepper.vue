@@ -28,8 +28,8 @@ import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
 import TimeTrailRaceRegisterPlayer from '@/components/modes/time-trail-race/PlayerRegister.vue';
 import TimeTrailRacePlaying from '@/components/modes/time-trail-race/PlayerTimer.vue';
 import TimeTrailRaceScore from '@/components/modes/time-trail-race/PlayerScore.vue';
-import StepperWrapper, { type StepperStep } from '@/components/prime/StepperWrapper.vue';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
+import StepperWrapper, { type StepperStep } from '@/components/wrapped/StepperWrapper.vue';
+import ConfirmWrapper from '@/components/wrapped/ConfirmWrapper.vue';
 
 const registerPlayer = ref();
 const confirmRef = ref();

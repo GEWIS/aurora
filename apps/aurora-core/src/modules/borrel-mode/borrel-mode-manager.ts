@@ -4,7 +4,7 @@ import { SocketioNamespaces } from '../../socketio-namespaces';
 import { BackofficeSyncEmitter } from '../events/backoffice-sync-emitter';
 import { HttpApiException, HttpStatusCode } from '../../helpers/custom-error';
 
-const FLAG = 'Poster.BorrelModePresent';
+const FLAG = 'BorrelModePresent';
 
 const CHECK_INTERVAL_MS = 60 * 1000;
 

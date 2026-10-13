@@ -77,14 +77,14 @@ describe('PUT /api/borrel-mode', () => {
   });
 });
 
-describe('Poster.BorrelModePresent disabled', () => {
+describe('BorrelModePresent disabled', () => {
   beforeAll(async () => {
     await testApp.authorizedAgent.put('/api/borrel-mode').send({ enabled: true });
-    await ServerSettingsStore.getInstance().setSetting('Poster.BorrelModePresent', false);
+    await ServerSettingsStore.getInstance().setSetting('BorrelModePresent', false);
   });
 
   afterAll(async () => {
-    await ServerSettingsStore.getInstance().setSetting('Poster.BorrelModePresent', true);
+    await ServerSettingsStore.getInstance().setSetting('BorrelModePresent', true);
   });
 
   it('GET /api/borrel-mode reports borrel mode as absent and inactive', async () => {
@@ -102,6 +102,6 @@ describe('Poster.BorrelModePresent disabled', () => {
 
     // ASSERT
     expect(res.status).toBe(409);
-    expect(res.text).toContain('Poster.BorrelModePresent');
+    expect(res.text).toContain('BorrelModePresent');
   });
 });

@@ -927,10 +927,6 @@
 						],
 						"description": "The logo that should be shown in the bottom left corner of the progress bar.\nCan be kept clear to imply no logo should be used."
 					},
-					"Poster.BorrelModePresent": {
-						"type": "boolean",
-						"description": "Whether \"borrel mode\" is present, namely a toggle adding an extra set of\nposters to the rotation."
-					},
 					"Poster.CustomStylesheet": {
 						"anyOf": [
 							{
@@ -987,6 +983,10 @@
 					"ScreenFilter.Warmth": {
 						"type": "number",
 						"format": "double"
+					},
+					"BorrelModePresent": {
+						"type": "boolean",
+						"description": "Whether \"borrel mode\" is present, namely a toggle that adds an extra set of\nposters to the rotation and changes the info screen during a borrel."
 					}
 				},
 				"required": [
@@ -1002,7 +1002,6 @@
 					"Poster.DefaultProgressBarColor",
 					"Poster.ProgressBarPosterColors",
 					"Poster.ProgressBarLogo",
-					"Poster.BorrelModePresent",
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
 					"Poster.Trello",
@@ -1014,7 +1013,8 @@
 					"Orders.WebhookPublicKeyExpirySeconds",
 					"ScreenFilter",
 					"ScreenFilter.Brightness",
-					"ScreenFilter.Warmth"
+					"ScreenFilter.Warmth",
+					"BorrelModePresent"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1036,7 +1036,6 @@
 							"Poster.DefaultProgressBarColor",
 							"Poster.ProgressBarPosterColors",
 							"Poster.ProgressBarLogo",
-							"Poster.BorrelModePresent",
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
 							"Poster.Trello",
@@ -1048,7 +1047,8 @@
 							"Orders.WebhookPublicKeyExpirySeconds",
 							"ScreenFilter",
 							"ScreenFilter.Brightness",
-							"ScreenFilter.Warmth"
+							"ScreenFilter.Warmth",
+							"BorrelModePresent"
 						],
 						"nullable": false
 					},
@@ -8261,7 +8261,6 @@
 											"Poster.DefaultProgressBarColor",
 											"Poster.ProgressBarPosterColors",
 											"Poster.ProgressBarLogo",
-											"Poster.BorrelModePresent",
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
 											"Poster.Trello",
@@ -8273,7 +8272,8 @@
 											"Orders.WebhookPublicKeyExpirySeconds",
 											"ScreenFilter",
 											"ScreenFilter.Brightness",
-											"ScreenFilter.Warmth"
+											"ScreenFilter.Warmth",
+											"BorrelModePresent"
 										],
 										"nullable": false
 									}

@@ -38,14 +38,14 @@ function setup() {
 }
 
 function setFlag(enabled: boolean) {
-  settings.set('Poster.BorrelModePresent', enabled);
-  settingChangeListeners.forEach((listener) => listener('Poster.BorrelModePresent'));
+  settings.set('BorrelModePresent', enabled);
+  settingChangeListeners.forEach((listener) => listener('BorrelModePresent'));
 }
 
 beforeEach(() => {
   vi.useFakeTimers();
   settings.clear();
-  settings.set('Poster.BorrelModePresent', true);
+  settings.set('BorrelModePresent', true);
   settingChangeListeners = [];
 });
 
@@ -84,7 +84,7 @@ describe('BorrelModeManager schedule', () => {
   });
 
   it('does not activate while the feature is disabled', () => {
-    settings.set('Poster.BorrelModePresent', false);
+    settings.set('BorrelModePresent', false);
     vi.setSystemTime(thursday(17, 0));
     const { manager, emit } = setup();
 
@@ -109,7 +109,7 @@ describe('BorrelModeManager.setActive', () => {
   });
 
   it('throws while the feature is disabled', () => {
-    settings.set('Poster.BorrelModePresent', false);
+    settings.set('BorrelModePresent', false);
     const { manager } = setup();
 
     expect(() => manager.setActive(true)).toThrow();

@@ -87,9 +87,6 @@ const screenFilterOpen = ref<boolean>(false);
 
 const borrelModeStore = useBorrelModeStore();
 const showBorrelMode = authStore.isInSecurityGroup('borrelMode', 'privileged');
-if (showBorrelMode) {
-  void borrelModeStore.fetch();
-}
 
 // TODO why does this reactivity not work as expected?
 const sceneMenuItems = computed<IShortcutItem[]>(() =>

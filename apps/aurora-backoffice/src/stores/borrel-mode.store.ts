@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getBorrelMode, setBorrelMode } from '@gewis/aurora-api-client';
+import { useSocketStore } from '@/stores/socket.store';
 
 interface BorrelModeStore {
   present: boolean;
@@ -14,6 +15,12 @@ export const useBorrelModeStore = defineStore('borrel-mode', {
     loading: false,
   }),
   actions: {
+    listen(): void {
+      const socketStore = useSocketStore();
+      socketStore.backofficeSocket?.on('borrel_mode_update', () => {
+        this.fetch().catch(() => {});
+      });
+    },
     async fetch() {
       this.loading = true;
       try {

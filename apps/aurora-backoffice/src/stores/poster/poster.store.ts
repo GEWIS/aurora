@@ -21,7 +21,6 @@ import {
   updatePoster,
   type UpdatePosterRequest,
 } from '@gewis/aurora-api-client';
-import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 interface PosterStore {
   posters: PosterResponse[];
@@ -64,7 +63,6 @@ export const usePosterStore = defineStore('poster', {
         this.fetchPosters(false),
         this.fetchCarouselOrder(),
         this.fetchStaticPosterState(),
-        useBorrelModeStore().fetch(),
       ]);
       this.loading = false;
 

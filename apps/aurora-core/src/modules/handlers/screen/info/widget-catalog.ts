@@ -144,7 +144,7 @@ export const DISABLED_WIDGETS: Record<string, string> = {
   // a moment, not a state worth a permanent panel, so it would sit on "No
   // incoming calls" all day. Deleting this entry is all that re-enabling takes.
   'caller-inline': 'Superseded by the incoming-call overlay, which takes the whole screen.',
-  'caller': 'Superseded by the incoming-call overlay, which takes the whole screen.',
+  caller: 'Superseded by the incoming-call overlay, which takes the whole screen.',
 };
 
 /** Number of columns in the info-screen grid. */

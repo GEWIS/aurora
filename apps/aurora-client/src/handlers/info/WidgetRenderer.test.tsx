@@ -13,6 +13,7 @@ const EMPTY: WidgetData = {
   services: null,
   rooms: null,
   caller: null,
+  borrelMode: false,
 };
 
 describe('placementStyle', () => {

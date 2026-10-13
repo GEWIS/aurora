@@ -47,6 +47,13 @@ describe('RoomStatusWidget', () => {
     );
     expect(screen.getByText('GEWIS is closed')).toBeInTheDocument();
   });
+
+  it('shows only the BAC as responsible during borrel mode', () => {
+    render(<RoomStatusWidget status={base} borrelMode />);
+    expect(screen.getByText('BAC')).toBeInTheDocument();
+    expect(screen.queryByText('Jan')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pietersen')).not.toBeInTheDocument();
+  });
 });
 
 describe('nextBeerTime', () => {

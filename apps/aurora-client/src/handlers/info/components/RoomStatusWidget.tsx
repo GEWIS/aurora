@@ -5,6 +5,7 @@ import { sBool, WidgetSettings } from '../settings';
 
 interface Props {
   status: RoomStatusResponse | null;
+  borrelMode?: boolean;
   settings?: WidgetSettings;
 }
 
@@ -41,7 +42,7 @@ export function nextBeerTime(beerTime: string, from: Date): Date | null {
   return target;
 }
 
-export default function RoomStatusWidget({ status, settings }: Props) {
+export default function RoomStatusWidget({ status, borrelMode = false, settings }: Props) {
   const showPhotos = sBool(settings, 'showPhotos', true);
   const showSymbols = sBool(settings, 'showSymbols', true);
 
@@ -55,39 +56,47 @@ export default function RoomStatusWidget({ status, settings }: Props) {
 
   return (
     <div className="flex h-full flex-col font-raleway text-white text-shadow">
-      <div className="mb-3 shrink-0 text-2xl text-white/60">Room responsible</div>
+      <div className="mb-3 shrink-0 text-2xl text-white/60">
+        Room <span className={borrelMode ? 'line-through' : undefined}>responsible</span>
+      </div>
 
       <div className="flex min-h-0 flex-1 flex-col divide-y divide-white/15">
-        {status.responsible.length === 0 && (
-          <div className="flex flex-1 items-center text-3xl">Nobody assigned</div>
-        )}
-        {status.responsible.map((person) => {
-          const [first, ...rest] = person.name.trim().split(/\s+/);
-          const last = rest.join(' ');
-          const icon = responsibleIcon(person);
-          return (
-            // Each responsible person fills an equal share of the widget's height
-            // (with a divider between them). First name big with the photo/keyholder
-            // icon aligned on the same line (right), last name small below.
-            <div key={person.name} className="flex flex-1 flex-col justify-center py-2">
-              <div className="flex items-center justify-between gap-3">
-                <span className="truncate text-5xl font-semibold">{first}</span>
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
-                  {showPhotos && person.photoUrl ? (
-                    <img
-                      src={person.photoUrl}
-                      alt={person.name}
-                      className="h-14 w-14 rounded-full object-cover"
-                    />
-                  ) : (
-                    showSymbols && icon && <FontAwesomeIcon icon={icon} />
-                  )}
+        {borrelMode ? (
+          <div className="flex flex-1 items-center text-3xl">BAC</div>
+        ) : (
+          <>
+            {status.responsible.length === 0 && (
+              <div className="flex flex-1 items-center text-3xl">Nobody assigned</div>
+            )}
+            {status.responsible.map((person) => {
+              const [first, ...rest] = person.name.trim().split(/\s+/);
+              const last = rest.join(' ');
+              const icon = responsibleIcon(person);
+              return (
+                // Each responsible person fills an equal share of the widget's height
+                // (with a divider between them). First name big with the photo/keyholder
+                // icon aligned on the same line (right), last name small below.
+                <div key={person.name} className="flex flex-1 flex-col justify-center py-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="truncate text-5xl font-semibold">{first}</span>
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
+                      {showPhotos && person.photoUrl ? (
+                        <img
+                          src={person.photoUrl}
+                          alt={person.name}
+                          className="h-14 w-14 rounded-full object-cover"
+                        />
+                      ) : (
+                        showSymbols && icon && <FontAwesomeIcon icon={icon} />
+                      )}
+                    </div>
+                  </div>
+                  {last && <span className="mt-1 truncate text-2xl opacity-75">{last}</span>}
                 </div>
-              </div>
-              {last && <span className="mt-1 truncate text-2xl opacity-75">{last}</span>}
-            </div>
-          );
-        })}
+              );
+            })}
+          </>
+        )}
       </div>
     </div>
   );

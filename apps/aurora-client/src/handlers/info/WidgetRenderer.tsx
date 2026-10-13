@@ -47,6 +47,7 @@ export interface WidgetData {
   services: ServicesHealthResponse | null;
   rooms: ConferenceRoomsResponse | null;
   caller: CallerEvent | null;
+  borrelMode: boolean;
 }
 
 /** Panel title shown above a widget, or undefined for widgets that self-title. */
@@ -113,7 +114,13 @@ export function renderWidget(
         <WeatherForecastWidget weather={data.weather} radar={data.radar} settings={settings} />
       );
     case 'room-responsible':
-      return <RoomStatusWidget status={data.roomStatus} settings={settings} />;
+      return (
+        <RoomStatusWidget
+          status={data.roomStatus}
+          borrelMode={data.borrelMode}
+          settings={settings}
+        />
+      );
     case 'beer':
       return (
         <BeerPanel

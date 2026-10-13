@@ -56,6 +56,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 import { useScreenFilterStore } from '@/stores/screen-filter.store';
 import ScreenFilterDialog from '@/components/screen-filter/ScreenFilterDialog.vue';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 const handlersStore = useHandlersStore();
 const subscriberStore = useSubscriberStore();
@@ -83,6 +84,12 @@ watch(
   { immediate: true },
 );
 const screenFilterOpen = ref<boolean>(false);
+
+const borrelModeStore = useBorrelModeStore();
+const showBorrelMode = authStore.isInSecurityGroup('poster', 'privileged');
+if (showBorrelMode) {
+  void borrelModeStore.fetch();
+}
 
 // TODO why does this reactivity not work as expected?
 const sceneMenuItems = computed<IShortcutItem[]>(() =>
@@ -205,25 +212,31 @@ const modes = computed<IShortcutItem[] | boolean>(() => {
 
 // Add items based on the user's security groups
 const screens = computed<IShortcutItem[] | boolean>(() => {
-  if (!showScreenFilter || !settingsStore.featureEnabled('ScreenFilter')) {
-    return false;
-  }
-
-  return [
-    {
-      label: 'Screens',
-      items: [
-        {
-          label: 'Screen filter',
-          icon: screenFilterStore.active ? 'pi-moon' : 'pi-sun',
-          loading: screenFilterStore.loading,
-          command: () => {
-            screenFilterOpen.value = true;
-          },
+  const items = [
+    showScreenFilter &&
+      settingsStore.featureEnabled('ScreenFilter') && {
+        label: 'Screen filter',
+        icon: screenFilterStore.active ? 'pi-moon' : 'pi-sun',
+        loading: screenFilterStore.loading,
+        command: () => {
+          screenFilterOpen.value = true;
         },
-      ],
-    },
-  ];
+      },
+    showBorrelMode &&
+      borrelModeStore.present && {
+        label: 'Borrel mode',
+        icon: 'pi-barcode',
+        loading: borrelModeStore.loading,
+        enabledIcon: borrelModeStore.enabled,
+        disabledIcon: !borrelModeStore.enabled,
+        command: async () => {
+          await borrelModeStore.set(!borrelModeStore.enabled);
+        },
+      },
+  ].filter(Boolean) as IShortcutItem[];
+
+  if (items.length === 0) return false;
+  return [{ label: 'Screens', items }];
 });
 
 const menus = computed<Array<Array<IShortcutItem>>>(

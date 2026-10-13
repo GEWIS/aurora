@@ -16,20 +16,15 @@
       </template>
     </Button>
     <PosterCreationDialog />
-    <div class="flex-1" />
-    <PosterBorrelModeSwitch v-if="borrelModeStore.present" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import PosterBorrelModeSwitch from '@/components/poster/PosterBorrelModeSwitch.vue';
 import { usePosterStore } from '@/stores/poster/poster.store';
-import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 import PosterCreationDialog from '@/components/poster/PosterCreationDialog.vue';
 
 const store = usePosterStore();
-const borrelModeStore = useBorrelModeStore();
 
 const refreshLoading = ref(false);
 </script>

@@ -22,6 +22,7 @@
             </router-link>
             <a v-else v-bind="props.action">
               <DashboardShortcutItem
+                :disabled="item.disabledIcon"
                 :enabled="item.enabledIcon"
                 :icon="item.icon"
                 :label="item.label"

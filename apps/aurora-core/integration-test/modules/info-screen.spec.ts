@@ -111,6 +111,37 @@ describe('GET /api/handler/screen/info/pc-usage', () => {
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
+
+  it('keeps the first lock time while a PC stays locked across reports', async () => {
+    // ARRANGE
+    const setKey = await createIntegrationKey(['setInfoPcUsage']);
+    const getKey = await createIntegrationKey(['getInfoPcUsage']);
+    const report = async (lockedAt?: string): Promise<void> => {
+      const res = await testApp.unauthorizedAgent
+        .post('/api/handler/screen/info/pc-usage')
+        .set('X-API-Key', setKey)
+        .send({ pcs: [{ pcId: '9', memberId: 1234, name: 'Jane Doe', lockedAt }] });
+      expect(res.status).toBe(204);
+    };
+    const lockedAt = async (): Promise<string | null> => {
+      const res = await testApp.unauthorizedAgent
+        .get('/api/handler/screen/info/pc-usage')
+        .set('X-API-Key', getKey);
+      expect(res.status).toBe(200);
+      return res.body.find((pc: { pcId: string }) => pc.pcId === '9').lockedAt;
+    };
+
+    // ACT + ASSERT: a later report of the same lock does not move it
+    await report('2026-01-01T10:00:00.000Z');
+    await report('2026-01-01T10:05:00.000Z');
+    expect(await lockedAt()).toBe('2026-01-01T10:00:00.000Z');
+
+    // ACT + ASSERT: unlocking clears it, so the next lock starts fresh
+    await report();
+    expect(await lockedAt()).toBeNull();
+    await report('2026-01-01T11:00:00.000Z');
+    expect(await lockedAt()).toBe('2026-01-01T11:00:00.000Z');
+  });
 });
 
 describe('GET /api/handler/screen/info/room-status', () => {

@@ -34,6 +34,9 @@ machine in a single payload:
 - Omitting `status` lets aurora infer it: `lockedAt` → locked, `remote` →
   remote, no user → free, otherwise in use. Send `status` explicitly only for
   `offline` and `maintenance`, which no session can express.
+- `lockedAt` may simply be the time of the run: aurora keeps the first
+  timestamp while a PC stays locked across reports and clears it once a report
+  arrives without one.
 
 Accounts without an `employeeNumber` — external accounts (`e1234`) and service
 accounts — report `memberId: null`. They show their name and get no symbol,

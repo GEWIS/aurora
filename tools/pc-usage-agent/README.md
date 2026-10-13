@@ -75,7 +75,8 @@ empty.
 
 - Machines are pinged before anything else, and every per-machine failure is
   caught: one unreachable PC is reported offline and the rest of the report
-  still goes out.
+  still goes out. A PC that answers ping but whose sessions `qwinsta` cannot
+  list is reported offline too, rather than free.
 - AD is read from the PDC emulator, so an account created or expired moments ago
   is already visible.
 - Accounts are resolved once per run and cached, since that is the slowest part.

@@ -20,6 +20,13 @@ const known: CallerEvent = {
   photoUrl: 'https://example/gewis.png',
 };
 const unknown: CallerEvent = { ringing: true, known: false, name: null, photoUrl: null };
+/** Not in the directory, but the phone system told us who is calling. */
+const reported: CallerEvent = {
+  ringing: true,
+  known: false,
+  name: '+31612345678',
+  photoUrl: null,
+};
 
 describe('CallerOverlay', () => {
   beforeEach(() => vi.useFakeTimers());
@@ -45,8 +52,26 @@ describe('CallerOverlay', () => {
     expect(screen.queryByText('GEWIS calling')).not.toBeInTheDocument();
   });
 
+  it('names a caller the phone system reported, without a photo', () => {
+    render(<CallerOverlay event={reported} />);
+    expect(screen.getByText('+31612345678 calling')).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
   it('renders nothing when not ringing', () => {
     render(<CallerOverlay event={{ ringing: false, known: false, name: null, photoUrl: null }} />);
     expect(screen.queryByText(/calling|ringing/i)).not.toBeInTheDocument();
+  });
+
+  it('dismisses before the timeout when the call stops ringing', () => {
+    const { rerender } = render(<CallerOverlay event={known} />);
+    expect(screen.getByText('GEWIS calling')).toBeInTheDocument();
+
+    // The phone system reported the hang-up (answered, declined or cancelled).
+    rerender(
+      <CallerOverlay event={{ ringing: false, known: false, name: null, photoUrl: null }} />,
+    );
+
+    expect(screen.queryByText('GEWIS calling')).not.toBeInTheDocument();
   });
 });

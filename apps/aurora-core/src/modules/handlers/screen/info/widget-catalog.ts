@@ -140,8 +140,11 @@ export interface WidgetPlacement {
  */
 export const DISABLED_WIDGETS: Record<string, string> = {
   'conference-rooms': 'Room availability has no real booking source yet.',
-  'caller-inline': 'The phone integration that reports incoming calls is not implemented yet.',
-  caller: 'The phone integration that reports incoming calls is not implemented yet.',
+  // The overlay (`caller`) is live; this grid widget is not. An incoming call is
+  // a moment, not a state worth a permanent panel, so it would sit on "No
+  // incoming calls" all day. Deleting this entry is all that re-enabling takes.
+  'caller-inline': 'Superseded by the incoming-call overlay, which takes the whole screen.',
+  'caller': 'Superseded by the incoming-call overlay, which takes the whole screen.',
 };
 
 /** Number of columns in the info-screen grid. */
@@ -411,10 +414,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
     ),
   ],
   'beer-modal': [],
-  caller: [
-    num('autoDismissSeconds', 'Auto-dismiss after (seconds)', 20, 5, 120),
-    entity('directory', 'Caller directory', 'callers'),
-  ],
+  caller: [],
 };
 
 /** Per-child config schemas for container widgets, keyed by container id. */

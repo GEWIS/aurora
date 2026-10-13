@@ -211,6 +211,31 @@
       </DataTable>
     </AppContainer>
 
+    <!-- Caller ID -->
+    <AppContainer v-if="canManageCallers" icon="pi-phone" title="Caller ID">
+      <template #header>
+        <span v-if="callerIdEnabled" class="text-sm text-green-400">
+          <i class="pi pi-check" /> Overlay enabled
+        </span>
+        <span v-else class="text-sm opacity-70"><i class="pi pi-ban" /> Overlay disabled</span>
+      </template>
+      <div class="flex flex-col gap-3">
+        <small class="opacity-70">
+          When the phone rings, the screens show who is calling. A caller listed here is shown by
+          name and photo; anyone else is shown as reported by the phone system.
+          <template v-if="!callerIdEnabled">
+            The overlay is switched off, so no call reaches the screens. An admin can turn
+            "InfoScreen.CallerId" on under Server settings. The directory can be prepared in the
+            meantime.
+          </template>
+          <template v-else>
+            Add it to a screen under "Manage layout" → Overlays → "Incoming call (overlay)".
+          </template>
+        </small>
+        <EntityControl entity="callers" :model-value="[]" :selectable="false" />
+      </div>
+    </AppContainer>
+
     <!-- Keyholder edit dialog -->
     <Dialog v-model:visible="dialogVisible" :header="`Edit ${editName}`" modal>
       <div class="flex flex-col gap-4 w-96">
@@ -259,11 +284,24 @@ import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useServerSettingsStore } from '@/stores/server-settings.store';
+import EntityControl from '@/views/Info/EntityControl.vue';
 
 const infoStore = useInfoStore();
 const authStore = useAuthStore();
+const settingsStore = useServerSettingsStore();
 
 const canRename = computed(() => authStore.getRoles.includes(SecurityGroup.ADMIN));
+
+/**
+ * The caller ID is a server setting rather than a per-screen choice, so the
+ * directory stays editable while the overlay is off and nothing is lost by
+ * switching it off for a while.
+ */
+const callerIdEnabled = computed(() => settingsStore.featureEnabled('InfoScreen.CallerId'));
+
+/** The caller endpoints are privileged, while this page itself is not. */
+const canManageCallers = computed(() => authStore.isInSecurityGroup('infoscreen', 'privileged'));
 
 // --- GEWIS keyholder sync ---------------------------------------------------
 

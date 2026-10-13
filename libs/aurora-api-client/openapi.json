@@ -3369,34 +3369,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"BorrelModeResponse": {
-				"properties": {
-					"enabled": {
-						"type": "boolean"
-					},
-					"present": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"enabled",
-					"present"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"BorrelModeParams": {
-				"properties": {
-					"enabled": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"enabled"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"EnabledParams": {
 				"properties": {
 					"enabled": {
@@ -6860,6 +6832,34 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"BorrelModeState": {
+				"properties": {
+					"present": {
+						"type": "boolean"
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"present",
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BorrelModeParams": {
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"BeatGeneratorResponse": {
 				"properties": {
 					"id": {
@@ -7108,6 +7108,9 @@
 					"screenFilter": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
+					"borrelMode": {
+						"$ref": "#/components/schemas/ISecuritySections"
+					},
 					"integrationUsers": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					}
@@ -7137,6 +7140,7 @@
 					"orders",
 					"timedEvents",
 					"screenFilter",
+					"borrelMode",
 					"integrationUsers"
 				],
 				"type": "object",
@@ -11814,77 +11818,6 @@
 				"parameters": []
 			}
 		},
-		"/handler/screen/poster/carousel/borrel-mode": {
-			"get": {
-				"operationId": "GetPosterBorrelMode",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/BorrelModeResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"put": {
-				"operationId": "SetPosterBorrelMode",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/BorrelModeParams"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/handler/screen/poster/carousel/{id}/enabled": {
 			"post": {
 				"operationId": "TogglePosterEnable",
@@ -15309,6 +15242,82 @@
 						}
 					}
 				]
+			}
+		},
+		"/borrel-mode": {
+			"get": {
+				"operationId": "GetBorrelMode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BorrelModeState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get whether borrel mode is available and whether it is currently active.",
+				"tags": [
+					"BorrelMode"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "SetBorrelMode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BorrelModeState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Activate or deactivate borrel mode until the end of the day",
+				"tags": [
+					"BorrelMode"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BorrelModeParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/beat-generator": {

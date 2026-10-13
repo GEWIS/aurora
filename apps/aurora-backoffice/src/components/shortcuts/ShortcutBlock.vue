@@ -86,7 +86,7 @@ watch(
 const screenFilterOpen = ref<boolean>(false);
 
 const borrelModeStore = useBorrelModeStore();
-const showBorrelMode = authStore.isInSecurityGroup('poster', 'privileged');
+const showBorrelMode = authStore.isInSecurityGroup('borrelMode', 'privileged');
 if (showBorrelMode) {
   void borrelModeStore.fetch();
 }

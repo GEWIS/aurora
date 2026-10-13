@@ -178,12 +178,24 @@ function Get-MaintenanceMachines {
 .DESCRIPTION
     Fields are split on whitespace rather than cut at fixed column offsets, so a
     long username does not shift the parse: SESSIONNAME USERNAME ID STATE ...
+
+    Throws when the machine cannot be queried, so the caller can tell that
+    apart from a machine nobody is logged in to.
 #>
 function Get-Sessions {
     param([string] $ComputerName)
 
+    # Windows PowerShell 5.1 wraps every stderr line of a native command in an
+    # error record, even with 2>$null, and under the script-wide 'Stop' the
+    # first one would end the whole run. Relax it for this call only and judge
+    # the result by the exit code instead.
+    $ErrorActionPreference = 'Continue'
     $output = & qwinsta /server:$ComputerName 2>$null
-    if ($LASTEXITCODE -ne 0 -or -not $output) { return @() }
+    $exitCode = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
+    if ($exitCode -ne 0 -or -not $output) {
+        throw "qwinsta /server:$ComputerName failed with exit code $exitCode"
+    }
 
     $sessions = @()
     foreach ($line in $output | Select-Object -Skip 1) {
@@ -257,13 +269,23 @@ foreach ($pcId in ($Machines.Keys | Sort-Object { [int] $_ })) {
     } elseif (-not (Test-Online -ComputerName $computer)) {
         $entry.status = 'offline'
     } else {
-        $session = Get-Sessions -ComputerName $computer |
-            Sort-Object -Property @{ Expression = { -not $_.IsConsole } } |
-            Select-Object -First 1
+        try {
+            $sessions = @(Get-Sessions -ComputerName $computer)
+        } catch {
+            Write-Warning "Could not list the sessions on ${computer}: $($_.Exception.Message)"
+            $sessions = $null
+        }
 
-        if ($null -eq $session) {
+        if ($null -eq $sessions) {
+            # It answers ping but will not say who is at it. Reporting that as
+            # free could show a taken seat as empty.
+            $entry.status = 'offline'
+        } elseif ($sessions.Count -eq 0) {
             $entry.status = 'free'
         } else {
+            $session = $sessions |
+                Sort-Object -Property @{ Expression = { -not $_.IsConsole } } |
+                Select-Object -First 1
             $member = Resolve-Member -SamAccountName $session.UserName
             $entry.memberId = $member.MemberId
             $entry.name = $member.Name
@@ -291,8 +313,15 @@ if (-not [string]::IsNullOrWhiteSpace($VirtualDesktopHost)) {
     } elseif (-not (Test-Online -ComputerName $VirtualDesktopHost)) {
         $report.Add(@{ pcId = 'vdesktop'; status = 'offline' })
     } else {
-        $sessions = @(Get-Sessions -ComputerName $VirtualDesktopHost)
-        if ($sessions.Count -eq 0) {
+        try {
+            $sessions = @(Get-Sessions -ComputerName $VirtualDesktopHost)
+        } catch {
+            Write-Warning "Could not list the sessions on ${VirtualDesktopHost}: $($_.Exception.Message)"
+            $sessions = $null
+        }
+        if ($null -eq $sessions) {
+            $report.Add(@{ pcId = 'vdesktop'; status = 'offline' })
+        } elseif ($sessions.Count -eq 0) {
             # Still report the machine, so an empty vdesktop reads as free
             # rather than going stale into offline.
             $report.Add(@{ pcId = 'vdesktop'; remote = $true })

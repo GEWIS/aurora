@@ -116,11 +116,11 @@ describe('LayoutService.sanitizeSettings', () => {
     expect(out.mode).toBeUndefined();
   });
 
-   it('clamps numbers to the setting bounds', () => {
+  it('clamps numbers to the setting bounds', () => {
     const news = getCatalogItem('news')!.settings;
     const out = LayoutService.sanitizeSettings(news, { maxItems: 999 });
     expect(out.maxItems).toBe(100);
-   });
+  });
 
   it('keeps text settings as strings', () => {
     const events = getCatalogItem('events')!.settings;

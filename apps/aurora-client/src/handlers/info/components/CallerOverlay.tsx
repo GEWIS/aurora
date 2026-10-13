@@ -27,7 +27,7 @@ const SHOW_MS = 20 * 1000;
 
 /**
  * Full-screen incoming-call overlay. On a ringing event it shows the caller's
- * photo + "<name> calling" for a known caller, or a shaking phone + "Phone is 
+ * photo + "<name> calling" for a known caller, or a shaking phone + "Phone is
  * ringing" for an unknown one, then auto-dismisses after ~20s (or earlier if the call is picked up or dropped).
  */
 export default function CallerOverlay({ event }: Props) {
@@ -69,9 +69,7 @@ export default function CallerOverlay({ event }: Props) {
               <FontAwesomeIcon icon={faPhone} />
             </motion.div>
           )}
-          <div className="text-6xl font-bold">
-            {name ? `${name} calling` : 'Phone is ringing'}
-          </div>
+          <div className="text-6xl font-bold">{name ? `${name} calling` : 'Phone is ringing'}</div>
         </motion.div>
       )}
     </AnimatePresence>

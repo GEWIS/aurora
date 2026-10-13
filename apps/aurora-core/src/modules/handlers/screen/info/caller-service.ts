@@ -16,6 +16,12 @@ export interface CallerResponse {
 export interface CallerRingParams {
   /** The reported phone number or SIP address of the incoming call. */
   number: string;
+  /**
+   * Reported caller name, used when the number is unknown
+   * to the directory (or absent, as on a Teams-to-Teams call). A directory match
+   * always wins, so a caller renamed in the backoffice stays renamed.
+   */
+  name?: string | null;
 }
 
 /**
@@ -29,6 +35,17 @@ export interface CallerRingEvent {
   name: string | null;
   photoUrl: string | null;
 }
+
+/**
+ * The event that dismisses the overlay: the call was answered, declined or
+ * cancelled. Frozen because it is shared by every caller that reports a hang-up.
+ */
+export const CALL_ENDED: CallerRingEvent = Object.freeze({
+  ringing: false,
+  known: false,
+  name: null,
+  photoUrl: null,
+});
 
 /**
  * Manages the caller directory and resolves an incoming caller id against it.
@@ -75,29 +92,37 @@ export default class CallerService {
 
   /**
    * Resolve a reported caller id (phone number or SIP address) against the
-   * directory. A falsy/`"0"` number is treated as "not ringing".
+   * directory. A falsy/`"0"` number is treated as "not ringing", unless the
+   * phone system reported a name (a Teams-to-Teams call has no number).
    */
-  public async resolve(number: string | null | undefined): Promise<CallerRingEvent> {
+  public async resolve(
+    number: string | null | undefined,
+    reportedName?: string | null,
+  ): Promise<CallerRingEvent> {
     const callers = await this.getAll();
-    return CallerService.matchCaller(number, callers);
+    return CallerService.matchCaller(number, callers, reportedName);
   }
 
   /**
    * Pure resolution of a caller id against a set of callers (no DB access).
+   * The directory (renaming a caller in backoffice) wins over the reported name.
    */
   public static matchCaller(
     number: string | null | undefined,
     callers: Pick<Caller, 'name' | 'numbers' | 'photoUrl'>[],
+    reportedName?: string | null,
   ): CallerRingEvent {
     const normalized = CallerService.normalize(number ?? '');
+    const name = (reportedName ?? '').trim() || null;
     if (!normalized || normalized === '0') {
-      return { ringing: false, known: false, name: null, photoUrl: null };
+      // No number at all: still ring if the phone system named the caller.
+      return name ? { ringing: true, known: false, name, photoUrl: null } : CALL_ENDED;
     }
     const match = callers.find((c) =>
       (c.numbers ?? []).some((n) => CallerService.normalize(n) === normalized),
     );
     if (!match) {
-      return { ringing: true, known: false, name: null, photoUrl: null };
+      return { ringing: true, known: false, name, photoUrl: null };
     }
     return { ringing: true, known: true, name: match.name, photoUrl: match.photoUrl };
   }

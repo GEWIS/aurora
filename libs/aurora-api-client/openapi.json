@@ -888,7 +888,7 @@
 							"format": "double"
 						},
 						"type": "array",
-						"description": "IDs of all light switches that should be activated when a discoball\nshould be turned on."
+						"description": "IDs of all light switches that should be activated when a discoball\r\nshould be turned on."
 					},
 					"TimeTrailRace": {
 						"type": "boolean",
@@ -925,11 +925,11 @@
 								]
 							}
 						],
-						"description": "The logo that should be shown in the bottom left corner of the progress bar.\nCan be kept clear to imply no logo should be used."
+						"description": "The logo that should be shown in the bottom left corner of the progress bar.\r\nCan be kept clear to imply no logo should be used."
 					},
 					"Poster.BorrelModePresent": {
 						"type": "boolean",
-						"description": "Whether \"borrel mode\" is present, namely a toggle adding an extra set of\nposters to the rotation."
+						"description": "Whether \"borrel mode\" is present, namely a toggle adding an extra set of\r\nposters to the rotation."
 					},
 					"Poster.CustomStylesheet": {
 						"anyOf": [
@@ -960,6 +960,9 @@
 					"InfoScreen": {
 						"type": "boolean",
 						"description": "Whether the info screen handler should be enabled."
+					},
+					"InfoScreen.CallerId": {
+						"type": "boolean"
 					},
 					"Orders": {
 						"type": "boolean"
@@ -1008,6 +1011,7 @@
 					"Poster.Trello",
 					"Poster.Requests",
 					"InfoScreen",
+					"InfoScreen.CallerId",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
@@ -1042,6 +1046,7 @@
 							"Poster.Trello",
 							"Poster.Requests",
 							"InfoScreen",
+							"InfoScreen.CallerId",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
@@ -1162,7 +1167,7 @@
 					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
-						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
+						"description": "ID of the socket connection if present.\r\nRequired to send events specifically and only to this entity.\r\nMapping from namespace to ID, as a websocket has a different ID\r\nfor each namespace its in."
 					},
 					"scaleFactor": {
 						"type": "number",
@@ -1221,7 +1226,7 @@
 					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
-						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
+						"description": "ID of the socket connection if present.\r\nRequired to send events specifically and only to this entity.\r\nMapping from namespace to ID, as a websocket has a different ID\r\nfor each namespace its in."
 					}
 				},
 				"required": [
@@ -1315,7 +1320,7 @@
 					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
-						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
+						"description": "ID of the socket connection if present.\r\nRequired to send events specifically and only to this entity.\r\nMapping from namespace to ID, as a websocket has a different ID\r\nfor each namespace its in."
 					}
 				},
 				"required": [
@@ -2613,7 +2618,7 @@
 							"nullable": true
 						},
 						"type": "array",
-						"description": "Slice of DMX channel values that should be send to the fixture.\nThe first value will be put on CH1, the second on CH2, the third on CH3, etc.\nUse \"null\" to indicate the channel should not be overriden."
+						"description": "Slice of DMX channel values that should be send to the fixture.\r\nThe first value will be put on CH1, the second on CH2, the third on CH3, etc.\r\nUse \"null\" to indicate the channel should not be overriden."
 					}
 				},
 				"required": [
@@ -2693,7 +2698,7 @@
 					"positionY": {
 						"type": "number",
 						"format": "float",
-						"description": "Position of the fixture within the group's grid.\nShould be undefined if the group is a line of fixtures\n(and not a grid).",
+						"description": "Position of the fixture within the group's grid.\r\nShould be undefined if the group is a line of fixtures\r\n(and not a grid).",
 						"minimum": 0
 					}
 				},
@@ -2715,18 +2720,18 @@
 					},
 					"groupInMiddle": {
 						"type": "boolean",
-						"description": "Whether the group of lights is situated in the middle of the room, or at the side.\nHandlers can use this to determine which effects to use."
+						"description": "Whether the group of lights is situated in the middle of the room, or at the side.\r\nHandlers can use this to determine which effects to use."
 					},
 					"gridSizeX": {
 						"type": "number",
 						"format": "float",
-						"description": "Size (width) of the X axis where all the fixtures are positioned.\nAll fixtures should have their positionX be in range [0, gridSizeX).",
+						"description": "Size (width) of the X axis where all the fixtures are positioned.\r\nAll fixtures should have their positionX be in range [0, gridSizeX).",
 						"minimum": 0
 					},
 					"gridSizeY": {
 						"type": "number",
 						"format": "float",
-						"description": "Size (width) of the Y axis where all the fixtures are positioned.\n0 if the lights are positioned in a line (and not in a grid)",
+						"description": "Size (width) of the Y axis where all the fixtures are positioned.\r\n0 if the lights are positioned in a line (and not in a grid)",
 						"minimum": 0
 					},
 					"pars": {
@@ -3790,7 +3795,7 @@
 					},
 					"fileName": {
 						"type": "string",
-						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint. Not set\nfor external posters."
+						"description": "Original name of the uploaded file. The file itself is served by a separate endpoint. Not set\r\nfor external posters."
 					}
 				},
 				"required": [
@@ -3807,7 +3812,7 @@
 				"additionalProperties": false
 			},
 			"ApprovePosterRequestParams": {
-				"description": "The final poster as approved by the reviewer. Optional fields that are left out are not set on\nthe poster, even if the requester provided them.",
+				"description": "The final poster as approved by the reviewer. Optional fields that are left out are not set on\r\nthe poster, even if the requester provided them.",
 				"properties": {
 					"name": {
 						"type": "string",
@@ -3846,7 +3851,7 @@
 					},
 					"uri": {
 						"type": "string",
-						"description": "Link of the external poster. Required when approving an external poster request, and not\nallowed for other requests."
+						"description": "Link of the external poster. Required when approving an external poster request, and not\r\nallowed for other requests."
 					}
 				},
 				"required": [
@@ -4030,7 +4035,7 @@
 							"format": "double"
 						},
 						"type": "array",
-						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\npick from."
+						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\r\npick from."
 					},
 					"type": {
 						"$ref": "#/components/schemas/PosterType.PHOTO"
@@ -4103,7 +4108,7 @@
 							"format": "double"
 						},
 						"type": "array",
-						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\npick from."
+						"description": "If the poster is of type photo this contains the ids of the GEWISweb albums this poster should\r\npick from."
 					},
 					"type": {
 						"anyOf": [
@@ -4255,7 +4260,7 @@
 					},
 					"symbol": {
 						"type": "string",
-						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\nmember is not in it (or the account belongs to no member)."
+						"description": "Board/keyholder symbol derived from the keyholder registry, or '' when the\r\nmember is not in it (or the account belongs to no member)."
 					}
 				},
 				"required": [
@@ -4288,7 +4293,7 @@
 							"$ref": "#/components/schemas/PcUser"
 						},
 						"type": "array",
-						"description": "Who is logged in. A physical PC has at most one entry; the virtual desktop\n({@link VDESKTOP_PC_ID}) can have many at once. Empty when free or offline."
+						"description": "Who is logged in. A physical PC has at most one entry; the virtual desktop\r\n({@link VDESKTOP_PC_ID}) can have many at once. Empty when free or offline."
 					},
 					"remote": {
 						"type": "boolean"
@@ -4320,7 +4325,7 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true,
-						"description": "GEWIS membership number of the person logged in, or null for an account\nthat belongs to no member (a guest or service login). This is the identity:\nthe keyholder registry is matched on it, so the login name never reaches\naurora at all."
+						"description": "GEWIS membership number of the person logged in, or null for an account\r\nthat belongs to no member (a guest or service login). This is the identity:\r\nthe keyholder registry is matched on it, so the login name never reaches\r\naurora at all."
 					},
 					"name": {
 						"type": "string",
@@ -4545,16 +4550,16 @@
 					"displayName": {
 						"type": "string",
 						"nullable": true,
-						"description": "What the screen calls this person. Blank means the short name is derived\nfrom the full name (given name, plus surname where two people clash)."
+						"description": "What the screen calls this person. Blank means the short name is derived\r\nfrom the full name (given name, plus surname where two people clash)."
 					},
 					"photoUrl": {
 						"type": "string",
 						"nullable": true,
-						"description": "Profile photo shown on the info screen. Not part of the GEWIS records, so\nit is set here or nowhere."
+						"description": "Profile photo shown on the info screen. Not part of the GEWIS records, so\r\nit is set here or nowhere."
 					},
 					"isCandidateBoard": {
 						"type": "boolean",
-						"description": "Whether this person is on the candidate board. The GEWIS API has no notion\nof a candidate board, so this is the one flag a human decides."
+						"description": "Whether this person is on the candidate board. The GEWIS API has no notion\r\nof a candidate board, so this is the one flag a human decides."
 					}
 				},
 				"type": "object",
@@ -4618,7 +4623,7 @@
 					"content",
 					"container"
 				],
-				"description": "What a widget is *for*, used to group the backoffice palette. Presentation\nonly — nothing in the core or the client behaves differently per category.\n\n`container` overlaps with the `container` flag, which carries the actual\nbehaviour (holds children, no nesting); the category exists so the palette\ndoes not have to special-case it."
+				"description": "What a widget is *for*, used to group the backoffice palette. Presentation\r\nonly — nothing in the core or the client behaves differently per category.\r\n\r\n`container` overlaps with the `container` flag, which carries the actual\r\nbehaviour (holds children, no nesting); the category exists so the palette\r\ndoes not have to special-case it."
 			},
 			"WidgetSettingValue": {
 				"anyOf": [
@@ -4639,7 +4644,7 @@
 						"type": "array"
 					}
 				],
-				"description": "The catalog of widgets the info screen supports. This is the single source of\ntruth shared (via the `widget-catalog` endpoint) with the backoffice layout\neditor (palette + resize bounds + per-widget settings) and the client\n(id → component mapping + setting consumption).\n\nGrid model: a fixed 9-column grid (16px gutters/margins) with 8 rows. A\nplaceable widget occupies a rectangle `{ x, y, w, h }` in grid cells. The same\nwidget type may be placed multiple times; each placement has its own unique\n`instanceId` and its own `settings`. Modal widgets are not placed on the grid;\nthey are toggled on or off and render as an overlay when triggered (beer\ncountdown, incoming call)."
+				"description": "The catalog of widgets the info screen supports. This is the single source of\r\ntruth shared (via the `widget-catalog` endpoint) with the backoffice layout\r\neditor (palette + resize bounds + per-widget settings) and the client\r\n(id → component mapping + setting consumption).\r\n\r\nGrid model: a fixed 9-column grid (16px gutters/margins) with 8 rows. A\r\nplaceable widget occupies a rectangle `{ x, y, w, h }` in grid cells. The same\r\nwidget type may be placed multiple times; each placement has its own unique\r\n`instanceId` and its own `settings`. Modal widgets are not placed on the grid;\r\nthey are toggled on or off and render as an overlay when triggered (beer\r\ncountdown, incoming call)."
 			},
 			"WidgetSettingOption": {
 				"properties": {
@@ -4688,7 +4693,7 @@
 							"background",
 							"entity"
 						],
-						"description": "`background` is a composite panel background: a `\"#rrggbb|opacity|border|blur\"`\nstring edited with a colour/opacity/border picker + preset swatches.\n`entity` renders a manager for a global list (callers/rooms/news sources); when\n`selectable` it is a per-widget multiselect filter storing the chosen ids."
+						"description": "`background` is a composite panel background: a `\"#rrggbb|opacity|border|blur\"`\r\nstring edited with a colour/opacity/border picker + preset swatches.\r\n`entity` renders a manager for a global list (callers/rooms/news sources); when\r\n`selectable` it is a per-widget multiselect filter storing the chosen ids."
 					},
 					"default": {
 						"$ref": "#/components/schemas/WidgetSettingValue"
@@ -4745,7 +4750,7 @@
 							"key"
 						],
 						"type": "object",
-						"description": "Only show this setting in the editor when another setting has a given value,\ne.g. `{ key: 'mode', value: 'digital' }`."
+						"description": "Only show this setting in the editor when another setting has a given value,\r\ne.g. `{ key: 'mode', value: 'digital' }`."
 					}
 				},
 				"required": [
@@ -5151,6 +5156,11 @@
 					"number": {
 						"type": "string",
 						"description": "The reported phone number or SIP address of the incoming call."
+					},
+					"name": {
+						"type": "string",
+						"nullable": true,
+						"description": "Reported caller name, used when the number is unknown\r\nto the directory (or absent, as on a Teams-to-Teams call). A directory match\r\nalways wins, so a caller renamed in the backoffice stays renamed."
 					}
 				},
 				"required": [
@@ -5168,7 +5178,7 @@
 					"maintenance",
 					"unknown"
 				],
-				"description": "A monitor's state, mirroring Uptime Kuma's own statuses (plus `unknown` for a\nmonitor that has not reported yet). The client colours each state the way Kuma\ndoes. Gatus only distinguishes success/failure, so it never reports `pending`\nor `maintenance`."
+				"description": "A monitor's state, mirroring Uptime Kuma's own statuses (plus `unknown` for a\r\nmonitor that has not reported yet). The client colours each state the way Kuma\r\ndoes. Gatus only distinguishes success/failure, so it never reports `pending`\r\nor `maintenance`."
 			},
 			"ServiceStatus": {
 				"properties": {
@@ -5538,7 +5548,7 @@
 					},
 					"enableFade": {
 						"type": "boolean",
-						"description": "Whether the lights should be turned off using a fade effect\non each beat"
+						"description": "Whether the lights should be turned off using a fade effect\r\non each beat"
 					},
 					"nrBlacks": {
 						"type": "integer",
@@ -5549,7 +5559,7 @@
 					"customCycleTime": {
 						"type": "integer",
 						"format": "int32",
-						"description": "Amount of time it takes before the lights switch to the next state (in ms). If undefined,\nbeats will be used for switching states",
+						"description": "Amount of time it takes before the lights switch to the next state (in ms). If undefined,\r\nbeats will be used for switching states",
 						"minimum": 0
 					}
 				},
@@ -5636,7 +5646,7 @@
 					"customCycleTime": {
 						"type": "integer",
 						"format": "int32",
-						"description": "Amount of time it takes before the lights switch to the next state (in ms). If undefined,\nbeats will be used for switching states",
+						"description": "Amount of time it takes before the lights switch to the next state (in ms). If undefined,\r\nbeats will be used for switching states",
 						"minimum": 0
 					}
 				},
@@ -5743,7 +5753,7 @@
 					"cycleTime": {
 						"type": "integer",
 						"format": "int32",
-						"description": "After how many ms (approximately) a ratio of lights should be turned on.\nDefaults to 0, which enables the ratio of lights on the beat of the music.",
+						"description": "After how many ms (approximately) a ratio of lights should be turned on.\r\nDefaults to 0, which enables the ratio of lights on the beat of the music.",
 						"minimum": 0
 					}
 				},
@@ -5809,12 +5819,12 @@
 					"brightenTimeMs": {
 						"type": "number",
 						"format": "double",
-						"description": "In how many ms the fixture should light up to the relativeBrightness on effect start.\nDisabled if undefined"
+						"description": "In how many ms the fixture should light up to the relativeBrightness on effect start.\r\nDisabled if undefined"
 					},
 					"dimTimeMs": {
 						"type": "number",
 						"format": "double",
-						"description": "In how many ms the fixture should dim from the relativeBrightness on effect start.\nDisabled if undefined or if brightenTimeMs is not undefined"
+						"description": "In how many ms the fixture should dim from the relativeBrightness on effect start.\r\nDisabled if undefined or if brightenTimeMs is not undefined"
 					}
 				},
 				"required": [
@@ -5910,7 +5920,7 @@
 					},
 					"singleWave": {
 						"type": "boolean",
-						"description": "Whether the animation should only be executed once from start to finish\ninstead of a continuous animation (false by default)"
+						"description": "Whether the animation should only be executed once from start to finish\r\ninstead of a continuous animation (false by default)"
 					}
 				},
 				"required": [
@@ -6870,7 +6880,7 @@
 					},
 					"hasPrecedence": {
 						"type": "boolean",
-						"description": "Whether this beat generator overrides the beats of all other generators.\nThis means that only these beats are acted upon by Aurora and propagated\nto all clients that listen to them."
+						"description": "Whether this beat generator overrides the beats of all other generators.\r\nThis means that only these beats are acted upon by Aurora and propagated\r\nto all clients that listen to them."
 					}
 				},
 				"required": [
@@ -6987,7 +6997,7 @@
 				"additionalProperties": false
 			},
 			"OidcConfig": {
-				"description": "The OidcConfig contains the details needed to authenticate with keycloak\nThese variables are based on the environment variables, and might differ\nfrom system to system.",
+				"description": "The OidcConfig contains the details needed to authenticate with keycloak\r\nThese variables are based on the environment variables, and might differ\r\nfrom system to system.",
 				"properties": {
 					"clientId": {
 						"type": "string",
@@ -7764,7 +7774,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Login a user via Spotify. Used to bind the returned spotify user to this server instance.\nPerforms a redirect to the Spotify website",
+				"description": "Login a user via Spotify. Used to bind the returned spotify user to this server instance.\r\nPerforms a redirect to the Spotify website",
 				"tags": [
 					"Spotify"
 				],
@@ -8143,7 +8153,7 @@
 						}
 					}
 				},
-				"description": "Get all server settings. NOTE: this can include secrets\nlike private keys!",
+				"description": "Get all server settings. NOTE: this can include secrets\r\nlike private keys!",
 				"tags": [
 					"ServerSettings"
 				],
@@ -8263,6 +8273,7 @@
 											"Poster.Trello",
 											"Poster.Requests",
 											"InfoScreen",
+											"InfoScreen.CallerId",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",
@@ -8419,7 +8430,7 @@
 						}
 					}
 				},
-				"description": "Change the dimming and blue light filter applied to all screens,\noptionally fading gradually to the new values",
+				"description": "Change the dimming and blue light filter applied to all screens,\r\noptionally fading gradually to the new values",
 				"tags": [
 					"ScreenFilter"
 				],
@@ -10254,7 +10265,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Store the next state of all fixtures in the given LightsGroup and do not change them anymore\n(i.e. freeze the fixture in its current state)",
+				"description": "Store the next state of all fixtures in the given LightsGroup and do not change them anymore\r\n(i.e. freeze the fixture in its current state)",
 				"tags": [
 					"Lights"
 				],
@@ -10525,7 +10536,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"description": "Store the next state of the fixture and do not change anymore\r\n(i.e. freeze the fixture in its current state)",
 				"tags": [
 					"Lights"
 				],
@@ -10674,7 +10685,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"description": "Store the next state of the fixture and do not change anymore\r\n(i.e. freeze the fixture in its current state)",
 				"tags": [
 					"Lights"
 				],
@@ -10823,7 +10834,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Store the next state of the fixture and do not change anymore\n(i.e. freeze the fixture in its current state)",
+				"description": "Store the next state of the fixture and do not change anymore\r\n(i.e. freeze the fixture in its current state)",
 				"tags": [
 					"Lights"
 				],
@@ -12241,7 +12252,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Hide the static poster currently shown on screens. The subscribers should\nrevert to their default view.",
+				"description": "Hide the static poster currently shown on screens. The subscribers should\r\nrevert to their default view.",
 				"tags": [
 					"Handlers"
 				],
@@ -12385,7 +12396,7 @@
 						}
 					}
 				},
-				"description": "Submit a request for a new poster, which has to be approved in the backoffice before it is\nshown. Send either a file for a media poster, or a uri for an external poster. The file has to\nbe a JPG, PNG or MP4 of at most 20 MB.",
+				"description": "Submit a request for a new poster, which has to be approved in the backoffice before it is\r\nshown. Send either a file for a media poster, or a uri for an external poster. The file has to\r\nbe a JPG, PNG or MP4 of at most 20 MB.",
 				"tags": [
 					"Handlers"
 				],
@@ -12584,7 +12595,7 @@
 						}
 					}
 				},
-				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\ncarousel. External poster requests need a uri. The request and the requester's details are\ndeleted afterwards.",
+				"description": "Approve a poster request, creating an enabled poster with the given fields at the end of the\r\ncarousel. External poster requests need a uri. The request and the requester's details are\r\ndeleted afterwards.",
 				"tags": [
 					"Handlers"
 				],
@@ -13306,7 +13317,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Bulk-set the status of all PCs. Intended for a single poster instance that\ngathers every PC's state and pushes it here with a shared integration key.",
+				"description": "Bulk-set the status of all PCs. Intended for a single poster instance that\r\ngathers every PC's state and pushes it here with a shared integration key.",
 				"tags": [
 					"Handlers"
 				],
@@ -13543,7 +13554,7 @@
 						}
 					}
 				},
-				"description": "Whether a keyholder sync can be run on this deployment, so the backoffice\ncan explain a disabled sync button.",
+				"description": "Whether a keyholder sync can be run on this deployment, so the backoffice\r\ncan explain a disabled sync button.",
 				"tags": [
 					"Handlers"
 				],
@@ -14112,7 +14123,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Report an incoming call. Intended for the phone system to hit with a shared\nintegration key; resolves the number against the directory and shows the\nincoming-call overlay on the screens.",
+				"description": "Report an incoming call. Intended for the phone system to hit with a shared\r\nintegration key; resolves the number against the directory and shows the\r\nincoming-call overlay on the screens.",
 				"tags": [
 					"Handlers"
 				],
@@ -14136,6 +14147,28 @@
 				}
 			}
 		},
+		"/handler/screen/info/caller-end": {
+			"post": {
+				"operationId": "SetInfoCallerEnd",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Report that the call stopped ringing and dismiss the overlay.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"setInfoCallerEnd"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/handler/screen/info/caller-ring/test": {
 			"post": {
 				"operationId": "TestInfoCallerRing",
@@ -14144,7 +14177,7 @@
 						"description": "No content"
 					}
 				},
-				"description": "Trigger a test incoming-call overlay from the backoffice (same behaviour as\nthe integration endpoint, but human-authenticated).",
+				"description": "Trigger a test incoming-call overlay from the backoffice (same behaviour as\r\nthe integration endpoint, but human-authenticated).",
 				"tags": [
 					"Handlers"
 				],
@@ -14169,6 +14202,31 @@
 						}
 					}
 				}
+			}
+		},
+		"/handler/screen/info/caller-end/test": {
+			"post": {
+				"operationId": "TestInfoCallerEnd",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Dismiss a test overlay from the backoffice without waiting for the timeout.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/handler/screen/info/services": {
@@ -14578,7 +14636,7 @@
 						}
 					}
 				},
-				"description": "Check whether a widget/entity field value actually works (iCal/RSS feed\nreachable + parseable, NS station code valid, image URL reachable, …) before\nit is saved to a live screen.",
+				"description": "Check whether a widget/entity field value actually works (iCal/RSS feed\r\nreachable + parseable, NS station code valid, image URL reachable, …) before\r\nit is saved to a live screen.",
 				"tags": [
 					"Handlers"
 				],
@@ -14628,7 +14686,7 @@
 						}
 					}
 				},
-				"description": "Given a list of color effects to create, add the given effects to the lightsgroup with the\ngiven ID. Remove all color effects if an empty array is given",
+				"description": "Given a list of color effects to create, add the given effects to the lightsgroup with the\r\ngiven ID. Remove all color effects if an empty array is given",
 				"tags": [
 					"Handlers"
 				],
@@ -14759,7 +14817,7 @@
 						}
 					}
 				},
-				"description": "Given a list of movement effects to create, add the given effects to the lightsgroup with the\ngiven ID. Remove all movement effects if an empty array is given",
+				"description": "Given a list of movement effects to create, add the given effects to the lightsgroup with the\r\ngiven ID. Remove all movement effects if an empty array is given",
 				"tags": [
 					"Handlers"
 				],
@@ -15119,7 +15177,7 @@
 						}
 					}
 				},
-				"description": "Replace the name, favorite status and effects of an existing scene.\nIf the scene is currently active, it is reapplied with the new effects.",
+				"description": "Replace the name, favorite status and effects of an existing scene.\r\nIf the scene is currently active, it is reapplied with the new effects.",
 				"tags": [
 					"Handlers"
 				],

@@ -19,13 +19,16 @@ interface Props {
   event: CallerEvent | null;
 }
 
-/** How long the overlay stays up after a ring, mirroring the legacy 20s. */
+/**
+ * How long the overlay stays up after a ring, mirroring the legacy 20s. This is
+ * a fallback for the event that a hang-up or pick-up is not registered or communicated.
+ */
 const SHOW_MS = 20 * 1000;
 
 /**
  * Full-screen incoming-call overlay. On a ringing event it shows the caller's
- * photo + "<name> calling" for a known caller, or a shaking phone + "Phone is
- * ringing" for an unknown one, then auto-dismisses after ~20s.
+ * photo + "<name> calling" for a known caller, or a shaking phone + "Phone is 
+ * ringing" for an unknown one, then auto-dismisses after ~20s (or earlier if the call is picked up or dropped).
  */
 export default function CallerOverlay({ event }: Props) {
   const [visible, setVisible] = useState(false);
@@ -40,7 +43,7 @@ export default function CallerOverlay({ event }: Props) {
     return () => clearTimeout(timer);
   }, [event]);
 
-  const known = event?.known && event.name;
+  const name = event?.name?.trim() || null;
 
   return (
     <AnimatePresence>
@@ -51,7 +54,7 @@ export default function CallerOverlay({ event }: Props) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 font-raleway text-white"
         >
-          {known && event.photoUrl ? (
+          {event.known && event.photoUrl ? (
             <img
               src={event.photoUrl}
               alt={event.name ?? 'caller'}
@@ -67,7 +70,7 @@ export default function CallerOverlay({ event }: Props) {
             </motion.div>
           )}
           <div className="text-6xl font-bold">
-            {known ? `${event.name} calling` : 'Phone is ringing'}
+            {name ? `${name} calling` : 'Phone is ringing'}
           </div>
         </motion.div>
       )}

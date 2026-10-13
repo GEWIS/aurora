@@ -7,7 +7,6 @@ import {
   forceUpdatePosters,
   getAllPosters,
   getCarouselOrder,
-  getPosterBorrelMode,
   getStaticPosterHandlerState,
   hideStaticPoster,
   type PosterResponse,
@@ -16,13 +15,13 @@ import {
   PosterType,
   removeMedia,
   setCarouselOrder,
-  setPosterBorrelMode,
   setStaticPosterClock,
   showStaticPoster,
   togglePosterEnable,
   updatePoster,
   type UpdatePosterRequest,
 } from '@gewis/aurora-api-client';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 interface PosterStore {
   posters: PosterResponse[];
@@ -33,8 +32,6 @@ interface PosterStore {
     clockVisible: boolean;
   };
   carousel: {
-    borrelModePresent: boolean;
-    borrelModeActive: boolean;
     carouselOrder: number[];
   };
 }
@@ -49,8 +46,6 @@ export const usePosterStore = defineStore('poster', {
       clockVisible: true,
     },
     carousel: {
-      borrelModePresent: false,
-      borrelModeActive: false,
       carouselOrder: [],
     },
   }),
@@ -69,7 +64,7 @@ export const usePosterStore = defineStore('poster', {
         this.fetchPosters(false),
         this.fetchCarouselOrder(),
         this.fetchStaticPosterState(),
-        this.fetchBorrelMode(),
+        useBorrelModeStore().fetch(),
       ]);
       this.loading = false;
 
@@ -250,26 +245,6 @@ export const usePosterStore = defineStore('poster', {
       const res = await setStaticPosterClock({ body: { visible } });
       if (res.response?.ok) {
         this.static.clockVisible = visible;
-      }
-    },
-    /**
-     * Fetch status of borrel mode.
-     */
-    async fetchBorrelMode() {
-      const res = await getPosterBorrelMode();
-      if (res.response?.ok && res.data) {
-        this.carousel.borrelModePresent = res.data.present;
-        this.carousel.borrelModeActive = res.data.enabled;
-      }
-    },
-    /**
-     * Toggle borrel mode.
-     * @param enabled
-     */
-    async setBorrelMode(enabled: boolean) {
-      const res = await setPosterBorrelMode({ body: { enabled } });
-      if (res.response?.ok) {
-        this.carousel.borrelModeActive = enabled;
       }
     },
     /**

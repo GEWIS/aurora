@@ -960,6 +960,14 @@
 					"InfoScreen.CallerId": {
 						"type": "boolean"
 					},
+					"InfoScreen.CallerId.UnknownNumber": {
+						"type": "string",
+						"enum": [
+							"full",
+							"censored",
+							"hidden"
+						]
+					},
 					"Orders": {
 						"type": "boolean"
 					},
@@ -1011,6 +1019,7 @@
 					"Poster.Requests",
 					"InfoScreen",
 					"InfoScreen.CallerId",
+					"InfoScreen.CallerId.UnknownNumber",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
@@ -1046,6 +1055,7 @@
 							"Poster.Requests",
 							"InfoScreen",
 							"InfoScreen.CallerId",
+							"InfoScreen.CallerId.UnknownNumber",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
@@ -8275,6 +8285,7 @@
 											"Poster.Requests",
 											"InfoScreen",
 											"InfoScreen.CallerId",
+											"InfoScreen.CallerId.UnknownNumber",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",

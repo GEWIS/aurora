@@ -6,6 +6,7 @@ export interface InfoScreenSettings {
    */
   InfoScreen: boolean;
   'InfoScreen.CallerId': boolean;
+  'InfoScreen.CallerId.UnknownNumber': 'full' | 'censored' | 'hidden';
 }
 
 declare module '../../../server-settings/server-setting' {
@@ -15,6 +16,7 @@ declare module '../../../server-settings/server-setting' {
 export const InfoScreenSettingsDefaults: InfoScreenSettings = {
   InfoScreen: true,
   'InfoScreen.CallerId': false,
+  'InfoScreen.CallerId.UnknownNumber': 'hidden',
 };
 
 registerSettingsDefaults(InfoScreenSettingsDefaults);

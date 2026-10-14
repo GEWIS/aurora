@@ -222,7 +222,9 @@
       <div class="flex flex-col gap-3">
         <small class="opacity-70">
           When the phone rings, the screens show who is calling. A caller listed here is shown by
-          name and photo; anyone else is shown as reported by the phone system.
+          name and photo; anyone else is shown as reported by the phone system. Whether an unknown
+          number is shown in full, censored or not at all is set by
+          "InfoScreen.CallerId.UnknownNumber" under Server settings.
           <template v-if="!callerIdEnabled">
             The overlay is switched off, so no call reaches the screens. An admin can turn
             "InfoScreen.CallerId" on under Server settings. The directory can be prepared in the

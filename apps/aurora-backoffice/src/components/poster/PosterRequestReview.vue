@@ -156,7 +156,7 @@
           The poster has to expire after it starts
         </Message>
 
-        <div v-if="posterStore.carousel.borrelModePresent" class="flex flex-row items-center gap-3">
+        <div v-if="borrelModeStore.present" class="flex flex-row items-center gap-3">
           <ToggleSwitch v-model="borrelMode" input-id="poster-request-borrel" />
           <label class="cursor-pointer" for="poster-request-borrel">
             Only show during Borrel mode
@@ -205,7 +205,7 @@ import {
   PosterTypeExternal,
 } from '@gewis/aurora-api-client';
 import { usePosterRequestStore } from '@/stores/poster/poster-request.store';
-import { usePosterStore } from '@/stores/poster/poster.store';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 import { formatPosterDate, formatPosterPeriod } from '@/utils/posterUtils';
 import { toastSuccess } from '@/utils/toastHandler';
@@ -217,7 +217,7 @@ const props = defineProps<{
 }>();
 
 const store = usePosterRequestStore();
-const posterStore = usePosterStore();
+const borrelModeStore = useBorrelModeStore();
 const settingsStore = useServerSettingsStore();
 
 const visible = ref<boolean>(false);

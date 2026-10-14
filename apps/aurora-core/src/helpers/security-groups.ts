@@ -31,6 +31,7 @@ export interface ISecurityGroups {
   orders: ISecuritySections;
   timedEvents: ISecuritySections;
   screenFilter: ISecuritySections;
+  borrelMode: ISecuritySections;
   integrationUsers: ISecuritySections;
 }
 
@@ -172,6 +173,10 @@ export const securityGroups = {
   screenFilter: {
     base: [...allSecurityGroups, SecurityGroup.SCREEN_SUBSCRIBER],
     privileged: baseSecurityGroups,
+  },
+  borrelMode: {
+    base: allSecuritySubscriberGroups,
+    privileged: [...privilegedSecurityGroups, SecurityGroup.BAC],
   },
   integrationUsers: {
     privileged: [SecurityGroup.ADMIN],

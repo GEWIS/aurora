@@ -7,6 +7,7 @@ import './modules/handlers/screen/poster/poster-screen-handler-settings';
 import './modules/handlers/screen/info/info-screen-settings';
 import './modules/orders/order-settings';
 import './modules/screen-filter/screen-filter-settings';
+import './modules/borrel-mode/borrel-mode-settings';
 
 /**
  * Every host/bootstrap (see index.ts and integration-test/shared/test-app.ts)

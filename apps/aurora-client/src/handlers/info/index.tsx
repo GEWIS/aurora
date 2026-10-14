@@ -29,6 +29,7 @@ import BeerOverlay from './components/BeerOverlay';
 import CallerOverlay, { CallerEvent } from './components/CallerOverlay';
 import { placementStyle, renderWidget, widgetTitle, WidgetData } from './WidgetRenderer';
 import WidgetCard, { CONTAINER_WIDGET_IDS } from './WidgetCard';
+import useBorrelMode from './useBorrelMode';
 
 interface Props {
   socket: Socket;
@@ -63,6 +64,7 @@ export default function InfoScreenView({ socket }: Props) {
   const [services, setServices] = useState<ServicesHealthResponse | null>(null);
   const [rooms, setRooms] = useState<ConferenceRoomsResponse | null>(null);
   const [caller, setCaller] = useState<CallerEvent | null>(null);
+  const borrelMode = useBorrelMode(socket);
 
   // Initial data load over HTTP.
   useEffect(() => {
@@ -157,6 +159,7 @@ export default function InfoScreenView({ socket }: Props) {
     services,
     rooms,
     caller,
+    borrelMode,
   };
 
   const placements = layout?.placements ?? [];

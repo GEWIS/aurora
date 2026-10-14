@@ -927,10 +927,6 @@
 						],
 						"description": "The logo that should be shown in the bottom left corner of the progress bar.\nCan be kept clear to imply no logo should be used."
 					},
-					"Poster.BorrelModePresent": {
-						"type": "boolean",
-						"description": "Whether \"borrel mode\" is present, namely a toggle adding an extra set of\nposters to the rotation."
-					},
 					"Poster.CustomStylesheet": {
 						"anyOf": [
 							{
@@ -987,6 +983,10 @@
 					"ScreenFilter.Warmth": {
 						"type": "number",
 						"format": "double"
+					},
+					"BorrelModePresent": {
+						"type": "boolean",
+						"description": "Whether \"borrel mode\" is present, namely a toggle that adds an extra set of\nposters to the rotation and changes the info screen during a borrel."
 					}
 				},
 				"required": [
@@ -1002,7 +1002,6 @@
 					"Poster.DefaultProgressBarColor",
 					"Poster.ProgressBarPosterColors",
 					"Poster.ProgressBarLogo",
-					"Poster.BorrelModePresent",
 					"Poster.CustomStylesheet",
 					"Poster.ClockShouldTick",
 					"Poster.Trello",
@@ -1014,7 +1013,8 @@
 					"Orders.WebhookPublicKeyExpirySeconds",
 					"ScreenFilter",
 					"ScreenFilter.Brightness",
-					"ScreenFilter.Warmth"
+					"ScreenFilter.Warmth",
+					"BorrelModePresent"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1036,7 +1036,6 @@
 							"Poster.DefaultProgressBarColor",
 							"Poster.ProgressBarPosterColors",
 							"Poster.ProgressBarLogo",
-							"Poster.BorrelModePresent",
 							"Poster.CustomStylesheet",
 							"Poster.ClockShouldTick",
 							"Poster.Trello",
@@ -1048,7 +1047,8 @@
 							"Orders.WebhookPublicKeyExpirySeconds",
 							"ScreenFilter",
 							"ScreenFilter.Brightness",
-							"ScreenFilter.Warmth"
+							"ScreenFilter.Warmth",
+							"BorrelModePresent"
 						],
 						"nullable": false
 					},
@@ -3365,34 +3365,6 @@
 				},
 				"required": [
 					"posterIds"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"BorrelModeResponse": {
-				"properties": {
-					"enabled": {
-						"type": "boolean"
-					},
-					"present": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"enabled",
-					"present"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"BorrelModeParams": {
-				"properties": {
-					"enabled": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"enabled"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -6860,6 +6832,34 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"BorrelModeState": {
+				"properties": {
+					"present": {
+						"type": "boolean"
+					},
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"present",
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BorrelModeParams": {
+				"properties": {
+					"enabled": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"enabled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"BeatGeneratorResponse": {
 				"properties": {
 					"id": {
@@ -7108,6 +7108,9 @@
 					"screenFilter": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					},
+					"borrelMode": {
+						"$ref": "#/components/schemas/ISecuritySections"
+					},
 					"integrationUsers": {
 						"$ref": "#/components/schemas/ISecuritySections"
 					}
@@ -7137,6 +7140,7 @@
 					"orders",
 					"timedEvents",
 					"screenFilter",
+					"borrelMode",
 					"integrationUsers"
 				],
 				"type": "object",
@@ -8257,7 +8261,6 @@
 											"Poster.DefaultProgressBarColor",
 											"Poster.ProgressBarPosterColors",
 											"Poster.ProgressBarLogo",
-											"Poster.BorrelModePresent",
 											"Poster.CustomStylesheet",
 											"Poster.ClockShouldTick",
 											"Poster.Trello",
@@ -8269,7 +8272,8 @@
 											"Orders.WebhookPublicKeyExpirySeconds",
 											"ScreenFilter",
 											"ScreenFilter.Brightness",
-											"ScreenFilter.Warmth"
+											"ScreenFilter.Warmth",
+											"BorrelModePresent"
 										],
 										"nullable": false
 									}
@@ -11814,77 +11818,6 @@
 				"parameters": []
 			}
 		},
-		"/handler/screen/poster/carousel/borrel-mode": {
-			"get": {
-				"operationId": "GetPosterBorrelMode",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/BorrelModeResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"put": {
-				"operationId": "SetPosterBorrelMode",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"Handlers"
-				],
-				"security": [
-					{
-						"local": [
-							"admin",
-							"board",
-							"avico",
-							"bac",
-							"key-holder",
-							"audio-subscriber",
-							"screen-subscriber",
-							"lights-subscriber"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/BorrelModeParams"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/handler/screen/poster/carousel/{id}/enabled": {
 			"post": {
 				"operationId": "TogglePosterEnable",
@@ -15309,6 +15242,82 @@
 						}
 					}
 				]
+			}
+		},
+		"/borrel-mode": {
+			"get": {
+				"operationId": "GetBorrelMode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BorrelModeState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get whether borrel mode is available and whether it is currently active.",
+				"tags": [
+					"BorrelMode"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "SetBorrelMode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BorrelModeState"
+								}
+							}
+						}
+					}
+				},
+				"description": "Activate or deactivate borrel mode until the end of the day",
+				"tags": [
+					"BorrelMode"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BorrelModeParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/beat-generator": {

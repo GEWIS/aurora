@@ -14,6 +14,7 @@ import SpotifyApiHandler from './modules/spotify/spotify-api-handler';
 import SpotifyTrackHandler from './modules/spotify/spotify-track-handler';
 import { FeatureFlagManager, ServerSettingsStore } from './modules/server-settings';
 import ScreenFilterManager from './modules/screen-filter/screen-filter-manager';
+import BorrelModeManager from './modules/borrel-mode/borrel-mode-manager';
 
 /**
  * Bind the long-lived services that controllers depend on into the container.
@@ -31,6 +32,7 @@ export function registerServices(): void {
     [FeatureFlagManager, FeatureFlagManager.getInstance()],
     [ServerSettingsStore, ServerSettingsStore.getInstance()],
     [ScreenFilterManager, ScreenFilterManager.getInstance()],
+    [BorrelModeManager, BorrelModeManager.getInstance()],
   ];
 
   services.forEach(([service, instance]) => {

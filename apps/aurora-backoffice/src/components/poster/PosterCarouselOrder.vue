@@ -34,14 +34,16 @@ import { ref, watch, computed } from 'vue';
 import { type PosterResponse } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 const store = usePosterStore();
 const authStore = useAuthStore();
+const borrelModeStore = useBorrelModeStore();
 const isPrivileged = computed(() => authStore.isInSecurityGroup('poster', 'privileged'));
 
 const isPosterInactive = (poster: PosterResponse): boolean => {
   if (!poster.enabled) return true;
-  if (poster.borrelMode && !store.carousel.borrelModeActive) return true;
+  if (poster.borrelMode && !borrelModeStore.enabled) return true;
   return false;
 };
 

@@ -10,20 +10,12 @@ import { Request as ExpressRequest } from 'express';
 import NsTrainsService, { TrainResponse } from './ns-trains-service';
 import GEWISPosterService, { GEWISPhotoAlbumParams } from './gewis-poster-service';
 import OlympicsService, { MedalTableRecord } from './olympics-service';
-import { FeatureEnabled, ServerSettingsStore } from '../../../server-settings';
+import { FeatureEnabled } from '../../../server-settings';
 import { Controller } from '@tsoa/runtime';
-import { ISettings } from '../../../server-settings/server-setting';
+import BorrelModeManager from '../../../borrel-mode/borrel-mode-manager';
 import { PosterResponse } from './local/poster-service';
 import Poster from './local/poster';
 import CarouselPosterService, { CAROUSEL_ID } from './local/carousel-poster-service';
-
-export interface BorrelModeParams {
-  enabled: boolean;
-}
-
-export interface BorrelModeResponse extends BorrelModeParams {
-  present: boolean;
-}
 
 export interface EnabledParams {
   enabled: boolean;
@@ -45,7 +37,10 @@ export interface CarouselOrderParams {
 export class CarouselPosterController extends Controller {
   protected screenHandler: CarouselPosterHandler;
 
-  constructor(private readonly handlerManager: HandlerManager) {
+  constructor(
+    private readonly handlerManager: HandlerManager,
+    private readonly borrelModeManager: BorrelModeManager,
+  ) {
     super();
     this.screenHandler = this.handlerManager
       .getHandlers(Screen)
@@ -57,6 +52,7 @@ export class CarouselPosterController extends Controller {
   public async getPosters(@Query() includeHidden?: boolean): Promise<CarouselResponse> {
     const posters = await this.screenHandler.posterService.getAllPosters();
 
+    const borrelMode = this.borrelModeManager.isActive();
     const now = new Date();
     const visible = includeHidden
       ? posters
@@ -65,7 +61,7 @@ export class CarouselPosterController extends Controller {
             p.enabled &&
             (!p.startDate || p.startDate <= now) &&
             (!p.expirationDate || p.expirationDate > now) &&
-            (this.screenHandler.borrelMode || !p.borrelMode),
+            (borrelMode || !p.borrelMode),
         );
 
     const order = await new CarouselPosterService().getOrder(CAROUSEL_ID);
@@ -74,7 +70,7 @@ export class CarouselPosterController extends Controller {
 
     return {
       posters: visible.map((p) => this.screenHandler.posterService.toResponse(p)),
-      borrelMode: this.screenHandler.borrelMode,
+      borrelMode,
     };
   }
 
@@ -99,29 +95,6 @@ export class CarouselPosterController extends Controller {
   public async forceUpdatePosters(@Request() req: ExpressRequest): Promise<void> {
     logger.audit(req.user, 'Force refresh carousel on screens.');
     this.screenHandler.forceUpdate();
-  }
-
-  @Security(SecurityNames.LOCAL, securityGroups.poster.base)
-  @Get('borrel-mode')
-  public async getPosterBorrelMode(): Promise<BorrelModeResponse> {
-    return {
-      present: this.screenHandler.borrelModeIsPresent(),
-      enabled: this.screenHandler.borrelMode,
-    };
-  }
-
-  @Security(SecurityNames.LOCAL, securityGroups.poster.base)
-  @Put('borrel-mode')
-  @FeatureEnabled('Poster.BorrelModePresent')
-  public async setPosterBorrelMode(
-    @Request() req: ExpressRequest,
-    @Body() body: BorrelModeParams,
-  ): Promise<void> {
-    logger.audit(
-      req.user,
-      `Set poster screen borrel mode to "${body.enabled ? 'true' : 'false'}".`,
-    );
-    this.screenHandler.setBorrelModeEnabled(body.enabled);
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.poster.privileged)

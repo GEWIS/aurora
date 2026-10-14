@@ -90,6 +90,46 @@ describe('Caller ID enabled', () => {
 });
 
 describe('Caller ID disabled', () => {
+  it('POST caller-ring returns 409 for an authorized integration', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['setInfoCallerRing']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .post('/api/handler/screen/info/caller-ring')
+      .set('X-API-Key', key)
+      .send({ number: '+31612345678' });
+
+    // ASSERT
+    expect(res.status).toBe(409);
+    expect(res.text).toContain('InfoScreen.CallerId');
+  });
+
+  it('POST caller-end returns 409 for an authorized integration', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['setInfoCallerEnd']);
+
+    // ACT
+    const res = await testApp.unauthorizedAgent
+      .post('/api/handler/screen/info/caller-end')
+      .set('X-API-Key', key);
+
+    // ASSERT
+    expect(res.status).toBe(409);
+  });
+
+  it('POST caller-ring/test and caller-end/test return 409', async () => {
+    // ACT
+    const ring = await testApp.authorizedAgent
+      .post('/api/handler/screen/info/caller-ring/test')
+      .send({ number: '+31612345678' });
+    const end = await testApp.authorizedAgent.post('/api/handler/screen/info/caller-end/test');
+
+    // ASSERT
+    expect(ring.status).toBe(409);
+    expect(end.status).toBe(409);
+  });
+
   it('hides the caller overlay from the widget catalog', async () => {
     // ACT
     const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');

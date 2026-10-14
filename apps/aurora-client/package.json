@@ -31,7 +31,7 @@
     "socket.io": "4.8.4",
     "socket.io-client": "4.8.4",
     "styled-components": "6.5.3",
-    "vite": "6.4.3",
+    "vite": "6.4.4",
     "vite-plugin-svgr": "4.5.0",
     "vite-tsconfig-paths": "6.1.1"
   },
@@ -52,7 +52,7 @@
     "eslint": "9.39.2",
     "jsdom": "^29.1.1",
     "openapi-typescript-codegen": "0.31.0",
-    "postcss": "8.5.28",
+    "postcss": "8.5.29",
     "sass": "1.105.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",

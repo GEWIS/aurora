@@ -20,6 +20,7 @@ import { useStatusStore } from '@/stores/status.store';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
 import { useAuditStore } from '@/stores/audit.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 /**
  * Auth store
@@ -162,6 +163,10 @@ export const useAuthStore = defineStore('auth', {
       }
       if (this.isInSecurityGroup('audit', 'base')) {
         await useAuditStore().init();
+      }
+      if (this.isInSecurityGroup('borrelMode', 'base')) {
+        await useBorrelModeStore().fetch();
+        useBorrelModeStore().listen();
       }
       if (
         this.isInSecurityGroup('poster', 'privileged') &&

@@ -409,7 +409,7 @@ const keyholderSearch = ref('');
  * The field and the table live in the same component, so every keystroke
  * re-renders this view. That is cheap in itself, but only as long as the table's
  * `value` keeps its identity: the moment the filter changes, the computed
- * rebuilds the array and PrimeVue re-renders every row and cell underneath it.
+ * rebuilds the array and OpenVue re-renders every row and cell underneath it.
  * Settling first keeps that to once per pause instead of once per letter.
  */
 const appliedSearch = ref('');

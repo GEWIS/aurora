@@ -172,7 +172,7 @@
         </div>
       </div>
 
-      <div v-if="store.carousel.borrelModePresent" class="flex flex-row items-center gap-3">
+      <div v-if="borrelModeStore.present" class="flex flex-row items-center gap-3">
         <ToggleSwitch v-model="borrelMode" input-id="poster-edit-borrel" />
         <label class="cursor-pointer" for="poster-edit-borrel">Only show during Borrel mode</label>
       </div>
@@ -193,8 +193,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import DatePicker from 'primevue/datepicker';
-import InputChips from 'primevue/inputchips';
+import DatePicker from 'openvue/datepicker';
+import InputChips from 'openvue/inputchips';
 import {
   FooterSize,
   type PosterResponse,
@@ -205,6 +205,7 @@ import {
 } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 const props = defineProps<{
   poster: PosterResponse;
@@ -213,6 +214,7 @@ const props = defineProps<{
 
 const store = usePosterStore();
 const settingsStore = useServerSettingsStore();
+const borrelModeStore = useBorrelModeStore();
 
 const visible = ref<boolean>(false);
 const loading = ref<boolean>(false);

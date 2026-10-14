@@ -34,7 +34,7 @@ import CoverPlayButton from '@/components/modes/centurion/CoverPlayButton.vue';
 import AppContainer from '@/layout/AppContainer.vue';
 import CenturionTapeTimeline from '@/components/modes/centurion/TapeTimeline.vue';
 import { useLayoutStore, TailwindWidth } from '@/stores/layout.store';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
+import ConfirmWrapper from '@/components/wrapped/ConfirmWrapper.vue';
 
 const confirmRef = ref();
 const centurionStore = useCenturionStore();

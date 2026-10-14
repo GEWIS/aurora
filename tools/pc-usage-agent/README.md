@@ -34,6 +34,9 @@ machine in a single payload:
 - Omitting `status` lets aurora infer it: `lockedAt` → locked, `remote` →
   remote, no user → free, otherwise in use. Send `status` explicitly only for
   `offline` and `maintenance`, which no session can express.
+- `lockedAt` may simply be the time of the run: aurora keeps the first
+  timestamp while a PC stays locked across reports and clears it once a report
+  arrives without one.
 
 Accounts without an `employeeNumber` — external accounts (`e1234`) and service
 accounts — report `memberId: null`. They show their name and get no symbol,
@@ -75,7 +78,8 @@ empty.
 
 - Machines are pinged before anything else, and every per-machine failure is
   caught: one unreachable PC is reported offline and the rest of the report
-  still goes out.
+  still goes out. A PC that answers ping but whose sessions `qwinsta` cannot
+  list is reported offline too, rather than free.
 - AD is read from the PDC emulator, so an account created or expired moments ago
   is already visible.
 - Accounts are resolved once per run and cached, since that is the slowest part.

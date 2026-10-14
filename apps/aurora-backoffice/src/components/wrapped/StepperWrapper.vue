@@ -78,13 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import StepPanel from 'primevue/steppanel';
-import StepList from 'primevue/steplist';
-import Stepper from 'primevue/stepper';
-import Step from 'primevue/step';
-import StepPanels from 'primevue/steppanels';
+import StepPanel from 'openvue/steppanel';
+import StepList from 'openvue/steplist';
+import Stepper from 'openvue/stepper';
+import Step from 'openvue/step';
+import StepPanels from 'openvue/steppanels';
 import { computed } from 'vue';
-import StepperWrapper from '@/components/prime/VerticalStepperWrapper.vue';
+import StepperWrapper from '@/components/wrapped/VerticalStepperWrapper.vue';
 import AppBox from '@/layout/AppBox.vue';
 import { TailwindWidth, useLayoutStore } from '@/stores/layout.store';
 

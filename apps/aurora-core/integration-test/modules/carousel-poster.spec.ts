@@ -173,51 +173,6 @@ describe('POST /api/handler/screen/poster/carousel/force-update', () => {
   });
 });
 
-describe('GET /api/handler/screen/poster/carousel/borrel-mode', () => {
-  it('returns 401 without auth', async () => {
-    // ACT
-    const res = await testApp.unauthorizedAgent.get(
-      '/api/handler/screen/poster/carousel/borrel-mode',
-    );
-
-    // ASSERT
-    expectApiError(res, 401);
-  });
-
-  it('returns 200 with admin auth (borrel mode inactive but feature present)', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.get(
-      '/api/handler/screen/poster/carousel/borrel-mode',
-    );
-
-    // ASSERT
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ present: true, enabled: false });
-  });
-});
-
-describe('PUT /api/handler/screen/poster/carousel/borrel-mode', () => {
-  it('returns 401 without auth', async () => {
-    // ACT
-    const res = await testApp.unauthorizedAgent
-      .put('/api/handler/screen/poster/carousel/borrel-mode')
-      .send({ enabled: true });
-
-    // ASSERT
-    expectApiError(res, 401);
-  });
-
-  it('returns 204 with admin auth and valid body', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent
-      .put('/api/handler/screen/poster/carousel/borrel-mode')
-      .send({ enabled: true });
-
-    // ASSERT
-    expect(res.status).toBe(204);
-  });
-});
-
 describe('GET /api/handler/screen/poster/carousel/train-departures', () => {
   it('returns 401 without auth', async () => {
     // ACT

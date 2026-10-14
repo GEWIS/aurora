@@ -51,7 +51,7 @@ All subscribers authenticate with an API key, then maintain a persistent SocketI
 | Repository                                                                  | Role                                                                                       | Tech                         |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------- |
 | `aurora-core` (this repo)                                                   | Central publisher — receives commands and pushes state to all subscribers                  | TypeScript, NodeJS, SocketIO |
-| `aurora-backoffice` (this repo)                                             | Web management UI for humans to control Aurora                                             | TypeScript, Vue, PrimeVue    |
+| `aurora-backoffice` (this repo)                                             | Web management UI for humans to control Aurora                                             | TypeScript, Vue, OpenVue     |
 | `aurora-client` (this repo)                                                 | Narrowcasting screen client — displays posters and information on screens                  | TypeScript, NodeJS, SocketIO |
 | [aurora-audio-player](https://github.com/GEWIS/aurora-audio-player)         | Audio subscriber — plays music as commanded by the core                                    | TypeScript, NodeJS           |
 | [aurora-lights-proxy](https://github.com/GEWIS/aurora-lights-proxy)         | DMX controller bridge — forwards DMX packets from core to ArtNet hardware                  | Python, Art-Net              |

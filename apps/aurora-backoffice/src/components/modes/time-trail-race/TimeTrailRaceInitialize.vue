@@ -51,7 +51,7 @@
 import { computed, ref } from 'vue';
 import SubscribersSelect from '@/components/modes/SubscribersSelect.vue';
 import { useTimeTrailRaceStore } from '@/stores/modes/time-trail-race.store';
-import StepperWrapper, { type StepperStep } from '@/components/prime/StepperWrapper.vue';
+import StepperWrapper, { type StepperStep } from '@/components/wrapped/StepperWrapper.vue';
 import SubscriberDetails from '@/components/modes/SubscribersDetails.vue';
 
 const store = useTimeTrailRaceStore();

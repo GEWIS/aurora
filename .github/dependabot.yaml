@@ -20,6 +20,13 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
+      openvue:
+        patterns:
+          - 'openvue'
+          - '@openvue/*'
+        update-types:
+          - 'minor'
+          - 'patch'
       development_minors_and_patches:
         dependency-type: 'development'
         update-types:

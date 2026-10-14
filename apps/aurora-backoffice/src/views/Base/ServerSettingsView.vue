@@ -146,9 +146,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import Column from 'primevue/column';
-import TreeTable from 'primevue/treetable';
-import type { TreeNode } from 'primevue/treenode';
+import Column from 'openvue/column';
+import TreeTable from 'openvue/treetable';
+import type { TreeNode } from 'openvue/treenode';
 import { type ISettings } from '@gewis/aurora-api-client';
 import { ISettingsSchema } from '@gewis/aurora-api-client/schemas';
 import AppContainer from '@/layout/AppContainer.vue';

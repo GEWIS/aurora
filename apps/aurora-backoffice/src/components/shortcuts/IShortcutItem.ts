@@ -1,4 +1,4 @@
-import type { MenuItem } from 'primevue/menuitem';
+import type { MenuItem } from 'openvue/menuitem';
 
 export interface IShortcutItem extends MenuItem {
   icon?: string;

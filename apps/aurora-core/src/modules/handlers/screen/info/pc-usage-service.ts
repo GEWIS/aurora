@@ -176,7 +176,10 @@ export default class PcUsageService {
     const pc = (await PcStatus.findOne({ where: { pcId } })) ?? PcStatus.create({ pcId });
     pc.users = values.users;
     pc.remote = values.remote;
-    pc.lockedAt = values.lockedAt;
+    // Reporters only see *that* a PC is locked and send the time of their run,
+    // so keep the first timestamp for as long as the lock lasts; overwriting it
+    // would reset the shown locked duration on every report.
+    pc.lockedAt = values.lockedAt && pc.lockedAt ? pc.lockedAt : values.lockedAt;
     pc.status = values.status;
     // Always refresh updatedAt so a PC re-reported with unchanged values is
     // still considered fresh; otherwise TypeORM skips the UPDATE (no column

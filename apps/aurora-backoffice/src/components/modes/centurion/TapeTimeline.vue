@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { MenuItem } from 'primevue/menuitem';
+import type { MenuItem } from 'openvue/menuitem';
 import type { MixTapeResponse, SongData, SongEvent } from '@gewis/aurora-api-client';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
 import { formatDuration } from '@/utils/formatterUtils';

@@ -172,7 +172,7 @@
           </div>
         </div>
 
-        <div v-if="store.carousel.borrelModePresent" class="flex flex-row items-center gap-3">
+        <div v-if="borrelModeStore.present" class="flex flex-row items-center gap-3">
           <ToggleSwitch v-model="borrelMode" input-id="poster-borrel" />
           <label class="cursor-pointer" for="poster-borrel">Only show during Borrel mode</label>
         </div>
@@ -194,8 +194,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import DatePicker from 'primevue/datepicker';
-import InputChips from 'primevue/inputchips';
+import DatePicker from 'openvue/datepicker';
+import InputChips from 'openvue/inputchips';
 import {
   type ExternalPosterRequest,
   FooterSize,
@@ -209,12 +209,14 @@ import {
 import { usePosterStore } from '@/stores/poster/poster.store';
 import { useServerSettingsStore } from '@/stores/server-settings.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useBorrelModeStore } from '@/stores/borrel-mode.store';
 
 type CreatableType = 'file' | PosterTypeExternal.EXTERN | PosterTypePhoto.PHOTO;
 
 const store = usePosterStore();
 const settingsStore = useServerSettingsStore();
 const authStore = useAuthStore();
+const borrelModeStore = useBorrelModeStore();
 const isPrivileged = computed(() => authStore.isInSecurityGroup('poster', 'privileged'));
 
 const visible = ref<boolean>(false);

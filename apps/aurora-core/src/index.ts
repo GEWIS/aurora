@@ -33,6 +33,7 @@ import LightsSwitchManager from './modules/lights/lights-switch-manager';
 import { TrelloPosterManager } from './modules/handlers/screen/poster/trello/trello-poster-manager';
 import GewisKeyholderSyncService from './modules/handlers/screen/info/gewis-keyholder-sync-service';
 import ScreenFilterManager from './modules/screen-filter/screen-filter-manager';
+import BorrelModeManager from './modules/borrel-mode/borrel-mode-manager';
 
 async function createApp(): Promise<void> {
   // Fix for production issue where a Docker volume overwrites the contents of a folder instead of merging them
@@ -97,6 +98,7 @@ async function createApp(): Promise<void> {
 
   ModeManager.getInstance().init(emitterStore);
   ScreenFilterManager.getInstance().init(io, emitterStore.backofficeSyncEmitter);
+  BorrelModeManager.getInstance().init(io, emitterStore.backofficeSyncEmitter);
 
   if (
     process.env.SPOTIFY_ENABLE === 'true' &&

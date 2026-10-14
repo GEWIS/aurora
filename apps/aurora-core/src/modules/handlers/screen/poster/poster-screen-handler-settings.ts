@@ -30,12 +30,6 @@ export interface PosterScreenHandlerSettings {
   'Poster.ProgressBarLogo': IFile | '';
 
   /**
-   * Whether "borrel mode" is present, namely a toggle adding an extra set of
-   * posters to the rotation.
-   */
-  'Poster.BorrelModePresent': boolean;
-
-  /**
    * Custom stylesheet defining the layout of the poster screen progress bar.
    */
   'Poster.CustomStylesheet': IFile | '';
@@ -66,7 +60,6 @@ export const PosterScreenHandlerSettingsDefaults: PosterScreenHandlerSettings = 
   'Poster.DefaultProgressBarColor': '#c40000',
   'Poster.ProgressBarPosterColors': false,
   'Poster.ProgressBarLogo': '',
-  'Poster.BorrelModePresent': true,
   'Poster.CustomStylesheet': '',
   'Poster.ClockShouldTick': true,
   'Poster.Trello': true,

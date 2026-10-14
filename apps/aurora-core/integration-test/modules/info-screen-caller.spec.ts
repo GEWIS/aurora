@@ -79,6 +79,25 @@ describe('Caller ID enabled', () => {
     expectApiError(denied, 403);
   });
 
+  it('POST caller-ring accepts a name without a number', async () => {
+    // ARRANGE
+    const key = await createIntegrationKey(['setInfoCallerRing']);
+
+    // ACT
+    const omitted = await testApp.unauthorizedAgent
+      .post('/api/handler/screen/info/caller-ring')
+      .set('X-API-Key', key)
+      .send({ name: 'Jane Doe' });
+    const nulled = await testApp.unauthorizedAgent
+      .post('/api/handler/screen/info/caller-ring')
+      .set('X-API-Key', key)
+      .send({ number: null, name: 'Jane Doe' });
+
+    // ASSERT
+    expect(omitted.status).toBe(204);
+    expect(nulled.status).toBe(204);
+  });
+
   it('offers the caller overlay in the widget catalog', async () => {
     // ACT
     const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');

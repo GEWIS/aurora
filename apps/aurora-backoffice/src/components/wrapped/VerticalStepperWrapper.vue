@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-import StepItem from 'primevue/stepitem';
-import Step from 'primevue/step';
+import StepItem from 'openvue/stepitem';
+import Step from 'openvue/step';
 
 defineProps<{
   wrap: boolean;

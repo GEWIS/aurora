@@ -43,7 +43,7 @@ import TimeTrailRaceInitialize from '@/components/modes/time-trail-race/TimeTrai
 import TimeTrailRaceStepper from '@/components/modes/time-trail-race/TimeTrailRaceStepper.vue';
 import TimeTrailRaceScoreboard from '@/components/modes/time-trail-race/TimeTrailRaceScoreboard.vue';
 import AppContainer from '@/layout/AppContainer.vue';
-import ConfirmWrapper from '@/components/prime/ConfirmWrapper.vue';
+import ConfirmWrapper from '@/components/wrapped/ConfirmWrapper.vue';
 import { useLayoutStore } from '@/stores/layout.store';
 
 const confirmRef = ref();

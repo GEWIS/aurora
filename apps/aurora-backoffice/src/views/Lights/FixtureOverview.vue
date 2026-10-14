@@ -158,7 +158,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
-import type { PopoverMethods } from 'primevue';
+import type { PopoverMethods } from 'openvue';
 import {
   freezeGroupMovingHeadRgb,
   freezeGroupMovingHeadWheel,

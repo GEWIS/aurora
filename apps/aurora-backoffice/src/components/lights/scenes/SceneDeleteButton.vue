@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { useConfirm } from 'primevue/useconfirm';
+import { useConfirm } from 'openvue/useconfirm';
 import { useSceneControllerStore } from '@/stores/scene-controller.store';
 
 const props = defineProps<{

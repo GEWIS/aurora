@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useConfirm } from 'primevue/useconfirm';
+import { useConfirm } from 'openvue/useconfirm';
 import type { PosterResponse } from '@gewis/aurora-api-client';
 import { usePosterStore } from '@/stores/poster/poster.store';
 

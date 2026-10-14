@@ -122,7 +122,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useConfirm } from 'primevue/useconfirm';
+import { useConfirm } from 'openvue/useconfirm';
 import type {
   LightsPredefinedEffectProperties,
   LightsPredefinedEffectResponse,

@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import Badge from 'primevue/badge';
+import Badge from 'openvue/badge';
 import { useLayoutStore } from '@/stores/layout.store';
 
 export interface MenuItem {

@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Galleria from 'primevue/galleria';
+import Galleria from 'openvue/galleria';
 import type { FileResponse } from '@gewis/aurora-api-client';
 
 defineProps<{

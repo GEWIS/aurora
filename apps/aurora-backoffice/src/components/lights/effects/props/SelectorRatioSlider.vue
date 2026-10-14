@@ -17,7 +17,7 @@
       :min="min"
       :model-value="value"
       :step="step"
-      @change="onChange"
+      @change="(newValue) => onChange(newValue as number)"
     />
   </div>
 </template>

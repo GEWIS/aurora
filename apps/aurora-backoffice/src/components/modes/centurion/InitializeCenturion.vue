@@ -62,8 +62,8 @@ import type { MixTapeResponse } from '@gewis/aurora-api-client';
 import SubscriberDetails from '@/components/modes/SubscribersDetails.vue';
 import { useCenturionStore } from '@/stores/modes/centurion.store';
 import TapeDetails from '@/components/modes/centurion/TapeDetails.vue';
-import type { StepperStep } from '@/components/prime/StepperWrapper.vue';
-import StepperWrapper from '@/components/prime/StepperWrapper.vue';
+import type { StepperStep } from '@/components/wrapped/StepperWrapper.vue';
+import StepperWrapper from '@/components/wrapped/StepperWrapper.vue';
 import SubscribersSelect from '@/components/modes/SubscribersSelect.vue';
 
 interface GroupedTape {

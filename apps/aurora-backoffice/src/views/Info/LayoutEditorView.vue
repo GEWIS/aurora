@@ -451,9 +451,9 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import type { MenuItem } from 'primevue/menuitem';
-import type Menu from 'primevue/menu';
-import type Popover from 'primevue/popover';
+import type { MenuItem } from 'openvue/menuitem';
+import type Menu from 'openvue/menu';
+import type Popover from 'openvue/popover';
 import { GridItem, GridLayout } from 'grid-layout-plus';
 import {
   type LayoutPresetResponse,

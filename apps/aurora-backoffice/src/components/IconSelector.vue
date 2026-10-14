@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { PrimeIcons } from '@primevue/core/api';
+import { PrimeIcons } from '@openvue/core/api';
 import { computed } from 'vue';
 
 defineProps<{

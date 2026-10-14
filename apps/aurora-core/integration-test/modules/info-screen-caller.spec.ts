@@ -79,6 +79,17 @@ describe('Caller ID enabled', () => {
     expectApiError(denied, 403);
   });
 
+  it('offers the caller overlay in the widget catalog', async () => {
+    // ACT
+    const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');
+
+    // ASSERT
+    expect(res.status).toBe(200);
+    expect(res.body.map((w: { id: string }) => w.id)).toContain('caller');
+  });
+});
+
+describe('Caller ID disabled', () => {
   it('hides the caller overlay from the widget catalog', async () => {
     // ACT
     const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');

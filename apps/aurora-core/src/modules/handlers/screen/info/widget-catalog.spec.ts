@@ -112,6 +112,11 @@ describe('DEFAULT_MODALS', () => {
       expect(isWidgetEnabled(id), `${id} is disabled`).toBe(true);
     }
   });
+
+  it('includes the incoming-call overlay, which the InfoScreen.CallerId flag gates instead', () => {
+    expect(isWidgetEnabled('caller')).toBe(true);
+    expect(DEFAULT_MODALS).toContain('caller');
+  });
 });
 
 describe('widget settings schema', () => {

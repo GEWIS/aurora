@@ -150,9 +150,20 @@ describe('LayoutService.sanitizeModals', () => {
     ]);
   });
 
+  it('keeps the incoming-call overlay', () => {
+    expect(LayoutService.sanitizeModals(['caller', 'beer-modal'])).toEqual([
+      'caller',
+      'beer-modal',
+    ]);
+  });
+
   it('drops disabled modal ids', () => {
-    // 'caller' is a real modal, but disabled — see DISABLED_WIDGETS.
-    expect(LayoutService.sanitizeModals(['caller', 'beer-modal'])).toEqual(['beer-modal']);
+    DISABLED_WIDGETS['beer-modal'] = 'Disabled for this test.';
+    try {
+      expect(LayoutService.sanitizeModals(['caller', 'beer-modal'])).toEqual(['caller']);
+    } finally {
+      delete DISABLED_WIDGETS['beer-modal'];
+    }
   });
 });
 

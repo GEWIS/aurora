@@ -1,4 +1,5 @@
-import { describe, beforeAll, it, expect } from 'vitest';
+import { describe, beforeAll, afterAll, it, expect } from 'vitest';
+import ServerSettingsStore from '@aurora/modules/server-settings/server-settings-store';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
 
@@ -41,6 +42,17 @@ describe('GET /api/user/me', () => {
 });
 
 describe('POST /api/orders/webhook', () => {
+  beforeAll(async () => {
+    await ServerSettingsStore.getInstance().setSetting(
+      'Orders.WebhookPublicKeyURL',
+      'http://127.0.0.1:1/public-key',
+    );
+  });
+
+  afterAll(async () => {
+    await ServerSettingsStore.getInstance().setSetting('Orders.WebhookPublicKeyURL', '');
+  });
+
   it('returns 400 with empty body (missing required X-Signature header)', async () => {
     // ACT
     const res = await testApp.unauthorizedAgent.post('/api/orders/webhook').send({});

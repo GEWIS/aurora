@@ -51,7 +51,7 @@ export default function FeatureEnabled(setting: keyof ISettings): ClassDecorator
     }
     // The decorator is assigned to a controller method
     if (args.length === 3 && args[0] instanceof Controller) {
-      return Middlewares(endpointMiddleware);
+      return Middlewares(endpointMiddleware)(...args);
     }
 
     // The decorator is assigned to a handler (duck typing on the branded symbol)

@@ -56,4 +56,27 @@ describe('CallerService.matchCaller', () => {
   it('does not ring on a blank reported name without a number', () => {
     expect(CallerService.matchCaller('', callers, '   ').ringing).toBe(false);
   });
+
+  it('presents an unknown number according to the display setting', () => {
+    const show = (display: 'full' | 'censored' | 'hidden') =>
+      CallerService.matchCaller('+31656789123', callers, null, display).name;
+    expect(show('full')).toBe('+31656789123');
+    expect(show('censored')).toBe('+31 6 ****9123');
+    expect(show('hidden')).toBeNull();
+  });
+
+  it('never censors a caller from the directory', () => {
+    const e = CallerService.matchCaller('+31612345678', callers, null, 'censored');
+    expect(e).toMatchObject({ known: true, name: 'John Doe' });
+  });
+
+  it('looks up a number reported as the name in the directory', () => {
+    const e = CallerService.matchCaller(null, callers, '+31 6 1234 5678', 'hidden');
+    expect(e).toMatchObject({ known: true, name: 'John Doe' });
+  });
+
+  it('does not show "0" as a number', () => {
+    const e = CallerService.matchCaller('0', callers, 'Jane Doe', 'full');
+    expect(e).toMatchObject({ ringing: true, name: 'Jane Doe' });
+  });
 });

@@ -1,4 +1,6 @@
 import Caller from './entities/caller';
+import { ServerSettingsStore } from '../../../server-settings';
+import { UnknownNumberDisplay, parsePhoneNumber, presentUnknownCaller } from './caller-number';
 
 export interface CallerParams {
   name: string;
@@ -100,29 +102,37 @@ export default class CallerService {
     reportedName?: string | null,
   ): Promise<CallerRingEvent> {
     const callers = await this.getAll();
-    return CallerService.matchCaller(number, callers, reportedName);
+    const display = ServerSettingsStore.getInstance().getSetting(
+      'InfoScreen.CallerId.UnknownNumber',
+    ) as UnknownNumberDisplay;
+    return CallerService.matchCaller(number, callers, reportedName, display);
   }
 
   /**
    * Pure resolution of a caller id against a set of callers (no DB access).
    * The directory (renaming a caller in backoffice) wins over the reported name.
+   * A caller outside the directory is presented according to `display`.
    */
   public static matchCaller(
     number: string | null | undefined,
     callers: Pick<Caller, 'name' | 'numbers' | 'photoUrl'>[],
     reportedName?: string | null,
+    display: UnknownNumberDisplay = 'hidden',
   ): CallerRingEvent {
-    const normalized = CallerService.normalize(number ?? '');
+    const reportedNumber = CallerService.normalize(number ?? '') === '0' ? null : number;
     const name = (reportedName ?? '').trim() || null;
-    if (!normalized || normalized === '0') {
-      // No number at all: still ring if the phone system named the caller.
-      return name ? { ringing: true, known: false, name, photoUrl: null } : CALL_ENDED;
-    }
-    const match = callers.find((c) =>
-      (c.numbers ?? []).some((n) => CallerService.normalize(n) === normalized),
+    // Without a number, a name that is itself a number can still match the directory.
+    const lookup = CallerService.normalize(
+      reportedNumber || (parsePhoneNumber(name) ? (name ?? '') : ''),
     );
+    if (!lookup && !name) return CALL_ENDED;
+
+    const match = lookup
+      ? callers.find((c) => (c.numbers ?? []).some((n) => CallerService.normalize(n) === lookup))
+      : undefined;
     if (!match) {
-      return { ringing: true, known: false, name, photoUrl: null };
+      const shown = presentUnknownCaller(reportedNumber, name, display);
+      return { ringing: true, known: false, name: shown, photoUrl: null };
     }
     return { ringing: true, known: true, name: match.name, photoUrl: match.photoUrl };
   }

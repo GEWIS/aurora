@@ -45,6 +45,22 @@
               "
             ></InputNumber>
           </div>
+          <div v-else-if="slotProps.node.data.type === 'enum'">
+            <Select
+              :disabled="!editing || !slotProps.node.data.canEdit"
+              :model-value="slotProps.node.data.value"
+              option-label="label"
+              option-value="value"
+              :options="slotProps.node.data.options"
+              @update:model-value="
+                (newValue: string) =>
+                  store.setSetting(
+                    slotProps.node.key,
+                    newValue as unknown as ISettings[keyof ISettings],
+                  )
+              "
+            />
+          </div>
           <div v-else-if="slotProps.node.data.type === 'string'">
             <InputText
               :disabled="!editing || !slotProps.node.data.canEdit"
@@ -143,6 +159,15 @@ const store = useServerSettingsStore();
 
 const editing = ref<boolean>(false);
 
+/** Readable option labels for enum settings; an option without one shows its raw value. */
+const ENUM_LABELS: Partial<Record<keyof ISettings, Record<string, string>>> = {
+  'InfoScreen.CallerId.UnknownNumber': {
+    full: 'Show full number',
+    censored: 'Show censored number',
+    hidden: "Don't show number",
+  },
+};
+
 const entries = computed(() => {
   if (!store.serverSettings) return [];
   const keys = Object.keys(store.serverSettings);
@@ -210,7 +235,14 @@ const entries = computed(() => {
           description = spec.description;
         }
         let type: string = '';
-        if ('type' in spec) {
+        let options: { label: string; value: string }[] | undefined;
+        if ('enum' in spec && Array.isArray(spec.enum)) {
+          type = 'enum';
+          options = spec.enum.map((value: string) => ({
+            label: ENUM_LABELS[setting as keyof ISettings]?.[value] ?? value,
+            value,
+          }));
+        } else if ('type' in spec) {
           type = spec.type;
         } else if ('$ref' in spec) {
           type = refToType(spec['$ref']);
@@ -229,6 +261,7 @@ const entries = computed(() => {
           data: {
             name: remainder,
             type,
+            options,
             description,
             // @ts-expect-error I do not understand this and can't be bothered anymore
             value: store.serverSettings![setting],

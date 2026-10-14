@@ -15,7 +15,7 @@ export interface CallerResponse {
 
 export interface CallerRingParams {
   /** The reported phone number or SIP address of the incoming call. */
-  number: string;
+  number?: string | null;
   /**
    * Reported caller name, used when the number is unknown
    * to the directory (or absent, as on a Teams-to-Teams call). A directory match

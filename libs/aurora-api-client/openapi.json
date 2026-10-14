@@ -5155,6 +5155,7 @@
 				"properties": {
 					"number": {
 						"type": "string",
+						"nullable": true,
 						"description": "The reported phone number or SIP address of the incoming call."
 					},
 					"name": {
@@ -5163,9 +5164,6 @@
 						"description": "Reported caller name, used when the number is unknown\nto the directory (or absent, as on a Teams-to-Teams call). A directory match\nalways wins, so a caller renamed in the backoffice stays renamed."
 					}
 				},
-				"required": [
-					"number"
-				],
 				"type": "object",
 				"additionalProperties": false
 			},

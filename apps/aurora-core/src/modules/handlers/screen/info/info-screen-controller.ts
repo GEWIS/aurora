@@ -457,7 +457,7 @@ export class InfoScreenController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: CallerRingParams,
   ): Promise<void> {
-    logger.audit(req.user, `Trigger test info screen call for "${body.number}".`);
+    logger.audit(req.user, `Trigger test info screen call for "${body.number ?? body.name}".`);
     const event = await this.callerService.resolve(body.number, body.name);
     this.getHandler()?.emitCaller(event);
   }

@@ -4,7 +4,7 @@
       <div v-for="items in menus" :key="items[0].key" class="break-inside-avoid">
         <Menu class="!border-none" :model="items">
           <template #submenuheader="{ item }">
-            <h6 class="mb-0 text-override">
+            <h6 class="!mb-0 text-override">
               {{ item.label }}
             </h6>
           </template>

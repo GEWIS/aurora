@@ -24,17 +24,13 @@ export default class CenturionBeatController {
   }
 
   public setSong(bpm?: number): void {
-    if(this.beatGeneratorSong) {
+    if (this.beatGeneratorSong) {
       this.beatManager.remove(this.beatGeneratorSong.getId());
       this.beatGeneratorSong = undefined;
     }
 
     if (bpm) {
-      this.beatGeneratorSong = new SimpleBeatGenerator(
-        'centurion',
-        'Centurion',
-        bpm,
-      );
+      this.beatGeneratorSong = new SimpleBeatGenerator('centurion', 'Centurion', bpm);
       this.beatManager.add(this.beatGeneratorSong, BeatPriorities.CENTURION_BEAT_GENERATOR);
     }
   }

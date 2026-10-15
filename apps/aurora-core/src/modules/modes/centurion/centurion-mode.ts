@@ -1,30 +1,23 @@
 import BaseMode from '../base-mode';
-import { LightsGroup, LightsSwitch } from '../../lights/entities';
+import { LightsGroup } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
 import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
 import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import MixTape, { FeedEvent, Horn, Song, SongData } from '../../lights/mix-tape';
-import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
-import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
-import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
+import MixTape, { FeedEvent, SongData } from '../../lights/mix-tape';
+import { getTwoComplementaryRgbColors } from '../../lights/color-definitions';
 import { MusicEmitter } from '../../events';
 import { TrackChangeEvent } from '../../events/music-emitter-events';
 import { CenturionScreenHandler } from '../../handlers/screen';
-import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
-import Wave from '../../lights/effects/color/wave';
-import Sparkle from '../../lights/effects/color/sparkle';
-import { BeatManager, BeatPriorities, SimpleBeatGenerator } from '../../beats';
+import { BeatManager } from '../../beats';
 import logger from '../../../logger';
 import LightsSwitchManager from '../../lights/lights-switch-manager';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
 import { ISettings } from '../../server-settings/server-setting';
 import RootLightsService from '../../lights/root-lights-service';
-import {
-  getRandomLightsEffectDirection,
-  getRandomLightsEffectPattern,
-  LightsEffectDirection,
-  LightsEffectPattern,
-} from '../../lights/effects/lights-effect-pattern';
+import { CenturionContext, CenturionPlaybackState } from './centurion-context';
+import DiscoballController from './discoball-controller';
+import CenturionBeatController from './centurion-beat-controller';
+import RandomEffectPicker from './random-effect-picker';
 
 const LIGHTS_HANDLER = 'SetEffectsHandler';
 const AUDIO_HANDLER = 'SimpleAudioHandler';
@@ -39,8 +32,6 @@ export default class CenturionMode extends BaseMode<
 > {
   public tape: MixTape;
 
-  private discoballs: LightsSwitch[] = [];
-
   private musicEmitter: MusicEmitter;
 
   private feedEvents: {
@@ -52,19 +43,11 @@ export default class CenturionMode extends BaseMode<
 
   public startTime: Date = new Date();
 
-  public lastHornEvent?: Horn & { timestamp: number };
-
-  public lastSongEvent?: Song & { timestamp: number };
-
-  public currentColors?: RgbColor[];
-
-  private beatManager: BeatManager;
-
-  private beatGeneratorBackground: SimpleBeatGenerator;
-
-  private beatGeneratorSong: SimpleBeatGenerator | undefined;
-
   private lightsSwitchManager: LightsSwitchManager;
+
+  private readonly playbackState: CenturionPlaybackState = {};
+
+  private ctx: CenturionContext;
 
   private initialized = false;
 
@@ -77,7 +60,6 @@ export default class CenturionMode extends BaseMode<
     super(lights, screens, audios, LIGHTS_HANDLER, SCREEN_HANDLER, AUDIO_HANDLER);
 
     this.audioHandler.addSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
-    this.beatManager = BeatManager.getInstance();
   }
 
   public async initialize(musicEmitter: MusicEmitter) {
@@ -88,7 +70,7 @@ export default class CenturionMode extends BaseMode<
     const discoballIds = ServerSettingsStore.getInstance().getSetting(
       'Centurion.DiscoballLightsSwitchIds',
     ) as ISettings['Centurion.DiscoballLightsSwitchIds'];
-    this.discoballs = (await new RootLightsService().getAllLightsSwitches()).filter((s) =>
+    const discoballs = (await new RootLightsService().getAllLightsSwitches()).filter((s) =>
       discoballIds.includes(s.id),
     );
 
@@ -98,6 +80,19 @@ export default class CenturionMode extends BaseMode<
         this.lightsSwitchManager.disableSwitch(s);
       }
     });
+
+    this.ctx = {
+      state: this.playbackState,
+      lightsHandler: this.lightsHandler,
+      screenHandler: this.screenHandler,
+      discoBall: new DiscoballController(discoballs, this.lightsSwitchManager),
+      beatController: new CenturionBeatController(BeatManager.getInstance()),
+      randomEffects: new RandomEffectPicker(),
+    };
+  }
+
+  public get state(): Readonly<CenturionPlaybackState> {
+    return this.playbackState;
   }
 
   public loadTape(tape: MixTape) {
@@ -120,12 +115,7 @@ export default class CenturionMode extends BaseMode<
     this.fireLastFeedEvent(this.timestamp);
 
     this.screenHandler.start();
-    this.beatGeneratorBackground = new SimpleBeatGenerator(
-      'background',
-      'Centurion (Background)',
-      130,
-    );
-    this.beatManager.add(this.beatGeneratorBackground, BeatPriorities.BACKGROUND_BEAT_GENERATOR);
+    this.ctx.beatController.startBackground();
     logger.info('Started centurion playback.');
     return true;
   }
@@ -142,11 +132,7 @@ export default class CenturionMode extends BaseMode<
     if (this.playing) {
       // Lazy solution for figuring out whether the discoball should be on:
       // let's just disable it by default
-      if (this.hasDiscoBall()) {
-        this.discoballs.forEach((s) => {
-          this.lightsSwitchManager.disableSwitch(s);
-        });
-      }
+      if (this.ctx.discoBall.hasDiscoball) this.ctx.discoBall.disable();
 
       this.registerFeedEvents(seconds);
       this.fireLastFeedEvent(seconds);
@@ -161,19 +147,11 @@ export default class CenturionMode extends BaseMode<
     this.audioHandler.stop();
     this.screenHandler.stop();
     this.stopFeedEvents();
-    this.setSongBeatGenerator();
-    this.beatManager.remove(this.beatGeneratorBackground.getId());
+    this.ctx.beatController.setSong();
+    this.ctx.beatController.stopBackground();
     logger.info('Paused centurion playback.');
 
     this.timestamp = (new Date().getTime() - this.startTime.getTime()) / 1000;
-  }
-
-  /**
-   * Returns whether a disco ball is present in the centurion lights setup
-   * @private
-   */
-  private hasDiscoBall(): boolean {
-    return this.discoballs.length > 0;
   }
 
   /**
@@ -199,117 +177,6 @@ export default class CenturionMode extends BaseMode<
     );
   }
 
-  private getRandomMovementEffectSide(): LightsEffectBuilder {
-    if (!this.beatGeneratorSong) {
-      return TableRotate.build();
-    }
-
-    // Baseline: cycle time of 10000ms for 120bpm
-    const baseCycleTime = Math.round(1200000 / this.beatGeneratorSong.bpm);
-    return TableRotate.build({ cycleTime: baseCycleTime });
-  }
-
-  private getRandomMovementEffectCenter(): LightsEffectBuilder {
-    // If we do not have a bpm, choose SearchLight as the default
-    const defaultEffect = SearchLight.build({ radiusFactor: 1.5, cycleTime: 3000 });
-    if (!this.beatGeneratorSong) {
-      return defaultEffect;
-    }
-
-    const baseCycleTime = Math.round(360000 / this.beatGeneratorSong.bpm);
-    const classicRotateProb = Math.max(0, Math.min(1, (this.beatGeneratorSong.bpm - 120) / 60));
-
-    const effects = [
-      {
-        effect: ClassicRotate.build({ cycleTime: baseCycleTime * 4 }),
-        probability: classicRotateProb,
-      },
-      {
-        effect: SearchLight.build({ radiusFactor: 1.5, cycleTime: baseCycleTime }),
-        probability: 1 - classicRotateProb,
-      },
-    ];
-    let factor = Math.random();
-
-    return (
-      effects.find((effect, i) => {
-        const previous = effects.slice(0, i).reduce((x, e) => x + e.probability, 0);
-        return previous <= factor && previous + effect.probability > factor;
-      })?.effect || defaultEffect
-    );
-  }
-
-  /**
-   * Get a random effect given a set of colors
-   * @param colors
-   * @private
-   */
-  private getRandomParEffect(colors: RgbColor[]): LightsEffectBuilder {
-    const pattern = getRandomLightsEffectPattern();
-    const direction = getRandomLightsEffectDirection();
-
-    const effects = [
-      {
-        effect: BeatFadeOut.build({
-          colors,
-          enableFade: false,
-          nrBlacks: 1,
-          pattern,
-          direction,
-        }),
-        probability: 0.8,
-      },
-      {
-        effect: Sparkle.build({ colors }),
-        probability: 0.1,
-      },
-      {
-        effect: Wave.build({
-          colors: colors,
-          pattern,
-          direction,
-        }),
-        probability: 0.1,
-      },
-    ];
-    let factor = Math.random();
-
-    if (!this.beatGeneratorSong || this.beatGeneratorSong.bpm < 120) {
-      // If the music is relatively slow or really fast, do not use wave or sparkle
-      factor = factor - 0.2;
-    } else if (this.beatGeneratorSong && this.beatGeneratorSong.bpm > 160) {
-      // If the music is really fast, do not use wave, as the other effects will be
-      // much more energetic
-      factor = factor - 0.1;
-    }
-
-    console.log(factor);
-
-    return (
-      effects.find((effect, i) => {
-        const previous = effects.slice(0, i).reduce((x, e) => x + e.probability, 0);
-        return previous <= factor && previous + effect.probability > factor;
-      })?.effect || effects[0].effect
-    );
-  }
-
-  /**
-   * Reset the song beat generator: restart it with the given BPM if BPM is defined, else stop.
-   * @param bpm
-   * @private
-   */
-  private setSongBeatGenerator(bpm?: number) {
-    if (this.beatGeneratorSong) {
-      this.beatManager.remove(this.beatGeneratorSong.getId());
-      this.beatGeneratorSong = undefined;
-    }
-
-    if (bpm) {
-      this.beatGeneratorSong = new SimpleBeatGenerator('centurion', 'Centurion', bpm);
-      this.beatManager.add(this.beatGeneratorSong, BeatPriorities.CENTURION_BEAT_GENERATOR);
-    }
-  }
-
   /**
    * Change the beat generator BPM to the speed defined in the song, if it exists. If it does not
    * exist, stop the song beat generator.
@@ -323,7 +190,7 @@ export default class CenturionMode extends BaseMode<
     } else {
       bpm = songData.bpm;
     }
-    this.setSongBeatGenerator(bpm);
+    this.ctx.beatController.setSong(bpm);
   }
 
   /**
@@ -331,31 +198,9 @@ export default class CenturionMode extends BaseMode<
    * @private
    */
   private setRandomLightEffects() {
-    const { colorNames } = getTwoComplementaryRgbColors();
-    this.currentColors = colorNames;
-
-    const newMovementEffectSideBuilder = this.getRandomMovementEffectSide();
-    const newMovementEffectCenterBuilder = this.getRandomMovementEffectCenter();
-    const movingHeadEffectColor = StaticColor.build({ color: RgbColor.WHITE });
-    const newEffectBuilder = this.getRandomParEffect(colorNames);
-
-    this.lights.forEach((l) => {
-      // If we have a moving head, assign a movement effect
-      if ((l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) && l.groupInMiddle) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectCenterBuilder]);
-      }
-      if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectSideBuilder]);
-      }
-      // If we have a wheel moving head, assign a static color
-      if (l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setColorEffect(l, [movingHeadEffectColor]);
-        // Otherwise use a random effect!
-      } else {
-        this.lightsHandler.setColorEffect(l, [newEffectBuilder]);
-      }
-    });
-    this.screenHandler.changeColors(colorNames);
+    this.ctx.state.screenColors = getTwoComplementaryRgbColors().colorNames;
+    this.screenHandler.changeColors(this.ctx.state.screenColors);
+    this.ctx.randomEffects.apply(this.ctx, this.ctx.state.screenColors);
   }
 
   /**
@@ -367,7 +212,7 @@ export default class CenturionMode extends BaseMode<
     logger.debug(event);
 
     if (event.type === 'horn') {
-      this.lastHornEvent = event;
+      this.ctx.state.lastHornEvent = event;
       this.lights.forEach((l) => {
         l.pars.forEach((p) => p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME));
         l.movingHeadRgbs.forEach((p) =>
@@ -379,7 +224,7 @@ export default class CenturionMode extends BaseMode<
       });
       this.screenHandler.horn(event.data.strobeTime ?? STROBE_TIME, event.data.counter);
     } else if (event.type === 'song') {
-      this.lastSongEvent = event;
+      this.ctx.state.lastSongEvent = event;
       this.setBpmFromSong(event.data);
       // Set effects after setting bpm, because the effects might need the bpm
       this.setRandomLightEffects();
@@ -399,21 +244,11 @@ export default class CenturionMode extends BaseMode<
           event.data.effects.movingHeadWheelMovement.length === 0);
 
       this.lights.forEach((l) => {
-        if (event.data.discoBall && isEffectDisableAll && !this.hasDiscoBall()) {
-          // If we want to only have the disco ball turned on, but our setup does not have one,
-          // we should just do random light effects
+        if (event.data.discoBall && isEffectDisableAll && !this.ctx.discoBall.hasDiscoball)
           event.data.random = true;
-        } else if (event.data.discoBall && this.hasDiscoBall()) {
-          // Enable disco ball
-          this.discoballs.forEach((s) => {
-            this.lightsSwitchManager.enableSwitch(s);
-          });
-        } else if (this.hasDiscoBall()) {
-          // Disable all disco ball if they should not be enabled
-          this.discoballs.forEach((s) => {
-            this.lightsSwitchManager.disableSwitch(s);
-          });
-        }
+        else if (event.data.discoBall && this.ctx.discoBall.hasDiscoball)
+          this.ctx.discoBall.enable();
+        else if (this.ctx.discoBall.hasDiscoball) this.ctx.discoBall.disable();
         if (event.data.reset) {
           // Reset effect
           this.lightsHandler.removeColorEffect(l);
@@ -423,8 +258,7 @@ export default class CenturionMode extends BaseMode<
         if (event.data.random) {
           this.setRandomLightEffects();
           // Restart the beat generator to ensure no quick successive beats when the lights change
-          this.beatGeneratorBackground.restart();
-          if (this.beatGeneratorSong) this.beatGeneratorSong.restart();
+          this.ctx.beatController.restart();
           return;
         }
         if (l.pars.length > 0 && event.data.effects.pars) {
@@ -449,7 +283,7 @@ export default class CenturionMode extends BaseMode<
         }
       });
     } else if (event.type === 'bpm') {
-      this.setSongBeatGenerator(event.data.bpm);
+      this.ctx.beatController.setSong(event.data.bpm);
     } else if (event.type === 'other' && event.data === 'stop') {
       this.stop();
     }

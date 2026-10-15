@@ -17,6 +17,6 @@ export interface CenturionContext {
   lightsHandler: SetEffectsHandler;
   screenHandler: CenturionScreenHandler;
   discoBall: DiscoballController;
-  beats: CenturionBeatController;
+  beatController: CenturionBeatController;
   randomEffects: RandomEffectPicker;
 }

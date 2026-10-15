@@ -12,7 +12,7 @@ import type { CenturionContext } from './centurion-context';
 
 export default class RandomEffectPicker {
   public apply(ctx: CenturionContext, colors: RgbColor[]) {
-    const bpm = ctx.beats.songBpm;
+    const bpm = ctx.beatController.songBpm;
 
     const newMovementEffectSideBuilder = this.getMovementEffectSide(bpm);
     const newMovementEffectCenterBuilder = this.getMovementEffectCenter(bpm);

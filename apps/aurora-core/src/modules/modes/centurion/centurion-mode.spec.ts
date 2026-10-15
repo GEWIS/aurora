@@ -231,7 +231,7 @@ describe('CenturionMode', () => {
         expect.anything(),
         expect.anything(),
       ]);
-      expect(mode.lastSongEvent).toMatchObject({ timestamp: 0, type: 'song' });
+      expect(mode.state.lastSongEvent).toMatchObject({ timestamp: 0, type: 'song' });
     });
 
     it('should strobe all fixtures and the screen on a horn', async () => {
@@ -242,7 +242,7 @@ describe('CenturionMode', () => {
         expect(p.fixture.enableStrobe).toHaveBeenCalledWith(1500),
       );
       expect(screenHandler.horn).toHaveBeenCalledWith(1500, 1);
-      expect(mode.lastHornEvent).toMatchObject({ timestamp: 10, data: { counter: 1 } });
+      expect(mode.state.lastHornEvent).toMatchObject({ timestamp: 10, data: { counter: 1 } });
     });
 
     it('should enable the disco ball once per group', async () => {
@@ -365,7 +365,7 @@ describe('CenturionMode', () => {
       mode.skip(15);
       mode.start();
 
-      expect(mode.lastHornEvent?.data.counter).toBe(1);
+      expect(mode.state.lastHornEvent?.data.counter).toBe(1);
     });
 
     it.fails('should handle the first song once when starting at 0', async () => {

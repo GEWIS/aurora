@@ -12,13 +12,13 @@ export default class DiscoballController {
   }
 
   public enable(): void {
-    this.discoballs.forEach(s => {
+    this.discoballs.forEach((s) => {
       this.lightsSwitchManager.enableSwitch(s);
     });
   }
 
   public disable(): void {
-    this.discoballs.forEach(s => {
+    this.discoballs.forEach((s) => {
       this.lightsSwitchManager.disableSwitch(s);
     });
   }

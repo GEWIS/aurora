@@ -112,10 +112,12 @@ describe('DEFAULT_MODALS', () => {
       expect(isWidgetEnabled(id), `${id} is disabled`).toBe(true);
     }
   });
+});
 
-  it('includes the incoming-call overlay, which the InfoScreen.CallerId flag gates instead', () => {
-    expect(isWidgetEnabled('caller')).toBe(true);
-    expect(DEFAULT_MODALS).toContain('caller');
+describe('incoming-call overlay', () => {
+  it('is not a layout widget, since InfoScreen.CallerId alone switches it on', () => {
+    expect(getCatalogItem('caller')).toBeUndefined();
+    expect(DEFAULT_MODALS).not.toContain('caller');
   });
 });
 
@@ -150,7 +152,7 @@ describe('container widgets', () => {
     expect(ids).toContain('clock');
     expect(ids).not.toContain('carousel');
     expect(ids).not.toContain('status-stack');
-    expect(ids).not.toContain('caller');
+    expect(ids).not.toContain('beer-modal');
     for (const id of Object.keys(DISABLED_WIDGETS)) expect(ids, id).not.toContain(id);
   });
 });

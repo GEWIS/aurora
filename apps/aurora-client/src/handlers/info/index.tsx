@@ -173,7 +173,7 @@ export default function InfoScreenView({ socket }: Props) {
         color={layout?.backgroundColor}
       />
       {modals.includes('beer-modal') && <BeerOverlay beerTime={roomStatus?.beerTime ?? null} />}
-      {modals.includes('caller') && <CallerOverlay event={caller} />}
+      <CallerOverlay event={caller} />
 
       <div className="fixed inset-0 flex items-center justify-center overflow-hidden">
         <div

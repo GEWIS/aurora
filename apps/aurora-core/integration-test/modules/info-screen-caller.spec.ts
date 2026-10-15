@@ -97,15 +97,6 @@ describe('Caller ID enabled', () => {
     expect(omitted.status).toBe(204);
     expect(nulled.status).toBe(204);
   });
-
-  it('offers the caller overlay in the widget catalog', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');
-
-    // ASSERT
-    expect(res.status).toBe(200);
-    expect(res.body.map((w: { id: string }) => w.id)).toContain('caller');
-  });
 });
 
 describe('Caller ID disabled', () => {
@@ -147,15 +138,6 @@ describe('Caller ID disabled', () => {
     // ASSERT
     expect(ring.status).toBe(409);
     expect(end.status).toBe(409);
-  });
-
-  it('hides the caller overlay from the widget catalog', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.get('/api/handler/screen/info/widget-catalog');
-
-    // ASSERT
-    expect(res.status).toBe(200);
-    expect(res.body.map((w: { id: string }) => w.id)).not.toContain('caller');
   });
 
   it('still lets the directory be managed, so callers can be prepared in advance', async () => {

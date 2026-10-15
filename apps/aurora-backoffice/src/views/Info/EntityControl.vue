@@ -41,8 +41,7 @@
     >
       <InputText v-model="testNumber" class="flex-1" placeholder="+31612345678" />
       <Button
-        v-tooltip.top="callerIdEnabled ? undefined : 'The caller ID overlay is switched off'"
-        :disabled="!testNumber || !callerIdEnabled"
+        :disabled="!testNumber"
         icon="pi pi-phone"
         label="Test call"
         severity="secondary"
@@ -51,7 +50,6 @@
       />
       <Button
         v-tooltip.top="'Dismiss the overlay without waiting for it to time out'"
-        :disabled="!callerIdEnabled"
         icon="pi pi-times"
         label="Hang up"
         severity="secondary"
@@ -77,7 +75,6 @@ import { useConfirm } from 'openvue/useconfirm';
 import { useCallerStore } from '@/stores/caller.store';
 import { useConferenceRoomStore } from '@/stores/conference-room.store';
 import { useNewsSourceStore } from '@/stores/news-source.store';
-import { useServerSettingsStore } from '@/stores/server-settings.store';
 import CallerEditDialog from '@/views/Info/CallerEditDialog.vue';
 import RoomEditDialog from '@/views/Info/RoomEditDialog.vue';
 import NewsSourceEditDialog from '@/views/Info/NewsSourceEditDialog.vue';
@@ -93,10 +90,6 @@ const confirm = useConfirm();
 const callerStore = useCallerStore();
 const roomStore = useConferenceRoomStore();
 const newsStore = useNewsSourceStore();
-const settingsStore = useServerSettingsStore();
-
-/** Both test triggers are refused by the core while the overlay is switched off. */
-const callerIdEnabled = computed(() => settingsStore.featureEnabled('InfoScreen.CallerId'));
 
 const editVisible = ref(false);
 const editId = ref<number | null>(null);

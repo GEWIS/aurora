@@ -9,7 +9,7 @@ import logger from '../../../../logger';
 import HandlerManager from '../../../root/handler-manager';
 import { Screen } from '../../../root/entities';
 import InfoScreenHandler from './info-screen-handler';
-import { FeatureEnabled, FeatureFlagManager } from '../../../server-settings';
+import { FeatureEnabled } from '../../../server-settings';
 import WeatherService, { WeatherResponse } from './weather-service';
 import RainRadarService, { RainRadarResponse } from './rain-radar-service';
 import NewsService, { NewsHeadline, NewsSourceParams, NewsSourceResponse } from './news-service';
@@ -276,8 +276,7 @@ export class InfoScreenController extends Controller {
   @Get('widget-catalog')
   public async getInfoWidgetCatalog(): Promise<WidgetCatalogItem[]> {
     // Disabled widgets (see DISABLED_WIDGETS) are never offered to the editor.
-    const callerId = FeatureFlagManager.getInstance().flagIsEnabled('InfoScreen.CallerId');
-    return enabledCatalog().filter((w) => callerId || w.id !== 'caller');
+    return enabledCatalog();
   }
 
   /**

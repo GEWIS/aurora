@@ -23,8 +23,7 @@ export default class RandomEffectPicker {
       // If we have a moving head, assign a movement effect
       if ((l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) && l.groupInMiddle) {
         ctx.lightsHandler.setMovementEffect(l, [newMovementEffectCenterBuilder]);
-      }
-      if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
+      } else if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
         ctx.lightsHandler.setMovementEffect(l, [newMovementEffectSideBuilder]);
       }
       // If we have a wheel moving head, assign a static color

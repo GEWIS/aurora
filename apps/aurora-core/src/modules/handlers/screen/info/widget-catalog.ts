@@ -262,6 +262,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
     ),
     num('latitude', 'Latitude', 51.447, -90, 90, 4),
     num('longitude', 'Longitude', 5.487, -180, 180, 4),
+    bool('showTemperature', 'Show current temperature', false, { key: 'mode', value: 'timeline' }),
     bool('showEmoji', 'Show weather icon', true, { key: 'mode', value: 'summary' }),
     bool('showDetails', 'Show wind/humidity/pressure', true, { key: 'mode', value: 'summary' }),
   ],

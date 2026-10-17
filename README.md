@@ -151,6 +151,6 @@ Issues and contributions go through the [GEWIS/aurora issue tracker](https://git
 
 ## License
 
-Copyright © 2023-2025 Study Association GEWIS — Some rights reserved.
+Copyright © 2023-2026 Study Association GEWIS — Some rights reserved.
 
 Aurora is licensed under the **GNU Affero General Public License v3.0 or later**. See the [LICENSE](LICENSE) file for details.

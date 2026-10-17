@@ -30,7 +30,7 @@ export default class InfoScreenLayout extends BaseEntity {
   })
   public placements: WidgetPlacement[];
 
-  /** Ids of the enabled modal (overlay) widgets, e.g. "beer-modal", "caller". */
+  /** Ids of the enabled modal (overlay) widgets, e.g. "beer-modal". */
   @Column({ type: 'simple-array', nullable: true })
   public modals: string[];
 

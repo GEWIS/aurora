@@ -114,6 +114,13 @@ describe('DEFAULT_MODALS', () => {
   });
 });
 
+describe('incoming-call overlay', () => {
+  it('is not a layout widget, since InfoScreen.CallerId alone switches it on', () => {
+    expect(getCatalogItem('caller')).toBeUndefined();
+    expect(DEFAULT_MODALS).not.toContain('caller');
+  });
+});
+
 describe('widget settings schema', () => {
   it('has unique keys per widget and valid select defaults', () => {
     for (const w of WIDGET_CATALOG) {
@@ -145,7 +152,7 @@ describe('container widgets', () => {
     expect(ids).toContain('clock');
     expect(ids).not.toContain('carousel');
     expect(ids).not.toContain('status-stack');
-    expect(ids).not.toContain('caller');
+    expect(ids).not.toContain('beer-modal');
     for (const id of Object.keys(DISABLED_WIDGETS)) expect(ids, id).not.toContain(id);
   });
 });

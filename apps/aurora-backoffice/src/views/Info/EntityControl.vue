@@ -48,6 +48,15 @@
         size="small"
         @click="triggerTest"
       />
+      <Button
+        v-tooltip.top="'Dismiss the overlay without waiting for it to time out'"
+        icon="pi pi-times"
+        label="Hang up"
+        severity="secondary"
+        size="small"
+        text
+        @click="endTest"
+      />
     </div>
 
     <CallerEditDialog v-if="entity === 'callers'" v-model:visible="editVisible" :edit-id="editId" />
@@ -153,5 +162,9 @@ function confirmDelete(item: Item) {
 
 async function triggerTest() {
   await callerStore.testCall(testNumber.value);
+}
+
+async function endTest() {
+  await callerStore.endTestCall();
 }
 </script>

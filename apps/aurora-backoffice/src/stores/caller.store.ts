@@ -3,6 +3,7 @@ import {
   createInfoCaller,
   deleteInfoCaller,
   getInfoCallers,
+  testInfoCallerEnd,
   testInfoCallerRing,
   updateInfoCaller,
   type CallerParams,
@@ -51,6 +52,10 @@ export const useCallerStore = defineStore('caller', {
     /** Trigger a test incoming-call overlay on the screens. */
     async testCall(number: string) {
       await testInfoCallerRing({ body: { number } });
+    },
+    /** Dismiss the test overlay instead of waiting out its timeout. */
+    async endTestCall() {
+      await testInfoCallerEnd();
     },
   },
 });

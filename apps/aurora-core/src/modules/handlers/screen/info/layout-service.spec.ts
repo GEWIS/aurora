@@ -30,7 +30,7 @@ describe('LayoutService.sanitizePlacements', () => {
 
   it('drops unknown and modal widget ids', () => {
     expect(LayoutService.sanitizePlacements([place({ id: 'nope' })])).toHaveLength(0);
-    expect(LayoutService.sanitizePlacements([place({ id: 'caller' })])).toHaveLength(0);
+    expect(LayoutService.sanitizePlacements([place({ id: 'beer-modal' })])).toHaveLength(0);
   });
 
   it('drops disabled widget ids', () => {
@@ -64,7 +64,7 @@ describe('LayoutService container children', () => {
     const res = LayoutService.sanitizeChildren(carousel, [
       child({ id: 'clock' }),
       child({ id: 'carousel' }), // container → no nesting
-      child({ id: 'caller' }), // modal
+      child({ id: 'beer-modal' }), // modal
       child({ id: 'caller-inline' }), // disabled
       child({ id: 'nope' }), // unknown
     ]);
@@ -117,9 +117,9 @@ describe('LayoutService.sanitizeSettings', () => {
   });
 
   it('clamps numbers to the setting bounds', () => {
-    const caller = getCatalogItem('caller')!.settings;
-    const out = LayoutService.sanitizeSettings(caller, { autoDismissSeconds: 999 });
-    expect(out.autoDismissSeconds).toBe(120);
+    const news = getCatalogItem('news')!.settings;
+    const out = LayoutService.sanitizeSettings(news, { maxItems: 999 });
+    expect(out.maxItems).toBe(100);
   });
 
   it('keeps text settings as strings', () => {
@@ -150,9 +150,17 @@ describe('LayoutService.sanitizeModals', () => {
     ]);
   });
 
-  it('drops disabled modal ids', () => {
-    // 'caller' is a real modal, but disabled — see DISABLED_WIDGETS.
+  it('drops the incoming-call overlay saved by older layouts', () => {
     expect(LayoutService.sanitizeModals(['caller', 'beer-modal'])).toEqual(['beer-modal']);
+  });
+
+  it('drops disabled modal ids', () => {
+    DISABLED_WIDGETS['beer-modal'] = 'Disabled for this test.';
+    try {
+      expect(LayoutService.sanitizeModals(['beer-modal'])).toEqual([]);
+    } finally {
+      delete DISABLED_WIDGETS['beer-modal'];
+    }
   });
 });
 

@@ -140,8 +140,10 @@ export interface WidgetPlacement {
  */
 export const DISABLED_WIDGETS: Record<string, string> = {
   'conference-rooms': 'Room availability has no real booking source yet.',
-  'caller-inline': 'The phone integration that reports incoming calls is not implemented yet.',
-  caller: 'The phone integration that reports incoming calls is not implemented yet.',
+  // The overlay (`caller`) is live; this grid widget is not. An incoming call is
+  // a moment, not a state worth a permanent panel, so it would sit on "No
+  // incoming calls" all day. Deleting this entry is all that re-enabling takes.
+  'caller-inline': 'Superseded by the incoming-call overlay, which takes the whole screen.',
 };
 
 /** Number of columns in the info-screen grid. */
@@ -410,10 +412,6 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
     ),
   ],
   'beer-modal': [],
-  caller: [
-    num('autoDismissSeconds', 'Auto-dismiss after (seconds)', 20, 5, 120),
-    entity('directory', 'Caller directory', 'callers'),
-  ],
 };
 
 /** Per-child config schemas for container widgets, keyed by container id. */
@@ -445,7 +443,6 @@ const RAW_CATALOG: Omit<WidgetCatalogItem, 'settings'>[] = [
   { id: 'status-stack', name: 'Status stack', category: 'container', icon: 'pi-clone', defaultW: 3, defaultH: 3, minW: 2, minH: 2, maxW: 6, maxH: 6, modal: false, container: true }, // prettier-ignore
   // Modal / overlay widgets (toggled on/off, not grid-placed)
   { id: 'beer-modal', name: 'Beer countdown (overlay)', category: 'room', icon: 'pi-star', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
-  { id: 'caller', name: 'Incoming call (overlay)', category: 'room', icon: 'pi-phone', defaultW: 0, defaultH: 0, minW: 0, minH: 0, maxW: 0, maxH: 0, modal: true }, // prettier-ignore
 ];
 
 /**
@@ -528,7 +525,7 @@ export function resolveSettings(
 }
 
 /** Ids of the modal widgets enabled by default on a fresh screen. */
-export const DEFAULT_MODALS: string[] = ['beer-modal', 'caller'].filter(isWidgetEnabled);
+export const DEFAULT_MODALS: string[] = ['beer-modal'].filter(isWidgetEnabled);
 
 /**
  * A sensible default grid layout, modelled on the sketch's example layout: the

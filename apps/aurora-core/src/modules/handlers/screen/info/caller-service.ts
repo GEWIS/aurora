@@ -1,4 +1,6 @@
 import Caller from './entities/caller';
+import { ServerSettingsStore } from '../../../server-settings';
+import { UnknownNumberDisplay, parsePhoneNumber, presentUnknownCaller } from './caller-number';
 
 export interface CallerParams {
   name: string;
@@ -15,7 +17,13 @@ export interface CallerResponse {
 
 export interface CallerRingParams {
   /** The reported phone number or SIP address of the incoming call. */
-  number: string;
+  number?: string | null;
+  /**
+   * Reported caller name, used when the number is unknown
+   * to the directory (or absent, as on a Teams-to-Teams call). A directory match
+   * always wins, so a caller renamed in the backoffice stays renamed.
+   */
+  name?: string | null;
 }
 
 /**
@@ -29,6 +37,17 @@ export interface CallerRingEvent {
   name: string | null;
   photoUrl: string | null;
 }
+
+/**
+ * The event that dismisses the overlay: the call was answered, declined or
+ * cancelled. Frozen because it is shared by every caller that reports a hang-up.
+ */
+export const CALL_ENDED: CallerRingEvent = Object.freeze({
+  ringing: false,
+  known: false,
+  name: null,
+  photoUrl: null,
+});
 
 /**
  * Manages the caller directory and resolves an incoming caller id against it.
@@ -75,29 +94,45 @@ export default class CallerService {
 
   /**
    * Resolve a reported caller id (phone number or SIP address) against the
-   * directory. A falsy/`"0"` number is treated as "not ringing".
+   * directory. A falsy/`"0"` number is treated as "not ringing", unless the
+   * phone system reported a name (a Teams-to-Teams call has no number).
    */
-  public async resolve(number: string | null | undefined): Promise<CallerRingEvent> {
+  public async resolve(
+    number: string | null | undefined,
+    reportedName?: string | null,
+  ): Promise<CallerRingEvent> {
     const callers = await this.getAll();
-    return CallerService.matchCaller(number, callers);
+    const display = ServerSettingsStore.getInstance().getSetting(
+      'InfoScreen.CallerId.UnknownNumber',
+    ) as UnknownNumberDisplay;
+    return CallerService.matchCaller(number, callers, reportedName, display);
   }
 
   /**
    * Pure resolution of a caller id against a set of callers (no DB access).
+   * The directory (renaming a caller in backoffice) wins over the reported name.
+   * A caller outside the directory is presented according to `display`.
    */
   public static matchCaller(
     number: string | null | undefined,
     callers: Pick<Caller, 'name' | 'numbers' | 'photoUrl'>[],
+    reportedName?: string | null,
+    display: UnknownNumberDisplay = 'hidden',
   ): CallerRingEvent {
-    const normalized = CallerService.normalize(number ?? '');
-    if (!normalized || normalized === '0') {
-      return { ringing: false, known: false, name: null, photoUrl: null };
-    }
-    const match = callers.find((c) =>
-      (c.numbers ?? []).some((n) => CallerService.normalize(n) === normalized),
+    const reportedNumber = CallerService.normalize(number ?? '') === '0' ? null : number;
+    const name = (reportedName ?? '').trim() || null;
+    // Without a number, a name that is itself a number can still match the directory.
+    const lookup = CallerService.normalize(
+      reportedNumber || (parsePhoneNumber(name) ? (name ?? '') : ''),
     );
+    if (!lookup && !name) return CALL_ENDED;
+
+    const match = lookup
+      ? callers.find((c) => (c.numbers ?? []).some((n) => CallerService.normalize(n) === lookup))
+      : undefined;
     if (!match) {
-      return { ringing: true, known: false, name: null, photoUrl: null };
+      const shown = presentUnknownCaller(reportedNumber, name, display);
+      return { ringing: true, known: false, name: shown, photoUrl: null };
     }
     return { ringing: true, known: true, name: match.name, photoUrl: match.photoUrl };
   }

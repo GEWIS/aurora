@@ -1,7 +1,7 @@
 import { Namespace } from 'socket.io';
 import BaseScreenHandler from '../../../root/base-screen-handler';
 import { BeatEvent, TrackChangeEvent } from '../../../events/music-emitter-events';
-import { FeatureEnabled } from '../../../server-settings';
+import { FeatureEnabled, FeatureFlagManager } from '../../../server-settings';
 import logger from '../../../../logger';
 import WeatherService from './weather-service';
 import RainRadarService from './rain-radar-service';
@@ -137,10 +137,11 @@ export default class InfoScreenHandler extends BaseScreenHandler {
 
   /**
    * Push an incoming-call event to all screens (the phone rings for the room,
-   * not a specific screen). No-op while the caller widgets are disabled.
+   * not a specific screen). The same event carries the hang-up: `ringing: false`
+   * dismisses the overlay.
    */
   public emitCaller(event: CallerRingEvent): void {
-    if (!isWidgetEnabled('caller') && !isWidgetEnabled('caller-inline')) return;
+    if (!FeatureFlagManager.getInstance().flagIsEnabled('InfoScreen.CallerId')) return;
     this.sendEvent('info_caller', event);
   }
 

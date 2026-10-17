@@ -8,6 +8,7 @@ import type {
   ServicesHealthResponse,
   WeatherResponse,
 } from '@gewis/aurora-api-client';
+import WidgetCard from '../WidgetCard';
 import ServicesWidget from './ServicesWidget';
 import ConferenceRoomsWidget from './ConferenceRoomsWidget';
 import WeatherForecastWidget from './WeatherForecastWidget';
@@ -189,13 +190,49 @@ describe('WeatherForecastWidget', () => {
     expect(screen.getByText('Weather unavailable')).toBeInTheDocument();
   });
 
-  it('timeline mode shows only the chart (no temperature)', () => {
+  it('timeline mode shows only the chart by default (no temperature)', () => {
     const weather = { temperature: 21, description: 'Zonnig' } as WeatherResponse;
     const { container } = render(
       <WeatherForecastWidget weather={weather} radar={null} settings={{ mode: 'timeline' }} />,
     );
     expect(container.querySelector('svg')).not.toBeNull();
     expect(screen.queryByText('21°')).not.toBeInTheDocument();
+  });
+
+  it('timeline showTemperature without a card title shows icon + temperature above the chart, no details', () => {
+    const weather = { temperature: 21, windBft: 3, description: 'Zonnig' } as WeatherResponse;
+    const { container } = render(
+      <WeatherForecastWidget
+        weather={weather}
+        radar={null}
+        settings={{ mode: 'timeline', showTemperature: true, showEmoji: false, showDetails: true }}
+      />,
+    );
+    expect(screen.getByText('21°')).toBeInTheDocument();
+    expect(container.querySelector('[data-icon="sun"]')).not.toBeNull();
+    expect(screen.queryByText(/3 Bft/)).not.toBeInTheDocument();
+    expect(container.querySelector('svg[viewBox="0 0 1000 300"]')).not.toBeNull();
+  });
+
+  it('timeline showTemperature puts the temperature on the card title row, and inline once untitled', () => {
+    const weather = { temperature: 21, description: 'Zonnig' } as WeatherResponse;
+    const card = (rows: number) => (
+      <WidgetCard id="weather" title="Weather forecast" rows={rows}>
+        <WeatherForecastWidget
+          weather={weather}
+          radar={null}
+          settings={{ mode: 'timeline', showTemperature: true }}
+        />
+      </WidgetCard>
+    );
+    const { rerender } = render(card(2));
+    const titleRow = screen.getByText('Weather forecast').parentElement!;
+    expect(titleRow).toContainElement(screen.getByText('21°'));
+
+    // One row high hides the title, so the conditions must fall back into the body.
+    rerender(card(1));
+    expect(screen.queryByText('Weather forecast')).not.toBeInTheDocument();
+    expect(screen.getByText('21°')).toBeInTheDocument();
   });
 });
 

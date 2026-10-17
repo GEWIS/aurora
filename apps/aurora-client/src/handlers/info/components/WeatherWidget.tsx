@@ -20,7 +20,7 @@ interface Props {
 }
 
 /** Map the (Dutch) Buienradar weather description to a FontAwesome icon. */
-function weatherIcon(description: string | null): IconDefinition {
+export function weatherIcon(description: string | null): IconDefinition {
   const d = (description ?? '').toLowerCase();
   if (/onweer|thunder/.test(d)) return faBolt;
   if (/sneeuw|snow/.test(d)) return faSnowflake;

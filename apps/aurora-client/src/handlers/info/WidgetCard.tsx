@@ -1,5 +1,6 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode, useState } from 'react';
 import { panelStyle } from './background';
+import { WidgetHeaderSlotContext } from './widgetHeaderSlot';
 
 /** Container widgets are transparent and full-bleed; their children carry the background. */
 export const CONTAINER_WIDGET_IDS = new Set(['carousel', 'status-stack']);
@@ -22,9 +23,11 @@ interface Props {
 /**
  * A titled panel for a widget. Top-level widgets get a grid `style`; children of
  * a container omit it and fill their parent. Content is vertically centred so
- * short widgets fill the card. Bleed/container widgets render chromeless.
+ * short widgets fill the card. Bleed/container widgets render chromeless. The
+ * right of the title row is a slot widgets can fill via `WidgetHeaderSlotContext`.
  */
 export default function WidgetCard({ id, title, background, rows, style, children }: Props) {
+  const [headerSlot, setHeaderSlot] = useState<HTMLDivElement | null>(null);
   const bgStyle = panelStyle(background);
   const showTitle = !!title && rows > 1;
   const fill = style ? '' : 'h-full w-full';
@@ -49,11 +52,14 @@ export default function WidgetCard({ id, title, background, rows, style, childre
       data-widget={id}
     >
       {showTitle && (
-        <div className="mb-2 shrink-0 font-raleway text-xl uppercase tracking-wide text-white/50">
-          {title}
+        <div className="mb-2 flex shrink-0 items-center justify-between gap-4">
+          <div className="font-raleway text-xl uppercase tracking-wide text-white/50">{title}</div>
+          <div ref={setHeaderSlot} className="flex shrink-0 items-center" />
         </div>
       )}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center">{children}</div>
+      <WidgetHeaderSlotContext.Provider value={showTitle ? headerSlot : null}>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center">{children}</div>
+      </WidgetHeaderSlotContext.Provider>
     </div>
   );
 }

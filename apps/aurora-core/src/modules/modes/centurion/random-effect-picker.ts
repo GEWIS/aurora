@@ -1,4 +1,4 @@
-import { RgbColor } from '../../lights/color-definitions';
+import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
 import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
@@ -8,10 +8,16 @@ import {
   getRandomLightsEffectDirection,
   getRandomLightsEffectPattern,
 } from '../../lights/effects/lights-effect-pattern';
-import type { CenturionContext } from './centurion-context';
+import type { CenturionContext, Lane } from './centurion-context';
 
 export default class RandomEffectPicker {
-  public apply(ctx: CenturionContext, colors: RgbColor[]) {
+  public roll(ctx: CenturionContext, lanes: ReadonlySet<Lane>) {
+    ctx.state.screenColors = getTwoComplementaryRgbColors().colorNames;
+    ctx.screenHandler.changeColors(ctx.state.screenColors);
+    this.apply(ctx, ctx.state.screenColors, lanes);
+  }
+
+  public apply(ctx: CenturionContext, colors: RgbColor[], lanes: ReadonlySet<Lane>) {
     const bpm = ctx.beatController.songBpm;
 
     const newMovementEffectSideBuilder = this.getMovementEffectSide(bpm);
@@ -20,17 +26,23 @@ export default class RandomEffectPicker {
     const newEffectBuilder = this.getParEffect(colors, bpm);
 
     ctx.lightsHandler.entities.forEach((l) => {
+      const hasPars = l.pars.length > 0;
+      const hasRgbs = l.movingHeadRgbs.length > 0;
+      const hasWheels = l.movingHeadWheels.length > 0;
+      const ownsMovement =
+        (hasRgbs && lanes.has('rgbMovement')) || (hasWheels && lanes.has('wheelMovement'));
+
       // If we have a moving head, assign a movement effect
-      if ((l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) && l.groupInMiddle) {
+      if (ownsMovement && l.groupInMiddle) {
         ctx.lightsHandler.setMovementEffect(l, [newMovementEffectCenterBuilder]);
-      } else if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
+      } else if (ownsMovement) {
         ctx.lightsHandler.setMovementEffect(l, [newMovementEffectSideBuilder]);
       }
       // If we have a wheel moving head, assign a static color
-      if (l.movingHeadWheels.length > 0) {
-        ctx.lightsHandler.setColorEffect(l, [movingHeadEffectColor]);
+      if (hasWheels) {
+        if (lanes.has('wheelColor')) ctx.lightsHandler.setColorEffect(l, [movingHeadEffectColor]);
         // Otherwise use a random effect!
-      } else {
+      } else if ((hasPars && lanes.has('parColor')) || (hasRgbs && lanes.has('rgbColor'))) {
         ctx.lightsHandler.setColorEffect(l, [newEffectBuilder]);
       }
     });

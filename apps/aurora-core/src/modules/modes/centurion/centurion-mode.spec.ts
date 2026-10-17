@@ -245,12 +245,37 @@ describe('CenturionMode', () => {
       expect(mode.state.lastHornEvent).toMatchObject({ timestamp: 10, data: { counter: 1 } });
     });
 
-    it('should enable the disco ball once per group', async () => {
+    it('should enable the disco ball once per effect', async () => {
       await createMode();
       playUntil(20);
 
-      expect(switchManager.enableSwitch).toHaveBeenCalledTimes(2);
+      expect(switchManager.enableSwitch).toHaveBeenCalledTimes(1);
       expect(switchManager.enableSwitch).toHaveBeenCalledWith(discoBallSwitch);
+    });
+
+    it('should keep the disco ball on during a random effect', async () => {
+      tape.feed = [
+        {
+          timestamp: 5,
+          type: 'effect',
+          data: {
+            discoBall: true,
+            effects: {
+              pars: [],
+              movingHeadRgbColor: [],
+              movingHeadRgbMovement: [],
+              movingHeadWheelColor: [],
+              movingHeadWheelMovement: [],
+            },
+          },
+        },
+        { timestamp: 10, type: 'effect', data: { random: true, effects: {} } },
+      ];
+      await createMode();
+      playUntil(10);
+
+      expect(screenHandler.changeColors).toHaveBeenCalledTimes(1);
+      expect(switchManager.disableSwitch).not.toHaveBeenCalled();
     });
 
     it('should fall back to random effects without a disco ball', async () => {
@@ -260,6 +285,14 @@ describe('CenturionMode', () => {
 
       expect(switchManager.enableSwitch).not.toHaveBeenCalled();
       expect(screenHandler.changeColors).toHaveBeenCalled();
+    });
+
+    it('should not modify the tape without a disco ball', async () => {
+      state.discoballIds = [];
+      await createMode();
+      playUntil(20);
+
+      expect(tape.feed[2]).not.toHaveProperty('data.random');
     });
 
     it('should remove the song beat generator for a song without bpm', async () => {
@@ -304,13 +337,13 @@ describe('CenturionMode', () => {
       expect(switchManager.disableSwitch).toHaveBeenCalledWith(discoBallSwitch);
     });
 
-    it('should re-roll effects and restart beat generators once per group on a random effect', async () => {
+    it('should re-roll effects and restart beat generators once on a random effect', async () => {
       await createMode();
       playUntil(50);
 
-      expect(screenHandler.changeColors).toHaveBeenCalledTimes(2);
-      expect(beatManager.active.get('background')?.generator.restart).toHaveBeenCalledTimes(2);
-      expect(beatManager.active.get('centurion')?.generator.restart).toHaveBeenCalledTimes(2);
+      expect(screenHandler.changeColors).toHaveBeenCalledTimes(1);
+      expect(beatManager.active.get('background')?.generator.restart).toHaveBeenCalledTimes(1);
+      expect(beatManager.active.get('centurion')?.generator.restart).toHaveBeenCalledTimes(1);
     });
 
     it('should remove all effects on a reset effect', async () => {
@@ -374,14 +407,6 @@ describe('CenturionMode', () => {
       vi.advanceTimersByTime(0);
 
       expect(musicEmitter.emitAudio).toHaveBeenCalledTimes(1);
-    });
-
-    it.fails('should not modify the tape without a disco ball', async () => {
-      state.discoballIds = [];
-      await createMode();
-      playUntil(20);
-
-      expect(tape.feed[2]).not.toHaveProperty('data.random');
     });
 
     it.fails('should not throw when destroyed before starting', async () => {

@@ -137,6 +137,10 @@ export default function CenturionView({ socket }: Props) {
       setHornCount(counter);
     });
 
+    socket.on('horn_count', (counters: number[]) => {
+      setHornCount(counters[0]);
+    });
+
     socket.on('change_colors', (newColorsEvent: RgbColor[][]) => {
       const colors = newColorsEvent[0];
       setRgbColors({

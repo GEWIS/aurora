@@ -5,6 +5,19 @@ import { CenturionScreenHandler } from '../../handlers/screen';
 import DiscoballController from './discoball-controller';
 import CenturionBeatController from './centurion-beat-controller';
 import RandomEffectPicker from './random-effect-picker';
+import { MusicEmitter } from '../../events';
+
+export type Lane =
+  | 'song'
+  | 'bpm'
+  | 'horn'
+  | 'discoBall'
+  | 'parColor'
+  | 'rgbColor'
+  | 'rgbMovement'
+  | 'wheelColor'
+  | 'wheelMovement'
+  | 'screenColors';
 
 export interface CenturionPlaybackState {
   lastHornEvent?: Horn & { timestamp: number };
@@ -14,9 +27,12 @@ export interface CenturionPlaybackState {
 
 export interface CenturionContext {
   state: CenturionPlaybackState;
+  musicEmitter: MusicEmitter;
   lightsHandler: SetEffectsHandler;
   screenHandler: CenturionScreenHandler;
   discoBall: DiscoballController;
   beatController: CenturionBeatController;
   randomEffects: RandomEffectPicker;
+  coverUrl?: string;
+  stop: () => void;
 }

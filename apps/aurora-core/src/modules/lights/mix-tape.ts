@@ -51,7 +51,7 @@ export type EffectData = {
   };
 };
 
-type Effect = {
+export type Effect = {
   type: 'effect';
   data: EffectData;
 };
@@ -60,7 +60,7 @@ export type BpmData = {
   bpm: number;
 };
 
-type Bpm = {
+export type Bpm = {
   type: 'bpm';
   data: BpmData;
 };

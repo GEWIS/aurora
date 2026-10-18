@@ -17,6 +17,7 @@ import DiscoballController from './discoball-controller';
 import CenturionBeatController from './centurion-beat-controller';
 import RandomEffectPicker from './random-effect-picker';
 import { toCommand } from './commands';
+import CenturionTimeline from './centurion-timeline';
 
 const LIGHTS_HANDLER = 'SetEffectsHandler';
 const AUDIO_HANDLER = 'SimpleAudioHandler';
@@ -44,6 +45,8 @@ export default class CenturionMode extends BaseMode<
   private readonly playbackState: CenturionPlaybackState = {};
 
   private ctx: CenturionContext;
+
+  private timeline: CenturionTimeline;
 
   private initialized = false;
 
@@ -96,6 +99,7 @@ export default class CenturionMode extends BaseMode<
     this.tape = tape;
     this.ctx.screenHandler.loaded(tape);
     this.ctx.coverUrl = tape.coverUrl;
+    this.timeline = CenturionTimeline.fromMixTape(tape, this.ctx.discoBall.hasDiscoball);
     logger.info(`Initialized centurion tape "${tape.name}"`);
   }
 

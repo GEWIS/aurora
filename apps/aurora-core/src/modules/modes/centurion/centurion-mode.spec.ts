@@ -69,6 +69,8 @@ class CenturionScreenHandler {
 
   horn = vi.fn();
 
+  hornCount = vi.fn();
+
   changeColors = vi.fn();
 }
 
@@ -368,8 +370,8 @@ describe('CenturionMode', () => {
     });
   });
 
-  describe('known bugs', () => {
-    it.fails('should enable the disco ball when starting inside the disco window', async () => {
+  describe('seek', () => {
+    it('should enable the disco ball when starting inside the disco window', async () => {
       await createMode();
       mode.skip(27);
       mode.start();
@@ -377,7 +379,7 @@ describe('CenturionMode', () => {
       expect(switchManager.enableSwitch).toHaveBeenCalledWith(discoBallSwitch);
     });
 
-    it.fails('should restore the song bpm when starting after an effect', async () => {
+    it('should restore the song bpm when starting after an effect', async () => {
       await createMode();
       mode.skip(22);
       mode.start();
@@ -385,7 +387,7 @@ describe('CenturionMode', () => {
       expect(beatManager.active.get('centurion')?.generator.bpm).toBe(140);
     });
 
-    it.fails('should restore the bpm event when starting after it', async () => {
+    it('should restore the bpm event when starting after it', async () => {
       await createMode();
       mode.skip(35);
       mode.start();
@@ -393,22 +395,81 @@ describe('CenturionMode', () => {
       expect(beatManager.active.get('centurion')?.generator.bpm).toBe(160);
     });
 
-    it.fails('should restore the last horn when starting after it', async () => {
+    it('should restore the last horn when starting after it', async () => {
       await createMode();
       mode.skip(15);
       mode.start();
 
       expect(mode.state.lastHornEvent?.data.counter).toBe(1);
+      expect(screenHandler.hornCount).toHaveBeenCalledWith(1);
+      expect(screenHandler.horn).not.toHaveBeenCalled();
     });
 
-    it.fails('should handle the first song once when starting at 0', async () => {
+    it('should handle the first song once when starting at 0', async () => {
       await createMode();
       mode.start();
       vi.advanceTimersByTime(0);
 
       expect(musicEmitter.emitAudio).toHaveBeenCalledTimes(1);
     });
+  });
 
+  describe('sync', () => {
+    // The player stamps its audio position (ms) with its own clock, here equal to the core's
+    async function createSyncedMode() {
+      await createMode();
+      const handler = audioHandler.addSyncAudioTimingHandler.mock.calls[0][0];
+      return (seconds: number) => handler({ startTime: Date.now(), timestamp: seconds * 1000 });
+    }
+
+    it('should not fire a command twice when the core is ahead', async () => {
+      const sync = await createSyncedMode();
+      mode.start();
+      vi.advanceTimersByTime(10_500);
+      sync(10);
+      vi.advanceTimersByTime(2000);
+
+      expect(screenHandler.horn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fire skipped commands when the core is behind', async () => {
+      const sync = await createSyncedMode();
+      mode.start();
+      vi.advanceTimersByTime(9500);
+      expect(screenHandler.horn).not.toHaveBeenCalled();
+
+      sync(10.2);
+      vi.advanceTimersByTime(0);
+
+      expect(screenHandler.horn).toHaveBeenCalledWith(1500, 1);
+    });
+
+    it('should restore the lanes when the drift exceeds the threshold', async () => {
+      const sync = await createSyncedMode();
+      mode.start();
+      vi.advanceTimersByTime(5000);
+      sync(27);
+
+      expect(switchManager.enableSwitch).toHaveBeenCalledWith(discoBallSwitch);
+      expect(screenHandler.hornCount).toHaveBeenCalledWith(1);
+      expect(screenHandler.horn).not.toHaveBeenCalled();
+      expect(mode.state.lastSongEvent).toMatchObject({ timestamp: 25 });
+    });
+
+    it('should catch up on every due command when a timer fires late', async () => {
+      await createMode();
+      mode.start();
+      // The clock moves on while the event loop is blocked
+      vi.setSystemTime(Date.now() + 15_000);
+      vi.advanceTimersByTime(10_000);
+
+      expect(screenHandler.horn).toHaveBeenCalledTimes(1);
+      expect(switchManager.enableSwitch).toHaveBeenCalledWith(discoBallSwitch);
+      expect(mode.state.lastSongEvent).toMatchObject({ timestamp: 25 });
+    });
+  });
+
+  describe('known bugs', () => {
     it.fails('should not throw when destroyed before starting', async () => {
       await createMode();
 

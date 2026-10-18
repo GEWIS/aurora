@@ -11,7 +11,7 @@ export default class CenturionTimeline {
    * Construct a new timeline object, assumes the commands array is sorted.
    * @param commands
    */
-  constructor(private readonly commands: CenturionCommand[]) {
+  constructor(public readonly commands: CenturionCommand[]) {
     this.n_lanes = new Set(commands.flatMap((c) => c.lanes)).size;
   }
 

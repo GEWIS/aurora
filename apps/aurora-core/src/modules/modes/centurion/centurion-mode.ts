@@ -3,7 +3,7 @@ import { LightsGroup } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
 import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
 import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import MixTape, { FeedEvent } from '../../lights/mix-tape';
+import MixTape from '../../lights/mix-tape';
 import { MusicEmitter } from '../../events';
 import { CenturionScreenHandler } from '../../handlers/screen';
 import { BeatManager } from '../../beats';
@@ -12,16 +12,17 @@ import LightsSwitchManager from '../../lights/lights-switch-manager';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
 import { ISettings } from '../../server-settings/server-setting';
 import RootLightsService from '../../lights/root-lights-service';
-import { CenturionContext, CenturionPlaybackState } from './centurion-context';
+import { CenturionContext, CenturionPlaybackState, Lane } from './centurion-context';
 import DiscoballController from './discoball-controller';
 import CenturionBeatController from './centurion-beat-controller';
 import RandomEffectPicker from './random-effect-picker';
-import { toCommand } from './commands';
+import { CenturionCommand } from './commands/centurion-command';
 import CenturionTimeline from './centurion-timeline';
 
 const LIGHTS_HANDLER = 'SetEffectsHandler';
 const AUDIO_HANDLER = 'SimpleAudioHandler';
 const SCREEN_HANDLER = 'CenturionScreenHandler';
+const SEEK_THRESHOLD = 1; // seconds
 
 @FeatureEnabled('Centurion')
 export default class CenturionMode extends BaseMode<
@@ -31,14 +32,11 @@ export default class CenturionMode extends BaseMode<
 > {
   public tape: MixTape;
 
-  private feedEvents: {
-    event: FeedEvent;
-    timeouts: NodeJS.Timeout[];
-  }[] = [];
+  private cursor = 0;
 
-  private timestamp: number = 0;
+  private anchor = { pos: 0, at: Date.now() };
 
-  public startTime: Date = new Date();
+  private timer?: NodeJS.Timeout;
 
   private lightsSwitchManager: LightsSwitchManager;
 
@@ -51,8 +49,11 @@ export default class CenturionMode extends BaseMode<
   private initialized = false;
 
   public get playing(): boolean {
-    // If we have registered events, we are playing audio
-    return this.feedEvents.length > 0;
+    return this.timer !== undefined;
+  }
+
+  public get startTime(): Date {
+    return new Date(this.anchor.at - this.anchor.pos * 1000);
   }
 
   constructor(lights: LightsGroup[], screens: Screen[], audios: Audio[]) {
@@ -108,16 +109,15 @@ export default class CenturionMode extends BaseMode<
    */
   public start(): boolean {
     if (this.tape.songFile.startsWith('http')) {
-      this.audioHandler.play(this.tape.songFile, this.timestamp);
+      this.audioHandler.play(this.tape.songFile, this.anchor.pos);
     } else {
-      this.audioHandler.play(`/static${this.tape.songFile}`, this.timestamp);
+      this.audioHandler.play(`/static${this.tape.songFile}`, this.anchor.pos);
     }
 
-    this.registerFeedEvents(this.timestamp);
-    this.fireLastFeedEvent(this.timestamp);
+    this.ctx.beatController.startBackground();
+    this.seek(this.anchor.pos);
 
     this.ctx.screenHandler.start();
-    this.ctx.beatController.startBackground();
     logger.info('Started centurion playback.');
     return true;
   }
@@ -128,17 +128,10 @@ export default class CenturionMode extends BaseMode<
    */
   public skip(seconds: number) {
     if (seconds < 0) throw new Error('Timestamp has to be positive');
-    this.timestamp = seconds;
     this.audioHandler.setPlayback(seconds);
 
-    if (this.playing) {
-      // Lazy solution for figuring out whether the discoball should be on:
-      // let's just disable it by default
-      if (this.ctx.discoBall.hasDiscoball) this.ctx.discoBall.disable();
-
-      this.registerFeedEvents(seconds);
-      this.fireLastFeedEvent(seconds);
-    }
+    if (this.playing) this.seek(seconds);
+    else this.anchor = { pos: seconds, at: Date.now() };
     logger.info(`Moved centurion playback to ${seconds} seconds.`);
   }
 
@@ -148,87 +141,90 @@ export default class CenturionMode extends BaseMode<
   public stop() {
     this.audioHandler.stop();
     this.ctx.screenHandler.stop();
-    this.stopFeedEvents();
+    this.anchor = { pos: this.position(), at: Date.now() };
+    clearTimeout(this.timer);
+    this.timer = undefined;
     this.ctx.beatController.setSong();
     this.ctx.beatController.stopBackground();
     logger.info('Paused centurion playback.');
+  }
 
-    this.timestamp = (new Date().getTime() - this.startTime.getTime()) / 1000;
+  private position(): number {
+    if (!this.playing) return this.anchor.pos;
+    return this.anchor.pos + (Date.now() - this.anchor.at) / 1000;
   }
 
   /**
-   * Handle a fired event
-   * @param event
+   * Restore every lane to its owner at t, then fire the commands after t on time
+   * @param t tape position in seconds
    * @private
    */
-  private handleFeedEvent(event: FeedEvent) {
-    logger.debug(event);
-    toCommand(event, this.ctx.discoBall.hasDiscoball).execute(this.ctx);
-  }
+  private seek(t: number) {
+    clearTimeout(this.timer);
+    this.timer = undefined;
 
-  /**
-   * Fire the last past event
-   * @param seconds
-   * @private
-   */
-  private fireLastFeedEvent(seconds: number) {
-    const pastEvents = this.tape.feed
-      .filter((e) => e.type === 'song' || e.type === 'effect')
-      .filter((e) => e.timestamp <= seconds);
-    if (pastEvents.length === 0) return;
+    const owners = this.timeline.ownersAt(t);
+    if (!owners.has('discoBall')) this.ctx.discoBall.disable();
 
-    this.handleFeedEvent(pastEvents[pastEvents.length - 1]);
-  }
+    if (owners.has('bpm')) owners.get('bpm')!.restore(this.ctx, new Set<Lane>(['bpm']));
+    else this.ctx.beatController.setSong();
 
-  /**
-   * Register events
-   * @param seconds seconds since start of the track
-   * @private
-   */
-  private registerFeedEvents(seconds: number = 0): void {
-    if (this.feedEvents.length > 0) {
-      this.stopFeedEvents();
-    }
-
-    this.startTime = new Date(new Date().getTime() - seconds * 1000);
-
-    const stopEvent: FeedEvent = {
-      type: 'other',
-      data: 'stop',
-      timestamp: this.tape.duration,
-    };
-
-    [...this.tape.feed, stopEvent]
-      .filter((e) => e.timestamp >= seconds)
-      .forEach((event) => {
-        const timestampMillis = Math.round((event.timestamp - seconds) * 1000);
-        const timeouts = [setTimeout(this.handleFeedEvent.bind(this, event), timestampMillis)];
-
-        this.feedEvents.push({
-          event,
-          timeouts,
-        });
-      });
-  }
-
-  private stopFeedEvents() {
-    this.feedEvents.forEach((e): void => {
-      e.timeouts.forEach((t) => clearTimeout(t));
+    const lanesByCommand = new Map<CenturionCommand, Set<Lane>>();
+    owners.forEach((cmd, lane) => {
+      if (lane !== 'bpm') lanesByCommand.set(cmd, (lanesByCommand.get(cmd) ?? new Set()).add(lane));
     });
-    this.feedEvents = [];
+
+    const { commands } = this.timeline;
+    [...lanesByCommand]
+      .sort(([a], [b]) => commands.indexOf(a) - commands.indexOf(b))
+      .forEach(([cmd, lanes]) => cmd.restore(this.ctx, lanes));
+
+    this.anchor = { pos: t, at: Date.now() };
+    this.cursor = this.timeline.indexAfter(t);
+    this.arm();
+  }
+
+  private fireDue() {
+    const { commands } = this.timeline;
+
+    while (
+      this.playing &&
+      this.cursor < commands.length &&
+      commands[this.cursor].startTime <= this.position()
+    ) {
+      commands[this.cursor++].execute(this.ctx);
+    }
+    if (this.playing) this.arm();
+  }
+
+  private arm() {
+    clearTimeout(this.timer);
+    const next = this.timeline.commands[this.cursor];
+    this.timer = next
+      ? setTimeout(
+          () => this.fireDue(),
+          Math.max(0, Math.ceil((next.startTime - this.position()) * 1000)),
+        )
+      : undefined;
   }
 
   /**
    * Synchronize the feed events with the currently playing audio
-   * @param sendTime the time the sync packet has been sent (to synchronize clocks)
-   * in ms since epoch
+   * @param startTime
    * @param timestamp progression of the audio in ms
    * @private
    */
   private syncFeedEvents({ startTime, timestamp }: { startTime: number; timestamp: number }) {
-    const msDifference = new Date().getTime() - startTime;
+    if (!this.playing) return;
+    const t = (timestamp + Date.now() - startTime) / 1000;
 
-    this.registerFeedEvents((timestamp + msDifference) / 1000);
+    if (Math.abs(t - this.position()) > SEEK_THRESHOLD) {
+      this.seek(t);
+      return;
+    }
+
+    this.anchor = { pos: t, at: Date.now() };
+    this.arm();
   }
 
   /**

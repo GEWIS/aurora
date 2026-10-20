@@ -29,7 +29,12 @@ import LayoutPresetService, {
   LayoutPresetParams,
   LayoutPresetResponse,
 } from './layout-preset-service';
-import CallerService, { CallerParams, CallerResponse, CallerRingParams } from './caller-service';
+import CallerService, {
+  CALL_ENDED,
+  CallerParams,
+  CallerResponse,
+  CallerRingParams,
+} from './caller-service';
 import ServicesHealthService, { ServicesHealthResponse } from './services-health-service';
 import ValidationService, { ValidationParams, ValidationResult } from './validation-service';
 import ConferenceRoomsService, {
@@ -422,26 +427,47 @@ export class InfoScreenController extends Controller {
    * integration key; resolves the number against the directory and shows the
    * incoming-call overlay on the screens.
    */
+  @FeatureEnabled('InfoScreen.CallerId')
   @Security(SecurityNames.INTEGRATION, ['setInfoCallerRing'])
   @Post('caller-ring')
   public async setInfoCallerRing(@Body() body: CallerRingParams): Promise<void> {
-    const event = await this.callerService.resolve(body.number);
+    const event = await this.callerService.resolve(body.number, body.name);
     this.getHandler()?.emitCaller(event);
+  }
+
+  /**
+   * Report that the call stopped ringing and dismiss the overlay.
+   */
+  @FeatureEnabled('InfoScreen.CallerId')
+  @Security(SecurityNames.INTEGRATION, ['setInfoCallerEnd'])
+  @Post('caller-end')
+  public async setInfoCallerEnd(): Promise<void> {
+    this.getHandler()?.emitCaller(CALL_ENDED);
   }
 
   /**
    * Trigger a test incoming-call overlay from the backoffice (same behaviour as
    * the integration endpoint, but human-authenticated).
    */
+  @FeatureEnabled('InfoScreen.CallerId')
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
   @Post('caller-ring/test')
   public async testInfoCallerRing(
     @Request() req: ExpressRequest,
     @Body() body: CallerRingParams,
   ): Promise<void> {
-    logger.audit(req.user, `Trigger test info screen call for "${body.number}".`);
-    const event = await this.callerService.resolve(body.number);
+    logger.audit(req.user, `Trigger test info screen call for "${body.number ?? body.name}".`);
+    const event = await this.callerService.resolve(body.number, body.name);
     this.getHandler()?.emitCaller(event);
+  }
+
+  /** Dismiss a test overlay from the backoffice without waiting for the timeout. */
+  @FeatureEnabled('InfoScreen.CallerId')
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.privileged)
+  @Post('caller-end/test')
+  public async testInfoCallerEnd(@Request() req: ExpressRequest): Promise<void> {
+    logger.audit(req.user, 'Dismiss the test info screen call.');
+    this.getHandler()?.emitCaller(CALL_ENDED);
   }
 
   // ---------------------------------------------------------------------------

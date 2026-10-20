@@ -957,6 +957,17 @@
 						"type": "boolean",
 						"description": "Whether the info screen handler should be enabled."
 					},
+					"InfoScreen.CallerId": {
+						"type": "boolean"
+					},
+					"InfoScreen.CallerId.UnknownNumber": {
+						"type": "string",
+						"enum": [
+							"full",
+							"censored",
+							"hidden"
+						]
+					},
 					"Orders": {
 						"type": "boolean"
 					},
@@ -1007,6 +1018,8 @@
 					"Poster.Trello",
 					"Poster.Requests",
 					"InfoScreen",
+					"InfoScreen.CallerId",
+					"InfoScreen.CallerId.UnknownNumber",
 					"Orders",
 					"Orders.DefaultTimeoutSeconds",
 					"Orders.WebhookPublicKeyURL",
@@ -1041,6 +1054,8 @@
 							"Poster.Trello",
 							"Poster.Requests",
 							"InfoScreen",
+							"InfoScreen.CallerId",
+							"InfoScreen.CallerId.UnknownNumber",
 							"Orders",
 							"Orders.DefaultTimeoutSeconds",
 							"Orders.WebhookPublicKeyURL",
@@ -5122,12 +5137,15 @@
 				"properties": {
 					"number": {
 						"type": "string",
+						"nullable": true,
 						"description": "The reported phone number or SIP address of the incoming call."
+					},
+					"name": {
+						"type": "string",
+						"nullable": true,
+						"description": "Reported caller name, used when the number is unknown\nto the directory (or absent, as on a Teams-to-Teams call). A directory match\nalways wins, so a caller renamed in the backoffice stays renamed."
 					}
 				},
-				"required": [
-					"number"
-				],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -8266,6 +8284,8 @@
 											"Poster.Trello",
 											"Poster.Requests",
 											"InfoScreen",
+											"InfoScreen.CallerId",
+											"InfoScreen.CallerId.UnknownNumber",
 											"Orders",
 											"Orders.DefaultTimeoutSeconds",
 											"Orders.WebhookPublicKeyURL",
@@ -14069,6 +14089,28 @@
 				}
 			}
 		},
+		"/handler/screen/info/caller-end": {
+			"post": {
+				"operationId": "SetInfoCallerEnd",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Report that the call stopped ringing and dismiss the overlay.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"integration": [
+							"setInfoCallerEnd"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/handler/screen/info/caller-ring/test": {
 			"post": {
 				"operationId": "TestInfoCallerRing",
@@ -14102,6 +14144,31 @@
 						}
 					}
 				}
+			}
+		},
+		"/handler/screen/info/caller-end/test": {
+			"post": {
+				"operationId": "TestInfoCallerEnd",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "Dismiss a test overlay from the backoffice without waiting for the timeout.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"key-holder"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/handler/screen/info/services": {

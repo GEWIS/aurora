@@ -211,6 +211,14 @@
       </DataTable>
     </AppContainer>
 
+    <!-- Caller ID -->
+    <AppContainer v-if="canManageCallers && callerIdEnabled" icon="pi-phone" title="Caller ID">
+      <div class="flex flex-col gap-3">
+        <small class="opacity-70">Displays incoming calls on the info screen.</small>
+        <EntityControl entity="callers" :model-value="[]" :selectable="false" />
+      </div>
+    </AppContainer>
+
     <!-- Keyholder edit dialog -->
     <Dialog v-model:visible="dialogVisible" :header="`Edit ${editName}`" modal>
       <div class="flex flex-col gap-4 w-96">
@@ -259,11 +267,19 @@ import AppContainer from '@/layout/AppContainer.vue';
 import KeyholderLabel from '@/components/info/KeyholderLabel.vue';
 import { useInfoStore } from '@/stores/info.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useServerSettingsStore } from '@/stores/server-settings.store';
+import EntityControl from '@/views/Info/EntityControl.vue';
 
 const infoStore = useInfoStore();
 const authStore = useAuthStore();
+const settingsStore = useServerSettingsStore();
 
 const canRename = computed(() => authStore.getRoles.includes(SecurityGroup.ADMIN));
+
+const callerIdEnabled = computed(() => settingsStore.featureEnabled('InfoScreen.CallerId'));
+
+/** The caller endpoints are privileged, while this page itself is not. */
+const canManageCallers = computed(() => authStore.isInSecurityGroup('infoscreen', 'privileged'));
 
 // --- GEWIS keyholder sync ---------------------------------------------------
 

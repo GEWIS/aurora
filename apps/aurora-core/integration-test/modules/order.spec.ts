@@ -1,4 +1,5 @@
-import { describe, beforeAll, it, expect } from 'vitest';
+import { describe, beforeAll, afterAll, it, expect } from 'vitest';
+import ServerSettingsStore from '@aurora/modules/server-settings/server-settings-store';
 import { expectApiError, expectValidationError } from '../shared/response-matchers';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 
@@ -71,7 +72,7 @@ describe('POST /api/orders', () => {
 });
 
 describe('POST /api/orders/webhook', () => {
-  it('returns 500 without auth (public endpoint crashes on missing OrderManager)', async () => {
+  it('returns 409 while no public key URL is configured', async () => {
     // ACT
     const res = await testApp.unauthorizedAgent
       .post('/api/orders/webhook')
@@ -79,26 +80,42 @@ describe('POST /api/orders/webhook', () => {
       .send({ orderNumber: 1 });
 
     // ASSERT
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(409);
+    expect(res.text).toContain('Orders.WebhookPublicKeyURL');
   });
 
-  it('returns 400 with missing X-Signature header', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent.post('/api/orders/webhook').send({ orderNumber: 1 });
+  describe('with a public key URL configured', () => {
+    beforeAll(async () => {
+      await ServerSettingsStore.getInstance().setSetting(
+        'Orders.WebhookPublicKeyURL',
+        'http://127.0.0.1:1/public-key',
+      );
+    });
 
-    // ASSERT
-    expect(res.status).toBe(400);
-  });
+    afterAll(async () => {
+      await ServerSettingsStore.getInstance().setSetting('Orders.WebhookPublicKeyURL', '');
+    });
 
-  it('returns 500 with invalid signature (OrderManager not initialized)', async () => {
-    // ACT
-    const res = await testApp.authorizedAgent
-      .post('/api/orders/webhook')
-      .set('X-Signature', 'invalidsignature')
-      .send({ orderNumber: 1 });
+    it('returns 400 with missing X-Signature header', async () => {
+      // ACT
+      const res = await testApp.authorizedAgent
+        .post('/api/orders/webhook')
+        .send({ orderNumber: 1 });
 
-    // ASSERT
-    expect(res.status).toBe(500);
+      // ASSERT
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 500 when the public key cannot be fetched', async () => {
+      // ACT
+      const res = await testApp.unauthorizedAgent
+        .post('/api/orders/webhook')
+        .set('X-Signature', 'invalidsignature')
+        .send({ orderNumber: 1 });
+
+      // ASSERT
+      expect(res.status).toBe(500);
+    });
   });
 });
 

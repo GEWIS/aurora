@@ -89,11 +89,13 @@ export class CenturionController extends Controller {
       return { playing: false };
     }
 
+    const playbackState = mode.state;
+
     return {
       tape: { name: mode.tape.name, artist: mode.tape.artist, coverUrl: mode.tape.coverUrl },
-      lastHorn: mode.lastHornEvent,
-      lastSong: mode.lastSongEvent,
-      colors: mode.currentColors,
+      lastHorn: playbackState.lastHornEvent,
+      lastSong: playbackState.lastSongEvent,
+      colors: playbackState.screenColors,
       playing: mode.playing,
     };
   }

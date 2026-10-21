@@ -1,35 +1,29 @@
 import BaseMode from '../base-mode';
-import { LightsGroup, LightsSwitch } from '../../lights/entities';
+import { LightsGroup } from '../../lights/entities';
 import { Audio, Screen } from '../../root/entities';
 import SetEffectsHandler from '../../handlers/lights/set-effects-handler';
 import SimpleAudioHandler from '../../handlers/audio/simple-audio-handler';
-import MixTape, { FeedEvent, Horn, Song, SongData } from '../../lights/mix-tape';
-import { BeatFadeOut, StaticColor } from '../../lights/effects/color';
-import { ClassicRotate, SearchLight, TableRotate } from '../../lights/effects/movement';
-import { getTwoComplementaryRgbColors, RgbColor } from '../../lights/color-definitions';
+import MixTape from '../../lights/mix-tape';
 import { MusicEmitter } from '../../events';
-import { TrackChangeEvent } from '../../events/music-emitter-events';
 import { CenturionScreenHandler } from '../../handlers/screen';
-import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
-import Wave from '../../lights/effects/color/wave';
-import Sparkle from '../../lights/effects/color/sparkle';
-import { BeatManager, BeatPriorities, SimpleBeatGenerator } from '../../beats';
+import { BeatManager } from '../../beats';
 import logger from '../../../logger';
 import LightsSwitchManager from '../../lights/lights-switch-manager';
 import { FeatureEnabled, ServerSettingsStore } from '../../server-settings';
 import { ISettings } from '../../server-settings/server-setting';
 import RootLightsService from '../../lights/root-lights-service';
-import {
-  getRandomLightsEffectDirection,
-  getRandomLightsEffectPattern,
-  LightsEffectDirection,
-  LightsEffectPattern,
-} from '../../lights/effects/lights-effect-pattern';
+import { CenturionContext, CenturionPlaybackState, Lane } from './centurion-context';
+import DiscoballController from './discoball-controller';
+import CenturionBeatController from './centurion-beat-controller';
+import RandomEffectPicker from './random-effect-picker';
+import { CenturionCommand } from './commands/centurion-command';
+import CenturionTimeline from './centurion-timeline';
+import EmitterStore from '../../events/emitter-store';
 
 const LIGHTS_HANDLER = 'SetEffectsHandler';
 const AUDIO_HANDLER = 'SimpleAudioHandler';
 const SCREEN_HANDLER = 'CenturionScreenHandler';
-const STROBE_TIME = 1500; // Milliseconds
+const SEEK_THRESHOLD = 1; // seconds
 
 @FeatureEnabled('Centurion')
 export default class CenturionMode extends BaseMode<
@@ -39,56 +33,46 @@ export default class CenturionMode extends BaseMode<
 > {
   public tape: MixTape;
 
-  private discoballs: LightsSwitch[] = [];
+  private cursor = 0;
 
-  private musicEmitter: MusicEmitter;
+  private anchor = { pos: 0, at: Date.now() };
 
-  private feedEvents: {
-    event: FeedEvent;
-    timeouts: NodeJS.Timeout[];
-  }[] = [];
-
-  private timestamp: number = 0;
-
-  public startTime: Date = new Date();
-
-  public lastHornEvent?: Horn & { timestamp: number };
-
-  public lastSongEvent?: Song & { timestamp: number };
-
-  public currentColors?: RgbColor[];
-
-  private beatManager: BeatManager;
-
-  private beatGeneratorBackground: SimpleBeatGenerator;
-
-  private beatGeneratorSong: SimpleBeatGenerator | undefined;
+  private timer?: NodeJS.Timeout;
 
   private lightsSwitchManager: LightsSwitchManager;
 
+  private readonly playbackState: CenturionPlaybackState = {};
+
+  private ctx: CenturionContext;
+
+  private timeline: CenturionTimeline;
+
   private initialized = false;
 
+  private readonly syncHandler = this.syncFeedEvents.bind(this);
+
   public get playing(): boolean {
-    // If we have registered events, we are playing audio
-    return this.feedEvents.length > 0;
+    return this.timer !== undefined;
+  }
+
+  public get startTime(): Date {
+    return new Date(this.anchor.at - this.anchor.pos * 1000);
   }
 
   constructor(lights: LightsGroup[], screens: Screen[], audios: Audio[]) {
     super(lights, screens, audios, LIGHTS_HANDLER, SCREEN_HANDLER, AUDIO_HANDLER);
 
-    this.audioHandler.addSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
-    this.beatManager = BeatManager.getInstance();
+    this.audioHandler.addSyncAudioTimingHandler(this.syncHandler);
   }
 
   public async initialize(musicEmitter: MusicEmitter) {
     if (this.initialized) throw new Error('CenturionMode already initialized!');
-    this.musicEmitter = musicEmitter;
     this.lightsSwitchManager = LightsSwitchManager.getInstance();
 
     const discoballIds = ServerSettingsStore.getInstance().getSetting(
       'Centurion.DiscoballLightsSwitchIds',
     ) as ISettings['Centurion.DiscoballLightsSwitchIds'];
-    this.discoballs = (await new RootLightsService().getAllLightsSwitches()).filter((s) =>
+    const discoballs = (await new RootLightsService().getAllLightsSwitches()).filter((s) =>
       discoballIds.includes(s.id),
     );
 
@@ -98,11 +82,29 @@ export default class CenturionMode extends BaseMode<
         this.lightsSwitchManager.disableSwitch(s);
       }
     });
+
+    this.ctx = {
+      state: this.playbackState,
+      musicEmitter: musicEmitter,
+      lightsHandler: this.lightsHandler,
+      screenHandler: this.screenHandler,
+      discoBall: new DiscoballController(discoballs, this.lightsSwitchManager),
+      beatController: new CenturionBeatController(BeatManager.getInstance()),
+      randomEffects: new RandomEffectPicker(),
+      stop: () => this.stop(),
+    };
+    this.initialized = true;
+  }
+
+  public get state(): Readonly<CenturionPlaybackState> {
+    return this.playbackState;
   }
 
   public loadTape(tape: MixTape) {
     this.tape = tape;
-    this.screenHandler.loaded(tape);
+    this.ctx.screenHandler.loaded(tape);
+    this.ctx.coverUrl = tape.coverUrl;
+    this.timeline = CenturionTimeline.fromMixTape(tape, this.ctx.discoBall.hasDiscoball);
     logger.info(`Initialized centurion tape "${tape.name}"`);
   }
 
@@ -110,22 +112,20 @@ export default class CenturionMode extends BaseMode<
    * Start playing the given mixtape and register all timed effects
    */
   public start(): boolean {
+    if (this.playing) return true;
+    if (this.anchor.pos >= this.tape.duration) this.anchor = { pos: 0, at: Date.now() };
+
     if (this.tape.songFile.startsWith('http')) {
-      this.audioHandler.play(this.tape.songFile, this.timestamp);
+      this.audioHandler.play(this.tape.songFile, this.anchor.pos);
     } else {
-      this.audioHandler.play(`/static${this.tape.songFile}`, this.timestamp);
+      this.audioHandler.play(`/static${this.tape.songFile}`, this.anchor.pos);
     }
 
-    this.registerFeedEvents(this.timestamp);
-    this.fireLastFeedEvent(this.timestamp);
+    this.ctx.beatController.startBackground();
+    this.seek(this.anchor.pos);
 
-    this.screenHandler.start();
-    this.beatGeneratorBackground = new SimpleBeatGenerator(
-      'background',
-      'Centurion (Background)',
-      130,
-    );
-    this.beatManager.add(this.beatGeneratorBackground, BeatPriorities.BACKGROUND_BEAT_GENERATOR);
+    this.ctx.screenHandler.start();
+    EmitterStore.getInstance().backofficeSyncEmitter.emit('mode_centurion_update');
     logger.info('Started centurion playback.');
     return true;
   }
@@ -136,21 +136,10 @@ export default class CenturionMode extends BaseMode<
    */
   public skip(seconds: number) {
     if (seconds < 0) throw new Error('Timestamp has to be positive');
-    this.timestamp = seconds;
     this.audioHandler.setPlayback(seconds);
 
-    if (this.playing) {
-      // Lazy solution for figuring out whether the discoball should be on:
-      // let's just disable it by default
-      if (this.hasDiscoBall()) {
-        this.discoballs.forEach((s) => {
-          this.lightsSwitchManager.disableSwitch(s);
-        });
-      }
-
-      this.registerFeedEvents(seconds);
-      this.fireLastFeedEvent(seconds);
-    }
+    if (this.playing) this.seek(seconds);
+    else this.anchor = { pos: seconds, at: Date.now() };
     logger.info(`Moved centurion playback to ${seconds} seconds.`);
   }
 
@@ -159,365 +148,114 @@ export default class CenturionMode extends BaseMode<
    */
   public stop() {
     this.audioHandler.stop();
-    this.screenHandler.stop();
-    this.stopFeedEvents();
-    this.setSongBeatGenerator();
-    this.beatManager.remove(this.beatGeneratorBackground.getId());
+    this.ctx.screenHandler.stop();
+    this.anchor = { pos: this.position(), at: Date.now() };
+    clearTimeout(this.timer);
+    this.timer = undefined;
+    this.ctx.beatController.setSong();
+    this.ctx.beatController.stopBackground();
+    EmitterStore.getInstance().backofficeSyncEmitter.emit('mode_centurion_update');
     logger.info('Paused centurion playback.');
+  }
 
-    this.timestamp = (new Date().getTime() - this.startTime.getTime()) / 1000;
+  private position(): number {
+    if (!this.playing) return this.anchor.pos;
+    return this.anchor.pos + (Date.now() - this.anchor.at) / 1000;
   }
 
   /**
-   * Returns whether a disco ball is present in the centurion lights setup
+   * Restore every lane to its owner at t, then fire the commands after t on time
+   * @param t tape position in seconds
    * @private
    */
-  private hasDiscoBall(): boolean {
-    return this.discoballs.length > 0;
-  }
+  private seek(t: number) {
+    clearTimeout(this.timer);
+    this.timer = undefined;
 
-  /**
-   * Broadcast the track we are currently listening to within Aurora
-   * @param song
-   * @private
-   */
-  private emitSong(song: SongData | SongData[]) {
-    let songs: SongData[];
-    if (!Array.isArray(song)) {
-      songs = [song];
-    } else {
-      songs = song;
+    const owners = this.timeline.ownersAt(t);
+    if (!owners.has('discoBall')) this.ctx.discoBall.disable();
+    if (!owners.has('horn')) {
+      this.ctx.state.lastHornEvent = undefined;
+      this.ctx.screenHandler.hornCount(null);
     }
-
-    this.musicEmitter.emitAudio(
-      'change_track',
-      songs.map((s) => ({
-        title: s.title,
-        artists: s.artist.split(', '),
-        cover: this.tape.coverUrl,
-      })) as TrackChangeEvent[],
-    );
-  }
-
-  private getRandomMovementEffectSide(): LightsEffectBuilder {
-    if (!this.beatGeneratorSong) {
-      return TableRotate.build();
-    }
-
-    // Baseline: cycle time of 10000ms for 120bpm
-    const baseCycleTime = Math.round(1200000 / this.beatGeneratorSong.bpm);
-    return TableRotate.build({ cycleTime: baseCycleTime });
-  }
-
-  private getRandomMovementEffectCenter(): LightsEffectBuilder {
-    // If we do not have a bpm, choose SearchLight as the default
-    const defaultEffect = SearchLight.build({ radiusFactor: 1.5, cycleTime: 3000 });
-    if (!this.beatGeneratorSong) {
-      return defaultEffect;
-    }
-
-    const baseCycleTime = Math.round(360000 / this.beatGeneratorSong.bpm);
-    const classicRotateProb = Math.max(0, Math.min(1, (this.beatGeneratorSong.bpm - 120) / 60));
-
-    const effects = [
-      {
-        effect: ClassicRotate.build({ cycleTime: baseCycleTime * 4 }),
-        probability: classicRotateProb,
-      },
-      {
-        effect: SearchLight.build({ radiusFactor: 1.5, cycleTime: baseCycleTime }),
-        probability: 1 - classicRotateProb,
-      },
-    ];
-    let factor = Math.random();
-
-    return (
-      effects.find((effect, i) => {
-        const previous = effects.slice(0, i).reduce((x, e) => x + e.probability, 0);
-        return previous <= factor && previous + effect.probability > factor;
-      })?.effect || defaultEffect
-    );
-  }
-
-  /**
-   * Get a random effect given a set of colors
-   * @param colors
-   * @private
-   */
-  private getRandomParEffect(colors: RgbColor[]): LightsEffectBuilder {
-    const pattern = getRandomLightsEffectPattern();
-    const direction = getRandomLightsEffectDirection();
-
-    const effects = [
-      {
-        effect: BeatFadeOut.build({
-          colors,
-          enableFade: false,
-          nrBlacks: 1,
-          pattern,
-          direction,
-        }),
-        probability: 0.8,
-      },
-      {
-        effect: Sparkle.build({ colors }),
-        probability: 0.1,
-      },
-      {
-        effect: Wave.build({
-          colors: colors,
-          pattern,
-          direction,
-        }),
-        probability: 0.1,
-      },
-    ];
-    let factor = Math.random();
-
-    if (!this.beatGeneratorSong || this.beatGeneratorSong.bpm < 120) {
-      // If the music is relatively slow or really fast, do not use wave or sparkle
-      factor = factor - 0.2;
-    } else if (this.beatGeneratorSong && this.beatGeneratorSong.bpm > 160) {
-      // If the music is really fast, do not use wave, as the other effects will be
-      // much more energetic
-      factor = factor - 0.1;
-    }
-
-    console.log(factor);
-
-    return (
-      effects.find((effect, i) => {
-        const previous = effects.slice(0, i).reduce((x, e) => x + e.probability, 0);
-        return previous <= factor && previous + effect.probability > factor;
-      })?.effect || effects[0].effect
-    );
-  }
-
-  /**
-   * Reset the song beat generator: restart it with the given BPM if BPM is defined, else stop.
-   * @param bpm
-   * @private
-   */
-  private setSongBeatGenerator(bpm?: number) {
-    if (this.beatGeneratorSong) {
-      this.beatManager.remove(this.beatGeneratorSong.getId());
-      this.beatGeneratorSong = undefined;
-    }
-
-    if (bpm) {
-      this.beatGeneratorSong = new SimpleBeatGenerator('centurion', 'Centurion', bpm);
-      this.beatManager.add(this.beatGeneratorSong, BeatPriorities.CENTURION_BEAT_GENERATOR);
-    }
-  }
-
-  /**
-   * Change the beat generator BPM to the speed defined in the song, if it exists. If it does not
-   * exist, stop the song beat generator.
-   * @param songData
-   * @private
-   */
-  private setBpmFromSong(songData: SongData | SongData[]) {
-    let bpm: number | undefined;
-    if (Array.isArray(songData)) {
-      bpm = songData.find((s) => s.bpm !== undefined)?.bpm;
-    } else {
-      bpm = songData.bpm;
-    }
-    this.setSongBeatGenerator(bpm);
-  }
-
-  /**
-   * Pick random colors and random effects to show using lights and screens
-   * @private
-   */
-  private setRandomLightEffects() {
-    const { colorNames } = getTwoComplementaryRgbColors();
-    this.currentColors = colorNames;
-
-    const newMovementEffectSideBuilder = this.getRandomMovementEffectSide();
-    const newMovementEffectCenterBuilder = this.getRandomMovementEffectCenter();
-    const movingHeadEffectColor = StaticColor.build({ color: RgbColor.WHITE });
-    const newEffectBuilder = this.getRandomParEffect(colorNames);
-
-    this.lights.forEach((l) => {
-      // If we have a moving head, assign a movement effect
-      if ((l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) && l.groupInMiddle) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectCenterBuilder]);
+    if (!owners.has('song')) this.ctx.state.lastSongEvent = undefined;
+    if (!owners.has('screenColors')) this.ctx.state.screenColors = undefined;
+    this.ctx.lightsHandler.entities.forEach((l) => {
+      const hasRgbs = l.movingHeadRgbs.length > 0;
+      const hasWheels = l.movingHeadWheels.length > 0;
+      if (
+        (l.pars.length > 0 && !owners.has('parColor')) ||
+        (hasRgbs && !owners.has('rgbColor')) ||
+        (hasWheels && !owners.has('wheelColor'))
+      ) {
+        this.ctx.lightsHandler.removeColorEffect(l);
       }
-      if (l.movingHeadRgbs.length > 0 || l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setMovementEffect(l, [newMovementEffectSideBuilder]);
-      }
-      // If we have a wheel moving head, assign a static color
-      if (l.movingHeadWheels.length > 0) {
-        this.lightsHandler.setColorEffect(l, [movingHeadEffectColor]);
-        // Otherwise use a random effect!
-      } else {
-        this.lightsHandler.setColorEffect(l, [newEffectBuilder]);
+      if ((hasRgbs && !owners.has('rgbMovement')) || (hasWheels && !owners.has('wheelMovement'))) {
+        this.ctx.lightsHandler.removeMovementEffect(l);
       }
     });
-    this.screenHandler.changeColors(colorNames);
-  }
 
-  /**
-   * Handle a fired event
-   * @param event
-   * @private
-   */
-  private handleFeedEvent(event: FeedEvent) {
-    logger.debug(event);
+    if (owners.has('bpm')) owners.get('bpm')!.restore(this.ctx, new Set<Lane>(['bpm']));
+    else this.ctx.beatController.setSong();
 
-    if (event.type === 'horn') {
-      this.lastHornEvent = event;
-      this.lights.forEach((l) => {
-        l.pars.forEach((p) => p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME));
-        l.movingHeadRgbs.forEach((p) =>
-          p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME),
-        );
-        l.movingHeadWheels.forEach((p) =>
-          p.fixture.enableStrobe(event.data.strobeTime ?? STROBE_TIME),
-        );
-      });
-      this.screenHandler.horn(event.data.strobeTime ?? STROBE_TIME, event.data.counter);
-    } else if (event.type === 'song') {
-      this.lastSongEvent = event;
-      this.setBpmFromSong(event.data);
-      // Set effects after setting bpm, because the effects might need the bpm
-      this.setRandomLightEffects();
-      this.emitSong(event.data);
-    } else if (event.type === 'effect') {
-      const isEffectDisableAll =
-        event.data.reset ||
-        (event.data.effects.pars &&
-          event.data.effects.pars.length === 0 &&
-          event.data.effects.movingHeadRgbColor &&
-          event.data.effects.movingHeadRgbColor.length === 0 &&
-          event.data.effects.movingHeadRgbMovement &&
-          event.data.effects.movingHeadRgbMovement.length === 0 &&
-          event.data.effects.movingHeadWheelColor &&
-          event.data.effects.movingHeadWheelColor.length === 0 &&
-          event.data.effects.movingHeadWheelMovement &&
-          event.data.effects.movingHeadWheelMovement.length === 0);
-
-      this.lights.forEach((l) => {
-        if (event.data.discoBall && isEffectDisableAll && !this.hasDiscoBall()) {
-          // If we want to only have the disco ball turned on, but our setup does not have one,
-          // we should just do random light effects
-          event.data.random = true;
-        } else if (event.data.discoBall && this.hasDiscoBall()) {
-          // Enable disco ball
-          this.discoballs.forEach((s) => {
-            this.lightsSwitchManager.enableSwitch(s);
-          });
-        } else if (this.hasDiscoBall()) {
-          // Disable all disco ball if they should not be enabled
-          this.discoballs.forEach((s) => {
-            this.lightsSwitchManager.disableSwitch(s);
-          });
-        }
-        if (event.data.reset) {
-          // Reset effect
-          this.lightsHandler.removeColorEffect(l);
-          this.lightsHandler.removeMovementEffect(l);
-          return;
-        }
-        if (event.data.random) {
-          this.setRandomLightEffects();
-          // Restart the beat generator to ensure no quick successive beats when the lights change
-          this.beatGeneratorBackground.restart();
-          if (this.beatGeneratorSong) this.beatGeneratorSong.restart();
-          return;
-        }
-        if (l.pars.length > 0 && event.data.effects.pars) {
-          // Color effect for pars
-          this.lightsHandler.setColorEffect(l, event.data.effects.pars);
-        }
-        if (l.movingHeadRgbs.length > 0) {
-          // Color effect for moving head rgb
-          if (event.data.effects.movingHeadRgbColor)
-            this.lightsHandler.setColorEffect(l, event.data.effects.movingHeadRgbColor);
-          // Movement effect for moving head rgb
-          if (event.data.effects.movingHeadRgbMovement)
-            this.lightsHandler.setMovementEffect(l, event.data.effects.movingHeadRgbMovement);
-        }
-        if (l.movingHeadWheels.length > 0) {
-          // Color effect for moving head wheel
-          if (event.data.effects.movingHeadWheelColor)
-            this.lightsHandler.setColorEffect(l, event.data.effects.movingHeadWheelColor);
-          // Movement effect for moving head wheel
-          if (event.data.effects.movingHeadWheelMovement)
-            this.lightsHandler.setMovementEffect(l, event.data.effects.movingHeadWheelMovement);
-        }
-      });
-    } else if (event.type === 'bpm') {
-      this.setSongBeatGenerator(event.data.bpm);
-    } else if (event.type === 'other' && event.data === 'stop') {
-      this.stop();
-    }
-  }
-
-  /**
-   * Fire the last past event
-   * @param seconds
-   * @private
-   */
-  private fireLastFeedEvent(seconds: number) {
-    const pastEvents = this.tape.feed
-      .filter((e) => e.type === 'song' || e.type === 'effect')
-      .filter((e) => e.timestamp <= seconds);
-    if (pastEvents.length === 0) return;
-
-    this.handleFeedEvent(pastEvents[pastEvents.length - 1]);
-  }
-
-  /**
-   * Register events
-   * @param seconds seconds since start of the track
-   * @private
-   */
-  private registerFeedEvents(seconds: number = 0): void {
-    if (this.feedEvents.length > 0) {
-      this.stopFeedEvents();
-    }
-
-    this.startTime = new Date(new Date().getTime() - seconds * 1000);
-
-    const stopEvent: FeedEvent = {
-      type: 'other',
-      data: 'stop',
-      timestamp: this.tape.duration,
-    };
-
-    [...this.tape.feed, stopEvent]
-      .filter((e) => e.timestamp >= seconds)
-      .forEach((event) => {
-        const timestampMillis = Math.round((event.timestamp - seconds) * 1000);
-        const timeouts = [setTimeout(this.handleFeedEvent.bind(this, event), timestampMillis)];
-
-        this.feedEvents.push({
-          event,
-          timeouts,
-        });
-      });
-  }
-
-  private stopFeedEvents() {
-    this.feedEvents.forEach((e): void => {
-      e.timeouts.forEach((t) => clearTimeout(t));
+    const lanesByCommand = new Map<CenturionCommand, Set<Lane>>();
+    owners.forEach((cmd, lane) => {
+      if (lane !== 'bpm') lanesByCommand.set(cmd, (lanesByCommand.get(cmd) ?? new Set()).add(lane));
     });
-    this.feedEvents = [];
+
+    const { commands } = this.timeline;
+    [...lanesByCommand]
+      .sort(([a], [b]) => commands.indexOf(a) - commands.indexOf(b))
+      .forEach(([cmd, lanes]) => cmd.restore(this.ctx, lanes));
+
+    this.anchor = { pos: t, at: Date.now() };
+    this.cursor = this.timeline.indexAfter(t);
+    // A restore never fires the StopCommand, so a seek at or past it stops here
+    if (this.cursor === commands.length) this.stop();
+    else this.arm();
+  }
+
+  private fireDue() {
+    const { commands } = this.timeline;
+
+    while (
+      this.playing &&
+      this.cursor < commands.length &&
+      commands[this.cursor].startTime <= this.position()
+    ) {
+      commands[this.cursor++].execute(this.ctx);
+    }
+    if (this.playing) this.arm();
+  }
+
+  private arm() {
+    clearTimeout(this.timer);
+    const next = this.timeline.commands[this.cursor];
+    this.timer = next
+      ? setTimeout(
+          () => this.fireDue(),
+          Math.max(0, Math.ceil((next.startTime - this.position()) * 1000)),
+        )
+      : undefined;
   }
 
   /**
    * Synchronize the feed events with the currently playing audio
-   * @param sendTime the time the sync packet has been sent (to synchronize clocks)
-   * in ms since epoch
+   * @param startTime
    * @param timestamp progression of the audio in ms
    * @private
    */
   private syncFeedEvents({ startTime, timestamp }: { startTime: number; timestamp: number }) {
-    const msDifference = new Date().getTime() - startTime;
+    if (!this.playing) return;
+    const t = (timestamp + Date.now() - startTime) / 1000;
 
-    this.registerFeedEvents((timestamp + msDifference) / 1000);
+    if (Math.abs(t - this.position()) > SEEK_THRESHOLD) {
+      this.seek(t);
+      return;
+    }
+
+    this.anchor = { pos: t, at: Date.now() };
+    this.arm();
   }
 
   /**
@@ -525,7 +263,7 @@ export default class CenturionMode extends BaseMode<
    */
   public destroy() {
     this.stop();
-    this.audioHandler.removeSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
+    this.audioHandler.removeSyncAudioTimingHandler(this.syncHandler);
     super.destroy();
   }
 }

@@ -29,6 +29,9 @@ interface CenturionStore {
   skipping: boolean;
 }
 
+// Bound once, so destroy() removes the same function that init() added
+let onCenturionUpdate: (() => Promise<void>) | undefined;
+
 export const useCenturionStore = defineStore('centurion', {
   state: (): CenturionStore => ({
     currentTape: null,
@@ -64,33 +67,32 @@ export const useCenturionStore = defineStore('centurion', {
             this.currentTape = null;
           }
         });
+      this.playing = this.currentTape?.playing ?? false;
       if (handleLoading) this.loading = false;
     },
     /**
      * Initialize the store
      */
     async init() {
+      // Attach before the awaits, so a destroy() during the requests still removes it
+      this.destroy();
+      onCenturionUpdate = () => this.getCurrentCenturion(false);
+      const socketStore = useSocketStore();
+      socketStore.backofficeSocket?.on('mode_centurion_update', onCenturionUpdate);
+
       await getCenturionTapes().then((tapes) => (this.tapes = tapes.data!));
 
       await this.getCurrentCenturion(false);
       this.loading = false;
-      this.playing = this.currentTape?.playing ?? false;
-
-      const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.on(
-        'mode_centurion_update',
-        this.getCurrentCenturion.bind(this),
-      );
     },
     /**
      * Destroy the store
      */
     destroy() {
+      if (!onCenturionUpdate) return;
       const socketStore = useSocketStore();
-      socketStore.backofficeSocket?.removeListener(
-        'mode_centurion_update',
-        this.getCurrentCenturion.bind(this),
-      );
+      socketStore.backofficeSocket?.removeListener('mode_centurion_update', onCenturionUpdate);
+      onCenturionUpdate = undefined;
     },
     /**
      * Initialize the centurion
@@ -120,7 +122,6 @@ export const useCenturionStore = defineStore('centurion', {
       });
       await this.getCurrentCenturion(false);
       this.loading = false;
-      this.playing = false;
     },
     /**
      * Quit the centurion

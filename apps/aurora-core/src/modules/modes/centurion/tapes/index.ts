@@ -33,6 +33,13 @@ export function validateTape(tape: MixTape) {
     }
   });
 
+  const last = tape.feed[tape.feed.length - 1];
+  if (last && last.timestamp > tape.duration) {
+    throw new Error(
+      `[Tape "${tape.name}"] Event with index ${tape.feed.length - 1} (${last.timestamp}) lies after the tape duration (${tape.duration})`,
+    );
+  }
+
   //
   const hornExceptions = [
     {

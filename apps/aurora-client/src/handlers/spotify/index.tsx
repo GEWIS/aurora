@@ -24,13 +24,14 @@ export default function SpotifyView({ socket }: Props) {
       .then((res) => handleTrackChange(res.data!))
       .catch((e) => console.error(e));
 
-    socket.on('change_track', (event: unknown[]) => {
+    const onChangeTrack = (event: unknown[]) => {
       const trackChangeEvents = event[0] as TrackChangeEvent[];
       handleTrackChange(trackChangeEvents);
-    });
+    };
+    socket.on('change_track', onChangeTrack);
 
     return () => {
-      socket.removeAllListeners();
+      socket.off('change_track', onChangeTrack);
     };
   }, [socket]);
 

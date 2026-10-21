@@ -37,7 +37,7 @@ export default class SimpleAudioHandler extends BaseAudioHandler {
   public removeSyncAudioTimingHandler(
     handler: (params: { startTime: number; timestamp: number }) => void,
   ) {
-    this.onSyncAudioTimings = this.onSyncAudioTimings.filter((h) => h === handler);
+    this.onSyncAudioTimings = this.onSyncAudioTimings.filter((h) => h !== handler);
   }
 
   /**

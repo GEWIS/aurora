@@ -55,65 +55,57 @@ export default function TimeTrailRaceView({ socket }: Props) {
       })
       .catch((e) => console.error(e));
 
-    socket.on('race-initialized', ([{ state: s, sessionName: n }]: RaceInitializedEvent[]) => {
-      setState(s);
-      setSessionName(n);
-      setScoreboard([]);
-      setPlayer(undefined);
-    });
-
-    socket.on(
-      'race-player-registered',
-      ([{ state: s, player: p, sessionName: n, scoreboard: sb }]: RacePlayerRegisteredEvent[]) => {
+    const listeners = {
+      'race-initialized': ([{ state: s, sessionName: n }]: RaceInitializedEvent[]) => {
+        setState(s);
+        setSessionName(n);
+        setScoreboard([]);
+        setPlayer(undefined);
+      },
+      'race-player-registered': ([
+        { state: s, player: p, sessionName: n, scoreboard: sb },
+      ]: RacePlayerRegisteredEvent[]) => {
         setState(s);
         setSessionName(n);
         setPlayer(p);
         setScoreboard(sb);
       },
-    );
-
-    socket.on(
-      'race-player-ready',
-      ([{ state: s, player: p, sessionName: n }]: RacePlayerReadyEvent[]) => {
+      'race-player-ready': ([{ state: s, player: p, sessionName: n }]: RacePlayerReadyEvent[]) => {
         setState(s);
         setSessionName(n);
         setPlayer(p);
       },
-    );
-
-    socket.on(
-      'race-started',
-      ([{ state: s, sessionName: n, player: p, startTime: t }]: RaceStartedEvent[]) => {
+      'race-started': ([
+        { state: s, sessionName: n, player: p, startTime: t },
+      ]: RaceStartedEvent[]) => {
         setState(s);
         setSessionName(n);
         setPlayer(p);
         setStartTime(new Date(t));
       },
-    );
-
-    socket.on(
-      'race-finished',
-      ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceFinishedEvent[]) => {
+      'race-finished': ([
+        { state: s, player: p, scoreboard: sb, sessionName: n },
+      ]: RaceFinishedEvent[]) => {
         setState(s);
         setSessionName(n);
         setPlayer(p);
         setScoreboard(sb);
         setStartTime(undefined);
       },
-    );
-
-    socket.on(
-      'race-scoreboard',
-      ([{ state: s, player: p, scoreboard: sb, sessionName: n }]: RaceScoreboardEvent[]) => {
+      'race-scoreboard': ([
+        { state: s, player: p, scoreboard: sb, sessionName: n },
+      ]: RaceScoreboardEvent[]) => {
         setState(s);
         setSessionName(n);
         setPlayer(p);
         setScoreboard(sb);
       },
-    );
+    };
+    // The socket is shared with the overlays, so only remove our own listeners
+    Object.entries(listeners).forEach(([event, listener]) => socket.on(event, listener));
 
     return () => {
-      socket.removeAllListeners();
+      Object.entries(listeners).forEach(([event, listener]) => socket.off(event, listener));
     };
   }, [socket]);
 

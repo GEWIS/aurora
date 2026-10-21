@@ -39,7 +39,7 @@ export default class CenturionTimeline {
     let high = this.commands.length;
     while (low < high) {
       const middle = Math.floor((low + high) / 2);
-      if (this.commands[middle].startTime <= t ) low = middle + 1;
+      if (this.commands[middle].startTime <= t) low = middle + 1;
       else high = middle;
     }
     return low;
@@ -50,6 +50,5 @@ export default class CenturionTimeline {
       ...tape.feed.map((e) => toCommand(e, hasDiscoball)),
       new StopCommand(tape.duration),
     ]);
-
   }
 }

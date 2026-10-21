@@ -37,11 +37,11 @@ export default class SongCommand extends CenturionCommand {
       ctx.state.lastSongEvent = this.event;
       ctx.musicEmitter.emitAudio(
         'change_track',
-        this.songs.map((s) => ({
+        this.songs.map((s): TrackChangeEvent => ({
           title: s.title,
           artists: s.artist.split(', '),
           cover: ctx.coverUrl,
-        })) as TrackChangeEvent[],
+        })),
       );
     }
   }

@@ -15,7 +15,10 @@ export type SongData = {
   /** Performing artists, comma-separated if multiple */
   artist: string;
   title: string;
-  /** Tempo of the song. Defaults to 130 beats per minute for this song if undefined */
+  /**
+   * Tempo of the song. Without it, the beat comes from the real-time beat detector,
+   * or else from the background generator at 130 beats per minute
+   */
   bpm?: number;
 };
 
@@ -39,8 +42,9 @@ export type EffectData = {
    */
   random?: boolean;
   /**
-   * Set custom effects. If an attribute is absent, this type of effect will not be applied.
-   * If an attribute is present with an empty array, this type of effect will be disabled.
+   * Set custom effects. If an attribute is absent, the lights keep their current effect of
+   * this type. If an attribute is present with an empty array, this type of effect will be
+   * disabled.
    */
   effects: {
     pars?: LightsEffectBuilder[];

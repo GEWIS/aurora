@@ -167,6 +167,8 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
     if (this.entities.length === 0) return;
 
     this.stopSequence(true);
+    if (!event.trackURI || !event.startTime) return;
+    const { startTime } = event;
 
     getDataSource()
       .getRepository(LightsTrackEffect)
@@ -176,7 +178,7 @@ export default class EffectSequenceHandler extends BaseLightsHandler {
       })
       .then((sequence) => {
         this.sequence = sequence;
-        this.startSequence(event.startTime);
+        this.startSequence(startTime);
       })
       .catch((e) => logger.error(e));
   }

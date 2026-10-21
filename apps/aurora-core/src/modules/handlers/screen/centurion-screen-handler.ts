@@ -22,12 +22,12 @@ export default class CenturionScreenHandler extends BaseScreenHandler {
     this.sendEvent('horn', { strobeTime, counter });
   }
 
-  hornCount(counter: number): void {
+  hornCount(counter: number | null): void {
     this.sendEvent('horn_count', counter);
   }
 
-  loaded(tape: MixTape): void {
-    this.sendEvent('loaded', tape);
+  loaded({ name, artist, coverUrl }: MixTape): void {
+    this.sendEvent('loaded', { name, artist, coverUrl });
   }
 
   start(): void {

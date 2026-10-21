@@ -10,8 +10,9 @@ export interface BeatEvent {
 export interface TrackChangeEvent {
   title: string;
   artists: string[];
-  startTime: Date;
+  /** Absent for Centurion songs, which have no start time or URI */
+  startTime?: Date;
   cover?: string;
-  trackURI: string; // Either a Spotify Track URI (spotify:track:<id>) or
+  trackURI?: string; // Either a Spotify Track URI (spotify:track:<id>) or
   // a local identifier (local:<id>)
 }

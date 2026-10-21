@@ -18,6 +18,7 @@ import CenturionBeatController from './centurion-beat-controller';
 import RandomEffectPicker from './random-effect-picker';
 import { CenturionCommand } from './commands/centurion-command';
 import CenturionTimeline from './centurion-timeline';
+import EmitterStore from '../../events/emitter-store';
 
 const LIGHTS_HANDLER = 'SetEffectsHandler';
 const AUDIO_HANDLER = 'SimpleAudioHandler';
@@ -48,6 +49,8 @@ export default class CenturionMode extends BaseMode<
 
   private initialized = false;
 
+  private readonly syncHandler = this.syncFeedEvents.bind(this);
+
   public get playing(): boolean {
     return this.timer !== undefined;
   }
@@ -59,7 +62,7 @@ export default class CenturionMode extends BaseMode<
   constructor(lights: LightsGroup[], screens: Screen[], audios: Audio[]) {
     super(lights, screens, audios, LIGHTS_HANDLER, SCREEN_HANDLER, AUDIO_HANDLER);
 
-    this.audioHandler.addSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
+    this.audioHandler.addSyncAudioTimingHandler(this.syncHandler);
   }
 
   public async initialize(musicEmitter: MusicEmitter) {
@@ -90,6 +93,7 @@ export default class CenturionMode extends BaseMode<
       randomEffects: new RandomEffectPicker(),
       stop: () => this.stop(),
     };
+    this.initialized = true;
   }
 
   public get state(): Readonly<CenturionPlaybackState> {
@@ -108,6 +112,9 @@ export default class CenturionMode extends BaseMode<
    * Start playing the given mixtape and register all timed effects
    */
   public start(): boolean {
+    if (this.playing) return true;
+    if (this.anchor.pos >= this.tape.duration) this.anchor = { pos: 0, at: Date.now() };
+
     if (this.tape.songFile.startsWith('http')) {
       this.audioHandler.play(this.tape.songFile, this.anchor.pos);
     } else {
@@ -118,6 +125,7 @@ export default class CenturionMode extends BaseMode<
     this.seek(this.anchor.pos);
 
     this.ctx.screenHandler.start();
+    EmitterStore.getInstance().backofficeSyncEmitter.emit('mode_centurion_update');
     logger.info('Started centurion playback.');
     return true;
   }
@@ -146,6 +154,7 @@ export default class CenturionMode extends BaseMode<
     this.timer = undefined;
     this.ctx.beatController.setSong();
     this.ctx.beatController.stopBackground();
+    EmitterStore.getInstance().backofficeSyncEmitter.emit('mode_centurion_update');
     logger.info('Paused centurion playback.');
   }
 
@@ -165,6 +174,26 @@ export default class CenturionMode extends BaseMode<
 
     const owners = this.timeline.ownersAt(t);
     if (!owners.has('discoBall')) this.ctx.discoBall.disable();
+    if (!owners.has('horn')) {
+      this.ctx.state.lastHornEvent = undefined;
+      this.ctx.screenHandler.hornCount(null);
+    }
+    if (!owners.has('song')) this.ctx.state.lastSongEvent = undefined;
+    if (!owners.has('screenColors')) this.ctx.state.screenColors = undefined;
+    this.ctx.lightsHandler.entities.forEach((l) => {
+      const hasRgbs = l.movingHeadRgbs.length > 0;
+      const hasWheels = l.movingHeadWheels.length > 0;
+      if (
+        (l.pars.length > 0 && !owners.has('parColor')) ||
+        (hasRgbs && !owners.has('rgbColor')) ||
+        (hasWheels && !owners.has('wheelColor'))
+      ) {
+        this.ctx.lightsHandler.removeColorEffect(l);
+      }
+      if ((hasRgbs && !owners.has('rgbMovement')) || (hasWheels && !owners.has('wheelMovement'))) {
+        this.ctx.lightsHandler.removeMovementEffect(l);
+      }
+    });
 
     if (owners.has('bpm')) owners.get('bpm')!.restore(this.ctx, new Set<Lane>(['bpm']));
     else this.ctx.beatController.setSong();
@@ -181,7 +210,9 @@ export default class CenturionMode extends BaseMode<
 
     this.anchor = { pos: t, at: Date.now() };
     this.cursor = this.timeline.indexAfter(t);
-    this.arm();
+    // A restore never fires the StopCommand, so a seek at or past it stops here
+    if (this.cursor === commands.length) this.stop();
+    else this.arm();
   }
 
   private fireDue() {
@@ -232,7 +263,7 @@ export default class CenturionMode extends BaseMode<
    */
   public destroy() {
     this.stop();
-    this.audioHandler.removeSyncAudioTimingHandler(this.syncFeedEvents.bind(this));
+    this.audioHandler.removeSyncAudioTimingHandler(this.syncHandler);
     super.destroy();
   }
 }

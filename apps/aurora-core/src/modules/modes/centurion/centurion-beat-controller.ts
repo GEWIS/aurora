@@ -2,11 +2,12 @@ import { BeatManager, BeatPriorities, SimpleBeatGenerator } from '../../beats';
 
 export default class CenturionBeatController {
   private beatGeneratorSong: SimpleBeatGenerator | undefined;
-  private beatGeneratorBackground: SimpleBeatGenerator;
+  private beatGeneratorBackground: SimpleBeatGenerator | undefined;
 
   constructor(private readonly beatManager: BeatManager) {}
 
   public startBackground(): void {
+    this.stopBackground();
     this.beatGeneratorBackground = new SimpleBeatGenerator(
       'background',
       'Centurion (Background)',
@@ -16,7 +17,7 @@ export default class CenturionBeatController {
   }
 
   public stopBackground(): void {
-    this.beatManager.remove(this.beatGeneratorBackground.getId());
+    if (this.beatGeneratorBackground) this.beatManager.remove(this.beatGeneratorBackground.getId());
   }
 
   public get songBpm(): number | undefined {
@@ -36,7 +37,7 @@ export default class CenturionBeatController {
   }
 
   public restart(): void {
-    this.beatGeneratorBackground.restart();
+    if (this.beatGeneratorBackground) this.beatGeneratorBackground.restart();
     if (this.beatGeneratorSong) this.beatGeneratorSong.restart();
   }
 }

@@ -821,7 +821,8 @@
 					},
 					"startTime": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "Absent for Centurion songs, which have no start time or URI"
 					},
 					"cover": {
 						"type": "string"
@@ -832,9 +833,7 @@
 				},
 				"required": [
 					"title",
-					"artists",
-					"startTime",
-					"trackURI"
+					"artists"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2413,7 +2412,7 @@
 					"bpm": {
 						"type": "number",
 						"format": "double",
-						"description": "Tempo of the song. Defaults to 130 beats per minute for this song if undefined"
+						"description": "Tempo of the song. Without it, the beat comes from the real-time beat detector,\nor else from the background generator at 130 beats per minute"
 					},
 					"title": {
 						"type": "string"

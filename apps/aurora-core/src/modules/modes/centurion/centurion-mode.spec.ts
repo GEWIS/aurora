@@ -5,6 +5,8 @@ import { LightsGroup, LightsSwitch } from '../../lights/entities';
 import { LightsEffectBuilder } from '../../lights/effects/lights-effect';
 import { BeatPriorities, SimpleBeatGenerator } from '../../beats';
 import { MusicEmitter } from '../../events';
+import { TableRotate } from '../../lights/effects/movement';
+import EmitterStore from '../../events/emitter-store';
 
 const state = vi.hoisted(() => ({
   handlers: [] as unknown[],
@@ -74,6 +76,8 @@ class CenturionScreenHandler {
   changeColors = vi.fn();
 }
 
+type SyncHandler = (params: { startTime: number; timestamp: number }) => void;
+
 class SimpleAudioHandler {
   entities = [];
 
@@ -83,21 +87,33 @@ class SimpleAudioHandler {
 
   setPlayback = vi.fn();
 
-  addSyncAudioTimingHandler = vi.fn();
+  syncHandlers: SyncHandler[] = [];
 
-  removeSyncAudioTimingHandler = vi.fn();
+  addSyncAudioTimingHandler = vi.fn((handler: SyncHandler) => this.syncHandlers.push(handler));
+
+  removeSyncAudioTimingHandler = vi.fn((handler: SyncHandler) => {
+    this.syncHandlers = this.syncHandlers.filter((h) => h !== handler);
+  });
 }
 
 class FakeBeatManager {
-  active = new Map<string, { generator: SimpleBeatGenerator; priority: number }>();
+  generators: { generator: SimpleBeatGenerator; priority: number }[] = [];
+
+  get active() {
+    return new Map(this.generators.map((g) => [g.generator.getId(), g]));
+  }
 
   add = vi.fn((generator: SimpleBeatGenerator, priority: number) => {
     generator.setPropagator({ sendBeat: () => {} });
     vi.spyOn(generator, 'restart');
-    this.active.set(generator.getId(), { generator, priority });
+    this.generators.push({ generator, priority });
   });
 
-  remove = vi.fn((id: string) => this.active.delete(id));
+  // Like BeatManager: removes only the first generator with the id
+  remove = vi.fn((id: string) => {
+    const index = this.generators.findIndex((g) => g.generator.getId() === id);
+    if (index >= 0) this.generators.splice(index, 1);
+  });
 }
 
 describe('CenturionMode', () => {
@@ -200,6 +216,7 @@ describe('CenturionMode', () => {
 
   afterEach(() => {
     vi.clearAllTimers();
+    vi.restoreAllMocks();
     vi.useRealTimers();
   });
 
@@ -412,6 +429,95 @@ describe('CenturionMode', () => {
 
       expect(musicEmitter.emitAudio).toHaveBeenCalledTimes(1);
     });
+
+    it('should restart from 0 when starting after the tape has ended', async () => {
+      await createMode();
+      playUntil(70);
+      mode.start();
+
+      expect(audioHandler.play).toHaveBeenLastCalledWith('/static/audio/tape.mp3', 0);
+      expect(mode.state.lastSongEvent).toMatchObject({ timestamp: 0 });
+      expect(mode.playing).toBe(true);
+    });
+
+    it('should ignore a start while already playing', async () => {
+      await createMode();
+      mode.start();
+      vi.advanceTimersByTime(15_000);
+      mode.start();
+      vi.advanceTimersByTime(10_000);
+
+      expect(audioHandler.play).toHaveBeenCalledOnce();
+      expect(screenHandler.horn).toHaveBeenCalledOnce();
+    });
+
+    it('should clear the horn when seeking back before the first horn', async () => {
+      await createMode();
+      playUntil(15);
+      mode.skip(5);
+
+      expect(mode.state.lastHornEvent).toBeUndefined();
+      expect(screenHandler.hornCount).toHaveBeenCalledWith(null);
+    });
+
+    it('should remove the light effects when seeking back before the first song', async () => {
+      tape.feed = [
+        { timestamp: 5, type: 'song', data: { artist: 'A', title: 'Song A', bpm: 140 } },
+      ];
+      await createMode();
+      playUntil(10);
+      mode.skip(2);
+
+      expect(lightsHandler.removeColorEffect).toHaveBeenCalledWith(parGroup);
+      expect(lightsHandler.removeColorEffect).toHaveBeenCalledWith(headGroup);
+      expect(lightsHandler.removeMovementEffect).toHaveBeenCalledOnce();
+      expect(lightsHandler.removeMovementEffect).toHaveBeenCalledWith(headGroup);
+    });
+
+    it('should clear the song and screen colours when seeking back before the first song', async () => {
+      tape.feed = [
+        { timestamp: 5, type: 'song', data: { artist: 'A', title: 'Song A', bpm: 140 } },
+      ];
+      await createMode();
+      playUntil(10);
+      mode.skip(2);
+
+      expect(mode.state.lastSongEvent).toBeUndefined();
+      expect(mode.state.screenColors).toBeUndefined();
+    });
+
+    it('should keep the light effects of their owners when seeking', async () => {
+      await createMode();
+      playUntil(45);
+      mode.skip(42);
+
+      expect(lightsHandler.removeColorEffect).not.toHaveBeenCalled();
+      expect(lightsHandler.removeMovementEffect).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['before', 10, 20],
+      ['after', 20, 10],
+    ])(
+      'should roll with the bpm at t when the bpm event comes %s the random effect',
+      async (_, bpmAt, randomAt) => {
+        tape.feed = [
+          { timestamp: 0, type: 'song', data: { artist: 'A', title: 'Song A', bpm: 140 } },
+          { timestamp: bpmAt, type: 'bpm', data: { bpm: 160 } },
+          { timestamp: randomAt, type: 'effect', data: { random: true, effects: {} } },
+        ];
+        tape.feed.sort((a, b) => a.timestamp - b.timestamp);
+        headGroup.groupInMiddle = false;
+        const build = vi.spyOn(TableRotate, 'build');
+        await createMode();
+        mode.skip(25);
+        mode.start();
+
+        // Side movement cycle time is 1 200 000 / bpm
+        expect(build).toHaveBeenCalledOnce();
+        expect(build).toHaveBeenCalledWith({ cycleTime: 7500 });
+      },
+    );
   });
 
   describe('sync', () => {
@@ -469,11 +575,44 @@ describe('CenturionMode', () => {
     });
   });
 
-  describe('known bugs', () => {
-    it.fails('should not throw when destroyed before starting', async () => {
+  describe('lifecycle', () => {
+    it('should not throw when destroyed before starting', async () => {
       await createMode();
 
       expect(() => mode.destroy()).not.toThrow();
+    });
+
+    it('should remove its audio sync handler when destroyed', async () => {
+      await createMode();
+      mode.destroy();
+
+      expect(audioHandler.syncHandlers).toEqual([]);
+    });
+
+    it('should notify the backoffice when playback starts and when the tape ends', async () => {
+      const update = vi.fn();
+      const { backofficeSyncEmitter } = EmitterStore.getInstance();
+      // BackofficeSyncEmitter sends every event as '*' with the event name first
+      backofficeSyncEmitter.on('*', update);
+      await createMode();
+
+      mode.start();
+      expect(update.mock.calls).toEqual([['mode_centurion_update']]);
+      vi.advanceTimersByTime(70_000);
+      expect(update.mock.calls).toEqual([['mode_centurion_update'], ['mode_centurion_update']]);
+
+      backofficeSyncEmitter.removeListener('*', update);
+    });
+
+    it.each([70, 80])('should stop when skipping to %ss while playing', async (seconds) => {
+      await createMode();
+      mode.start();
+      mode.skip(seconds);
+
+      expect(audioHandler.stop).toHaveBeenCalled();
+      expect(screenHandler.stop).toHaveBeenCalled();
+      expect(beatManager.generators).toEqual([]);
+      expect(mode.playing).toBe(false);
     });
   });
 });

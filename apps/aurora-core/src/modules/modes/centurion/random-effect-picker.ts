@@ -127,8 +127,6 @@ export default class RandomEffectPicker {
       factor = factor - 0.1;
     }
 
-    console.log(factor);
-
     return (
       effects.find((effect, i) => {
         const previous = effects.slice(0, i).reduce((x, e) => x + e.probability, 0);

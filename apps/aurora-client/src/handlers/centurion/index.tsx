@@ -85,7 +85,8 @@ export default function CenturionView({ socket }: Props) {
       setMixtape(resState.data.tape);
       setStatus(Status.READY);
     }
-    if (resState.data.lastHorn) setHornCount(resState.data.lastHorn.data.counter);
+    // Live, `start` sets -1 until the first horn; a reload only knows whether it is playing
+    setHornCount(resState.data.lastHorn?.data.counter ?? (resState.data.playing ? -1 : undefined));
     if (resState.data.lastSong && Array.isArray(resState.data.lastSong.data)) {
       setSong(resState.data.lastSong.data[0].title);
       setArtists(resState.data.lastSong.data[0].artist);
@@ -101,68 +102,63 @@ export default function CenturionView({ socket }: Props) {
       });
     }
     if (resState.data.playing) setStatus(Status.PLAYING);
-
-    socket.on('loaded', (mixTapes: MixTape[]) => {
-      const mixTape = mixTapes[0];
-
-      setMixtape(mixTape ?? null);
-      setStatus(Status.READY);
-      setHornCount(undefined);
-    });
-
-    socket.on('start', () => {
-      if (hornCount === undefined) setHornCount(-1);
-      setStatus(Status.PLAYING);
-    });
-
-    socket.on('stop', () => {
-      setStatus(Status.STOPPED);
-    });
-
-    socket.on('change_track', (event: TrackChangeEvent[][]) => {
-      const track = event[0][0];
-      setArtists(track.artists.join(', '));
-      setSong(track.title);
-      setStatus(Status.PLAYING);
-    });
-
-    socket.on('horn', (hornEvent: HornEvent[]) => {
-      const { strobeTime, counter } = hornEvent[0];
-      setStrobe(true);
-      setTimeout(() => {
-        setStrobe(false);
-      }, strobeTime);
-
-      setStatus(Status.PLAYING);
-      setHornCount(counter);
-    });
-
-    socket.on('horn_count', (counters: number[]) => {
-      setHornCount(counters[0]);
-    });
-
-    socket.on('change_colors', (newColorsEvent: RgbColor[][]) => {
-      const colors = newColorsEvent[0];
-      setRgbColors({
-        start: colors[0],
-        end: colors[1],
-      });
-    });
   };
 
   useEffect(() => {
+    const listeners = {
+      loaded: (mixTapes: MixTape[]) => {
+        setMixtape(mixTapes[0] ?? null);
+        setStatus(Status.READY);
+        setHornCount(undefined);
+      },
+      start: () => {
+        setHornCount((current) => current ?? -1);
+        setStatus(Status.PLAYING);
+      },
+      stop: () => {
+        setStatus(Status.STOPPED);
+      },
+      change_track: (event: TrackChangeEvent[][]) => {
+        const track = event[0][0];
+        setArtists(track.artists.join(', '));
+        setSong(track.title);
+        setStatus(Status.PLAYING);
+      },
+      horn: (hornEvent: HornEvent[]) => {
+        const { strobeTime, counter } = hornEvent[0];
+        setStrobe(true);
+        setTimeout(() => {
+          setStrobe(false);
+        }, strobeTime);
+
+        setStatus(Status.PLAYING);
+        setHornCount(counter);
+      },
+      horn_count: (counters: (number | null)[]) => {
+        setHornCount(counters[0] ?? -1);
+      },
+      change_colors: (newColorsEvent: RgbColor[][]) => {
+        const colors = newColorsEvent[0];
+        setRgbColors({
+          start: colors[0],
+          end: colors[1],
+        });
+      },
+    };
+    // The socket is shared with the overlays, so only remove our own listeners
+    Object.entries(listeners).forEach(([event, listener]) => socket.on(event, listener));
+
     init().catch((e) => {
       console.error(e);
     });
 
     return () => {
-      socket.removeAllListeners();
+      Object.entries(listeners).forEach(([event, listener]) => socket.off(event, listener));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
   const getRandomInt = () => {
-    if (hornCount === undefined) return 0;
+    if (hornCount === undefined || hornCount <= 0) return 0;
     return Math.floor(Math.random() * 2 * hornCount) - hornCount;
   };
 
@@ -180,7 +176,7 @@ export default function CenturionView({ socket }: Props) {
                 className={clsx(styles.drunk, 'z-20')}
                 style={{
                   ['--random-rotation' as string]: `${randomInt / 3}deg`,
-                  ['--random-time' as string]: `${hornCount === 0 || hornCount === undefined ? '500s' : `${(1 / hornCount) * 500}s`}`,
+                  ['--random-time' as string]: `${hornCount === undefined || hornCount <= 0 ? '500s' : `${(1 / hornCount) * 500}s`}`,
                   display: 'inline-block',
                 }}
               >

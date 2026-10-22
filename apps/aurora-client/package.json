@@ -52,11 +52,11 @@
     "eslint": "9.39.2",
     "jsdom": "^29.1.1",
     "openapi-typescript-codegen": "0.31.0",
-    "postcss": "8.5.29",
-    "sass": "1.105.1",
+    "postcss": "8.5.31",
+    "sass": "1.105.2",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=22.0.0"

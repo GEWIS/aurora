@@ -87,8 +87,8 @@
     "@types/qs": "6.15.1",
     "@types/supertest": "^7.2.1",
     "@types/swagger-ui-express": "4.1.8",
-    "@typescript-eslint/eslint-plugin": "8.71.1",
-    "@typescript-eslint/parser": "8.71.1",
+    "@typescript-eslint/eslint-plugin": "8.71.2",
+    "@typescript-eslint/parser": "8.71.2",
     "concurrently": "9.2.5",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
@@ -99,7 +99,7 @@
     "tsx": "^4.23.15",
     "typescript": "5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=22.0.0"

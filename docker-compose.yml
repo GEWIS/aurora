@@ -9,7 +9,7 @@ volumes:
 services:
   core:
     <<: *pnpm-config
-    image: node:22
+    image: node:22.23.4
     entrypoint: ['node', '/app/scripts/entrypoint.ts']
     working_dir: /app
     healthcheck:
@@ -47,7 +47,7 @@ services:
 
   client:
     <<: *pnpm-config
-    image: node:22
+    image: node:22.23.4
     entrypoint: ['node', '/app/scripts/entrypoint.ts']
     working_dir: /app
     ports:
@@ -65,7 +65,7 @@ services:
 
   backoffice:
     <<: *pnpm-config
-    image: node:22
+    image: node:22.23.4
     entrypoint: ['node', '/app/scripts/entrypoint.ts']
     working_dir: /app
     ports:

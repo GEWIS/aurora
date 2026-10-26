@@ -1,11 +1,11 @@
 # build context: the monorepo root
-FROM node:22 AS pruner
+FROM node:22.23.4 AS pruner
 WORKDIR /app
 RUN corepack enable
 COPY . .
 RUN pnpm dlx turbo@2.9.18 prune @gewis/aurora-core --docker
 
-FROM node:22 AS builder
+FROM node:22.23.4 AS builder
 ENV CI=true
 WORKDIR /app
 RUN corepack enable
@@ -20,7 +20,7 @@ RUN pnpm --filter @gewis/aurora-core run build
 # Install the musl variants of native packages (such as sharp), as the final image is Alpine
 RUN pnpm --filter @gewis/aurora-core --prod deploy --legacy --libc musl /prod
 
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 

@@ -1,11 +1,11 @@
 # build context: the monorepo root
-FROM node:22 AS pruner
+FROM node:22.23.4 AS pruner
 WORKDIR /app
 RUN corepack enable
 COPY . .
 RUN pnpm dlx turbo@2.9.18 prune @gewis/aurora-client --docker
 
-FROM node:22 AS builder
+FROM node:22.23.4 AS builder
 ENV CI=true
 WORKDIR /app
 RUN corepack enable

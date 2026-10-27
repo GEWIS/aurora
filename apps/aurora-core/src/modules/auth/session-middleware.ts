@@ -4,6 +4,7 @@ import { RequestHandler } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { getDataSource } from '../../database';
+import logger from '../../logger';
 import { Session } from './entities';
 
 export default class SessionMiddleware {
@@ -23,7 +24,8 @@ export default class SessionMiddleware {
       resave: false,
       saveUninitialized: false,
       store: new TypeormStore({
-        limitSubquery: false, // MariaDB
+        limitSubquery: false,
+        onError: (_store, error) => logger.error(error, 'Session store error'),
       }).connect(getDataSource().getRepository(Session)),
     });
   }

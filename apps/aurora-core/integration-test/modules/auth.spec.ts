@@ -1,4 +1,5 @@
 import { describe, beforeAll, it, expect, vi } from 'vitest';
+import { SelectQueryBuilder } from 'typeorm';
 import { TestEnvironment, type TestApp } from '../shared/test-app';
 import { expectApiError } from '../shared/response-matchers';
 import { SecurityGroup } from '../../src/helpers/security';
@@ -224,5 +225,28 @@ describe('POST /api/auth/oidc', () => {
 
     fetchSpy.mockRestore();
     vi.unstubAllEnvs();
+  });
+});
+
+describe('session store', () => {
+  it('keeps serving sessions after a single failed session query', async () => {
+    // ARRANGE
+    const getOneSpy = vi
+      .spyOn(SelectQueryBuilder.prototype, 'getOne')
+      .mockRejectedValueOnce(new Error('Connection lost'));
+
+    // ACT
+    const failed = await testApp.authorizedAgent.get('/api/user/me');
+    getOneSpy.mockRestore();
+    const recovered = await testApp.authorizedAgent.get('/api/user/me');
+
+    // ASSERT
+    expect(failed.status).toBe(500);
+    expect(recovered.status).toBe(200);
+    expect(recovered.body).toEqual({
+      id: 'john-doe',
+      name: 'John Doe',
+      roles: ['admin'],
+    });
   });
 });

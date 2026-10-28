@@ -53,7 +53,7 @@ export default class LightsControllerManager {
     });
 
     // Tick rate (currently 35Hz)
-    setInterval(this.tick.bind(this), Number(process.env.LIGHTS_TICK_INTERVAL) ?? 29);
+    setInterval(this.tick.bind(this), Number(process.env.LIGHTS_TICK_INTERVAL) || 29);
   }
 
   /**
@@ -174,7 +174,7 @@ export default class LightsControllerManager {
    */
   private hasUpdated(valuesUpdatedAt?: Date): boolean {
     if (valuesUpdatedAt === undefined) return true;
-    return valuesUpdatedAt > this.previousTick;
+    return valuesUpdatedAt >= this.previousTick;
   }
 
   /**

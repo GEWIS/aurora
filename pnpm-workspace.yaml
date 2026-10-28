@@ -15,4 +15,5 @@ packages:
   - 'tools/*'
 
 overrides:
+  '@gewis/sudosos-client>axios': '1.21.0'
   '@types/express': '5.0.6'

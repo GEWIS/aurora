@@ -51,7 +51,7 @@
     "eslint": "9.39.2",
     "jsdom": "^29.1.1",
     "postcss": "8.5.31",
-    "sass": "1.105.2",
+    "sass": "1.106.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "^4.1.12"

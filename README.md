@@ -76,6 +76,9 @@ cd aurora-core
 # Install all dependencies (monorepo)
 pnpm install
 
+# Generate the API client (@gewis/aurora-api-client) used by the backoffice and client
+pnpm sync
+
 # Set up environment
 cp apps/aurora-core/.env.example apps/aurora-core/.env
 

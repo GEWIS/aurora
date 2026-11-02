@@ -42,7 +42,8 @@ import ConferenceRoomsService, {
   ConferenceRoomParams,
   ConferenceRoomsResponse,
 } from './conference-rooms-service';
-import { WidgetCatalogItem, enabledCatalog } from './widget-catalog';
+import NetbirdStatusService, { NetbirdPeerStatus } from './netbird-status-service';
+import { WidgetCatalogItem, enabledCatalog, isWidgetEnabled } from './widget-catalog';
 import GewisKeyholderSyncService, {
   KeyholderSyncResult,
   KeyholderSyncStatus,
@@ -76,6 +77,8 @@ export class InfoScreenController extends Controller {
   private conferenceRoomsService = new ConferenceRoomsService();
 
   private servicesHealthService = new ServicesHealthService();
+
+  private netbirdStatusService = new NetbirdStatusService();
 
   /**
    * Resolve the running info screen handler so that mutations can push updates
@@ -471,7 +474,7 @@ export class InfoScreenController extends Controller {
   }
 
   // ---------------------------------------------------------------------------
-  // Services health (Uptime Kuma) + conference rooms (stub)
+  // Services health (Uptime Kuma), NetBird peers + conference rooms (stub)
   // ---------------------------------------------------------------------------
 
   /**
@@ -481,6 +484,17 @@ export class InfoScreenController extends Controller {
   @Get('services')
   public async getInfoServices(@Query() url?: string): Promise<ServicesHealthResponse> {
     return this.servicesHealthService.getHealth(url);
+  }
+
+  /**
+   * The NetBird peers visible to the Aurora host. Empty when the widget is
+   * disabled, so hosts without a NetBird daemon never try to run its CLI.
+   */
+  @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)
+  @Get('netbird')
+  public async getInfoNetbird(): Promise<NetbirdPeerStatus[]> {
+    if (!isWidgetEnabled('netbird')) return [];
+    return this.netbirdStatusService.getPeers();
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.infoscreen.base)

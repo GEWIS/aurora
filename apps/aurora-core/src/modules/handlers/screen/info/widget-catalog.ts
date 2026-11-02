@@ -144,6 +144,10 @@ export const DISABLED_WIDGETS: Record<string, string> = {
   // a moment, not a state worth a permanent panel, so it would sit on "No
   // incoming calls" all day. Deleting this entry is all that re-enabling takes.
   'caller-inline': 'Superseded by the incoming-call overlay, which takes the whole screen.',
+  // Needs the NetBird daemon on the Aurora host, so it is opt-in per deployment.
+  ...(process.env.NETBIRD_STATUS_ENABLED === 'true'
+    ? {}
+    : { netbird: 'NETBIRD_STATUS_ENABLED is not set; the host may not run NetBird.' }),
 };
 
 /** Number of columns in the info-screen grid. */
@@ -323,6 +327,7 @@ const WIDGET_SETTINGS: Record<string, WidgetSetting[]> = {
     bool('onlyOffline', 'Only unfold offline groups', false),
     bool('showSummary', 'Show summary line', true),
   ],
+  netbird: [text('peers', 'Peers (comma-separated names or FQDNs, blank = all)', '')],
   'conference-rooms': [
     entity('rooms', 'Rooms shown', 'conference-rooms', true),
     select(
@@ -433,6 +438,7 @@ const RAW_CATALOG: Omit<WidgetCatalogItem, 'settings'>[] = [
   { id: 'news', name: 'News ticker', category: 'information', icon: 'pi-megaphone', defaultW: 9, defaultH: 1, minW: 4, minH: 1, maxW: 9, maxH: 1, modal: false }, // prettier-ignore
   { id: 'workstations', name: 'Workstation info', category: 'room', icon: 'pi-desktop', defaultW: 5, defaultH: 4, minW: 3, minH: 2, maxW: 7, maxH: 6, modal: false }, // prettier-ignore
   { id: 'services', name: 'GEWIS services', category: 'information', icon: 'pi-server', defaultW: 2, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 3, modal: false }, // prettier-ignore
+  { id: 'netbird', name: 'NetBird peers', category: 'information', icon: 'pi-sitemap', defaultW: 2, defaultH: 2, minW: 1, minH: 1, maxW: 4, maxH: 6, modal: false }, // prettier-ignore
   { id: 'conference-rooms', name: 'Conference rooms', category: 'room', icon: 'pi-building', defaultW: 3, defaultH: 2, minW: 2, minH: 2, maxW: 4, maxH: 4, modal: false }, // prettier-ignore
   { id: 'logo', name: 'GEWIS logo', category: 'content', icon: 'pi-image', defaultW: 2, defaultH: 2, minW: 1, minH: 2, maxW: 2, maxH: 3, modal: false }, // prettier-ignore
   { id: 'coffee', name: 'Coffee status', category: 'room', icon: 'pi-inbox', defaultW: 2, defaultH: 1, minW: 2, minH: 1, maxW: 3, maxH: 2, modal: false }, // prettier-ignore

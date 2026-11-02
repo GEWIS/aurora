@@ -3,6 +3,7 @@ import {
   AgendaEvent,
   ChildWidget,
   ConferenceRoomsResponse,
+  NetbirdPeerStatus,
   NewsHeadline,
   PcStatusResponse,
   RainRadarResponse,
@@ -22,6 +23,7 @@ import TrainsWidget from './components/TrainsWidget';
 import NewsTicker from './components/NewsTicker';
 import PcUsageMap from './components/PcUsageMap';
 import ServicesWidget from './components/ServicesWidget';
+import NetbirdWidget from './components/NetbirdWidget';
 import ConferenceRoomsWidget from './components/ConferenceRoomsWidget';
 import CoffeeWidget from './components/CoffeeWidget';
 import LogoFlip from './components/LogoFlip';
@@ -45,6 +47,7 @@ export interface WidgetData {
   roomStatus: RoomStatusResponse | null;
   track: TrackChangeEvent | null;
   services: ServicesHealthResponse | null;
+  netbird: NetbirdPeerStatus[];
   rooms: ConferenceRoomsResponse | null;
   caller: CallerEvent | null;
   borrelMode: boolean;
@@ -62,6 +65,7 @@ const TITLES: Record<string, string | undefined> = {
   news: undefined,
   workstations: 'Workstation status',
   services: 'GEWIS services',
+  netbird: 'NetBird peers',
   'conference-rooms': 'Conference rooms',
   logo: undefined,
   coffee: 'Coffee status',
@@ -147,6 +151,8 @@ export function renderWidget(
       );
     case 'services':
       return <ServicesWidget services={data.services} settings={settings} />;
+    case 'netbird':
+      return <NetbirdWidget peers={data.netbird} settings={settings} />;
     case 'conference-rooms':
       return <ConferenceRoomsWidget rooms={data.rooms} settings={settings} />;
     case 'coffee':

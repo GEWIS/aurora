@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import {
   DEFAULT_LAYOUT,
   DEFAULT_MODALS,
@@ -118,6 +118,31 @@ describe('incoming-call overlay', () => {
   it('is not a layout widget, since InfoScreen.CallerId alone switches it on', () => {
     expect(getCatalogItem('caller')).toBeUndefined();
     expect(DEFAULT_MODALS).not.toContain('caller');
+  });
+});
+
+describe('netbird widget', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  /**
+   * The catalog reads the env var once, at module load, so each case needs a
+   * fresh module instance; the static import above cannot be re-evaluated.
+   */
+  async function enabledWith(value: string | undefined): Promise<boolean> {
+    vi.stubEnv('NETBIRD_STATUS_ENABLED', value);
+    vi.resetModules();
+    const catalog = await import('./widget-catalog');
+    return catalog.isWidgetEnabled('netbird');
+  }
+
+  it('is only offered when NETBIRD_STATUS_ENABLED is exactly "true"', async () => {
+    expect(await enabledWith(undefined)).toBe(false);
+    expect(await enabledWith('')).toBe(false);
+    expect(await enabledWith('false')).toBe(false);
+    expect(await enabledWith('true')).toBe(true);
   });
 });
 

@@ -5,6 +5,7 @@ import {
   ConferenceRoomsResponse,
   getInfoAgenda,
   getInfoConferenceRooms,
+  getInfoNetbird,
   getInfoNews,
   getInfoOwnLayout,
   getInfoPcUsage,
@@ -15,6 +16,7 @@ import {
   getInfoWeather,
   getSpotifyCurrentlyPlaying,
   InfoScreenLayoutResponse,
+  NetbirdPeerStatus,
   NewsHeadline,
   PcStatusResponse,
   RainRadarResponse,
@@ -62,6 +64,7 @@ export default function InfoScreenView({ socket }: Props) {
   const [roomStatus, setRoomStatus] = useState<RoomStatusResponse | null>(null);
   const [track, setTrack] = useState<TrackChangeEvent | null>(null);
   const [services, setServices] = useState<ServicesHealthResponse | null>(null);
+  const [netbird, setNetbird] = useState<NetbirdPeerStatus[]>([]);
   const [rooms, setRooms] = useState<ConferenceRoomsResponse | null>(null);
   const [caller, setCaller] = useState<CallerEvent | null>(null);
   const borrelMode = useBorrelMode(socket);
@@ -95,6 +98,9 @@ export default function InfoScreenView({ socket }: Props) {
     getInfoServices()
       .then((r) => setServices(r.data ?? null))
       .catch(console.error);
+    getInfoNetbird()
+      .then((r) => setNetbird(r.data ?? []))
+      .catch(console.error);
     getInfoConferenceRooms()
       .then((r) => setRooms(r.data ?? null))
       .catch(console.error);
@@ -114,6 +120,7 @@ export default function InfoScreenView({ socket }: Props) {
     const onPcs = (p: unknown[]) => setPcs(p[0] as PcStatusResponse[]);
     const onRoom = (p: unknown[]) => setRoomStatus(p[0] as RoomStatusResponse);
     const onServices = (p: unknown[]) => setServices(p[0] as ServicesHealthResponse);
+    const onNetbird = (p: unknown[]) => setNetbird(p[0] as NetbirdPeerStatus[]);
     const onRooms = (p: unknown[]) => setRooms(p[0] as ConferenceRoomsResponse);
     const onCaller = (p: unknown[]) => setCaller(p[0] as CallerEvent);
     const onTrack = (p: unknown[]) => setTrack((p[0] as TrackChangeEvent[])[0] ?? null);
@@ -127,6 +134,7 @@ export default function InfoScreenView({ socket }: Props) {
     socket.on('info_pcusage', onPcs);
     socket.on('info_roomstatus', onRoom);
     socket.on('info_services', onServices);
+    socket.on('info_netbird', onNetbird);
     socket.on('info_conferencerooms', onRooms);
     socket.on('info_caller', onCaller);
     socket.on('change_track', onTrack);
@@ -141,6 +149,7 @@ export default function InfoScreenView({ socket }: Props) {
       socket.off('info_pcusage', onPcs);
       socket.off('info_roomstatus', onRoom);
       socket.off('info_services', onServices);
+      socket.off('info_netbird', onNetbird);
       socket.off('info_conferencerooms', onRooms);
       socket.off('info_caller', onCaller);
       socket.off('change_track', onTrack);
@@ -157,6 +166,7 @@ export default function InfoScreenView({ socket }: Props) {
     roomStatus,
     track,
     services,
+    netbird,
     rooms,
     caller,
     borrelMode,

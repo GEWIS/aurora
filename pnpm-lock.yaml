@@ -46,8 +46,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(vue@3.5.44(typescript@5.9.3))
       '@openvue/themes':
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.1.0
+        version: 1.1.0
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -1555,8 +1555,8 @@ packages:
   '@openuxkit/styles@1.1.0':
     resolution: {integrity: sha512-DohE7jvtnTeapfFjqL0RmX63JmKfv1YbL4V2LFTruNXkdK+GfhtvkyUM/1pCrcmjWyflGfZhW5z8LJzUkzwLDQ==}
 
-  '@openuxkit/themes@1.1.0':
-    resolution: {integrity: sha512-0OuDQLFuhUGKWujAs8ejbhrRac9u0h03T349JqKyuGTQWCVaRyNJiShX9OcqCsVi9tbvFHuMkCxppCL/w1Hslw==}
+  '@openuxkit/themes@1.2.0':
+    resolution: {integrity: sha512-fZ+5dfhnxc42fC5JANXxW/lHpdG9g9vGpPhWXmz8cAy9b8FQ7S/W3acBiDj6bdQIY+Af6jQZIlOlC1I86OFOvg==}
 
   '@openuxkit/utils@1.0.1':
     resolution: {integrity: sha512-AwHDW1UIQ9tBE/liNELlg3m3aGZSCKxL848XbgICbLV9UQ+Nv/uv+E0amQ8H/gyoOYTTNKF7qFhxtKZTlOub1A==}
@@ -1572,8 +1572,8 @@ packages:
     resolution: {integrity: sha512-xCBcHvs0SjEqrDkL54cwcSKUYkjbAPPbfISfygoxjkE/yibUGk3STyutVsGTAEeV5BIYmK/Hd4eUMN/FOTcsfw==}
     engines: {node: '>=12.11.0'}
 
-  '@openvue/themes@1.0.0':
-    resolution: {integrity: sha512-YiLHzoa+0ic5yz/+vljDaH3UWNofgu5JLENq2FPMY+rPJD9L2F+/QumvUj7vUHvPIFexnb35FwM6fpetw6BfiA==}
+  '@openvue/themes@1.1.0':
+    resolution: {integrity: sha512-ZV6WgIjQC51sMY8NbIx7OZZymEpmYuPyU8IuKAj7lFTwsZ38DXhtxo0iaCMGHN6hKaHpCpZTBMq0ICrcFTwJXA==}
     engines: {node: '>=12.11.0'}
 
   '@oxc-project/types@0.133.0':
@@ -2320,6 +2320,9 @@ packages:
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
+
+  '@types/estree@1.0.10':
+    resolution: {integrity: sha512-lTyOMnOcmRBzdCv6/4zUZCrEhV0xrqQiUZBZtVcbmLHBXKLnN8q89v/wKRF/Q0HbwVsqbIG3o5HDoFl9sduM+g==}
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
@@ -7480,7 +7483,7 @@ snapshots:
     dependencies:
       '@openuxkit/styled': 1.0.0
 
-  '@openuxkit/themes@1.1.0':
+  '@openuxkit/themes@1.2.0':
     dependencies:
       '@openuxkit/styled': 1.0.0
 
@@ -7500,10 +7503,10 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  '@openvue/themes@1.0.0':
+  '@openvue/themes@1.1.0':
     dependencies:
       '@openuxkit/styled': 1.0.0
-      '@openuxkit/themes': 1.1.0
+      '@openuxkit/themes': 1.2.0
 
   '@oxc-project/types@0.133.0': {}
 
@@ -8060,11 +8063,14 @@ snapshots:
 
   '@types/eslint@8.56.12':
     dependencies:
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
       '@types/json-schema': 7.0.15
     optional: true
 
   '@types/esrecurse@4.3.1': {}
+
+  '@types/estree@1.0.10':
+    optional: true
 
   '@types/estree@1.0.9': {}
 

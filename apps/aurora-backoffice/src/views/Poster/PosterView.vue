@@ -78,9 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import type { PosterType } from '@gewis/aurora-api-client';
-import { getPosterStatus, posterStatusLabels, type PosterStatus } from '@/utils/posterUtils';
+import { computed } from 'vue';
 import AppContainer from '@/layout/AppContainer.vue';
 import { usePosterStore } from '@/stores/poster/poster.store';
 import PosterCard from '@/components/poster/PosterCard.vue';
@@ -89,6 +87,7 @@ import StaticPosterPreview from '@/components/poster/StaticPosterPreview.vue';
 import StaticPosterButtonClear from '@/components/poster/StaticPosterButtonClear.vue';
 import StaticPosterClockToggle from '@/components/poster/StaticPosterClockToggle.vue';
 import PosterCarouselOrder from '@/components/poster/PosterCarouselOrder.vue';
+import { usePosterFilters } from '@/composables/usePosterFilters';
 
 const posterStore = usePosterStore();
 void posterStore.init();
@@ -97,26 +96,8 @@ const activeStaticPoster = computed(
   () => posterStore.staticPosters.find((p) => p.id === posterStore.static.activePosterId) ?? null,
 );
 
-const search = ref('');
-const selectedTypes = ref<PosterType[] | null>([]);
-const selectedStatuses = ref<PosterStatus[] | null>([]);
-
-const typeOptions = computed(() => [...new Set(posterStore.posters.map((p) => p.type))].sort());
-
-const statusOptions = Object.entries(posterStatusLabels).map(([value, label]) => ({
-  label,
-  value,
-}));
-
-const filteredPosters = computed(() => {
-  const q = search.value.trim().toLowerCase();
-  return posterStore.posters.filter(
-    (p) =>
-      (!q || p.name.toLowerCase().includes(q)) &&
-      (!selectedTypes.value?.length || selectedTypes.value.includes(p.type)) &&
-      (!selectedStatuses.value?.length || selectedStatuses.value.includes(getPosterStatus(p))),
-  );
-});
+const { search, selectedTypes, selectedStatuses, typeOptions, statusOptions, filteredPosters } =
+  usePosterFilters(() => posterStore.posters);
 </script>
 
 <style scoped></style>

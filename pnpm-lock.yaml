@@ -43,8 +43,8 @@ importers:
         specifier: 2.4.0
         version: 2.4.0
       '@openvue/core':
-        specifier: 1.0.0
-        version: 1.0.0(vue@3.5.44(typescript@5.9.3))
+        specifier: 1.1.0
+        version: 1.1.0(vue@3.5.44(typescript@5.9.3))
       '@openvue/themes':
         specifier: 1.1.0
         version: 1.1.0
@@ -1561,12 +1561,6 @@ packages:
   '@openuxkit/utils@1.0.1':
     resolution: {integrity: sha512-AwHDW1UIQ9tBE/liNELlg3m3aGZSCKxL848XbgICbLV9UQ+Nv/uv+E0amQ8H/gyoOYTTNKF7qFhxtKZTlOub1A==}
     engines: {node: '>=12.11.0'}
-
-  '@openvue/core@1.0.0':
-    resolution: {integrity: sha512-cVgUD4gSTboMi+zM55fSNxeqrmGlECdrh5oYfZDFx7BwPgvgdZgDKTrIp2/pjiUoxracD+zlS2KYTyw96aai3Q==}
-    engines: {node: '>=12.11.0'}
-    peerDependencies:
-      vue: ^3.5.0
 
   '@openvue/core@1.1.0':
     resolution: {integrity: sha512-jJVcg9WwAa0meu+O1MBZkCIhdxA2ddxby+pBWMzCzmbG8I6bSeWXZ/Mi1/WzXJYA8slUI0XTXNUD3ID/58XB+g==}
@@ -7439,13 +7433,6 @@ snapshots:
       '@openuxkit/styled': 1.0.0
 
   '@openuxkit/utils@1.0.1': {}
-
-  '@openvue/core@1.0.0(vue@3.5.44(typescript@5.9.3))':
-    dependencies:
-      '@openuxkit/styled': 1.0.0
-      '@openuxkit/styles': 1.1.0
-      '@openuxkit/utils': 1.0.1
-      vue: 3.5.44(typescript@5.9.3)
 
   '@openvue/core@1.1.0(vue@3.5.44(typescript@5.9.3))':
     dependencies:

@@ -14,7 +14,7 @@
   "dependencies": {
     "@gewis/aurora-api-client": "workspace:*",
     "@gewis/splash": "2.4.0",
-    "@openvue/themes": "1.0.0",
+    "@openvue/themes": "1.1.0",
     "@openvue/core": "1.0.0",
     "@tailwindcss/postcss": "4.3.3",
     "@vee-validate/yup": "4.15.1",

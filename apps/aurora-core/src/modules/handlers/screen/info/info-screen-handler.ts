@@ -11,6 +11,7 @@ import PcUsageService from './pc-usage-service';
 import InfoStatusService from './info-status-service';
 import ServicesHealthService from './services-health-service';
 import ConferenceRoomsService from './conference-rooms-service';
+import NetbirdStatusService from './netbird-status-service';
 import LayoutService from './layout-service';
 import { CallerRingEvent } from './caller-service';
 import NsTrainsService from '../poster/ns-trains-service';
@@ -45,6 +46,8 @@ export default class InfoScreenHandler extends BaseScreenHandler {
 
   private readonly conferenceRoomsService = new ConferenceRoomsService();
 
+  private readonly netbirdStatusService = new NetbirdStatusService();
+
   private readonly layoutService = new LayoutService();
 
   /** Last logged failure message per event, to avoid spamming identical errors. */
@@ -73,6 +76,10 @@ export default class InfoScreenHandler extends BaseScreenHandler {
     // no screen can be showing it otherwise.
     if (isWidgetEnabled('conference-rooms')) {
       this.poll('info_conferencerooms', 60 * SECOND, () => this.conferenceRoomsService.getRooms());
+    }
+    // Only polled when NETBIRD_STATUS_ENABLED is set; other hosts have no daemon.
+    if (isWidgetEnabled('netbird')) {
+      this.poll('info_netbird', 30 * SECOND, () => this.netbirdStatusService.getPeers());
     }
   }
 

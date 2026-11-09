@@ -5224,6 +5224,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"NetbirdPeerState": {
+				"type": "string",
+				"enum": [
+					"connected",
+					"connecting",
+					"offline"
+				],
+				"description": "A peer's connection state as seen by the NetBird daemon on the Aurora host.\nThe client shows `connected` as green, `connecting` as orange and `offline`\nas gray."
+			},
+			"NetbirdPeerStatus": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "First label of the FQDN, e.g. \"aurora\" for \"aurora.netbird.cloud\"."
+					},
+					"fqdn": {
+						"type": "string"
+					},
+					"state": {
+						"$ref": "#/components/schemas/NetbirdPeerState"
+					}
+				},
+				"required": [
+					"name",
+					"fqdn",
+					"state"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"RoomBusyInterval": {
 				"properties": {
 					"start": {
@@ -14213,6 +14243,45 @@
 						}
 					}
 				]
+			}
+		},
+		"/handler/screen/info/netbird": {
+			"get": {
+				"operationId": "GetInfoNetbird",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/NetbirdPeerStatus"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "The NetBird peers visible to the Aurora host. Empty when the widget is\ndisabled, so hosts without a NetBird daemon never try to run its CLI.",
+				"tags": [
+					"Handlers"
+				],
+				"security": [
+					{
+						"local": [
+							"admin",
+							"board",
+							"avico",
+							"bac",
+							"key-holder",
+							"audio-subscriber",
+							"screen-subscriber",
+							"lights-subscriber"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/handler/screen/info/conference-rooms": {

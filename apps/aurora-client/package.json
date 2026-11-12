@@ -19,7 +19,7 @@
     "@gewis/aurora-api-client": "workspace:*",
     "@giphy/js-fetch-api": "5.7.0",
     "@giphy/react-components": "10.2.0",
-    "@tailwindcss/postcss": "4.3.3",
+    "@tailwindcss/postcss": "4.3.5",
     "clsx": "2.1.1",
     "events": "3.3.0",
     "framer-motion": "12.43.0",

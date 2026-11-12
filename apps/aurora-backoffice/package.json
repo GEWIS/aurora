@@ -14,9 +14,9 @@
   "dependencies": {
     "@gewis/aurora-api-client": "workspace:*",
     "@gewis/splash": "2.4.0",
-    "@openvue/themes": "1.1.0",
-    "@openvue/core": "1.1.0",
-    "@tailwindcss/postcss": "4.3.3",
+    "@openvue/themes": "1.1.1",
+    "@openvue/core": "1.1.1",
+    "@tailwindcss/postcss": "4.3.5",
     "@vee-validate/yup": "4.15.1",
     "cronstrue": "2.61.0",
     "dotenv": "16.6.1",
@@ -27,7 +27,7 @@
     "socket.io-client": "4.8.4",
     "tailwindcss-primeui": "0.6.1",
     "uuid": "11.1.1",
-    "vue": "3.5.44",
+    "vue": "3.5.45",
     "vue-router": "4.6.4",
     "vue-timeago3": "2.3.2",
     "yup": "1.6.1"

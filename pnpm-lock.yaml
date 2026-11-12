@@ -161,8 +161,8 @@ importers:
         specifier: 5.7.0
         version: 5.7.0
       '@giphy/react-components':
-        specifier: 10.1.2
-        version: 10.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(styled-components@6.6.0(css-to-react-native@3.2.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
+        specifier: 10.2.0
+        version: 10.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(styled-components@6.6.0(css-to-react-native@3.2.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -464,7 +464,7 @@ importers:
         version: 3.1.14
       supertest:
         specifier: ^7.3.2
-        version: 7.3.2
+        version: 7.3.2(supports-color@5.5.0)
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@swc/core@1.16.20)(@types/node@22.20.5)(typescript@5.9.3)
@@ -1135,8 +1135,11 @@ packages:
   '@giphy/js-util@5.2.0':
     resolution: {integrity: sha512-Qt7pGh2cqiNmXLeWAgb459wK8+BuMLtIxTfg4ZksnPHPsLthiHT9hhzs2QhqUh7Pp/HOq+Cbv2etGDfnq+xiKA==}
 
-  '@giphy/react-components@10.1.2':
-    resolution: {integrity: sha512-DVyIgf5az0uzHwnkS8tUaqO4qNx8DoxJupnRLhOl8M5CcvV9ykeZBLDxLj+jyDTySPYaIIJtrlR+8SeV2dHZwQ==}
+  '@giphy/js-util@5.2.1':
+    resolution: {integrity: sha512-72QDkdKUlXFHHsnRAalrbZ8f7rkC8zYqxpNSOMZB6VpNKX0pLnt4GO3fgyVoh+2V53qmPnepRA6Hgvy1/eOkdw==}
+
+  '@giphy/react-components@10.2.0':
+    resolution: {integrity: sha512-CHxh71ACRMBkNCJ+eeAtVWbN3vcdZD5ck07EnWOUJte1QBvVgZmUrUPa6CdbsGeI8QZ8W7NZb74XpEbkZSxG6Q==}
     peerDependencies:
       react: 18 - 19
       styled-components: '>= 5'
@@ -5880,6 +5883,9 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tslib@2.9.1:
+    resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
+
   tsoa@7.0.0-alpha.0:
     resolution: {integrity: sha512-o5h2DD1IKa2GF728BHYDL2uSX57a44sX8BLFScR4KbD0xlOmgsSDECneJmouDxf9MJdjHHWc+I1S3sGK82B6kQ==}
     engines: {node: '>=18.0.0', yarn: '>=1.9.4'}
@@ -6516,8 +6522,7 @@ snapshots:
 
   '@babel/runtime@7.29.10': {}
 
-  '@babel/runtime@7.29.13':
-    optional: true
+  '@babel/runtime@7.29.13': {}
 
   '@babel/template@7.29.7':
     dependencies:
@@ -6579,22 +6584,22 @@ snapshots:
   '@emnapi/core@1.10.0':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/runtime@1.10.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/runtime@1.11.3':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emotion/is-prop-valid@1.4.0':
@@ -6966,7 +6971,7 @@ snapshots:
   '@giphy/js-analytics@5.0.0':
     dependencies:
       '@giphy/js-types': 5.1.0
-      '@giphy/js-util': 5.2.0
+      '@giphy/js-util': 5.2.1
       append-query: 2.1.1
       throttle-debounce: 3.0.1
 
@@ -6982,13 +6987,18 @@ snapshots:
       '@giphy/js-types': 5.1.0
       uuid: 9.0.1
 
-  '@giphy/react-components@10.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(styled-components@6.6.0(css-to-react-native@3.2.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
+  '@giphy/js-util@5.2.1':
+    dependencies:
+      '@giphy/js-types': 5.1.0
+      uuid: 11.1.1
+
+  '@giphy/react-components@10.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(styled-components@6.6.0(css-to-react-native@3.2.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
     dependencies:
       '@giphy/colors': 1.0.1
       '@giphy/js-analytics': 5.0.0
       '@giphy/js-fetch-api': 5.7.0
       '@giphy/js-types': 5.1.0
-      '@giphy/js-util': 5.2.0
+      '@giphy/js-util': 5.2.1
       intersection-observer: 0.12.2
       react: 19.3.1
       react-use: 17.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -7999,7 +8009,7 @@ snapshots:
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@types/accepts@1.3.7':
@@ -9346,7 +9356,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   dotenv@16.6.1: {}
 
@@ -10918,7 +10928,7 @@ snapshots:
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   lru-cache@10.4.3: {}
 
@@ -11076,7 +11086,7 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   node-abi@3.101.0:
     dependencies:
@@ -11538,10 +11548,10 @@ snapshots:
     dependencies:
       react: 19.3.1
 
-  react-universal-interface@0.6.2(react@19.3.1)(tslib@2.8.1):
+  react-universal-interface@0.6.2(react@19.3.1)(tslib@2.9.1):
     dependencies:
       react: 19.3.1
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   react-use@17.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
@@ -11554,13 +11564,13 @@ snapshots:
       nano-css: 5.6.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-      react-universal-interface: 0.6.2(react@19.3.1)(tslib@2.8.1)
+      react-universal-interface: 0.6.2(react@19.3.1)(tslib@2.9.1)
       resize-observer-polyfill: 1.5.1
       screenfull: 5.2.0
       set-harmonic-interval: 1.0.1
       throttle-debounce: 3.0.1
       ts-easing: 0.2.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   react@19.3.1: {}
 
@@ -11718,7 +11728,7 @@ snapshots:
 
   rtl-css-js@1.16.1:
     dependencies:
-      '@babel/runtime': 7.29.10
+      '@babel/runtime': 7.29.13
 
   run-applescript@7.1.0: {}
 
@@ -11963,7 +11973,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   socket.io-adapter@2.5.8(supports-color@5.5.0):
     dependencies:
@@ -12194,7 +12204,7 @@ snapshots:
 
   stylis@4.4.0: {}
 
-  superagent@10.4.2:
+  superagent@10.4.2(supports-color@5.5.0):
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
@@ -12212,11 +12222,11 @@ snapshots:
     dependencies:
       copy-anything: 4.1.5
 
-  supertest@7.3.2:
+  supertest@7.3.2(supports-color@5.5.0):
     dependencies:
       cookie-signature: 1.2.2
       methods: 1.1.2
-      superagent: 10.4.2
+      superagent: 10.4.2(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -12391,6 +12401,8 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.8.1: {}
+
+  tslib@2.9.1: {}
 
   tsoa@7.0.0-alpha.0:
     dependencies:

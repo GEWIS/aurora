@@ -282,8 +282,8 @@ importers:
         specifier: 7.0.0-alpha.0
         version: 7.0.0-alpha.0
       async-lock:
-        specifier: 1.4.1
-        version: 1.4.1
+        specifier: 1.5.0
+        version: 1.5.0
       axios:
         specifier: 1.21.0
         version: 1.21.0
@@ -2930,8 +2930,8 @@ packages:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
     engines: {node: '>= 0.4'}
 
-  async-lock@1.4.1:
-    resolution: {integrity: sha512-Az2ZTpuytrtqENulXwO3GGv1Bztugx6TT37NIo7imr/Qo0gsYiGtSdBa2B6fsXhTpVZDNfu1Qn3pk531e3q+nQ==}
+  async-lock@1.5.0:
+    resolution: {integrity: sha512-JgULma1mWaHlyJ67lvicyel5Cq+k55bXafE0gyvJBdHkH0vdE/IGGDF1glNyRInisNS6pZL2oho96S6Hw68kfQ==}
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
@@ -8848,7 +8848,7 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  async-lock@1.4.1: {}
+  async-lock@1.5.0: {}
 
   asynckit@0.4.0: {}
 

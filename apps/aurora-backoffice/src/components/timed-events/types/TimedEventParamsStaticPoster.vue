@@ -1,28 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
     <label for="static-poster-select">Static poster</label>
-    <Select
-      id="static-poster-select"
-      v-model="selectedPosterId"
-      :loading="posterStore.loading"
-      option-value="id"
-      :options="posterStore.staticPosters"
-      placeholder="Choose a poster"
-    >
-      <template #option="slotProps">
-        <div class="flex items-center">
-          <StaticPosterPreview class="w-64" :poster="slotProps.option" />
-        </div>
-      </template>
-      <template #value="slotProps">
-        <StaticPosterPreview
-          v-if="selectedPoster"
-          class="w-64 inline-block"
-          :poster="selectedPoster"
-        />
-        <span v-else>{{ slotProps.placeholder }}</span>
-      </template>
-    </Select>
+    <PosterSelect v-model="selectedPosterId"> </PosterSelect>
   </div>
 
   <div class="flex flex-row gap-2">
@@ -38,9 +17,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { CreateTimedEventRequest, TimedEventSetStaticPoster } from '@gewis/aurora-api-client';
-import StaticPosterPreview from '@/components/poster/StaticPosterPreview.vue';
 import TimedEventDialogSaveButton from '@/components/timed-events/types/TimedEventDialogSaveButton.vue';
 import type { TimedEventParamsProps } from '@/components/timed-events/types/TimedEventParamsProps';
+import PosterSelect from '@/components/poster/PosterSelect.vue';
 import { usePosterStore } from '@/stores/poster/poster.store';
 
 const props = defineProps<TimedEventParamsProps<TimedEventSetStaticPoster['params']>>();
@@ -51,9 +30,7 @@ void posterStore.init();
 const selectedPosterId = ref<number | undefined>(
   props.originalEventSpecParams?.posterId ?? undefined,
 );
-const selectedPoster = computed(() => {
-  return posterStore.staticPosters.find((poster) => poster.id === selectedPosterId.value);
-});
+
 const clockVisible = ref<boolean>(props.originalEventSpecParams?.clockVisible ?? true);
 const loading = ref<boolean>(false);
 

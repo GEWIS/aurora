@@ -584,72 +584,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"IntegrationUserResponse": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					},
-					"lastSeen": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"endpoints",
-					"lastSeen"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserCreateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
-				"required": [
-					"name",
-					"endpoints"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IntegrationUserUpdateRequest": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"endpoints": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array",
-						"description": "List of endpoints (operationIds) this user can access"
-					}
-				},
-				"type": "object",
-				"additionalProperties": false
-			},
 			"ExternalUrls": {
 				"properties": {
 					"spotify": {
@@ -1163,9 +1097,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1173,6 +1104,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
@@ -1186,9 +1120,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"scaleFactor"
 				],
 				"type": "object",
@@ -1222,9 +1156,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1233,6 +1164,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"name": {
+						"type": "string"
+					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
 						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
@@ -1240,9 +1174,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1316,9 +1250,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1327,6 +1258,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"name": {
+						"type": "string"
+					},
 					"socketIds": {
 						"$ref": "#/components/schemas/Partial_Record_SocketioNamespaces.string__",
 						"description": "ID of the socket connection if present.\nRequired to send events specifically and only to this entity.\nMapping from namespace to ID, as a websocket has a different ID\nfor each namespace its in."
@@ -1334,9 +1268,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1361,9 +1295,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1371,6 +1302,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1429,9 +1363,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1485,9 +1419,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1495,6 +1426,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1576,9 +1510,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1664,9 +1598,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1674,6 +1605,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"nrChannels": {
 						"type": "number",
@@ -1758,9 +1692,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"nrChannels",
 					"canReset",
 					"shutterChannelValues",
@@ -1820,9 +1754,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -1830,6 +1761,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"controller": {
 						"$ref": "#/components/schemas/LightsControllerResponse"
@@ -1863,9 +1797,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"controller",
 					"gridSizeX",
 					"gridSizeY",
@@ -2654,9 +2588,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -2664,6 +2595,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					},
 					"dmxChannel": {
 						"type": "number",
@@ -2678,9 +2612,9 @@
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
 					"updatedAt",
+					"name",
 					"dmxChannel",
 					"onValue"
 				],
@@ -6676,9 +6610,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
-					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -6686,13 +6617,16 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"id",
-					"name",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -7193,6 +7127,72 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"IntegrationUserResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					},
+					"lastSeen": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"endpoints",
+					"lastSeen"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserCreateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
+				"required": [
+					"name",
+					"endpoints"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IntegrationUserUpdateRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"endpoints": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of endpoints (operationIds) this user can access"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"PaginatedAuditLogEntryResponse": {
 				"properties": {
 					"records": {
@@ -7555,256 +7555,6 @@
 					}
 				],
 				"parameters": []
-			}
-		},
-		"/user/integration/endpoints": {
-			"get": {
-				"operationId": "GetIntegrationEndpoints",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"type": "string"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get a list of all endpoints that an integration user could access.",
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/user/integration": {
-			"get": {
-				"operationId": "GetAllIntegrationUsers",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/IntegrationUserResponse"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/user/integration/{id}": {
-			"get": {
-				"operationId": "GetSingleIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"patch": {
-				"operationId": "UpdateIntegrationUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IntegrationUserResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteIntegrationUser",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/user/integration/{id}/key": {
-			"get": {
-				"operationId": "GetIntegrationUserKey",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"User"
-				],
-				"security": [
-					{
-						"local": [
-							"admin"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
 			}
 		},
 		"/spotify/login": {
@@ -8872,6 +8622,11 @@
 							"bac",
 							"key-holder"
 						]
+					},
+					{
+						"integration": [
+							"getLightsHandlers"
+						]
 					}
 				],
 				"parameters": []
@@ -8895,6 +8650,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"setLightsHandler"
 						]
 					}
 				],
@@ -10239,6 +9999,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"enableStrobeOnLightsGroup"
+						]
 					}
 				],
 				"parameters": [
@@ -10284,6 +10049,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"disableStrobeOnLightsGroup"
+						]
 					}
 				],
 				"parameters": [
@@ -10319,6 +10089,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"freezeLightsGroup"
+						]
 					}
 				],
 				"parameters": [
@@ -10353,6 +10128,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"unfreezeLightsGroup"
 						]
 					}
 				],
@@ -10410,6 +10190,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"setLightsGroupMasterDimmer"
 						]
 					}
 				],
@@ -10476,6 +10261,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"clearLightsGroupMasterDimmer"
+						]
 					}
 				],
 				"parameters": [
@@ -10509,6 +10299,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"setGroupParOverride"
 						]
 					}
 				],
@@ -10555,6 +10350,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"resetGroupPar"
+						]
 					}
 				],
 				"parameters": [
@@ -10589,6 +10389,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"freezeGroupPar"
 						]
 					}
 				],
@@ -10625,6 +10430,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"unfreezeGroupPar"
+						]
 					}
 				],
 				"parameters": [
@@ -10658,6 +10468,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"setGroupMovingHeadRgbOverride"
 						]
 					}
 				],
@@ -10704,6 +10519,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"resetGroupMovingHeadRgb"
+						]
 					}
 				],
 				"parameters": [
@@ -10738,6 +10558,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"freezeGroupMovingHeadRgb"
 						]
 					}
 				],
@@ -10774,6 +10599,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"unfreezeMovingHeadRgb"
+						]
 					}
 				],
 				"parameters": [
@@ -10807,6 +10637,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"setGroupMovingHeadWheelOverride"
 						]
 					}
 				],
@@ -10853,6 +10688,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"resetGroupMovingHeadWheel"
+						]
 					}
 				],
 				"parameters": [
@@ -10887,6 +10727,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"freezeGroupMovingHeadWheel"
 						]
 					}
 				],
@@ -10923,6 +10768,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"unfreezeMovingHeadWheel"
+						]
 					}
 				],
 				"parameters": [
@@ -10957,6 +10807,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"turnOnLightsSwitch"
+						]
 					}
 				],
 				"parameters": [
@@ -10990,6 +10845,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"turnOffLightsSwitch"
 						]
 					}
 				],
@@ -14708,6 +14568,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"applyLightsEffectColor"
+						]
 					}
 				],
 				"parameters": [
@@ -14779,6 +14644,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"updateLightsEffectColorColors"
+						]
 					}
 				],
 				"parameters": [
@@ -14839,6 +14709,11 @@
 							"avico",
 							"bac"
 						]
+					},
+					{
+						"integration": [
+							"applyLightsEffectMovement"
+						]
 					}
 				],
 				"parameters": [
@@ -14896,6 +14771,11 @@
 							"board",
 							"avico",
 							"bac"
+						]
+					},
+					{
+						"integration": [
+							"getAllPredefinedLightsEffects"
 						]
 					}
 				],
@@ -15712,6 +15592,256 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/user/integration/endpoints": {
+			"get": {
+				"operationId": "GetIntegrationEndpoints",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get a list of all endpoints that an integration user could access.",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/integration": {
+			"get": {
+				"operationId": "GetAllIntegrationUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IntegrationUserResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/integration/{id}": {
+			"get": {
+				"operationId": "GetSingleIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateIntegrationUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IntegrationUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IntegrationUserUpdateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteIntegrationUser",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/user/integration/{id}/key": {
+			"get": {
+				"operationId": "GetIntegrationUserKey",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"local": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/audit-logs": {

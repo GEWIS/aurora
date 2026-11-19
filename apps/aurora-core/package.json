@@ -70,7 +70,7 @@
     "@eslint/compat": "2.1.1",
     "@eslint/eslintrc": "3.3.7",
     "@eslint/js": "9.39.5",
-    "@tsoa/cli": "7.0.0-alpha.0",
+    "@tsoa/cli": "7.0.0-rc.0",
     "@types/async-lock": "1.4.2",
     "@types/body-parser": "1.19.6",
     "@types/cookie-parser": "1.4.10",

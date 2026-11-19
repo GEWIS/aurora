@@ -1,5 +1,5 @@
 import { Controller, Path } from '@tsoa/runtime';
-import { Body, Get, Post, Request, Route, Security, Tags } from 'tsoa';
+import { Body, Get, Post, Request, Route, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import { injectable } from 'inversify';
 import HandlerManager from './handler-manager';
@@ -9,6 +9,7 @@ import { LightsGroup } from '../lights/entities';
 import RootLightsService, { LightsGroupResponse } from '../lights/root-lights-service';
 import RootScreenService, { ScreenResponse } from './root-screen-service';
 import { SecurityNames } from '../../helpers/security';
+import { Security } from '../auth';
 import HandlerService from './handler-service';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';
@@ -63,6 +64,7 @@ export class HandlerController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.handler.base)
+  @Security(SecurityNames.INTEGRATION, ['getLightsHandlers'])
   @Get('lights')
   public getLightsHandlers(): HandlerResponse<LightsGroupResponse>[] {
     return this.handlersManager.getHandlers(LightsGroup).map((h) => ({
@@ -75,6 +77,7 @@ export class HandlerController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.handler.privileged)
+  @Security(SecurityNames.INTEGRATION, ['setLightsHandler'])
   @Post('lights/{id}')
   public async setLightsHandler(
     @Request() req: ExpressRequest,

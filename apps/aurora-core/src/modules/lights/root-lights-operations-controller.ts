@@ -1,4 +1,4 @@
-import { Body, Delete, Post, Request, Res, Route, Security, Tags } from 'tsoa';
+import { Body, Delete, Post, Request, Res, Route, Tags } from 'tsoa';
 import { injectable } from 'inversify';
 import { Controller, TsoaResponse } from '@tsoa/runtime';
 import { Request as ExpressRequest } from 'express';
@@ -12,6 +12,7 @@ import {
 } from './entities';
 import { StrobeProps } from './effects/color/strobe';
 import { SecurityNames } from '../../helpers/security';
+import { Security } from '../auth';
 import logger from '../../logger';
 import { securityGroups } from '../../helpers/security-groups';
 import { getDataSource } from '../../database';
@@ -58,6 +59,7 @@ export class RootLightsOperationsController extends Controller {
    * Enable the strobe for all fixtures in the given group
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['enableStrobeOnLightsGroup'])
   @Post('group/{id}/strobe/enable')
   public async enableStrobeOnLightsGroup(
     @Request() req: ExpressRequest,
@@ -79,6 +81,7 @@ export class RootLightsOperationsController extends Controller {
    * Disable the strobe for all fixtures in the given group
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['disableStrobeOnLightsGroup'])
   @Post('group/{id}/strobe/disable')
   public async disableStrobeOnLightsGroup(@Request() req: ExpressRequest, id: number) {
     const lightsGroup = this.getGroups().find((g) => g.id === id);
@@ -97,6 +100,7 @@ export class RootLightsOperationsController extends Controller {
    * (i.e. freeze the fixture in its current state)
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['freezeLightsGroup'])
   @Post('group/{id}/freeze')
   public async freezeLightsGroup(@Request() req: ExpressRequest, id: number) {
     const group = this.getGroups().find((g) => g.id === id);
@@ -114,6 +118,7 @@ export class RootLightsOperationsController extends Controller {
    * Unfreeze the DMX values
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['unfreezeLightsGroup'])
   @Post('group/{id}/unfreeze')
   public async unfreezeLightsGroup(@Request() req: ExpressRequest, id: number) {
     const group = this.getGroups().find((g) => g.id === id);
@@ -128,6 +133,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['setLightsGroupMasterDimmer'])
   @Post('group/{id}/dimmer')
   public async setLightsGroupMasterDimmer(
     @Request() req: ExpressRequest,
@@ -159,6 +165,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['clearLightsGroupMasterDimmer'])
   @Delete('group/{id}/dimmer')
   public async clearLightsGroupMasterDimmer(
     @Request() req: ExpressRequest,
@@ -184,6 +191,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['setGroupParOverride'])
   @Post('group/par/{id}/override')
   public async setGroupParOverride(
     @Request() req: ExpressRequest,
@@ -208,6 +216,7 @@ export class RootLightsOperationsController extends Controller {
    * Perform the fixture's internal reset operation if possible. Do nothing otherwise
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['resetGroupPar'])
   @Post('group/par/{id}/reset')
   public async resetGroupPar(@Request() req: ExpressRequest, id: number) {
     const pars = this.getGroups()
@@ -232,6 +241,7 @@ export class RootLightsOperationsController extends Controller {
    * (i.e. freeze the fixture in its current state)
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['freezeGroupPar'])
   @Post('group/par/{id}/freeze')
   public async freezeGroupPar(@Request() req: ExpressRequest, id: number) {
     const pars = this.getGroups()
@@ -252,6 +262,7 @@ export class RootLightsOperationsController extends Controller {
    * Unfreeze the DMX values
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['unfreezeGroupPar'])
   @Post('group/par/{id}/unfreeze')
   public async unfreezeGroupPar(@Request() req: ExpressRequest, id: number) {
     const pars = this.getGroups()
@@ -269,6 +280,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['setGroupMovingHeadRgbOverride'])
   @Post('group/moving-head-rgb/{id}/override')
   public async setGroupMovingHeadRgbOverride(
     @Request() req: ExpressRequest,
@@ -296,6 +308,7 @@ export class RootLightsOperationsController extends Controller {
    * Perform the fixture's internal reset operation if possible. Do nothing otherwise
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['resetGroupMovingHeadRgb'])
   @Post('group/moving-head-rgb/{id}/reset')
   public async resetGroupMovingHeadRgb(@Request() req: ExpressRequest, id: number) {
     const movingHeadRgbs = this.getGroups()
@@ -320,6 +333,7 @@ export class RootLightsOperationsController extends Controller {
    * (i.e. freeze the fixture in its current state)
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['freezeGroupMovingHeadRgb'])
   @Post('group/moving-head-rgb/{id}/freeze')
   public async freezeGroupMovingHeadRgb(@Request() req: ExpressRequest, id: number) {
     const movingHead = this.getGroups()
@@ -343,6 +357,7 @@ export class RootLightsOperationsController extends Controller {
    * Unfreeze the DMX values
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['unfreezeMovingHeadRgb'])
   @Post('group/moving-head-rgb/{id}/unfreeze')
   public async unfreezeMovingHeadRgb(@Request() req: ExpressRequest, id: number) {
     const pars = this.getGroups()
@@ -363,6 +378,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['setGroupMovingHeadWheelOverride'])
   @Post('group/moving-head-wheel/{id}/override')
   public async setGroupMovingHeadWheelOverride(
     @Request() req: ExpressRequest,
@@ -390,6 +406,7 @@ export class RootLightsOperationsController extends Controller {
    * Perform the fixture's internal reset operation if possible. Do nothing otherwise
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['resetGroupMovingHeadWheel'])
   @Post('group/moving-head-wheel/{id}/reset')
   public async resetGroupMovingHeadWheel(@Request() req: ExpressRequest, id: number) {
     const movingHeadWheels = this.getGroups()
@@ -417,6 +434,7 @@ export class RootLightsOperationsController extends Controller {
    * (i.e. freeze the fixture in its current state)
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['freezeGroupMovingHeadWheel'])
   @Post('group/moving-head-wheel/{id}/freeze')
   public async freezeGroupMovingHeadWheel(@Request() req: ExpressRequest, id: number) {
     const movingHead = this.getGroups()
@@ -440,6 +458,7 @@ export class RootLightsOperationsController extends Controller {
    * Unfreeze the DMX values
    */
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['unfreezeMovingHeadWheel'])
   @Post('group/moving-head-wheel/{id}/unfreeze')
   public async unfreezeMovingHeadWheel(@Request() req: ExpressRequest, id: number) {
     const pars = this.getGroups()
@@ -460,6 +479,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['turnOnLightsSwitch'])
   @Post('switch/{id}/on')
   public async turnOnLightsSwitch(@Request() req: ExpressRequest, id: number): Promise<void> {
     const lightsSwitch = await this.getLightsSwitch(id);
@@ -474,6 +494,7 @@ export class RootLightsOperationsController extends Controller {
   }
 
   @Security(SecurityNames.LOCAL, securityGroups.lightOperation.base)
+  @Security(SecurityNames.INTEGRATION, ['turnOffLightsSwitch'])
   @Post('switch/{id}/off')
   public async turnOffLightsSwitch(@Request() req: ExpressRequest, id: number): Promise<void> {
     const lightsSwitch = await this.getLightsSwitch(id);

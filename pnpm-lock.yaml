@@ -276,8 +276,8 @@ importers:
         specifier: workspace:*
         version: link:../../libs/aurora-api-client
       '@gewis/sudosos-client':
-        specifier: 1.34.0
-        version: 1.34.0
+        specifier: 1.37.0
+        version: 1.37.0
       '@tsoa/runtime':
         specifier: 7.0.0-alpha.0
         version: 7.0.0-alpha.0
@@ -578,6 +578,10 @@ packages:
 
   '@babel/runtime@7.29.13':
     resolution: {integrity: sha512-v+oN26xP4YIlQsbQ/CbTH1WG5m/l/DjKKZNy/Kp3f/AFvbgt7Em/D0FeMM3O2hX0YzeN2M16W8lOpyhIkfCBcQ==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.14':
+    resolution: {integrity: sha512-Y5tqevQaUAZhhj82BpYMNC1ssvLQTVAfwKdm8iy8qwmhvC2/CpcAu8OC+QEtjM7pMk7knx83u1Qj8gzkicyelw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.29.7':
@@ -1117,8 +1121,8 @@ packages:
   '@gewis/splash@2.4.0':
     resolution: {integrity: sha512-MdxN/hF2nZSf7OMY3fUAYArMjz+3tav9FNQ7ukEFmJZyDu/eMs/h6n6D3MYCND5yG9WmYJ6DYJq8VU0AWAV1/Q==}
 
-  '@gewis/sudosos-client@1.34.0':
-    resolution: {integrity: sha512-vEf5Tx6G8gfP1OqRF91ZBYlBsG/rKddkIVEHN95uV1kkjrb6I1YSytWFJxVtwmiwR366wiR7dmQFCnhOnWbwOw==}
+  '@gewis/sudosos-client@1.37.0':
+    resolution: {integrity: sha512-kAysICpt3Po9hMjGcbczbeHK5i+DtJMtup1HKQh+ELiqcuLRbsXlVV2PbY+0bbG/NIVONw6PVeswv/66Z/OFaQ==}
 
   '@giphy/colors@1.0.1':
     resolution: {integrity: sha512-CMUY2UR8Ujl/wTRVjwu9spss6Cf2qkQNATKfoWCTWQp7CXdSfPWUDepp0c0/F0n7lYphLFvD9qzOC4NSdBt7nw==}
@@ -1787,6 +1791,9 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
+  '@rolldown/pluginutils@1.1.1':
+    resolution: {integrity: sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==}
+
   '@rollup/pluginutils@5.5.1':
     resolution: {integrity: sha512-P9ZvnfouRu4MSC+ilERaw6FmZs8zqKhpHxEs4aGDGWQAMzQGXnhvCSvoNwokfNvdt7t3Y5Y4p6gStQgezeIqug==}
     engines: {node: '>=14.0.0'}
@@ -2286,6 +2293,9 @@ packages:
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
+
+  '@tybys/wasm-util@0.10.5':
+    resolution: {integrity: sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==}
 
   '@types/accepts@1.3.7':
     resolution: {integrity: sha512-Pay9fq2lM2wXPWbteBsRAGiWH2hig4ZE2asK+mm7kUzlxRTfL961rj89I6zV/E3PcIkDqyuBEcMxFT7rccugeQ==}
@@ -6443,6 +6453,9 @@ snapshots:
 
   '@babel/runtime@7.29.13': {}
 
+  '@babel/runtime@7.29.14':
+    optional: true
+
   '@babel/template@7.29.7':
     dependencies:
       '@babel/code-frame': 7.29.7
@@ -6878,7 +6891,7 @@ snapshots:
 
   '@gewis/splash@2.4.0': {}
 
-  '@gewis/sudosos-client@1.34.0':
+  '@gewis/sudosos-client@1.37.0':
     dependencies:
       axios: 1.21.0
     transitivePeerDependencies:
@@ -7364,7 +7377,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@tybys/wasm-util': 0.10.4
+      '@tybys/wasm-util': 0.10.5
     optional: true
 
   '@noble/hashes@1.8.0': {}
@@ -7536,6 +7549,8 @@ snapshots:
     optional: true
 
   '@rolldown/pluginutils@1.0.1': {}
+
+  '@rolldown/pluginutils@1.1.1': {}
 
   '@rollup/pluginutils@5.5.1(rollup@4.65.1)':
     dependencies:
@@ -7920,6 +7935,11 @@ snapshots:
     optional: true
 
   '@tybys/wasm-util@0.10.4':
+    dependencies:
+      tslib: 2.9.1
+    optional: true
+
+  '@tybys/wasm-util@0.10.5':
     dependencies:
       tslib: 2.9.1
     optional: true
@@ -8807,7 +8827,7 @@ snapshots:
 
   babel-plugin-macros@3.1.0:
     dependencies:
-      '@babel/runtime': 7.29.13
+      '@babel/runtime': 7.29.14
       cosmiconfig: 7.1.0
       resolve: 1.22.14
     optional: true
@@ -11533,7 +11553,7 @@ snapshots:
   rolldown@1.0.3:
     dependencies:
       '@oxc-project/types': 0.133.0
-      '@rolldown/pluginutils': 1.0.1
+      '@rolldown/pluginutils': 1.1.1
     optionalDependencies:
       '@rolldown/binding-android-arm64': 1.0.3
       '@rolldown/binding-darwin-arm64': 1.0.3

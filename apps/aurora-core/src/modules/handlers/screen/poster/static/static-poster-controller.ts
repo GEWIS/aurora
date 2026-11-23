@@ -1,10 +1,11 @@
 import { Controller } from '@tsoa/runtime';
 import { injectable } from 'inversify';
-import { Body, Delete, Get, Post, Request, Route, Security, Tags } from 'tsoa';
+import { Body, Delete, Get, Post, Request, Route, Tags } from 'tsoa';
 import { StaticPosterHandler } from '../../index';
 import HandlerManager from '../../../../root/handler-manager';
 import { Screen } from '../../../../root/entities';
 import { SecurityNames } from '../../../../../helpers/security';
+import { Security } from '../../../../auth';
 import { securityGroups } from '../../../../../helpers/security-groups';
 import { Request as ExpressRequest } from 'express';
 import logger from '../../../../../logger';

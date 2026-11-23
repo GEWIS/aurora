@@ -1,11 +1,12 @@
 import { Controller, Patch, TsoaResponse } from '@tsoa/runtime';
 import { injectable } from 'inversify';
-import { Body, Delete, Get, Post, Request, Res, Route, Security, Tags } from 'tsoa';
+import { Body, Delete, Get, Post, Request, Res, Route, Tags } from 'tsoa';
 import { Request as ExpressRequest } from 'express';
 import SetEffectsHandler from './set-effects-handler';
 import HandlerManager from '../../root/handler-manager';
 import { LightsGroup } from '../../lights/entities';
 import { SecurityNames } from '../../../helpers/security';
+import { Security } from '../../auth';
 import { LightsEffectsColorCreateParams } from '../../lights/effects/color';
 import { LightsEffectsMovementCreateParams } from '../../lights/effects/movement';
 import logger from '../../../logger';
@@ -38,6 +39,7 @@ export class SetEffectsController extends Controller {
    * @param effects
    */
   @Security(SecurityNames.LOCAL, securityGroups.effects.base)
+  @Security(SecurityNames.INTEGRATION, ['applyLightsEffectColor'])
   @Post('{id}/color')
   public async applyLightsEffectColor(
     id: number,
@@ -75,6 +77,7 @@ export class SetEffectsController extends Controller {
    * @param notFoundResponse
    */
   @Security(SecurityNames.LOCAL, securityGroups.effects.base)
+  @Security(SecurityNames.INTEGRATION, ['updateLightsEffectColorColors'])
   @Post('{id}/color/colors')
   public async updateLightsEffectColorColors(
     id: number,
@@ -110,6 +113,7 @@ export class SetEffectsController extends Controller {
    * @param effects
    */
   @Security(SecurityNames.LOCAL, securityGroups.effects.base)
+  @Security(SecurityNames.INTEGRATION, ['applyLightsEffectMovement'])
   @Post('{id}/movement')
   public async applyLightsEffectMovement(
     id: number,
@@ -143,6 +147,7 @@ export class SetEffectsController extends Controller {
    * Get all existing predefined effects
    */
   @Security(SecurityNames.LOCAL, securityGroups.effects.base)
+  @Security(SecurityNames.INTEGRATION, ['getAllPredefinedLightsEffects'])
   @Get('predefined')
   public async getAllPredefinedLightsEffects(): Promise<LightsPredefinedEffectResponse[]> {
     const effects = await new SetEffectsService().getAllPredefinedEffects();

@@ -49,6 +49,11 @@ describe('GET /api/user/integration/endpoints', () => {
       'getInfoPcUsage',
       'getInfoRoomStatus',
       'getSpotifyCurrentlyPlaying',
+      'getScreenHandlers',
+      'setLightsHandler',
+      'applyLightsEffectColor',
+      'turnOnLightsSwitch',
+      'showStaticPoster',
     ];
 
     // ACT

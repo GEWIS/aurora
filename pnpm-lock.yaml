@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@gewis/sudosos-client>axios': 1.21.0
+  '@gewis/sudosos-client>axios': 1.21.1
   '@types/express': 5.0.6
 
 importers:
@@ -2970,9 +2970,6 @@ packages:
   axe-core@4.14.0:
     resolution: {integrity: sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==}
     engines: {node: '>=4'}
-
-  axios@1.21.0:
-    resolution: {integrity: sha512-YCzXMB53Q9PZBsh7yN7wtapit4WepwcHS2fP8QhGsBxSz5YtgYobV7GGlWlAJi+RxfU77GQTQi2DSLUma42EYA==}
 
   axios@1.21.1:
     resolution: {integrity: sha512-6eI5Q/Y4u/Um9dDlsRoq5pY2rxnUTv+L4PpLitnbk/i4jb3MxLZ5CsN5Ih3IysbeRYK4pR+P7qfMsOQl9fwwFQ==}
@@ -6916,7 +6913,7 @@ snapshots:
 
   '@gewis/sudosos-client@1.37.0':
     dependencies:
-      axios: 1.21.0
+      axios: 1.21.1
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -8834,16 +8831,6 @@ snapshots:
   aws-ssl-profiles@1.1.2: {}
 
   axe-core@4.14.0: {}
-
-  axios@1.21.0:
-    dependencies:
-      follow-redirects: 1.16.3
-      form-data: 4.0.6
-      https-proxy-agent: 5.0.1
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-      - supports-color
 
   axios@1.21.1:
     dependencies:

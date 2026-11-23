@@ -32,8 +32,7 @@
           </div>
           <div class="text-justify">
             You are about to start to start a time trail race session called
-            <span class="font-semibold">{{ sessionName }}</span
-            >.
+            <span class="font-semibold">{{ sessionName }}</span>.
           </div>
           <SubscriberDetails
             class="mt-3"
